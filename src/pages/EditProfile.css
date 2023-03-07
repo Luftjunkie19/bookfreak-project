@@ -1,0 +1,40 @@
+.file-upload {
+  display: inline-block;
+  position: relative;
+}
+
+.file-upload span {
+  display: block;
+  padding: 10px;
+  color: #fff;
+  background-color: #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.file-upload span:hover {
+  background-color: #0062cc;
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+textarea {
+  width: 450px;
+  height: 200px;
+  font-family: inherit;
+  resize: none;
+}
+
+textarea:active,
+textarea:focus {
+  outline: none;
+}

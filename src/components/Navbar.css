@@ -1,0 +1,73 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(0, 52, 97);
+  color: aliceblue;
+  padding: 10px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar .logo-holder {
+  width: 50px;
+  height: 50px;
+  padding: 10px;
+}
+
+.navbar .logo-holder img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.options {
+  display: flex;
+}
+
+.options a {
+  text-decoration: none;
+  transition: all 0.5s;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  color: aliceblue;
+  padding: 5px;
+  border-radius: 5px;
+  margin: 10px;
+}
+
+a svg {
+  font-size: 30px;
+  margin-right: 10px;
+}
+
+.active-link {
+  background: rgb(3, 120, 255);
+}
+
+.btn.logout {
+  background-color: rgb(181, 2, 2);
+}
+
+.options .btn.logout svg {
+  margin-left: 10px;
+  font-size: 20px;
+}
+
+.links ul {
+  list-style-type: none;
+  display: flex;
+}
+
+li a {
+  text-decoration: none;
+  color: white;
+  margin-right: 10px;
+}
