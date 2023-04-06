@@ -1,0 +1,33 @@
+.notifications-holder {
+  position: absolute;
+  right: 0;
+  top: 15%;
+  overflow: scroll;
+  overflow-x: hidden;
+  height: 200px;
+}
+
+.notification,
+.new-notification {
+  background: white;
+  padding: 5px;
+  word-wrap: break-word;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.5s;
+  color: black;
+}
+
+.new-notification {
+  font-weight: 600;
+}
+
+.new-notification:hover {
+  background: greenyellow;
+}
+
+.notification:hover {
+  background: rgb(54, 131, 255);
+  color: white;
+}

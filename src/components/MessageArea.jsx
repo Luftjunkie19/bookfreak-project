@@ -28,18 +28,18 @@ import { toast } from 'react-toastify';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useDocument } from '../hooks/useDocument';
 import { useFirestore } from '../hooks/useFirestore';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 function MessageArea({ chatId, messagedUser }) {
   const { user } = useAuthContext();
   const [message, setMessage] = useState("");
-
+  const { pushNotification } = usePushNotifications();
   console.log(messagedUser);
 
   const firestore = getFirestore();
 
   const { document } = useDocument("chats", chatId);
   const { updateDocument } = useFirestore("chats");
-  console.log(document);
 
   console.log(chatId);
 
@@ -85,6 +85,16 @@ function MessageArea({ chatId, messagedUser }) {
         chatId: chatId,
       });
       setMessage("");
+
+      await pushNotification({
+        notificationContent: `${user.displayName} has sent you a message`,
+        directedTo: messagedUser.id,
+        linkTo: `message-to/${chatId}`,
+        isRead: false,
+        notificationTime: Timestamp.fromDate(new Date()),
+        changeConcering: user.photoURL,
+      });
+
       const bottomOfChat = messagesHolder.current;
       bottomOfChat.scrollTo(0, bottomOfChat.scrollHeight);
     }
@@ -116,6 +126,16 @@ function MessageArea({ chatId, messagedUser }) {
       await updateDocument(chatId, {
         messages: newArray,
       });
+
+      await pushNotification({
+        notificationContent: `${user.displayName} has sent you a message`,
+        directedTo: messagedUser.id,
+        linkTo: `message-to/${chatId}`,
+        isRead: false,
+        notificationTime: Timestamp.fromDate(new Date()),
+        changeConcering: user.photoURL,
+      });
+
       setMessage("");
       const bottomOfChat = messagesHolder.current;
       bottomOfChat.scrollTo(0, bottomOfChat.scrollHeight);
@@ -130,7 +150,7 @@ function MessageArea({ chatId, messagedUser }) {
     const chatDocument = await getDoc(chat);
 
     const inacceptableFiles = files.filter((file) => {
-      return file.size > 100000 && !file.type.includes("image");
+      return file.size > 100000 || !file.type.includes("image");
     });
 
     const acceptableFiles = files.filter((file) => {
@@ -150,7 +170,7 @@ function MessageArea({ chatId, messagedUser }) {
     }
 
     if (inacceptableFiles.length === 0 && acceptableFiles.length === 0) {
-      toast.error("Neither were the files acceptable nor inacceptable 🤪.");
+      toast.error("It seems, you haven't uploaded anything 🤪.");
       return;
     }
 
@@ -200,6 +220,16 @@ function MessageArea({ chatId, messagedUser }) {
           createdAt: Timestamp.fromDate(new Date()),
           chatId: chatId,
         });
+
+        await pushNotification({
+          notificationContent: `${user.displayName} has sent you a message`,
+          directedTo: messagedUser.id,
+          linkTo: `message-to/${chatId}`,
+          isRead: false,
+          notificationTime: Timestamp.fromDate(new Date()),
+          changeConcering: user.photoURL,
+        });
+
         const bottomOfChat = messagesHolder.current;
         bottomOfChat.scrollTo(0, bottomOfChat.scrollHeight);
       }
@@ -231,6 +261,16 @@ function MessageArea({ chatId, messagedUser }) {
         await updateDocument(chatId, {
           messages: newArray,
         });
+
+        await pushNotification({
+          notificationContent: `${user.displayName} has sent you a message`,
+          directedTo: messagedUser.id,
+          linkTo: `message-to/${chatId}`,
+          isRead: false,
+          notificationTime: Timestamp.fromDate(new Date()),
+          changeConcering: user.photoURL,
+        });
+
         const bottomOfChat = messagesHolder.current;
         bottomOfChat.scrollTo(0, bottomOfChat.scrollHeight);
       }
@@ -242,11 +282,11 @@ function MessageArea({ chatId, messagedUser }) {
       <div className="messaging-container">
         <div className="messages-holder" ref={messagesHolder}>
           {document &&
-            document.messages.map((message) => (
+            document.messages.map((message, i) => (
               <>
                 {message.sender.id === user.uid ? (
                   <>
-                    <div className="owner-message">
+                    <div className="owner-message" key={i}>
                       <div className="message-content">
                         {message.content &&
                         message.content.includes(
@@ -271,7 +311,7 @@ function MessageArea({ chatId, messagedUser }) {
                   </>
                 ) : (
                   <>
-                    <div className="from-message">
+                    <div className="from-message" key={i}>
                       <div className="from-picture">
                         <img src={message.sender.photoURL} alt="" />
                       </div>

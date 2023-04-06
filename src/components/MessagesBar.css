@@ -12,6 +12,10 @@
   left: 0;
 }
 
+.messages-bar::-webkit-scrollbar {
+  display: none;
+}
+
 .chat-message {
   display: flex;
   flex-direction: column;

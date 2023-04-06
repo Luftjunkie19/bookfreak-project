@@ -1,5 +1,5 @@
 body {
-  background-color: rgb(48, 48, 48);
+  background-image: linear-gradient(60deg, #29323c 5%, #3d4956 100%);
   overflow-x: hidden;
 }
 

@@ -1,8 +1,12 @@
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getFirestore,
+  updateDoc,
+} from 'firebase/firestore';
 
-import { useAuthContext } from "./useAuthContext";
-import { useCollection } from "./useCollection";
-import { useOrderedCollection } from "./useOrderedCollection";
+import { useAuthContext } from './useAuthContext';
+import { useCollection } from './useCollection';
+import { useOrderedCollection } from './useOrderedCollection';
 
 export function useUpdateChats() {
   const { user } = useAuthContext();

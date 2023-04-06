@@ -1,0 +1,18 @@
+.under-nav {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  background-image: linear-gradient(20deg, #194b96 0%, #2462be 100%);
+  border-top: 2px solid white;
+}
+
+.visit-p {
+  font-weight: 700;
+}
+
+.under-links {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}

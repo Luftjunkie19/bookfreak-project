@@ -82,6 +82,14 @@ export function useLogin() {
       navigate("/");
     } catch (error) {
       setIsPending(false);
+
+      if (
+        error.message ===
+        "Firebase: Error (auth/account-exists-with-different-credential)."
+      ) {
+        setError("There is already an user with such an credentials");
+      }
+
       setError(error.message);
     }
   };
@@ -128,6 +136,14 @@ export function useLogin() {
       navigate("/");
     } catch (error) {
       setIsPending(false);
+
+      if (
+        error.message ===
+        "Firebase: Error (auth/account-exists-with-different-credential)."
+      ) {
+        setError("There is already an user with such an credentials");
+      }
+
       setError(error.message);
     }
   };
@@ -175,6 +191,14 @@ export function useLogin() {
       navigate("/");
     } catch (error) {
       setIsPending(false);
+
+      if (
+        error.message ===
+        "Firebase: Error (auth/account-exists-with-different-credential)."
+      ) {
+        setError("There is already an user with such an credentials");
+      }
+
       setError(error.message);
     }
   };
@@ -196,6 +220,14 @@ export function useLogin() {
       navigate("/");
     } catch (error) {
       setIsPending(false);
+
+      if (
+        error.message ===
+        "Firebase: Error (auth/account-exists-with-different-credential)."
+      ) {
+        setError("There is already an user with such an credentials");
+      }
+
       setError(error.message);
     }
   };
@@ -238,6 +270,14 @@ export function useLogin() {
       navigate("/");
     } catch (error) {
       setIsPending(false);
+
+      if (
+        error.message ===
+        "Firebase: Error (auth/account-exists-with-different-credential)."
+      ) {
+        setError("There is already an user with such an credentials");
+      }
+
       setError(error.message);
       console.log(error.message);
     }

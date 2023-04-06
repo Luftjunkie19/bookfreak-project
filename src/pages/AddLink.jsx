@@ -1,14 +1,14 @@
-import './AddLink.css';
+import "./AddLink.css";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { useNavigate } from 'react-router-dom';
-import Select from 'react-select';
-import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
+import Select from "react-select";
+import { toast } from "react-toastify";
 
-import Loader from '../components/Loader';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useFirestore } from '../hooks/useFirestore';
+import Loader from "../components/Loader";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useFirestore } from "../hooks/useFirestore";
 
 function AddLink() {
   const [option, setOption] = useState("");
@@ -29,7 +29,7 @@ function AddLink() {
 
     try {
       if (option === "discord") {
-        if (!link.includes("#")) {
+        if (!link.match("^.{3,32}#[0-9]{4}$")) {
           setError("Your dicord nickname is wrong, please check it ones again");
           setIsPending(false);
           return;
@@ -41,6 +41,16 @@ function AddLink() {
           addedBy: user.uid,
         });
       } else {
+        if (
+          !link.match(
+            "/(https?://)?(www.)?[a-zA-Z0-9]+.[a-zA-Z]{2,}([/w .-]*)*/?/"
+          )
+        ) {
+          setError("Your URL is invalid, change it.");
+          setIsPending(false);
+          return;
+        }
+
         await addDocument({
           mediaType: option,
           linkTo: link,

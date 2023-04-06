@@ -117,6 +117,7 @@ function LogInWithPhone() {
               />
             </label>
             <button className="btn">Verify</button>
+            {error && <p className="error">{error}</p>}
           </form>
         </>
       )}

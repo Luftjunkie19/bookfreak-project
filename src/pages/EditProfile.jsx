@@ -1,31 +1,21 @@
-import './EditProfile.css';
+import "./EditProfile.css";
 
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
-import {
-  updateEmail,
-  updateProfile,
-} from 'firebase/auth';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import { FaUserAlt } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { updateEmail, updateProfile } from "firebase/auth";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { FaUserAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import Loader from '../components/Loader';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useCollection } from '../hooks/useCollection';
-import { useDocument } from '../hooks/useDocument';
-import { useFirestore } from '../hooks/useFirestore';
-import { useUpdateDocs } from '../hooks/useUpdateDocs';
-import { useUpdateChats } from '../hooks/useUpdateUserChat';
+import Loader from "../components/Loader";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useCollection } from "../hooks/useCollection";
+import { useDocument } from "../hooks/useDocument";
+import { useFirestore } from "../hooks/useFirestore";
+import { useUpdateCommunities } from "../hooks/useUpdateCommunities";
+import { useUpdateDocs } from "../hooks/useUpdateDocs";
+import { useUpdateChats } from "../hooks/useUpdateUserChat";
 
 function EditProfile() {
   const { user } = useAuthContext();
@@ -43,7 +33,6 @@ function EditProfile() {
   const [imgError, setImgError] = useState(null);
   const [description, setDescription] = useState("");
   const [isPending, setIsPending] = useState(false);
-
   const { updateDocument } = useFirestore("users");
   const { documents } = useCollection("books", [
     "createdBy.id",
@@ -58,6 +47,8 @@ function EditProfile() {
   const storage = getStorage();
 
   const navigate = useNavigate();
+
+  const { updateComunities } = useUpdateCommunities();
 
   useEffect(() => {
     if (document) {
@@ -115,6 +106,20 @@ function EditProfile() {
         const snapshot = await uploadBytes(image, profileImg);
         const photoURL = await getDownloadURL(image);
 
+        updateComunities(
+          {
+            label: nickname,
+            value: {
+              nickname: nickname,
+              photoURL: photoURL,
+              id: user.uid,
+            },
+          },
+          nickname,
+          photoURL
+        );
+        console.log("Provided changes", nickname, photoURL);
+
         await updateProfile(user, {
           displayName: nickname,
           photoURL: photoURL,
@@ -125,6 +130,7 @@ function EditProfile() {
           photoURL: photoURL,
           description: description,
         });
+
         await updateEmail(user, email);
         updateDocs(documents, "books", nickname, email, photoURL);
 
@@ -143,6 +149,19 @@ function EditProfile() {
         console.log(`Profile Pic hasn't been changed`);
         console.log(nickname, email, profileImg, description);
 
+        updateComunities(
+          {
+            label: nickname,
+            value: {
+              nickname: nickname,
+              photoURL: profileImg,
+              id: user.uid,
+            },
+          },
+          nickname,
+          profileImg
+        );
+
         await updateProfile(user, {
           displayName: nickname,
           photoURL: profileImg,
@@ -154,6 +173,7 @@ function EditProfile() {
           photoURL: profileImg,
           description: description,
         });
+
         await updateEmail(user, email);
         updateDocs(documents, "books", nickname, email, profileImg);
         if (ownedArray.length > 0) {

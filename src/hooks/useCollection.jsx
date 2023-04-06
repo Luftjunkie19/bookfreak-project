@@ -1,16 +1,13 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from "react";
 
 import {
   collection,
   getFirestore,
   onSnapshot,
+  orderBy,
   query,
   where,
-} from 'firebase/firestore';
+} from "firebase/firestore";
 
 export function useCollection(col, _q, _orderedBy) {
   const [documents, setDocuments] = useState([]);
@@ -29,11 +26,11 @@ export function useCollection(col, _q, _orderedBy) {
     }
 
     if (orderedBy) {
-      ref = query(ref, orderedBy(...orderedBy));
+      ref = query(ref, orderBy(...orderedBy));
     }
 
     if (Query && orderedBy) {
-      ref = query(ref, where(...Query), orderedBy(...orderedBy));
+      ref = query(ref, where(...Query), orderBy(...orderedBy));
     }
 
     const unsub = () => {

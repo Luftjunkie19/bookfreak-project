@@ -25,11 +25,11 @@
 }
 
 .description {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 400px;
+  max-height: 200px;
+  max-width: 400px;
+  overflow: auto;
+  padding: 10px;
+  margin: 20px;
   padding: 15px;
 }
 
@@ -147,6 +147,11 @@
   transition: 0.4s all;
 }
 
+.link a {
+  display: flex;
+  align-items: center;
+}
+
 .link:hover {
   transform: scale(1.05) translateY(-2px);
 }
@@ -202,4 +207,8 @@ a {
   width: 25px;
   height: 25px;
   border: #000000;
+}
+
+.remove-user {
+  background-color: #ff0000;
 }

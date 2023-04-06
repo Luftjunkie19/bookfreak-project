@@ -1,15 +1,22 @@
-import "./Book.css";
+import './Book.css';
 
-import { formatDistanceToNow } from "date-fns";
-import { FaPencilAlt, FaSignOutAlt } from "react-icons/fa";
-import { useParams } from "react-router";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { formatDistanceToNow } from 'date-fns';
+import { increment } from 'firebase/firestore';
+import {
+  FaPencilAlt,
+  FaSignOutAlt,
+  FaStar,
+} from 'react-icons/fa';
+import { useParams } from 'react-router';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useDocument } from "../hooks/useDocument";
-import { useFirestore } from "../hooks/useFirestore";
-import Avatar from "./Avatar";
+import Recommended from '../components/Recommended';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useDocument } from '../hooks/useDocument';
+import { useFavourite } from '../hooks/useFavourite';
+import { useFirestore } from '../hooks/useFirestore';
+import Avatar from './Avatar';
 
 function Book() {
   const { id } = useParams();
@@ -20,7 +27,10 @@ function Book() {
 
   const { document, error } = useDocument("books", id);
 
-  const { deleteDocument } = useFirestore("books");
+  const { deleteDocument, updateDocument } = useFirestore("books");
+
+  const { addToFavourite, removeFromFavourite, checkCondition } =
+    useFavourite("favourite");
 
   console.log(error);
 
@@ -30,9 +40,38 @@ function Book() {
   };
 
   return (
-    <>
+    <div className="book-element">
       {document && (
         <div className="book-details">
+          {user.uid !== document.createdBy.id && (
+            <button
+              className={`to-favourite ${
+                checkCondition(document.id) ? "added" : ""
+              }`}
+              onClick={() => {
+                if (!checkCondition(document.id)) {
+                  addToFavourite(document);
+                  updateDocument(id, {
+                    favouritedCount: increment(1),
+                  });
+                } else {
+                  removeFromFavourite(document.id);
+                  updateDocument(id, {
+                    favouritedCount: increment(-1),
+                  });
+                }
+              }}
+            >
+              <FaStar
+                title={
+                  !checkCondition(document.id)
+                    ? "add to favourites"
+                    : "remove from favourites"
+                }
+              />
+            </button>
+          )}
+
           {user.uid === document.createdBy.id && (
             <>
               <button className="btn delete" onClick={clickDelete}>
@@ -69,19 +108,23 @@ function Book() {
 
       {document && document.recension.content.trim() !== "" && (
         <div className="recension-container">
-          <h3>Recension:</h3>
+          <h2>Recension:</h2>
           {document.recension.content}
 
-          <h4>
+          <p>
             Added: {``}
             {formatDistanceToNow(
               document.recension.timeOfRecension.toDate()
             )}{" "}
             ago
-          </h4>
+          </p>
         </div>
       )}
-    </>
+
+      {document && document.readPages === document.pagesNumber && (
+        <Recommended />
+      )}
+    </div>
   );
 }
 

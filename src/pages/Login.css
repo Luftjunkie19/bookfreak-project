@@ -93,3 +93,8 @@ input {
   flex-direction: column;
   padding: 10px;
 }
+
+.select-input {
+  width: 250px;
+  color: black;
+}

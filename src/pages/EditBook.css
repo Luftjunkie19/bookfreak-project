@@ -7,3 +7,20 @@
 .wrong {
   color: crimson;
 }
+
+.condition-area {
+  margin: 15px;
+}
+
+.yes {
+  background: green;
+}
+
+.no {
+  background: red;
+}
+
+.active {
+  background: rgb(42, 73, 230);
+  transform: translateY(-5px);
+}

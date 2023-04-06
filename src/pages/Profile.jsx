@@ -1,29 +1,41 @@
 import "./Profile.css";
 
+import { deleteUser } from "firebase/auth";
+import {
+  arrayRemove,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  getFirestore,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import {
   FaCommentAlt,
-  FaDiscord,
-  FaGithub,
   FaPencilAlt,
   FaPlusCircle,
-  FaSpotify,
-  FaTrashAlt,
-  FaYoutube,
+  FaUserAltSlash,
 } from "react-icons/fa";
-import { useParams } from "react-router";
+import { Route, Routes, useParams } from "react-router";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { useClipboard } from "use-clipboard-copy";
 
+import FavouriteBooks from "../components/FavouriteBooks";
+import Links from "../components/Links";
+import OwnedBooks from "../components/OwnedBooks";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useCollection } from "../hooks/useCollection";
 import { useDocument } from "../hooks/useDocument";
 import { useFirestore } from "../hooks/useFirestore";
 import { useLinks } from "../hooks/useLinks";
+import { useLogout } from "../hooks/useLogout";
 import { useOrderedCollection } from "../hooks/useOrderedCollection";
 
 function Profile() {
   const { id } = useParams();
+
+  const { logout } = useLogout();
 
   const { document, error } = useDocument("users", id);
 
@@ -43,18 +55,12 @@ function Profile() {
 
   const { user } = useAuthContext();
 
-  const { copy } = useClipboard();
+  const chats = orderedDocuments.filter((doc) => {
+    const id = doc.id.split("-");
+    return id[0 || 1] === user.uid;
+  });
 
-  const handleCopy = (nickname) => {
-    copy(nickname);
-    toast.dark("Nickname successfully copied ✅");
-  };
-
-  const deleteLink = async (id) => {
-    await deleteDocument(id);
-    toast.success("Link deleted");
-    navigate(`/profile/${id}`);
-  };
+  console.log(chats);
 
   const redirectToExistedChat = (providedId) => {
     if (orderedDocuments) {
@@ -70,6 +76,76 @@ function Profile() {
         navigate(`/message-to/${providedId}`);
       }
     }
+  };
+
+  const removeFromParticularCollection = async (collection) => {
+    const collectionDocuments = await getDocs(collection);
+
+    collectionDocuments.forEach((doc) => {
+      deleteDoc(doc.ref);
+    });
+  };
+
+  const removeUserFromArrays = async (collection, user, collectionsName) => {
+    const documents = await getDocs(collection);
+
+    documents.forEach((docu) => {
+      const document = doc(getFirestore(), collectionsName, docu.id);
+
+      updateDoc(document, { users: arrayRemove(user) });
+    });
+  };
+
+  const removeAccount = async () => {
+    const userToRemove = doc(getFirestore(), "users", user.uid);
+
+    const books = collection(getFirestore(), "books");
+    const chats = collection(getFirestore(), "chats");
+    const ownedBooks = query(books, where("createdBy.id", "==", user.uid));
+    const partneredChats = query(
+      chats,
+      where("users.partner.id", "==", user.uid)
+    );
+
+    const ownedLinks = query(
+      collection(getFirestore(), "links"),
+      where("addedBy", "==", user.uid)
+    );
+
+    const memberPattern = {
+      label: user.displayName,
+      value: {
+        id: user.uid,
+        nickname: user.displayName,
+        photoURL: user.photoURL,
+      },
+    };
+    const joinedCompetitions = query(
+      collection(getFirestore(), "competitions"),
+      where("users", "array-contains", memberPattern)
+    );
+    const joinedClubs = collection(getFirestore(), "clubs");
+    const ownedCompetitions = query(
+      joinedCompetitions,
+      where("createdBy.id", "==", user.uid)
+    );
+    const ownedClubs = query(
+      joinedClubs,
+      where("createdBy.id", "==", user.uid)
+    );
+    const ownedChats = query(chats, where("users.you.id", "==", user.uid));
+    removeFromParticularCollection(partneredChats);
+    removeFromParticularCollection(ownedLinks);
+    removeFromParticularCollection(ownedChats);
+    removeFromParticularCollection(ownedBooks);
+    removeFromParticularCollection(ownedClubs);
+    removeFromParticularCollection(ownedCompetitions);
+    removeUserFromArrays(joinedCompetitions, memberPattern, "competitions");
+    removeUserFromArrays(joinedClubs, memberPattern, "clubs");
+
+    await deleteDoc(userToRemove);
+    await deleteUser(user);
+    await logout();
   };
 
   return (
@@ -100,6 +176,13 @@ function Profile() {
                       <Link className="btn profile-btn add-link" to="/add-link">
                         Add link <FaPlusCircle />
                       </Link>
+
+                      <button
+                        className="btn profile-btn remove-user"
+                        onClick={removeAccount}
+                      >
+                        Remove User <FaUserAltSlash />
+                      </button>
                     </div>
                   </>
                 )}
@@ -136,132 +219,40 @@ function Profile() {
                 </>
               )}
             </div>
-
-            <h2>Links to:</h2>
-
-            <div className="links">
-              {links &&
-                (links.filter((link) => {
-                  return link.addedBy === document.id;
-                }).length === 0 ? (
-                  <p>No links added yet</p>
-                ) : (
-                  <>
-                    {links
-                      .filter((link) => {
-                        return link.addedBy === document.id;
-                      })
-                      .map((link, i) => (
-                        <>
-                          {link.mediaType === "discord" ? (
-                            <div
-                              className={`link ${link.mediaType}`}
-                              onClick={() => handleCopy(link.nickname)}
-                              key={i}
-                            >
-                              <FaDiscord /> <p>{link.nickname}</p>
-                              {link.addedBy === user.uid && (
-                                <button
-                                  className="remove-link"
-                                  onClick={async () =>
-                                    await deleteLink(link.id)
-                                  }
-                                >
-                                  <FaTrashAlt />
-                                </button>
-                              )}
-                            </div>
-                          ) : (
-                            <>
-                              <Link target="_blank" to={link.linkTo} key={i}>
-                                <div className={`link ${link.mediaType}`}>
-                                  {link.mediaType === "youtube" && (
-                                    <>
-                                      <FaYoutube />
-                                    </>
-                                  )}
-
-                                  {link.mediaType === "github" && (
-                                    <>
-                                      <FaGithub />
-                                    </>
-                                  )}
-
-                                  {link.mediaType === "spotify" && (
-                                    <>
-                                      <FaSpotify />
-                                    </>
-                                  )}
-
-                                  {link.mediaType === "youtube" && (
-                                    <>
-                                      <p>Youtube</p>
-                                    </>
-                                  )}
-                                  {link.mediaType === "github" && (
-                                    <>
-                                      <p>Github</p>
-                                    </>
-                                  )}
-
-                                  {link.mediaType === "spotify" && (
-                                    <>
-                                      <p>Spotify</p>
-                                    </>
-                                  )}
-
-                                  {link.addedBy === user.uid && (
-                                    <button
-                                      className="remove-link"
-                                      onClick={async () =>
-                                        await deleteLink(link.id)
-                                      }
-                                    >
-                                      <FaTrashAlt />
-                                    </button>
-                                  )}
-                                </div>
-                              </Link>
-                            </>
-                          )}
-                        </>
-                      ))}
-                  </>
-                ))}
+            <div className="pages-buttons">
+              <Link to="owned-books" className="btn">
+                Books
+              </Link>
+              <Link to="links" className="btn">
+                Links
+              </Link>
+              <Link to="users-fav" className="btn">
+                Favourite
+              </Link>
             </div>
-            <h2>Added Books:</h2>
 
-            <div
-              className={
-                documents &&
-                documents.filter((doc) => {
-                  return doc.createdBy.id === document.id;
-                }).length > 0
-                  ? "books"
-                  : "links"
-              }
-            >
-              {documents &&
-              documents.filter((doc) => {
-                return doc.createdBy.id === document.id;
-              }).length > 0 ? (
-                documents
-                  .filter((doc) => {
-                    return doc.createdBy.id === document.id;
-                  })
-                  .map((book, i) => (
-                    <Link to={`/book/${book.id}`}>
-                      <div className="owned-book" key={i}>
-                        <div className="owned-cover">
-                          <img src={book.photoURL} alt="" />
-                        </div>
-                      </div>
-                    </Link>
-                  ))
-              ) : (
-                <p>No books yet</p>
-              )}
-            </div>
+            <Routes>
+              <Route
+                path="owned-books"
+                element={
+                  <OwnedBooks
+                    ownedBooks={documents && documents}
+                    ownerId={document && document.id}
+                  />
+                }
+              />
+              <Route
+                path="links"
+                element={
+                  <Links document={document && document} user={user && user} />
+                }
+              />
+
+              <Route
+                path="users-fav"
+                element={<FavouriteBooks id={document.id} />}
+              />
+            </Routes>
           </div>
         </>
       )}
