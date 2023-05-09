@@ -42,8 +42,6 @@ input {
   line-height: 21px;
   background-color: rgb(0, 157, 254);
   color: white;
-  min-width: 120px;
-  max-width: 200px;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
@@ -97,4 +95,19 @@ input {
 .select-input {
   width: 250px;
   color: black;
+}
+
+@media screen and (max-width: 540px) {
+  label {
+    padding: 5px;
+    margin: 5px;
+  }
+
+  input {
+    max-width: 250px;
+  }
+
+  form {
+    width: 85vw;
+  }
 }

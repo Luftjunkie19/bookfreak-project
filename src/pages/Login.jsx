@@ -1,16 +1,12 @@
-import './Login.css';
+import "./Login.css";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import {
-  FaFacebook,
-  FaGithub,
-  FaGoogle,
-  FaPhoneAlt,
-} from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { motion } from "framer-motion";
+import { FaFacebook, FaGithub, FaGoogle, FaPhoneAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
-import { useLogin } from '../hooks/useLogin';
+import { useLogin } from "../hooks/useLogin";
 
 function Login() {
   const {
@@ -34,7 +30,12 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <motion.form
+      onSubmit={handleSubmit}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <h2>Login to join us!</h2>
 
       <label>
@@ -84,7 +85,7 @@ function Login() {
 
         {error && <p className="error">{error}</p>}
       </div>
-    </form>
+    </motion.form>
   );
 }
 

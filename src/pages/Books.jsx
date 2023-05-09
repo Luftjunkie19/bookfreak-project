@@ -1,18 +1,11 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import {
-  FaArrowLeft,
-  FaArrowRight,
-} from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import CreatableSelect from 'react-select/creatable';
+import { motion } from "framer-motion";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import CreatableSelect from "react-select/creatable";
 
-import { useOrderedCollection } from '../hooks/useOrderedCollection';
+import { useOrderedCollection } from "../hooks/useOrderedCollection";
 
 function Books() {
   const { orderedDocuments } = useOrderedCollection("books");
@@ -96,7 +89,28 @@ function Books() {
   const [sortParam, setSortParam] = useState("All");
   const [sortType, setSortType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const objectsOnPage = 10;
+  const objectsOnPage = () => {
+    if (document.body.offsetWidth <= 425) {
+      return 4;
+    } else if (
+      425 < document.body.offsetWidth &&
+      document.body.offsetWidth <= 767
+    ) {
+      return 4;
+    } else if (
+      document.body.offsetWidth > 768 &&
+      document.body.offsetWidth <= 1024
+    ) {
+      return 6;
+    } else if (
+      document.body.offsetWidth >= 1025 &&
+      document.body.offsetWidth <= 1560
+    ) {
+      return 8;
+    } else {
+      return 10;
+    }
+  };
 
   const filterBooks = useCallback(
     (param) => {
@@ -144,12 +158,12 @@ function Books() {
     return sortBooksBy(sortType);
   }, [sortBooksBy, sortType]);
 
-  const pagesAmount = Math.ceil(sortedArray.length / objectsOnPage);
+  const pagesAmount = Math.ceil(sortedArray.length / objectsOnPage());
 
   const fetchObjects = useCallback(
     (page) => {
-      const start = (page - 1) * objectsOnPage;
-      const end = start + objectsOnPage;
+      const start = (page - 1) * objectsOnPage();
+      const end = start + objectsOnPage();
       const pageObjects = memoizedBooks.slice(start, end);
       return pageObjects;
     },
@@ -181,7 +195,12 @@ function Books() {
   let books = setBooks(fetchObjects(currentPage));
 
   return (
-    <div className="home-container">
+    <motion.div
+      className="home-container"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       {
         <h2>
           {sortedArray.length > 0
@@ -274,7 +293,7 @@ function Books() {
           </button>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

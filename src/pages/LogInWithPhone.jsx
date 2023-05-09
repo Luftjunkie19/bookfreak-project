@@ -1,22 +1,19 @@
-import 'react-phone-input-2/lib/material.css';
+import "react-phone-input-2/lib/material.css";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
   getAuth,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-} from 'firebase/auth';
-import {
-  doc,
-  getDoc,
-  getFirestore,
-} from 'firebase/firestore';
-import PhoneInput from 'react-phone-input-2';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "firebase/auth";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { motion } from "framer-motion";
+import PhoneInput from "react-phone-input-2";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { useAuthContext } from '../hooks/useAuthContext';
+import { useAuthContext } from "../hooks/useAuthContext";
 
 function LogInWithPhone() {
   const firestore = getFirestore();
@@ -90,7 +87,12 @@ function LogInWithPhone() {
   return (
     <>
       {!showConfirmation && (
-        <form onSubmit={handleSendVerificationCode}>
+        <motion.form
+          onSubmit={handleSendVerificationCode}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
           <label>
             <PhoneInput
               country={"pl"}
@@ -102,12 +104,17 @@ function LogInWithPhone() {
           {error && <p className="error">{error}</p>}
 
           <button className="btn">Go to verify</button>
-        </form>
+        </motion.form>
       )}
       <div id="recaptcha-container"></div>
       {showConfirmation && (
         <>
-          <form onSubmit={handleVerifyCode}>
+          <motion.form
+            onSubmit={handleVerifyCode}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             <label>
               <span>Verification code:</span>
               <input
@@ -118,7 +125,7 @@ function LogInWithPhone() {
             </label>
             <button className="btn">Verify</button>
             {error && <p className="error">{error}</p>}
-          </form>
+          </motion.form>
         </>
       )}
     </>

@@ -1,33 +1,90 @@
 .notifications-holder {
-  position: absolute;
+  position: fixed;
   right: 0;
-  top: 15%;
+  top: 13%;
   overflow: scroll;
   overflow-x: hidden;
   height: 200px;
+  background: black;
+  padding: 10px;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+}
+
+.notifications-holder::-webkit-scrollbar {
+  display: none;
 }
 
 .notification,
 .new-notification {
   background: white;
-  padding: 5px;
+  padding: 20px;
   word-wrap: break-word;
   margin: 5px;
-  border-radius: 5px;
   cursor: pointer;
   transition: all 0.5s;
   color: black;
+  height: 70px;
+  width: 250px;
+  position: relative;
+  top: 0;
+  left: 0;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
 .new-notification {
   font-weight: 600;
+  background-color: red;
+  color: white;
+}
+
+.notification::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  width: 10px;
+  height: 100%;
+  background: rgb(0, 128, 255);
+  transition: all 0.5s;
+}
+
+button.new-notification,
+button.notification {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0;
+  outline: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.new-notification::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  width: 10px;
+  height: 100%;
+  background: rgb(255, 255, 255);
+  transition: all 0.5s;
 }
 
 .new-notification:hover {
-  background: greenyellow;
+  background: rgb(120, 164, 237);
 }
 
 .notification:hover {
   background: rgb(54, 131, 255);
   color: white;
+}
+
+.notification:hover::before {
+  background: white;
+}
+
+.new-notification:hover::before {
+  background: rgb(9, 255, 0);
 }

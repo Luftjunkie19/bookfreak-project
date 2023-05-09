@@ -27,8 +27,6 @@ export default function AuthContextProvider({ children }) {
     userIsReady: false,
   });
 
-  console.log(state);
-
   const myAuth = getAuth();
 
   useEffect(() => {

@@ -4,6 +4,7 @@
   color: white;
   border-radius: 5px;
   transition: all 0.5s;
+  width: 250px;
 }
 
 .club-img {
@@ -40,4 +41,28 @@
   background-color: rgba(39, 29, 29, 0.729);
   padding: 10px;
   border-radius: 5px;
+}
+
+@media (max-width: 425px) {
+  .club {
+    width: 60vw;
+  }
+
+  .club-img {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (min-width: 425px) and (max-width: 767px) {
+  .club {
+    width: 40vw;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .club {
+    width: 25vw;
+    height: 12vh;
+  }
 }

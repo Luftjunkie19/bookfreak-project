@@ -1,56 +1,73 @@
-import './NotificationsHolder.css';
+import "./NotificationsHolder.css";
 
-import {
-  useMemo,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from "date-fns";
 import {
   deleteDoc,
   doc,
   getDoc,
   getFirestore,
   updateDoc,
-} from 'firebase/firestore';
-import {
-  FaCheck,
-  FaWindowClose,
-} from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "firebase/firestore";
+import { FaCheck, FaWindowClose } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useCollection } from '../hooks/useCollection';
-import { useOrderedCollection } from '../hooks/useOrderedCollection';
-import { usePushNotifications } from '../hooks/usePushNotifications';
+import { modalActions } from "../context/ModalContext";
+import { notificationActions } from "../context/NotificationReducer";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useCollection } from "../hooks/useCollection";
+import { useOrderedCollection } from "../hooks/useOrderedCollection";
 
-function NotificationViewer({ openModal, closeModal, isOpened }) {
+function NotificationViewer() {
   const { user } = useAuthContext();
-  const { markAsRead } = usePushNotifications();
-  const { orderedDocuments } = useOrderedCollection(
-    "notifications",
-    ["notificationTime", "desc"],
-    ["directedTo", "==", user.uid]
-  );
-  const { documents } = useCollection(
-    "join-request",
-    ["directedTo", "==", user.uid],
-    ["notificationTime", "desc"]
-  );
-
-  const notifications = useMemo(() => {
-    return orderedDocuments;
-  }, [orderedDocuments]);
-
-  const joinRequests = useMemo(() => {
-    return documents;
-  }, [documents]);
-
-  console.log(joinRequests, notifications);
-
+  const { orderedDocuments } = useOrderedCollection("notifications");
+  const { documents } = useCollection("join-request");
+  const openedModal = useSelector((state) => state.modal.isOpened);
+  const dispatch = useDispatch();
+  const secDispatch = useDispatch();
   const [requestId, setRequestId] = useState("");
-  console.log(isOpened);
+
+  const directedToNotifications = orderedDocuments
+    .filter((doc) => doc.directedTo === user.uid)
+    .sort((a, b) => b.notificationTime - a.notificationTime);
+  const directedToRequests = documents
+    .filter((doc) => doc.directedTo === user.uid)
+    .sort((a, b) => b.notificationTime - a.notificationTime);
+
+  const notReadN = orderedDocuments.filter(
+    (doc) => doc.directedTo === user.uid && doc.isRead === false
+  ).length;
+
+  const notReadR = documents.filter(
+    (doc) => doc.directedTo === user.uid && doc.isRead === false
+  ).length;
+
+  useEffect(() => {
+    dispatch(
+      notificationActions.updateNotifications({
+        notifications: notReadN,
+        requests: notReadR,
+      })
+    );
+  });
+
+  const markAsRead = async (id) => {
+    try {
+      const notficiation = doc(getFirestore(), "notifications", id);
+
+      const notificationElement = await getDoc(notficiation);
+      if (!notificationElement.data().isRead) {
+        await updateDoc(notficiation, {
+          isRead: true,
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   const getDocument =
     requestId.trim() !== "" &&
@@ -67,22 +84,19 @@ function NotificationViewer({ openModal, closeModal, isOpened }) {
 
       let clubsMembers = clubDocument.data().users;
       clubsMembers.push(document.joinerData);
-      console.log(clubsMembers);
 
       const requestToRemove = doc(getFirestore(), "join-request", document.id);
 
-      const indexOfRequest = joinRequests.indexOf(document);
+      const indexOfRequest = documents.indexOf(document);
 
       await deleteDoc(requestToRemove);
 
-      console.log(joinRequests);
-
       await updateDoc(club, { users: clubsMembers });
 
-      joinRequests.splice(indexOfRequest, 1);
+      documents.splice(indexOfRequest, 1);
 
       toast.success("User successfully added.");
-      closeModal();
+      dispatch(modalActions.closeModal());
     }
   };
 
@@ -90,59 +104,55 @@ function NotificationViewer({ openModal, closeModal, isOpened }) {
     const document = getDocument[0];
     const requestToRemove = doc(getFirestore(), "join-request", document.id);
 
-    const indexOfRequest = joinRequests.indexOf(document);
+    const indexOfRequest = documents.indexOf(document);
 
     await deleteDoc(requestToRemove);
 
-    joinRequests.splice(indexOfRequest, 1);
+    documents.splice(indexOfRequest, 1);
 
-    closeModal();
+    secDispatch(modalActions.closeModal());
+  };
+
+  const closeModal = async () => {
+    const document = getDocument[0];
+    const updatedDocument = doc(getFirestore(), "join-request", document.id);
+
+    await updateDoc(updatedDocument, {
+      isRead: true,
+    });
+
+    secDispatch(modalActions.closeModal());
+    setRequestId("");
   };
 
   return (
     <>
       <div className="notifications-holder">
-        {notifications &&
-          notifications.length > 0 &&
-          notifications.map((doc) => (
-            <Link
-              key={doc.id}
-              to={doc.linkTo}
-              onClick={async () => await markAsRead(doc.id)}
-            >
-              <p className={doc.isRead ? "notification" : "new-notification"}>
-                {doc.notificationContent}
-              </p>
-            </Link>
-          ))}
+        {directedToNotifications.map((doc) => (
+          <Link key={doc.id} to={doc.linkTo} onClick={() => markAsRead(doc.id)}>
+            <p className={doc.isRead ? "notification" : "new-notification"}>
+              {doc.notificationContent}
+            </p>
+          </Link>
+        ))}
 
-        {joinRequests &&
-          joinRequests.map((doc) => (
-            <button
-              onClick={() => {
-                openModal();
-                setRequestId(doc.id);
-                console.log(isOpened);
-              }}
-              className={doc.isRead ? "notification" : "new-notification"}
-            >
-              <p>{doc.requestContent}</p>
-            </button>
-          ))}
-
-        {notifications.length === 0 && <p>No notifications yet.</p>}
+        {directedToRequests.map((doc) => (
+          <button
+            key={doc.id}
+            onClick={() => {
+              dispatch(modalActions.openModal());
+              setRequestId(doc.id);
+            }}
+            className={doc.isRead ? "notification" : "new-notification"}
+          >
+            <p>{doc.requestContent}</p>
+          </button>
+        ))}
       </div>
 
-      {isOpened && (
+      {openedModal && (
         <div className="loader-container">
-          <button
-            className="btn delete"
-            onClick={() => {
-              closeModal();
-              setRequestId("");
-              console.log(isOpened);
-            }}
-          >
+          <button className="btn delete" onClick={() => closeModal()}>
             Close <FaWindowClose />
           </button>
 
@@ -160,10 +170,10 @@ function NotificationViewer({ openModal, closeModal, isOpened }) {
                   </h2>
 
                   <div className="pages-buttons">
-                    <button className="btn yes" onClick={addToClub}>
+                    <button className="btn yes" onClick={() => addToClub()}>
                       Accept <FaCheck />{" "}
                     </button>
-                    <button className="btn no" onClick={declineRequest}>
+                    <button className="btn no" onClick={() => declineRequest()}>
                       Decline <FaWindowClose />{" "}
                     </button>
                   </div>

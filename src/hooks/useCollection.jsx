@@ -18,21 +18,21 @@ export function useCollection(col, _q, _orderedBy) {
   const Query = useRef(_q).current;
   const orderedBy = useRef(_orderedBy).current;
 
+  let ref = collection(myAuth, col);
+  if (Query) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ref = query(ref, where(...Query));
+  }
+
+  if (orderedBy) {
+    ref = query(ref, orderBy(...orderedBy));
+  }
+
+  if (Query && orderedBy) {
+    ref = query(ref, where(...Query), orderBy(...orderedBy));
+  }
+
   useEffect(() => {
-    let ref = collection(myAuth, col);
-
-    if (Query) {
-      ref = query(ref, where(...Query));
-    }
-
-    if (orderedBy) {
-      ref = query(ref, orderBy(...orderedBy));
-    }
-
-    if (Query && orderedBy) {
-      ref = query(ref, where(...Query), orderBy(...orderedBy));
-    }
-
     const unsub = () => {
       onSnapshot(
         ref,
@@ -50,7 +50,7 @@ export function useCollection(col, _q, _orderedBy) {
     };
 
     return () => unsub();
-  }, [error, myAuth, col, Query, orderedBy]);
+  }, [error, myAuth, col, Query, orderedBy, ref]);
 
   return { documents, error };
 }

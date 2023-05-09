@@ -1,4 +1,5 @@
 import "./Profile.css";
+import "./Home.css";
 
 import { deleteUser } from "firebase/auth";
 import {
@@ -12,12 +13,14 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { motion } from "framer-motion";
 import {
   FaCommentAlt,
   FaPencilAlt,
   FaPlusCircle,
   FaUserAltSlash,
 } from "react-icons/fa";
+import { GiWhiteBook } from "react-icons/gi";
 import { Route, Routes, useParams } from "react-router";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -27,8 +30,6 @@ import OwnedBooks from "../components/OwnedBooks";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useCollection } from "../hooks/useCollection";
 import { useDocument } from "../hooks/useDocument";
-import { useFirestore } from "../hooks/useFirestore";
-import { useLinks } from "../hooks/useLinks";
 import { useLogout } from "../hooks/useLogout";
 import { useOrderedCollection } from "../hooks/useOrderedCollection";
 
@@ -39,36 +40,19 @@ function Profile() {
 
   const { document, error } = useDocument("users", id);
 
-  console.log(document);
-
   const { documents } = useCollection("books");
 
   const { orderedDocuments } = useOrderedCollection("chats");
 
   const navigate = useNavigate();
 
-  const { deleteDocument } = useFirestore("links");
-
-  const { links } = useLinks();
-
-  console.log(links);
-
   const { user } = useAuthContext();
-
-  const chats = orderedDocuments.filter((doc) => {
-    const id = doc.id.split("-");
-    return id[0 || 1] === user.uid;
-  });
-
-  console.log(chats);
 
   const redirectToExistedChat = (providedId) => {
     if (orderedDocuments) {
       const existedChat = orderedDocuments.filter((document) => {
         return providedId === document.id.split("-").reverse().join("-");
       });
-
-      console.log(...existedChat);
 
       if (existedChat.length > 0) {
         navigate(`/message-to/${existedChat[0].id}`);
@@ -152,7 +136,12 @@ function Profile() {
     <>
       {document && (
         <>
-          <div className="user-container">
+          <motion.div
+            className="user-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             <div
               className={
                 document.id !== user.uid ? "profile-for-users" : "profile-data"
@@ -165,6 +154,17 @@ function Profile() {
 
                 <p className="nickname">{document.nickname}</p>
                 <p>Email: {document.email}</p>
+                <p className="reader-stats">
+                  Already read:{" "}
+                  {
+                    documents.filter(
+                      (doc) =>
+                        doc.createdBy.id === document.id &&
+                        doc.readPages === doc.pagesNumber
+                    ).length
+                  }
+                  x <GiWhiteBook />
+                </p>
 
                 {document.id === user.uid && (
                   <>
@@ -220,13 +220,13 @@ function Profile() {
               )}
             </div>
             <div className="pages-buttons">
-              <Link to="owned-books" className="btn">
+              <Link to="owned-books" className="btn user-btn">
                 Books
               </Link>
-              <Link to="links" className="btn">
+              <Link to="links" className="btn user-btn">
                 Links
               </Link>
-              <Link to="users-fav" className="btn">
+              <Link to="users-fav" className="btn user-btn">
                 Favourite
               </Link>
             </div>
@@ -253,7 +253,7 @@ function Profile() {
                 element={<FavouriteBooks id={document.id} />}
               />
             </Routes>
-          </div>
+          </motion.div>
         </>
       )}
 

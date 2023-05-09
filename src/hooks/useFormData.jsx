@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 
-export function useDocument(col, id) {
+export function useFormData(col, id) {
   const [document, setDocument] = useState();
   const [error, setError] = useState(null);
 
   const firestore = getFirestore();
 
-  const ref = doc(firestore, col, id);
   useEffect(() => {
+    const ref = doc(firestore, col, id);
     const unsub = () => {
       onSnapshot(
         ref,
@@ -25,7 +25,7 @@ export function useDocument(col, id) {
     };
 
     return () => unsub();
-  }, [col, firestore, id, ref]);
+  }, [col, firestore, id]);
 
   return { document, error };
 }

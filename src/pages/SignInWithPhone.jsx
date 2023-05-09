@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { motion } from "framer-motion";
 import PhoneInput from "react-phone-input-2";
 import { useNavigate } from "react-router-dom";
 
@@ -110,7 +111,12 @@ function SignInWithPhone() {
   return (
     <>
       {!showConfirmation && (
-        <form onSubmit={handleSendVerificationCode}>
+        <motion.form
+          onSubmit={handleSendVerificationCode}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
           <label>
             <span>Nickname:</span>
             <input
@@ -131,12 +137,17 @@ function SignInWithPhone() {
           {error && <p className="error">{error}</p>}
 
           <button className="btn">Go to verify</button>
-        </form>
+        </motion.form>
       )}
       <div id="recaptcha-container"></div>
       {showConfirmation && (
         <>
-          <form onSubmit={handleVerifyCode}>
+          <motion.form
+            onSubmit={handleVerifyCode}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             <label>
               <span>Verification code:</span>
               <input
@@ -147,7 +158,7 @@ function SignInWithPhone() {
             </label>
             <button className="btn">Verify</button>
             {error && <p className="error">{error}</p>}
-          </form>
+          </motion.form>
         </>
       )}
     </>

@@ -5,6 +5,17 @@
   justify-content: end;
 }
 
+.back-to-btn {
+  position: absolute;
+  padding: 5px;
+
+  display: flex;
+  align-items: center;
+}
+.back-to-btn svg {
+  font-size: 24px;
+}
+
 .owner-picture,
 .from-picture {
   width: 50px;
@@ -41,7 +52,17 @@
 }
 
 .btn.send {
-  height: 50px;
+  background: none;
+  padding: 5px;
+  box-shadow: none;
+  font-size: 24px;
+}
+
+.btn.add-photo {
+  background: none;
+  padding: 5px;
+  box-shadow: none;
+  font-size: 24px;
 }
 
 .owner-message {
@@ -100,4 +121,30 @@
   height: 100%;
   object-fit: cover;
   border-radius: 5px;
+}
+
+@media (max-width: 425px) {
+  .message-managment label textarea {
+    width: 250px;
+    height: 40px;
+  }
+  .owner-message .message-content,
+  .from-message .message-content {
+    max-width: 300px;
+    padding: 10px;
+  }
+}
+
+@media (min-width: 425px) and (max-width: 767px) {
+  .owner-picture,
+  .from-picture {
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+  }
+  .owner-message .message-content,
+  .from-message .message-content {
+    max-width: 300px;
+    padding: 15px;
+  }
 }

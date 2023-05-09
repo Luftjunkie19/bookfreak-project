@@ -38,6 +38,10 @@
   right: 0;
 }
 
+.btn.delete svg {
+  color: white;
+}
+
 .btn.edit-book,
 .btn.edit-comp {
   position: absolute;
@@ -101,4 +105,16 @@
 
 .added {
   color: darkgoldenrod;
+}
+
+@media (max-width: 425px) {
+  .recension-container {
+    width: 300px;
+  }
+}
+
+@media (min-width: 425px) and (max-width: 767px) {
+  .recension-container {
+    width: 350px;
+  }
 }

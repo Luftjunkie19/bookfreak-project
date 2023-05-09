@@ -1,10 +1,11 @@
 import "./Ranking.css";
 
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 import { useCollection } from "../hooks/useCollection";
 
-function Ranking({ users }) {
+function Ranking({ users, rankingOf, timeDifference }) {
   const { documents } = useCollection("books");
 
   const readBooks = documents.filter((book) => {
@@ -25,11 +26,23 @@ function Ranking({ users }) {
     return b.booksRead - a.booksRead;
   });
 
-  console.log(users, readBooks, usersWithBooksRead);
-
   return (
-    <div className="ranking">
-      <h2>{sortedReaders[0].value.nickname} is currently leading</h2>
+    <motion.div
+      className={`ranking ${
+        rankingOf === "competition" && timeDifference <= 0
+          ? "expired-ranking"
+          : ""
+      }`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <h2>
+        {sortedReaders[0].value.nickname}{" "}
+        {rankingOf === "competition" && timeDifference <= 0
+          ? "has won the competition"
+          : "Is currently leading"}
+      </h2>
       <p>
         {sortedReaders[0].booksRead}{" "}
         {sortedReaders[0].booksRead > 1 ? "books" : "book"} has been read by{" "}
@@ -37,7 +50,7 @@ function Ranking({ users }) {
       </p>
 
       {sortedReaders.map((user, i) => (
-        <Link to={`/user/profile/${user.value.id}`} key={i}>
+        <Link to={`/profile/${user.value.id}`} key={i}>
           <div
             className={`user ${
               i === 0
@@ -62,7 +75,7 @@ function Ranking({ users }) {
           </div>
         </Link>
       ))}
-    </div>
+    </motion.div>
   );
 }
 

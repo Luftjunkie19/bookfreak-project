@@ -1,6 +1,4 @@
-import "./Navbar.css";
-
-import { useEffect, useState } from "react";
+import './Navbar.css';
 
 import {
   FaBell,
@@ -9,28 +7,25 @@ import {
   FaPlusCircle,
   FaSearch,
   FaUserAlt,
-  FaUserAltSlash,
-} from "react-icons/fa";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+} from 'react-icons/fa';
+import { GiHamburgerMenu } from 'react-icons/gi';
+import { RiLogoutBoxRFill } from 'react-icons/ri';
+import { useDispatch } from 'react-redux';
+import {
+  Link,
+  useLocation,
+} from 'react-router-dom';
 
-import BookIcon from "../assets/book-icon.png";
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useCollection } from "../hooks/useCollection";
-import { useLogout } from "../hooks/useLogout";
-import { useOrderedCollection } from "../hooks/useOrderedCollection";
-import NotificationViewer from "../pages/NotificationViewer";
+import BookIcon from '../assets/book-icon.png';
+import { burgerActions } from '../context/BurgerContext';
+import { viewerActions } from '../context/ViewerContext';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useLogout } from '../hooks/useLogout';
 
-function Navbar() {
+function Navbar({ unreadNotifications, unreadRequests }) {
   const { user } = useAuthContext();
   const { logout } = useLogout();
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
-  const [allNotifications, setAllNotifications] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
   const location = useLocation();
-  const { documents } = useCollection("notifications");
-  const { orderedDocuments } = useOrderedCollection("join-request");
-  const navigate = useNavigate();
 
   const checkLocation = (linkLocation) => {
     if (location.pathname === linkLocation) {
@@ -38,56 +33,53 @@ function Navbar() {
     }
   };
 
-  const openedModal = () => {
-    setOpenModal(true);
-  };
-
-  const closeModal = () => {
-    setOpenModal(false);
-  };
-
-  useEffect(() => {
-    if (documents && orderedDocuments) {
-      const unreadRequests = orderedDocuments.filter((doc) => {
-        if (user) {
-          return !doc.isRead && doc.directedTo === user.uid;
-        }
-      });
-
-      const unreadDocs = documents.filter((doc) => {
-        if (user) {
-          return !doc.isRead && doc.directedTo === user.uid;
-        }
-      });
-
-      const allUnread = unreadRequests.concat(unreadDocs);
-
-      setAllNotifications(allUnread);
-
-      setHasUnreadNotifications(allUnread.length > 0);
-    }
-  }, [documents, user, orderedDocuments]);
-
-  const bringToProfile = () => {
-    navigate("/");
-    setTimeout(() => {
-      navigate(`/profile/${user.uid}`);
-    });
-  };
+  const dispatch = useDispatch();
 
   return (
     <>
       <div className="navbar">
-        <div className="logo">
-          <div className="logo-holder">
-            <img src={BookIcon} alt="book-img" />
+        <Link to="/">
+          <div className="logo">
+            <div className="logo-holder">
+              <img src={BookIcon} alt="book-img" />
+            </div>
+            <h2>BookFreak</h2>
           </div>
-          <h2>BookFreak</h2>
-        </div>
+        </Link>
 
-        <div className="links">
-          {!user && (
-            <>
+        {user && (
+          <div className="mobile-nav">
+            <button
+              className="notification-btn mobile"
+              onClick={() => {
+                dispatch(viewerActions.toggleState());
+              }}
+            >
+              <FaBell />
+              {unreadNotifications > 0 ||
+                (unreadRequests > 0 && (
+                  <div className="red-point">
+                    {unreadNotifications + unreadRequests >= 10
+                      ? "9+"
+                      : unreadNotifications + unreadRequests}
+                  </div>
+                ))}
+            </button>
+
+            <button
+              className="hamburger-btn"
+              onClick={() => {
+                dispatch(burgerActions.toggleBurger());
+              }}
+            >
+              <GiHamburgerMenu />
+            </button>
+          </div>
+        )}
+
+        {!user && (
+          <>
+            <div className="links">
               <ul>
                 <li>
                   <Link to="/sign-up">Sign up</Link>
@@ -96,80 +88,68 @@ function Navbar() {
                   <Link to="/login">Login</Link>
                 </li>
               </ul>
-            </>
-          )}
+            </div>
+          </>
+        )}
 
-          {user && (
-            <>
-              <div className="options">
-                <Link
-                  to="/"
-                  className={checkLocation("/") ? "active-link" : ""}
-                >
-                  <FaHome /> Home
-                </Link>
+        {user && (
+          <>
+            <div className="nav-options">
+              <Link to="/" className={checkLocation("/") ? "active-link" : ""}>
+                <FaHome />
+              </Link>
 
-                <Link
-                  onClick={bringToProfile}
-                  className={
-                    checkLocation(`/profile/${user.uid}`) ? "active-link" : ""
-                  }
-                >
-                  <FaUserAlt /> Profile
-                </Link>
+              <Link
+                to={`/profile/${user.uid}`}
+                className={
+                  checkLocation(`/profile/${user.uid}`) ? "active-link" : ""
+                }
+              >
+                <FaUserAlt />
+              </Link>
 
-                <Link
-                  to="/create"
-                  className={checkLocation(`/create`) ? "active-link" : ""}
-                >
-                  <FaPlusCircle /> Create
-                </Link>
+              <Link
+                to="/create"
+                className={checkLocation(`/create`) ? "active-link" : ""}
+              >
+                <FaPlusCircle />
+              </Link>
 
-                <Link
-                  to="/your-chats"
-                  className={checkLocation(`/your-chats`) ? "active-link" : ""}
-                >
-                  <FaComments /> Your chats
-                </Link>
+              <Link
+                to="/your-chats"
+                className={checkLocation(`/your-chats`) ? "active-link" : ""}
+              >
+                <FaComments />
+              </Link>
 
-                <button
-                  className="notification-btn"
-                  onClick={() => setShowNotifications(!showNotifications)}
-                >
-                  <FaBell /> Notifications
-                  {allNotifications.length > 0 && (
-                    <div
-                      className={
-                        hasUnreadNotifications ? "red-point" : "hidden"
-                      }
-                    >
-                      {allNotifications.length}
-                    </div>
-                  )}
-                </button>
+              <button
+                className="notification-btn"
+                onClick={() => {
+                  dispatch(viewerActions.toggleState());
+                }}
+              >
+                <FaBell />
+                {(unreadNotifications > 0 || unreadRequests.length) > 0 && (
+                  <div className="red-point">
+                    {unreadNotifications + unreadRequests}
+                  </div>
+                )}
+              </button>
 
-                <Link
-                  to="/search"
-                  className={checkLocation(`/search`) ? "active-link" : ""}
-                >
-                  <FaSearch /> Search
-                </Link>
+              <Link
+                to="/search"
+                className={checkLocation(`/search`) ? "active-link" : ""}
+              >
+                <FaSearch />
+              </Link>
 
-                <button className="btn logout" onClick={logout}>
-                  Logout <FaUserAltSlash />
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+              <button className="btn logout" onClick={logout}>
+                Logout <RiLogoutBoxRFill />
+              </button>
+            </div>
+          </>
+        )}
       </div>
-      {user && showNotifications && (
-        <NotificationViewer
-          openModal={openedModal}
-          isOpened={openModal}
-          closeModal={closeModal}
-        />
-      )}
     </>
   );
 }

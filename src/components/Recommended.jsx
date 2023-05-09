@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useCollection } from '../hooks/useCollection';
-import { useOrderedCollection } from '../hooks/useOrderedCollection';
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useCollection } from "../hooks/useCollection";
+import { useOrderedCollection } from "../hooks/useOrderedCollection";
 
-function Recommended() {
+function Recommended({ currentId }) {
   const { user } = useAuthContext();
   const { documents } = useCollection(
     "books",
@@ -24,39 +25,21 @@ function Recommended() {
     return [...orderedDocuments, ...documents].find((obj) => obj.id === id);
   });
 
-  console.log("ARRAY", fullRecomendedArray);
-
-  console.log(documents);
-
-  const navigate = useNavigate();
-
   const notYours = fullRecomendedArray.filter((doc) => {
-    return doc.createdBy.id !== user.uid;
+    return doc.createdBy.id !== user.uid && doc.id !== currentId;
   });
 
-  let startingNumber =
-    Math.round(Math.random() * notYours.length - 1) >= notYours.length - 1 - 4
-      ? notYours.length - 1 - 4
-      : Math.round(Math.random() * notYours.length - 1);
-
-  let result = notYours.slice(startingNumber, startingNumber + 4);
-
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <h3 className="recomended-header">Also recommended by other users:</h3>
       {
         <div className="recomended-holder">
-          {result.map((doc, i) => (
-            <div
-              key={i}
-              className="recomended-book"
-              onClick={() => {
-                navigate("/");
-                setTimeout(() => {
-                  navigate(`/book/${doc.id}`);
-                });
-              }}
-            >
+          {notYours.splice(0, 4).map((doc, i) => (
+            <Link key={i} className="recomended-book" to={`/book/${doc.id}`}>
               <div className="prev-cover recomended">
                 <img src={doc.photoURL && doc.photoURL} alt="cover" />
               </div>
@@ -67,11 +50,11 @@ function Recommended() {
                 <br />
                 {doc.createdBy.createdAt.toDate().toDateString()}
               </small>
-            </div>
+            </Link>
           ))}
         </div>
       }
-    </>
+    </motion.div>
   );
 }
 

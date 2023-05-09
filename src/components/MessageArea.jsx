@@ -1,47 +1,34 @@
-import './MessageArea.css';
+import "./MessageArea.css";
 
-import {
-  useRef,
-  useState,
-} from 'react';
+import { useRef, useState } from "react";
 
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from "date-fns";
 import {
   doc,
   getDoc,
   getFirestore,
   setDoc,
   Timestamp,
-} from 'firebase/firestore';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import {
-  FaCamera,
-  FaPaperPlane,
-} from 'react-icons/fa';
-import { toast } from 'react-toastify';
+} from "firebase/firestore";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { FaArrowLeft, FaCamera, FaPaperPlane } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useDocument } from '../hooks/useDocument';
-import { useFirestore } from '../hooks/useFirestore';
-import { usePushNotifications } from '../hooks/usePushNotifications';
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useDocument } from "../hooks/useDocument";
+import { useFirestore } from "../hooks/useFirestore";
+import { usePushNotifications } from "../hooks/usePushNotifications";
 
 function MessageArea({ chatId, messagedUser }) {
   const { user } = useAuthContext();
   const [message, setMessage] = useState("");
   const { pushNotification } = usePushNotifications();
-  console.log(messagedUser);
 
   const firestore = getFirestore();
 
   const { document } = useDocument("chats", chatId);
   const { updateDocument } = useFirestore("chats");
-
-  console.log(chatId);
 
   const messagesHolder = useRef();
 
@@ -175,7 +162,6 @@ function MessageArea({ chatId, messagedUser }) {
     }
 
     acceptableFiles.map(async (file) => {
-      console.log(file);
       const storage = getStorage();
 
       const uploadPath = `messages/uid${user.uid}-${messagedUser.id}/${file.name}`;
@@ -184,7 +170,6 @@ function MessageArea({ chatId, messagedUser }) {
 
       const snapshot = await uploadBytes(image, file);
       const messagedPhoto = await getDownloadURL(image);
-      console.log(messagedPhoto);
 
       if (!chatDocument.exists()) {
         await setDoc(chat, {
@@ -279,6 +264,11 @@ function MessageArea({ chatId, messagedUser }) {
 
   return (
     <>
+      {window.outerWidth < 1025 && (
+        <Link to="/your-chats" className="back-to-btn">
+          <FaArrowLeft /> Back
+        </Link>
+      )}
       <div className="messaging-container">
         <div className="messages-holder" ref={messagesHolder}>
           {document &&
@@ -356,7 +346,7 @@ function MessageArea({ chatId, messagedUser }) {
           </label>
 
           <button className="btn send" onClick={sendMessage}>
-            Send <FaPaperPlane />
+            <FaPaperPlane />
           </button>
         </div>
       </div>

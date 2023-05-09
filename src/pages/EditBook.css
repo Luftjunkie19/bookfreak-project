@@ -12,15 +12,19 @@
   margin: 15px;
 }
 
-.yes {
+.btn.yes {
   background: green;
 }
 
-.no {
+.btn.no {
   background: red;
 }
 
-.active {
+.btn.active {
   background: rgb(42, 73, 230);
   transform: translateY(-5px);
+}
+
+.loader-container form {
+  color: black;
 }

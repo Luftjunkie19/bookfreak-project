@@ -22,7 +22,7 @@
   width: 400px;
   background-color: rgb(37, 139, 255);
   color: azure;
-  padding: 10px;
+  padding: 5px;
   margin: 10px;
   border-radius: 20px 0 30px 20px;
   transition: all 0.5s;
@@ -62,6 +62,7 @@
   display: flex;
   align-items: start;
   justify-content: space-around;
+  font-size: 14px;
 }
 
 .messages-holder {
@@ -72,4 +73,41 @@
 
 .messages-holder::-webkit-scrollbar {
   display: none;
+}
+
+@media screen and (max-width: 425px) {
+  .messages-bar {
+    width: 400px;
+  }
+
+  .chat-message {
+    width: 300px;
+  }
+}
+
+@media (min-width: 426px) and (max-width: 767px) {
+  .messages-bar {
+    width: 400px;
+  }
+
+  .chat-message {
+    width: 350px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .messages-bar {
+    width: 600px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1560px) {
+  .from-photo {
+    width: 30px;
+    height: 30px;
+  }
+
+  .chat-message {
+    width: 300px;
+  }
 }

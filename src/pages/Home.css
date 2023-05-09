@@ -107,3 +107,218 @@
 .recomended-header {
   color: aliceblue;
 }
+
+/*Phones*/
+@media screen and (max-width: 540px) {
+  .books-holder {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .recension {
+    height: 20vh;
+    overflow: scroll;
+    overflow-x: hidden;
+  }
+
+  .recension::-webkit-scrollbar {
+    display: none;
+  }
+
+  .books {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .recomended-holder {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .notification-btn.mobile {
+    display: block;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  .results-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .competitions-container {
+    width: 50vw;
+  }
+
+  .prev-cover {
+    width: 80px;
+    height: 80px;
+  }
+
+  .book {
+    padding: 15px;
+    width: 50vw;
+    height: 30vh;
+  }
+
+  .nav-options {
+    display: none;
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
+  .sort-section {
+    flex-direction: column;
+  }
+
+  .small-avatar {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (min-width: 540px) and (max-width: 767px) {
+  .books-holder {
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+  }
+
+  .recension {
+    height: 25vh;
+    overflow: scroll;
+    overflow-x: hidden;
+  }
+
+  .recension::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  .nav-options {
+    display: none;
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
+  .prev-cover {
+    width: 60px;
+    height: 60px;
+  }
+
+  .book {
+    padding: 10px;
+    width: 35vw;
+    height: 30vh;
+  }
+
+  .sort-section {
+    flex-direction: column;
+  }
+
+  .recomended-holder {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .prev-cover.recomended {
+    width: 50px;
+    height: 50px;
+  }
+
+  .competitions-container {
+    width: 40vw;
+    padding: 5px;
+  }
+
+  .small-avatar {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/*Tablets*/
+@media (min-width: 768px) and (max-width: 1023px) {
+  .nav-options {
+    display: none;
+  }
+
+  .recomended-holder {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  .prev-cover {
+    width: 75px;
+    height: 75px;
+  }
+
+  .books-holder {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .book {
+    padding: 10px;
+    width: 25vw;
+  }
+
+  .small-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  .competitions-container {
+    width: 220px;
+  }
+
+  .recension {
+    height: 25vh;
+    overflow: scroll;
+    overflow-x: hidden;
+  }
+
+  .recension::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/*Desktops*/
+@media (min-width: 1024px) and (max-width: 1560px) {
+  .books-holder {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .book {
+    padding: 10px;
+    width: 20vw;
+  }
+
+  .competitions-container {
+    width: 20vw;
+  }
+
+  .recension {
+    height: 25vh;
+    overflow: scroll;
+    overflow-x: hidden;
+  }
+
+  .recension::-webkit-scrollbar {
+    display: none;
+  }
+
+  .club {
+    width: 25vw;
+    height: 12vh;
+  }
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
   createUserWithEmailAndPassword,
@@ -9,22 +9,12 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   updateProfile,
-} from 'firebase/auth';
-import {
-  doc,
-  getDoc,
-  getFirestore,
-  setDoc,
-} from 'firebase/firestore';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import { useNavigate } from 'react-router-dom';
+} from "firebase/auth";
+import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { useNavigate } from "react-router-dom";
 
-import { useAuthContext } from './useAuthContext';
+import { useAuthContext } from "./useAuthContext";
 
 export function useLogin() {
   const [error, setError] = useState("");
@@ -33,8 +23,6 @@ export function useLogin() {
   const context = useAuthContext();
 
   const { dispatch, user } = context;
-
-  console.log(user);
 
   const navigate = useNavigate();
 
@@ -240,14 +228,18 @@ export function useLogin() {
 
       const res = await createUserWithEmailAndPassword(myAuth, email, password);
 
-      const uploadPath = `profileImg/uid${res.user.uid}/${profileImg.name}`;
+      console.log(res.user);
 
       const storage = getStorage();
 
-      const image = ref(storage, uploadPath);
+      const storageRef = ref(
+        storage,
+        `profileImg/uid${res.user.uid}/${res.user.displayName}.jpg`
+      );
 
-      const snapshot = await uploadBytes(image, profileImg);
-      const photoURL = await getDownloadURL(image);
+      await uploadBytes(storageRef, profileImg);
+
+      const photoURL = await getDownloadURL(storageRef);
 
       await updateProfile(res.user, { displayName, photoURL });
 

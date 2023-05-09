@@ -4,6 +4,8 @@
   padding: 8px 10px;
   border-radius: 5px;
   transition: all 0.5s;
+  width: 250px;
+  height: 275px;
 }
 
 .competitions-container:hover {
@@ -41,6 +43,10 @@
 
 .expired {
   background-color: rgb(103, 102, 102);
+}
+
+.expired svg {
+  color: gainsboro;
 }
 
 .expired-comp {

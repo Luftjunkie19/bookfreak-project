@@ -2,6 +2,7 @@ import "./AddLink.css";
 
 import { useState } from "react";
 
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { toast } from "react-toastify";
@@ -62,8 +63,6 @@ function AddLink() {
       setIsPending(false);
       navigate(`/profile/${user.uid}`);
       toast.info("Link successfully added");
-
-      console.log(option, link);
     } catch (error) {
       setError(error.message);
     }
@@ -78,7 +77,12 @@ function AddLink() {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <motion.form
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
         <h2>Add Link, so people can contact you 😄</h2>
 
         <label>
@@ -147,7 +151,7 @@ function AddLink() {
         {error && <p className="error">{error}</p>}
 
         <button className="btn">Add Link</button>
-      </form>
+      </motion.form>
 
       {isPending && <Loader />}
     </>

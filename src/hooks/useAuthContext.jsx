@@ -9,7 +9,5 @@ export function useAuthContext() {
     throw new Error("Context should be included in a provider");
   }
 
-  console.log(context);
-
   return context;
 }

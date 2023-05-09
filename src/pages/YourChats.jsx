@@ -1,5 +1,7 @@
 import React from "react";
 
+import { motion } from "framer-motion";
+
 import MessagesBar from "../components/MessagesBar";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useCollection } from "../hooks/useCollection";
@@ -13,9 +15,13 @@ function YourChats() {
   ]);
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <MessagesBar partneredDocs={documents} />
-    </div>
+    </motion.div>
   );
 }
 

@@ -1,46 +1,62 @@
-import './Club.css';
+import "./Club.css";
 
-import React from 'react';
+import React from "react";
 
-import { Timestamp } from 'firebase/firestore';
-import {
-  FaPencilAlt,
-  FaTrashAlt,
-  FaUserPlus,
-} from 'react-icons/fa';
-import {
-  Link,
-  Route,
-  Routes,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { Timestamp } from "firebase/firestore";
+import { motion } from "framer-motion";
+import { BsChatTextFill } from "react-icons/bs";
+import { FaPencilAlt, FaTrashAlt, FaUserPlus } from "react-icons/fa";
+import { ImExit } from "react-icons/im";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useDocument } from '../hooks/useDocument';
-import { useFirestore } from '../hooks/useFirestore';
-import useSendJoinRequest from '../hooks/useSendJoinRequest';
-import CompetitionChat from './CompetitionChat';
-import Members from './Members';
-import Ranking from './Ranking';
+import { warningActions } from "../context/WarningContext";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useDocument } from "../hooks/useDocument";
+import { useFirestore } from "../hooks/useFirestore";
+import useSendJoinRequest from "../hooks/useSendJoinRequest";
+import Members from "./Members";
+import Ranking from "./Ranking";
 
 function Club() {
   const { id } = useParams();
-
+  const dispatch = useDispatch();
   const { document } = useDocument("clubs", id);
   const { user } = useAuthContext();
-  const { deleteDocument } = useFirestore("clubs");
+  const { deleteDocument, updateDocument } = useFirestore("clubs");
   const navigate = useNavigate();
 
   const { sendMembershipRequest } = useSendJoinRequest();
-
-  console.log(document);
 
   const deleteClub = async (id) => {
     await deleteDocument(id);
     navigate("/");
     toast.success("Club has been deleted successfully 😄");
+  };
+
+  const leaveClub = async () => {
+    const arrayWithoutYou = document.users.filter(
+      (doc) => doc.value.id !== user.uid
+    );
+
+    if (arrayWithoutYou && document.createdBy.id === user.uid) {
+      dispatch(
+        warningActions.openWarning({
+          referedTo: document.id,
+          typeOf: "club",
+          collection: "clubs",
+        })
+      );
+      return;
+    }
+
+    navigate("/");
+    toast.success("Competition left successfully !");
+
+    await updateDocument(document.id, {
+      users: arrayWithoutYou,
+    });
   };
 
   const sendJoiningRequest = async () => {
@@ -65,9 +81,14 @@ function Club() {
 
   return (
     <div className="club-container">
-      {document && (
+      {document ? (
         <>
-          <div className="club-detailed">
+          <motion.div
+            className="club-detailed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             {document.createdBy.id === user.uid && (
               <div>
                 <button
@@ -102,11 +123,20 @@ function Club() {
               </p>
             </div>
             <div className="club-nav">
-              <Link to="members">Members</Link>
-              <Link to="ranking">Ranking</Link>
               {document.users.filter((member) => {
                 return member.value.id === user.uid;
-              }).length !== 0 && <Link to="chat">Chat</Link>}
+              }).length !== 0 && (
+                <>
+                  <Link to="chat" className="move-to">
+                    Chat
+                    <BsChatTextFill />
+                  </Link>
+
+                  <button className="btn close" onClick={leaveClub}>
+                    Leave <ImExit />
+                  </button>
+                </>
+              )}
             </div>
 
             {document.users.filter((member) => {
@@ -123,29 +153,24 @@ function Club() {
             <div className="club-description">
               <p>{document.description}</p>
             </div>
-          </div>
+          </motion.div>
+        </>
+      ) : (
+        <>
+          <h2>Loading...</h2>
         </>
       )}
       {document && (
-        <Routes>
-          <Route
-            path="members"
-            element={<Members members={document && document.users} />}
-          />
-          <Route
-            path="ranking"
-            element={<Ranking users={document && document.users} />}
-          />
-
-          {document.users.filter((member) => {
-            return member.value.id === user.uid;
-          }).length !== 0 && (
-            <Route
-              path="chat"
-              element={<CompetitionChat collectionName="clubs" />}
-            />
-          )}
-        </Routes>
+        <>
+          <div className="club-info">
+            <h2>Members:</h2>
+            <Members members={document && document.users} />
+          </div>
+          <div className="club-info">
+            <h2>Ranking</h2>
+            <Ranking users={document && document.users} />
+          </div>
+        </>
       )}
     </div>
   );

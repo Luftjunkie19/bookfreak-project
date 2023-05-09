@@ -38,3 +38,58 @@ textarea:active,
 textarea:focus {
   outline: none;
 }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  background: none;
+  border-radius: none;
+  outline: none;
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #0077ff;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #fd8300;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 425px) {
+  textarea {
+    width: 300px;
+  }
+}
+
+@media (min-width: 426px) and (max-width: 767px) {
+  textarea {
+    width: 300px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  textarea {
+    width: 350px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1560px) {
+  textarea {
+    width: 350px;
+  }
+}

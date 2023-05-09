@@ -1,5 +1,6 @@
 import "./Home.css";
 
+import { motion } from "framer-motion";
 import { FaBookOpen } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
@@ -10,9 +11,37 @@ import HomeCompetitions from "./HomeCompetitions";
 function Home() {
   const { orderedDocuments } = useOrderedCollection("books");
 
+  const getNumber = () => {
+    if (document.body.offsetWidth <= 425) {
+      return 5;
+    } else if (
+      425 < document.body.offsetWidth &&
+      document.body.offsetWidth <= 767
+    ) {
+      return 5;
+    } else if (
+      document.body.offsetWidth >= 768 &&
+      document.body.offsetWidth <= 1023
+    ) {
+      return 5;
+    } else if (
+      document.body.offsetWidth >= 1024 &&
+      document.body.offsetWidth <= 1440
+    ) {
+      return 3;
+    } else {
+      return 4;
+    }
+  };
+
   return (
     <>
-      <div className="home-container">
+      <motion.div
+        className="home-container"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
         {orderedDocuments && (
           <h2>
             {orderedDocuments.length > 0
@@ -26,7 +55,7 @@ function Home() {
           }
         >
           {orderedDocuments &&
-            orderedDocuments.slice(0, 4).map((doc, i) => (
+            orderedDocuments.slice(0, getNumber()).map((doc, i) => (
               <Link to={`/book/${doc.id}`} key={i}>
                 <div key={i} className="book">
                   <div className="prev-cover">
@@ -57,7 +86,7 @@ function Home() {
         <HomeCompetitions />
         <h2>Clubs:</h2>
         <HomeClubs />
-      </div>
+      </motion.div>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import './MessagesHolder.css';
 
+import { motion } from 'framer-motion';
 import { useParams } from 'react-router';
 
 import MessageArea from '../components/MessageArea';
@@ -25,15 +26,19 @@ function MessagesHolder() {
     user.uid,
   ]);
 
-  console.log(document);
-
-  console.log(chatId.split("-")[0]);
+  // eslint-disable-next-line no-restricted-globals
+  const condition = window.outerWidth > 1024;
 
   return (
-    <div className="chat-container">
-      <MessagesBar partneredDocs={documents} />
+    <motion.div
+      className="chat-container"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      {condition && <MessagesBar partneredDocs={documents} />}
       <MessageArea chatId={chatId} messagedUser={document} />
-    </div>
+    </motion.div>
   );
 }
 

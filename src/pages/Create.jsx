@@ -1,34 +1,23 @@
-import './Login.css';
-import './Create.css';
+import "./Login.css";
+import "./Create.css";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from "react";
 
-import { Timestamp } from 'firebase/firestore';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import {
-  FaBook,
-  FaTrophy,
-  FaUsers,
-} from 'react-icons/fa';
-import generateUniqueId from 'react-id-generator';
-import { useNavigate } from 'react-router';
-import CreatableSelect from 'react-select/creatable';
-import { toast } from 'react-toastify';
+import { Timestamp } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { motion } from "framer-motion";
+import { FaBook, FaTrophy, FaUsers } from "react-icons/fa";
+import generateUniqueId from "react-id-generator";
+import { useNavigate } from "react-router";
+import CreatableSelect from "react-select/creatable";
+import { toast } from "react-toastify";
 
-import Loader from '../components/Loader';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useCollection } from '../hooks/useCollection';
-import { useFirestore } from '../hooks/useFirestore';
-import { usePushNotifications } from '../hooks/usePushNotifications';
+import Loader from "../components/Loader";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useCollection } from "../hooks/useCollection";
+import { useFirestore } from "../hooks/useFirestore";
+import { useOrderedCollection } from "../hooks/useOrderedCollection";
+import { usePushNotifications } from "../hooks/usePushNotifications";
 
 function Create() {
   const [author, setAuthor] = useState("");
@@ -45,32 +34,33 @@ function Create() {
     selectedToAdd.toLowerCase() === "" ? "books" : selectedToAdd.toLowerCase()
   );
   const { documents } = useCollection("users");
+  const { orderedDocuments } = useOrderedCollection("competitions");
   const { user } = useAuthContext();
   const recensionArea = useRef();
   const [competitionsName, setCompetitionsName] = useState("");
   const [description, setDescription] = useState("");
   const [attachedUsers, setAttachedUsers] = useState([]);
-  const { pushNotifcation } = usePushNotifications();
+  const { pushNotification } = usePushNotifications();
   const [isRecommendable, setIsRecommendable] = useState(false);
   const [expirationDate, setExpirationDate] = useState();
-  console.log("NOW IS LOGGED", user);
 
-  let usersAvailable = [];
-
-  const notCurrentUsers = documents.filter((doc) => {
-    return doc.id !== user.uid;
-  });
-
-  usersAvailable = notCurrentUsers.map((user) => {
-    return {
-      label: user.nickname,
-      value: {
-        nickname: user.nickname,
-        id: user.id,
-        photoURL: user.photoURL,
-      },
-    };
-  });
+  let notCurrentUsers = documents
+    .filter((doc) => {
+      return (
+        doc.id !== user.uid &&
+        !attachedUsers.some((member) => member.value.id === doc.id)
+      );
+    })
+    .map((user) => {
+      return {
+        label: user.nickname,
+        value: {
+          nickname: user.nickname,
+          id: user.id,
+          photoURL: user.photoURL,
+        },
+      };
+    });
 
   const addOptions = [
     { value: "Books", label: "Books" },
@@ -135,8 +125,6 @@ function Create() {
       recensionArea.current.value = "";
       setIsRecommendable(false);
     }
-
-    console.log(recensionArea.current);
   }, [recensionArea, readPages, pagesNumber, isNotCompleted]);
 
   const condition = readPages === pagesNumber;
@@ -147,8 +135,6 @@ function Create() {
     e.preventDefault();
     setError(null);
     setIsPending(true);
-
-    console.log(category);
 
     try {
       if (selectedToAdd === "Books") {
@@ -162,8 +148,6 @@ function Create() {
         const photoURL = await getDownloadURL(image);
 
         const uniqueId = generateUniqueId("book-");
-
-        console.log(cover);
 
         if (readPages > pagesNumber) {
           setError(
@@ -210,13 +194,13 @@ function Create() {
       }
 
       if (selectedToAdd === "Competitions") {
-        if (competitionsName.trim() === "" || attachedUsers.length < 1) {
+        if (competitionsName.trim() === "" || attachedUsers.length < 2) {
           setIsPending(false);
-          toast.error("Pojebało Cię synu?");
+          toast.error("At least 2 users needed to create a club.");
           return;
         }
 
-        const uniqueId = generateUniqueId("readersClub-");
+        const uniqueId = generateUniqueId("competition-");
 
         await addDocument({
           competitionTitle: title,
@@ -246,7 +230,7 @@ function Create() {
         });
 
         attachedUsers.map(async (member) => {
-          await pushNotifcation({
+          await pushNotification({
             notificationContent: `You've been added by ${user.displayName} to ${title} competition.`,
             directedTo: member.value.id,
             linkTo: `/competitions`,
@@ -255,8 +239,6 @@ function Create() {
             changeConcering: user.photoURL,
           });
         });
-
-        console.log(title, competitionsName, attachedUsers);
       }
 
       if (selectedToAdd === "Clubs") {
@@ -304,7 +286,7 @@ function Create() {
         });
 
         attachedUsers.map(async (member) => {
-          await pushNotifcation({
+          await pushNotification({
             notificationContent: `You've been added by ${user.displayName} to ${title} club.`,
             directedTo: member.value.id,
             linkTo: `/readers-clubs`,
@@ -349,254 +331,265 @@ function Create() {
   };
 
   return (
-    <div className="search-container">
-      <div>
-        <h2>Which part would you like to broaden?</h2>
-        <CreatableSelect
-          isClearable
-          isSearchable
-          options={addOptions}
-          onChange={(e) => setSelectedToAdd(e.value)}
-        />
-      </div>
-
-      <form
-        onSubmit={handleSubmit}
-        style={
-          selectedToAdd === "Books" ? { display: "flex" } : { display: "none" }
-        }
+    <div className="side">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
       >
-        <h2>
-          Add new Book <FaBook />
-        </h2>
-
-        <label>
-          <span>Author:</span>
-          <input
-            type="text"
-            required
-            onChange={(e) => setAuthor(e.target.value)}
-          />
-        </label>
-
-        <label>
-          <span>Title:</span>
-          <input
-            type="text"
-            required
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
-
-        <label>
-          <span>Category:</span>
-          <CreatableSelect
-            required
-            className="select-input"
-            isClearable
-            isSearchable
-            options={bookCategories}
-            onChange={(e) => {
-              const selectedOption =
-                e && e.value ? e : { value: "", label: "" };
-              setCategory(selectedOption.value);
-            }}
-          />
-        </label>
-
-        <label>
-          <span>Pages:</span>
-          <input
-            type="number"
-            min={1}
-            required
-            onChange={(e) => setPagesNumber(+e.target.value)}
-          />
-        </label>
-
-        <label>
-          <span>Read pages:</span>
-          <input
-            type="number"
-            min={0}
-            required
-            onChange={(e) => setReadPages(+e.target.value)}
-          />
-        </label>
-
-        <label>
-          <span>Recension:</span>
-          <textarea ref={recensionArea}></textarea>
-        </label>
-
-        <label>
-          <span>Cover: </span>
-          <input type="file" required onChange={handleSelect} />
-        </label>
-
-        {condition && (
+        <div className="search-container">
           <div>
-            <div className="condition-area">
-              <h2>Is this book recomendable?</h2>
-              <div className="pages-buttons">
-                <button
-                  className={`btn yes ${isRecommendable ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setIsRecommendable(true);
-                  }}
-                >
-                  Yes
-                </button>
-                <button
-                  className={`btn no ${!isRecommendable ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setIsRecommendable(false);
-                  }}
-                >
-                  No
-                </button>
-              </div>
-            </div>
+            <h2>Which part would you like to broaden?</h2>
+
+            <CreatableSelect
+              isClearable
+              isSearchable
+              options={addOptions}
+              onChange={(e) => setSelectedToAdd(e.value)}
+            />
           </div>
-        )}
 
-        {error && <p className="wrong">{error}</p>}
+          <form
+            onSubmit={handleSubmit}
+            style={
+              selectedToAdd === "Books"
+                ? { display: "flex" }
+                : { display: "none" }
+            }
+          >
+            <h2>
+              Add new Book <FaBook />
+            </h2>
 
-        <button className="btn">Add new Book</button>
-      </form>
+            <label>
+              <span>Author:</span>
+              <input
+                type="text"
+                required
+                onChange={(e) => setAuthor(e.target.value)}
+              />
+            </label>
 
-      <form
-        onSubmit={handleSubmit}
-        style={
-          selectedToAdd === "Competitions"
-            ? { display: "flex" }
-            : { display: "none" }
-        }
-      >
-        <h2>
-          Add new Competition <FaTrophy />
-        </h2>
+            <label>
+              <span>Title:</span>
+              <input
+                type="text"
+                required
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </label>
 
-        <label>
-          <span>Title:</span>
-          <input
-            type="text"
-            required
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
+            <label>
+              <span>Category:</span>
+              <CreatableSelect
+                required
+                className="select-input"
+                isClearable
+                isSearchable
+                options={bookCategories}
+                onChange={(e) => {
+                  const selectedOption =
+                    e && e.value ? e : { value: "", label: "" };
+                  setCategory(selectedOption.value);
+                }}
+              />
+            </label>
 
-        <label>
-          <span>Competition's type:</span>
-          <CreatableSelect
-            required
-            className="select-input"
-            isClearable
-            isSearchable
-            options={competitionTypes}
-            onChange={(e) => setCompetitionsName(e.value)}
-          />
-        </label>
+            <label>
+              <span>Pages:</span>
+              <input
+                type="number"
+                min={1}
+                required
+                onChange={(e) => setPagesNumber(+e.target.value)}
+              />
+            </label>
 
-        <label>
-          <span>Expiration date:</span>
-          <input
-            className="input-date"
-            type="date"
-            required
-            onChange={(e) => {
-              setExpirationDate(new Date(e.target.value));
-            }}
-          />
-        </label>
+            <label>
+              <span>Read pages:</span>
+              <input
+                type="number"
+                min={0}
+                required
+                onChange={(e) => setReadPages(+e.target.value)}
+              />
+            </label>
 
-        <label>
-          <span>Users:</span>
-          <CreatableSelect
-            required
-            className="select-input"
-            isClearable
-            isSearchable
-            isMulti
-            options={usersAvailable}
-            onChange={(e) => {
-              setAttachedUsers(e);
-              console.log(e);
-            }}
-          />
-        </label>
+            <label>
+              <span>Recension:</span>
+              <textarea ref={recensionArea}></textarea>
+            </label>
 
-        <label>
-          <span>Description:</span>
-          <textarea
-            required
-            placeholder="What's this competition about, what's to win?"
-            onChange={(e) => setDescription(e.target.value)}
-          ></textarea>
-        </label>
+            <label>
+              <span>Cover: </span>
+              <input type="file" required onChange={handleSelect} />
+            </label>
 
-        {error && <p className="wrong">{error}</p>}
+            {condition && (
+              <div>
+                <div className="condition-area">
+                  <h2>Is this book recomendable?</h2>
+                  <div className="pages-buttons">
+                    <button
+                      className={`btn yes ${isRecommendable ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsRecommendable(true);
+                      }}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      className={`btn no ${!isRecommendable ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsRecommendable(false);
+                      }}
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
-        <button className="btn">Add new Competition</button>
-      </form>
+            {error && <p className="wrong">{error}</p>}
 
-      <form
-        onSubmit={handleSubmit}
-        style={
-          selectedToAdd === "Clubs" ? { display: "flex" } : { display: "none" }
-        }
-      >
-        <h2>
-          Add new Reader's Club <FaUsers />
-        </h2>
+            <button className="btn">Add new Book</button>
+          </form>
 
-        <label>
-          <span>Club's name:</span>
-          <input
-            type="text"
-            required
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
+          <form
+            onSubmit={handleSubmit}
+            style={
+              selectedToAdd === "Competitions"
+                ? { display: "flex" }
+                : { display: "none" }
+            }
+          >
+            <h2>
+              Add new Competition <FaTrophy />
+            </h2>
 
-        <label>
-          <span>Users:</span>
-          <CreatableSelect
-            required
-            className="select-input"
-            isClearable
-            isSearchable
-            isMulti
-            options={usersAvailable}
-            onChange={(e) => {
-              setAttachedUsers(e);
-              console.log(e);
-            }}
-          />
-        </label>
+            <label>
+              <span>Title:</span>
+              <input
+                type="text"
+                required
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </label>
 
-        <label>
-          <span>Club's logo: </span>
-          <input type="file" required onChange={handleSelect} />
-        </label>
+            <label>
+              <span>Competition's type:</span>
+              <CreatableSelect
+                required
+                className="select-input"
+                isClearable
+                isSearchable
+                options={competitionTypes}
+                onChange={(e) => setCompetitionsName(e.value)}
+              />
+            </label>
 
-        <label>
-          <span>Description:</span>
-          <textarea
-            required
-            placeholder="Tell the users, what are you in this club doing."
-            onChange={(e) => setDescription(e.target.value)}
-          ></textarea>
-        </label>
+            <label>
+              <span>Expiration date:</span>
+              <input
+                className="input-date"
+                type="date"
+                required
+                onChange={(e) => {
+                  setExpirationDate(new Date(e.target.value));
+                }}
+              />
+            </label>
 
-        {error && <p className="wrong">{error}</p>}
+            <label>
+              <span>Users:</span>
+              <CreatableSelect
+                required
+                className="select-input"
+                isClearable
+                isSearchable
+                isMulti
+                options={notCurrentUsers}
+                onChange={(e) => {
+                  setAttachedUsers(e);
+                }}
+              />
+            </label>
 
-        <button className="btn">Add new Club</button>
-      </form>
+            <label>
+              <span>Description:</span>
+              <textarea
+                required
+                placeholder="What's this competition about, what's to win?"
+                onChange={(e) => setDescription(e.target.value)}
+              ></textarea>
+            </label>
 
-      {isPending && <Loader />}
+            {error && <p className="wrong">{error}</p>}
+
+            <button className="btn">Add new Competition</button>
+          </form>
+
+          <form
+            onSubmit={handleSubmit}
+            style={
+              selectedToAdd === "Clubs"
+                ? { display: "flex" }
+                : { display: "none" }
+            }
+          >
+            <h2>
+              Add new Reader's Club <FaUsers />
+            </h2>
+
+            <label>
+              <span>Club's name:</span>
+              <input
+                type="text"
+                required
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </label>
+
+            <label>
+              <span>Users:</span>
+              <CreatableSelect
+                required
+                className="select-input"
+                isClearable
+                isSearchable
+                isMulti
+                options={notCurrentUsers}
+                onChange={(e) => {
+                  setAttachedUsers(e);
+                }}
+              />
+            </label>
+
+            <label>
+              <span>Club's logo: </span>
+              <input type="file" required onChange={handleSelect} />
+            </label>
+
+            <label>
+              <span>Description:</span>
+              <textarea
+                required
+                placeholder="Tell the users, what are you in this club doing."
+                onChange={(e) => setDescription(e.target.value)}
+              ></textarea>
+            </label>
+
+            {error && <p className="wrong">{error}</p>}
+
+            <button className="btn">Add new Club</button>
+          </form>
+
+          {isPending && <Loader />}
+        </div>
+      </motion.div>
     </div>
   );
 }

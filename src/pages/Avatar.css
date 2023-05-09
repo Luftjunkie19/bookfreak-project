@@ -1,7 +1,5 @@
 .avatar {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
   color: white;
   background-color: rgb(0, 91, 170);
   padding: 10px;
@@ -25,7 +23,6 @@
 .avatar-info {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .avatar-info p {

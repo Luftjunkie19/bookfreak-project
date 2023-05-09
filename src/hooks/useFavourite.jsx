@@ -5,12 +5,12 @@ import {
   query,
   Timestamp,
   where,
-} from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+} from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
-import { useAuthContext } from "./useAuthContext";
-import { useCollection } from "./useCollection";
-import { useFirestore } from "./useFirestore";
+import { useAuthContext } from './useAuthContext';
+import { useCollection } from './useCollection';
+import { useFirestore } from './useFirestore';
 
 export function useFavourite(collectionName) {
   const { user } = useAuthContext();
@@ -26,7 +26,6 @@ export function useFavourite(collectionName) {
   const checkCondition = (id) => {
     return documents
       .map((doc) => {
-        console.log(doc);
         return doc.bookId;
       })
       .includes(id);
@@ -50,7 +49,6 @@ export function useFavourite(collectionName) {
         starredAt: Timestamp.fromDate(new Date()),
       },
     });
-    console.log("Object added");
   };
 
   const removeFromFavourite = async (id) => {
@@ -68,8 +66,6 @@ export function useFavourite(collectionName) {
       await deleteDocument(doc.id);
       navigate(`/book/${id}`);
     });
-
-    console.log("Object removed");
   };
 
   return { addToFavourite, removeFromFavourite, checkCondition };

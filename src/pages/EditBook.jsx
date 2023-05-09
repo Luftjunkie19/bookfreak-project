@@ -1,24 +1,22 @@
-import './EditBook.css';
+import "./EditBook.css";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from "react";
 
-import { Timestamp } from 'firebase/firestore';
-import { FaBookOpen } from 'react-icons/fa';
-import { useParams } from 'react-router';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { Timestamp } from "firebase/firestore";
+import { motion } from "framer-motion";
+import { FaBookOpen } from "react-icons/fa";
+import { GrClose } from "react-icons/gr";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import Loader from '../components/Loader';
-import { useDocument } from '../hooks/useDocument';
-import { useFirestore } from '../hooks/useFirestore';
+import Loader from "../components/Loader";
+import { modalActions } from "../context/ModalContext";
+import { useFirestore } from "../hooks/useFirestore";
+import { useFormData } from "../hooks/useFormData";
 
-function EditBook() {
-  const { id } = useParams();
-  const { document } = useDocument("books", id);
+function EditBook({ id }) {
+  const { document } = useFormData("books", id);
   const { updateDocument } = useFirestore("books");
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -59,6 +57,7 @@ function EditBook() {
   }, [readPages, pagesNumber, document]);
 
   const conditionArea = readPages === pagesNumber;
+  const dispatch = useDispatch();
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -91,6 +90,7 @@ function EditBook() {
       setIsPending(false);
       toast.success("Book updated successfully");
       navigate(`/book/${id}`);
+      dispatch(modalActions.closeModal());
     } catch (error) {
       setError(error.message);
     }
@@ -98,84 +98,100 @@ function EditBook() {
 
   return (
     <>
-      <form onSubmit={handleUpdate}>
-        <h2>Update your book</h2>
-        <FaBookOpen className="book-form-icon" />
-        <p>Wanna add some changes? Here you are !</p>
-        <label>
-          <span>Title: </span>
-          <input
-            type="text"
-            required
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
-        <label>
-          <span>Author: </span>
-          <input
-            type="text"
-            required
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
-        </label>
-        <label>
-          <span>Pages number: </span>
-          <input
-            type="number"
-            min={1}
-            required
-            value={pagesNumber}
-            onChange={(e) => setPagesNumber(+e.target.value)}
-          />
-        </label>
-        <label>
-          <span>Read pages: </span>
-          <input
-            type="number"
-            required
-            min={0}
-            value={readPages}
-            onChange={(e) => setReadPages(+e.target.value)}
-          />
-        </label>
+      <motion.div
+        className="loader-container"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <button
+          className="btn delete"
+          onClick={() => {
+            dispatch(modalActions.closeModal());
+          }}
+        >
+          Close <GrClose />
+        </button>
 
-        <label>
-          <span>Recension:</span>
-          <textarea ref={recensionArea}></textarea>
-        </label>
+        <form onSubmit={handleUpdate}>
+          <h2>Update your book</h2>
+          <FaBookOpen className="book-form-icon" />
+          <p>Wanna add some changes? Here you are !</p>
+          <label>
+            <span>Title: </span>
+            <input
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </label>
+          <label>
+            <span>Author: </span>
+            <input
+              type="text"
+              required
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+            />
+          </label>
+          <label>
+            <span>Pages number: </span>
+            <input
+              type="number"
+              min={1}
+              required
+              value={pagesNumber}
+              onChange={(e) => setPagesNumber(+e.target.value)}
+            />
+          </label>
+          <label>
+            <span>Read pages: </span>
+            <input
+              type="number"
+              required
+              min={0}
+              value={readPages}
+              onChange={(e) => setReadPages(+e.target.value)}
+            />
+          </label>
 
-        {conditionArea && (
-          <div className="condition-area">
-            <h2>Is this book recomendable?</h2>
-            <div className="pages-buttons">
-              <button
-                className={`btn yes ${isRecommendable ? "active" : ""}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsRecommendable(true);
-                }}
-              >
-                Yes
-              </button>
-              <button
-                className={`btn no ${!isRecommendable ? "active" : ""}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsRecommendable(false);
-                }}
-              >
-                No
-              </button>
+          <label>
+            <span>Recension:</span>
+            <textarea ref={recensionArea}></textarea>
+          </label>
+
+          {conditionArea && (
+            <div className="condition-area">
+              <h2>Is this book recomendable?</h2>
+              <div className="pages-buttons">
+                <button
+                  className={`btn yes ${isRecommendable ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsRecommendable(true);
+                  }}
+                >
+                  Yes
+                </button>
+                <button
+                  className={`btn no ${!isRecommendable ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsRecommendable(false);
+                  }}
+                >
+                  No
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {error && <p className="error">{error}</p>}
+          {error && <p className="error">{error}</p>}
 
-        <button className="btn">Update book</button>
-      </form>
+          <button className="btn">Update book</button>
+        </form>
+      </motion.div>
 
       {isPending && <Loader />}
     </>

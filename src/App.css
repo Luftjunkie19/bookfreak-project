@@ -18,3 +18,7 @@ body {
 .error {
   color: red;
 }
+
+.side {
+  min-height: 75vh;
+}

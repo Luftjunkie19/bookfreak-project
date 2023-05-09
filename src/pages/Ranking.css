@@ -10,6 +10,10 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+.ranking h2 {
+  word-wrap: break-word;
+}
+
 .silver {
   background: linear-gradient(45deg, #c4c4c4, #929292);
   color: black;
@@ -34,4 +38,8 @@
 
 .ranking-member .small-avatar {
   margin-right: 10px;
+}
+
+.ranking.expired-ranking {
+  background: rgb(57, 55, 55);
 }

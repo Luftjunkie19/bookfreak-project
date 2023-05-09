@@ -55,3 +55,75 @@
 .expired-phrase {
   background-color: rgba(60, 59, 59, 0.735);
 }
+
+.btn.close {
+  background: none;
+  box-shadow: none;
+  position: relative;
+  top: 0;
+  left: 0;
+  transition: all 0.5s 0.25s;
+  overflow: hidden;
+}
+
+.btn.close::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: red;
+  border-radius: 5px;
+  margin-top: 5px;
+  transition: all 0.5s;
+}
+
+.btn.close::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: -100%;
+  width: 100%;
+  height: 2px;
+  background: red;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  transition: all 0.5s 0.15s;
+}
+
+.btn.close:hover {
+  color: red;
+}
+
+.btn.close:hover::after {
+  right: 0;
+}
+
+.btn.close:hover::before {
+  left: 0;
+}
+
+@media (max-width: 425px) {
+  .comp-holder {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 426px) and (max-width: 768px) {
+  .comp-holder {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .comp-holder {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1560px) {
+  .comp-holder {
+    flex-direction: column;
+  }
+}

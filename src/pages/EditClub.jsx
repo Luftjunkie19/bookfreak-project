@@ -1,44 +1,34 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
-import { Timestamp } from 'firebase/firestore';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import { FaUsers } from 'react-icons/fa';
-import {
-  useNavigate,
-  useParams,
-} from 'react-router';
-import CreatableSelect from 'react-select';
-import { toast } from 'react-toastify';
+import { Timestamp } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { motion } from "framer-motion";
+import { FaUsers } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router";
+import CreatableSelect from "react-select";
+import { toast } from "react-toastify";
 
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useCollection } from '../hooks/useCollection';
-import { useDocument } from '../hooks/useDocument';
-import { useFirestore } from '../hooks/useFirestore';
-import { usePushNotifications } from '../hooks/usePushNotifications';
+import Loader from "../components/Loader";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useCollection } from "../hooks/useCollection";
+import { useFirestore } from "../hooks/useFirestore";
+import { useFormData } from "../hooks/useFormData";
+import { usePushNotifications } from "../hooks/usePushNotifications";
 
 function EditClub() {
   const { id } = useParams();
-  const { document } = useDocument("clubs", id);
+  const { document } = useFormData("clubs", id);
   const { user } = useAuthContext();
   const [clubsName, setClubsName] = useState("");
   const [error, setError] = useState("");
   const [attachedUsers, setAttachedUsers] = useState([]);
   const [description, setDescription] = useState("");
   const [clubLogo, setClubLogo] = useState(null);
+  const [isPending, setIsPending] = useState(false);
   const { documents } = useCollection("users");
   const { updateDocument } = useFirestore("clubs");
   const navigate = useNavigate();
   const { pushNotification } = usePushNotifications();
-
-  console.log(document);
 
   const notCurrentUsers = documents.filter((doc) => {
     return doc.id !== user.uid;
@@ -90,6 +80,8 @@ function EditClub() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setIsPending(true);
     try {
       if (clubLogo.name) {
         const uploadPath = `clubLogo/uid${user.uid}/${clubLogo.name}`;
@@ -151,8 +143,6 @@ function EditClub() {
           ],
         });
 
-        console.log(attachedUsers);
-
         attachedUsers.map(async (member) => {
           await pushNotification({
             notificationContent: `${user.displayName} has comitted some changes in ${clubsName} club`,
@@ -164,6 +154,8 @@ function EditClub() {
           });
         });
 
+        setError(null);
+        setIsPending(false);
         navigate(`/readers-clubs/${id}`);
         toast.success("Club successfully updated");
       }
@@ -173,58 +165,65 @@ function EditClub() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>
-        Wanna update the Club? <FaUsers />
-      </h2>
-      <p>Here you are 🤓!</p>
+    <>
+      <motion.form
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onSubmit={handleSubmit}
+      >
+        <h2>
+          Wanna update the Club? <FaUsers />
+        </h2>
+        <p>Here you are 🤓!</p>
 
-      <label>
-        <span>Club's name:</span>
-        <input
-          type="text"
-          required
-          value={clubsName}
-          onChange={(e) => setClubsName(e.target.value)}
-        />
-      </label>
+        <label>
+          <span>Club's name:</span>
+          <input
+            type="text"
+            required
+            value={clubsName}
+            onChange={(e) => setClubsName(e.target.value)}
+          />
+        </label>
 
-      <label>
-        <span>Users:</span>
-        <CreatableSelect
-          required
-          className="select-input"
-          isClearable
-          isSearchable
-          isMulti
-          options={usersAvailable}
-          value={attachedUsers}
-          onChange={(e) => {
-            setAttachedUsers(e);
-            console.log(e);
-          }}
-        />
-      </label>
+        <label>
+          <span>Users:</span>
+          <CreatableSelect
+            required
+            className="select-input"
+            isClearable
+            isSearchable
+            isMulti
+            options={usersAvailable}
+            value={attachedUsers}
+            onChange={(e) => {
+              setAttachedUsers(e);
+            }}
+          />
+        </label>
 
-      <label>
-        <span>Club's logo: </span>
-        <input type="file" onChange={handleSelect} />
-      </label>
+        <label>
+          <span>Club's logo: </span>
+          <input type="file" onChange={handleSelect} />
+        </label>
 
-      <label>
-        <span>Description:</span>
-        <textarea
-          required
-          placeholder="Tell the users, what are you in this club doing."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        ></textarea>
-      </label>
+        <label>
+          <span>Description:</span>
+          <textarea
+            required
+            placeholder="Tell the users, what are you in this club doing."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          ></textarea>
+        </label>
 
-      {error && <p className="wrong">{error}</p>}
+        {error && <p className="wrong">{error}</p>}
 
-      <button className="btn">Update Club</button>
-    </form>
+        <button className="btn">Update Club</button>
+      </motion.form>
+      {isPending && <Loader />}
+    </>
   );
 }
 

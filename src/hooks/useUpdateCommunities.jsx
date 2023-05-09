@@ -4,12 +4,12 @@ import {
   doc,
   getFirestore,
   updateDoc,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 
-import { useAuthContext } from "./useAuthContext";
-import { useCollection } from "./useCollection";
-import { useFirestore } from "./useFirestore";
-import { useOrderedCollection } from "./useOrderedCollection";
+import { useAuthContext } from './useAuthContext';
+import { useCollection } from './useCollection';
+import { useFirestore } from './useFirestore';
+import { useOrderedCollection } from './useOrderedCollection';
 
 export function useUpdateCommunities() {
   const { user } = useAuthContext();
@@ -35,8 +35,6 @@ export function useUpdateCommunities() {
     "array-contains",
     memberPattern,
   ]);
-
-  console.log("competitions", orderedDocuments, "clubs", documents);
 
   const updateComunities = (updatedUser, ownerUserName, ownerUsePhoto) => {
     documents.map((doc) => {
@@ -97,8 +95,6 @@ export function useUpdateCommunities() {
 
     orderedDocuments.map((docu) => {
       const competition = doc(getFirestore(), "competitions", docu.id);
-
-      console.log(docu.messages);
 
       if (docu.createdBy.id === user.uid) {
         updateDoc(competition, {

@@ -3,6 +3,8 @@ import './Competition.css';
 import React from 'react';
 
 import { Timestamp } from 'firebase/firestore';
+import { motion } from 'framer-motion';
+import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
   FaPencilAlt,
   FaPeopleCarry,
@@ -10,21 +12,19 @@ import {
   FaUserPlus,
   FaUserTie,
 } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
 import {
   Link,
-  Route,
-  Routes,
   useNavigate,
 } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+import { warningActions } from '../context/WarningContext';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useDocument } from '../hooks/useDocument';
 import { useFirestore } from '../hooks/useFirestore';
 import useSendJoinRequest from '../hooks/useSendJoinRequest';
-import CompetitionChat from './CompetitionChat';
-import CreatedBy from './CreatedBy';
 import Members from './Members';
 import Ranking from './Ranking';
 
@@ -33,7 +33,7 @@ function Competition() {
   const { user } = useAuthContext();
   const { document } = useDocument("competitions", id);
   const navigate = useNavigate();
-  const { deleteDocument } = useFirestore("competitions");
+  const { deleteDocument, updateDocument } = useFirestore("competitions");
   const deleteCompetition = async (id) => {
     await deleteDocument(id);
     navigate("/");
@@ -41,12 +41,36 @@ function Competition() {
   };
   const { sendMembershipRequest } = useSendJoinRequest();
 
-  console.log(document && document.expiresAt.toDate());
+  const dispatch = useDispatch();
 
   const expirationTime =
     document && new Date(document.expiresAt.toDate()).getTime();
 
   let timesDifference = expirationTime - new Date().getTime();
+
+  const leaveCompetition = async () => {
+    const arrayWithoutYou = document.users.filter(
+      (doc) => doc.value.id !== user.uid
+    );
+
+    if (arrayWithoutYou && document.createdBy.id === user.uid) {
+      dispatch(
+        warningActions.openWarning({
+          referedTo: document.id,
+          typeOf: "competition",
+          collection: "competitions",
+        })
+      );
+      return;
+    }
+
+    await updateDocument(document.id, {
+      users: arrayWithoutYou,
+    });
+
+    navigate("/");
+    toast.success("Competition left successfully !");
+  };
 
   const sendJoiningRequest = async () => {
     await sendMembershipRequest({
@@ -69,7 +93,12 @@ function Competition() {
   };
 
   return (
-    <div className="comp-holder">
+    <motion.div
+      className="comp-holder"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="competition">
         {document && document.createdBy.id === user.uid && (
           <div>
@@ -90,7 +119,7 @@ function Competition() {
           </div>
         )}
 
-        {document && (
+        {document ? (
           <>
             <div
               className={`competition-details ${
@@ -167,68 +196,68 @@ function Competition() {
 
               {document.users.filter((member) => {
                 return member.value.id === user.uid;
-              }).length === 0 && (
-                <div className="club-nav">
-                  <button className="join-btn" onClick={sendJoiningRequest}>
-                    Join Competition <FaUserPlus />
-                  </button>
-                </div>
-              )}
+              }).length === 0 &&
+                Math.round(timesDifference / (1000 * 60 * 60 * 24)) > 0 && (
+                  <div className="club-nav">
+                    <button className="join-btn" onClick={sendJoiningRequest}>
+                      Join Competition <FaUserPlus />
+                    </button>
+                  </div>
+                )}
 
               <div className="options">
-                <Link to="created-by">Show creator</Link>
-                <Link to="members">Show Members</Link>
                 {document &&
                   document.users.filter((member) => {
                     return member.value.id === user.uid;
-                  }).length !== 0 && (
+                  }).length !== 0 &&
+                  Math.round(timesDifference / (1000 * 60 * 60 * 24)) > 0 && (
                     <>
-                      <Link to="competition-chat">Show chat</Link>
-                      <Link to="ranking">Show Ranking</Link>
+                      <Link to="competition-chat" className="move-to">
+                        Show chat
+                      </Link>
+                      <button className="btn close" onClick={leaveCompetition}>
+                        Leave <BsFillDoorOpenFill />{" "}
+                      </button>
                     </>
                   )}
               </div>
             </div>
           </>
-        )}
-      </div>
-      <Routes>
-        {document && (
+        ) : (
           <>
-            <Route
-              path="created-by"
-              element={
-                <CreatedBy
-                  creatorName={document && document.createdBy.displayName}
-                  createdDate={document && document.createdBy.createdAt}
-                  creatorImg={document && document.createdBy.photoURL}
-                  creatorProfileId={document && document.createdBy.id}
-                />
-              }
-            />
-            <Route
-              path="members"
-              element={<Members members={document && document.users} />}
-            />
-
-            <Route
-              path="ranking"
-              element={<Ranking users={document && document.users} />}
-            />
-
-            {document &&
-              document.users.filter((member) => {
-                return member.value.id === user.uid;
-              }).length !== 0 && (
-                <Route
-                  path="competition-chat"
-                  element={<CompetitionChat collectionName="competitions" />}
-                />
-              )}
+            <h2>Loading...</h2>
           </>
         )}
-      </Routes>
-    </div>
+      </div>
+
+      {document && (
+        <>
+          {/** 
+          <CreatedBy
+            creatorName={document && document.createdBy.displayName}
+            createdDate={document && document.createdBy.createdAt}
+            creatorImg={document && document.createdBy.photoURL}
+            creatorProfileId={document && document.createdBy.id}
+          />*/}
+
+          <div className="club-info">
+            <h2>Members:</h2>
+            <Members members={document && document.users} />
+          </div>
+
+          <div className="club-info">
+            <h2>Ranking</h2>
+            <Ranking
+              users={document && document.users}
+              rankingOf={"competition"}
+              timeDifference={Math.round(
+                timesDifference / (1000 * 60 * 60 * 24)
+              )}
+            />
+          </div>
+        </>
+      )}
+    </motion.div>
   );
 }
 

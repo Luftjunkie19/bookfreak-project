@@ -84,6 +84,7 @@
 .links {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -211,4 +212,47 @@ a {
 
 .remove-user {
   background-color: #ff0000;
+}
+
+.user-btn {
+  width: 80px;
+  margin-left: 10px;
+}
+
+.reader-stats {
+  font-weight: 650;
+  font-size: 24px;
+}
+
+.reader-stats svg {
+  font-size: 24px;
+}
+
+@media screen and (max-width: 540px) {
+  .profile-data,
+  .profile-for-users {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .books {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-for-users {
+    margin: 10px;
+  }
+
+  .profile-img {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (min-width: 540px) and (max-width: 767px) {
+  .profile-data,
+  .profile-for-users {
+    display: flex;
+    flex-direction: column;
+  }
 }

@@ -1,14 +1,12 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import {
-  getAuth,
-  sendPasswordResetEmail,
-} from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function ForgotPassword() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   const myAuth = getAuth();
 
@@ -24,7 +22,12 @@ function ForgotPassword() {
   };
 
   return (
-    <form onSubmit={submitForm}>
+    <motion.form
+      onSubmit={submitForm}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <h2>Forgot a password?</h2>
       <p>No worries all sometimes forget 'bout something 😅</p>
 
@@ -39,7 +42,7 @@ function ForgotPassword() {
       </label>
 
       <button className="btn">Send email</button>
-    </form>
+    </motion.form>
   );
 }
 

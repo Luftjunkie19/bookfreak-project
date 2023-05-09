@@ -27,6 +27,11 @@
   transition: 0.5s all;
 }
 
+.footer-link svg {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
 .footer-link.fb:hover {
   color: #77c6ff;
 }
@@ -68,4 +73,11 @@
 .footer-link.tiktok:hover {
   color: rgb(34, 211, 255);
   text-shadow: 3px 3px 3px #ee1d52;
+}
+
+@media (max-width: 540px) {
+  .footer {
+    grid-template-columns: 1fr;
+    align-content: center;
+  }
 }

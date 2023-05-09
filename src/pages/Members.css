@@ -29,3 +29,23 @@
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
   transform: translateY(-5px);
 }
+
+@media (max-width: 425px) {
+  .members {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 425px) and (max-width: 767px) {
+  .members {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1560px) {
+  .members {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

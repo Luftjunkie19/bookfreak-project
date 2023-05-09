@@ -5,9 +5,11 @@ import React from "react";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
 
 import App from "./App";
 import AuthContextProvider from "./context/AuthContext";
+import stored from "./context/Stored";
 
 // Import the functions you need from the SDKs you need
 // TODO: Add SDKs for Firebase products that you want to use
@@ -31,7 +33,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthContextProvider>
-      <App />
+      <Provider store={stored}>
+        <App />
+      </Provider>
     </AuthContextProvider>
   </React.StrictMode>
 );
