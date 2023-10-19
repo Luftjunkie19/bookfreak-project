@@ -10,7 +10,7 @@
   flex-direction: column;
   background-color: rgba(0, 0, 0, 0.651);
   color: aliceblue;
-  z-index: 1000;
+  z-index: 999999999999999999999999999999999999999999999999999;
 }
 
 .loader-container img {

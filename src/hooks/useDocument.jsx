@@ -1,6 +1,13 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  getFirestore,
+  onSnapshot,
+} from 'firebase/firestore';
 
 export function useDocument(col, id) {
   const [document, setDocument] = useState();

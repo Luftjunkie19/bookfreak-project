@@ -1,0 +1,77 @@
+{
+  "heroSection": {
+    "title": {
+      "eng": "Welcome to BookFreak",
+      "ger": "Willkommen bei BookFreak",
+      "pl": "Witaj w BookFreak"
+    },
+    "description": {
+      "eng": "The place with society of real Freaks. Join any competition to face with readers like you and to win prizes. Attend Clubs to communicate with your friends or other bookfreaks. Find books, you haven't heard about and enjoy your time here.",
+      "ger": "Der Ort mit der Community der echten Freaks. Nimm an einem Wettbewerb teil, um die Stirn den Lesern wie Du zu bieten und die Preise zu gewinnen. Tritt einen Verein bei, sich mit deinen Freunden oder anderen bookfreaks unterhalten zu können. Finde Bücher, darüber du nie gehört hast und Genieße die Zeit hier.",
+      "pl": "To miejsce z społecznością prawdziwych Freaków. Dołącz do konkursu, aby zmierzyć się z czytelnikami jak ty i wygraj nagrody. Dołącz do klubów, żeby komunikować się ze znajomymi lub innymi bookfreakami. Znajdź książki, o których nie słyszałeś i ciesz się swoim czasem spędzonym tutaj."
+    },
+    "button": {
+      "eng": "Explore more",
+      "ger": "Entdecke mehr",
+      "pl": "Odkryj więcej"
+    }
+  },
+  "homePage": {
+    "explorationOptions": {
+      "title": {
+        "eng": "Things you can explore here:",
+        "ger": "Sachen, die du hier entdecken kannst:",
+        "pl": "Rzeczy, jakie możesz tu odkryć:"
+      },
+      "option1": {
+        "eng": "Books",
+        "ger": "Bücher",
+        "pl": "Książki"
+      },
+      "option2": {
+        "eng": "Recensions",
+        "ger": "Rezensionen",
+        "pl": "Recenzje"
+      },
+      "option3": {
+        "eng": "Competitions",
+        "ger": "Wettbewerbe",
+        "pl": "Konkursy"
+      },
+      "option4": {
+        "eng": "Reading Groups",
+        "ger": "Lesegruppen",
+        "pl": "Kluby Czytelników"
+      }
+    },
+    "recentTexts": {
+      "books": {
+        "eng": "Recently Added Books",
+        "ger": "Zuletzt hinzugefügte Bücher",
+        "pl": "Ostatnie książki"
+      },
+      "competitions": {
+        "eng": "Recently Created Competitions",
+        "ger": "Zuletzt Erstellte Wettbewerbe",
+        "pl": "Ostatnie konkursy"
+      },
+      "clubs": {
+        "eng": "Recently created Clubs",
+        "ger": "Zuletzt erstellte Lesegruppen",
+        "pl": "Ostatnie kluby"
+      }
+    },
+    "bookObject": {
+      "pages": {
+        "eng": "Pages",
+        "ger": "Seiten",
+        "pl": "Strony"
+      },
+      "by": {
+        "eng": "By",
+        "ger": "Von",
+        "pl": "Od"
+      }
+    }
+  }
+}

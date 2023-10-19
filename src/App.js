@@ -1,97 +1,86 @@
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./components/stylings/effects.css";
 
 import { useEffect } from "react";
 
-import { AnimatePresence } from "framer-motion";
+import { useDetectAdBlock } from "adblock-detect-react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
 import Footer from "./components/Footer";
-import HamburgerMenu from "./components/HamburgerMenu";
-import Navbar from "./components/Navbar";
-import UnderNav from "./components/UnderNav";
-import Warning from "./components/Warning";
-import { notificationActions } from "./context/NotificationReducer";
+import HamburgerMenu from "./components/Navbar&MenuComponents/HamburgerMenu";
+import HamburgerMenuUnlogged from "./components/Navbar&MenuComponents/HamburgerMenuUnlogged";
+import Navbar from "./components/Navbar&MenuComponents/Navbar";
+import NotificationViewer from "./components/Navbar&MenuComponents/NotificationViewer";
+import UnloggedNavbar from "./components/Navbar&MenuComponents/UnloggedNavbar";
+import AdblockAlert from "./components/WarningsComponents/AdblockAlert";
+import Warning from "./components/WarningsComponents/Warning";
 import { useAuthContext } from "./hooks/useAuthContext";
-import { useCollection } from "./hooks/useCollection";
-import { useOrderedCollection } from "./hooks/useOrderedCollection";
-import AddLink from "./pages/AddLink";
-import Book from "./pages/Book";
-import Books from "./pages/Books";
-import Club from "./pages/Club";
-import Clubs from "./pages/Clubs";
-import Competition from "./pages/Competition.jsx";
-import CompetitionChat from "./pages/CompetitionChat";
-import Competitions from "./pages/Competitions";
+import Login from "./pages/AuthorizationForms/Login";
+import LogInWithPhone from "./pages/AuthorizationForms/LogInWithPhone";
+import SignInWithPhone from "./pages/AuthorizationForms/SignInWithPhone";
+import SignUp from "./pages/AuthorizationForms/SignUp";
+import MessagesHolder from "./pages/ChatPages/MessagesHolder";
+import YourChats from "./pages/ChatPages/YourChats";
+import Books from "./pages/CollectionsPages/Books";
+import Clubs from "./pages/CollectionsPages/Clubs";
+import Competitions from "./pages/CollectionsPages/Competitions";
+import Recensions from "./pages/CollectionsPages/Recensions";
+import GeneralInfo from "./pages/CommunitySubPages/GeneralInfo";
+import OverallClub from "./pages/CommunitySubPages/OverallClub";
 import Create from "./pages/Create";
-import EditClub from "./pages/EditClub";
-import EditCompetition from "./pages/EditCompetition";
-import EditProfile from "./pages/EditProfile";
-import ForgotPassword from "./pages/ForgotPassword";
+import AddLink from "./pages/Forms&FormsPages/AddLink";
+import EditClub from "./pages/Forms&FormsPages/EditClub";
+import EditCompetition from "./pages/Forms&FormsPages/EditCompetition";
+import EditProfile from "./pages/Forms&FormsPages/EditProfile";
+import ForgotPassword from "./pages/Forms&FormsPages/ForgotPassword.jsx";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import LogInWithPhone from "./pages/LogInWithPhone";
-import MessagesHolder from "./pages/MessagesHolder";
-import NotificationViewer from "./pages/NotificationViewer";
-import Profile from "./pages/Profile";
-import Recensions from "./pages/Recensions";
-import SearchFor from "./pages/SearchFor";
-import SearchOption from "./pages/SearchOption";
-import SignInWithPhone from "./pages/SignInWithPhone";
-import SignUp from "./pages/SignUp";
-import YourChats from "./pages/YourChats.jsx";
+import SearchFor from "./pages/SearchPages/SearchFor";
+import SearchOption from "./pages/SearchPages/SearchOption";
+import Book from "./pages/SinglePages/Book";
+import Club from "./pages/SinglePages/Club";
+import Competition from "./pages/SinglePages/Competition.jsx";
+import Profile from "./pages/SinglePages/Profile";
 
 function App() {
   const { user, userIsReady } = useAuthContext();
-  const { orderedDocuments } = useOrderedCollection("join-request");
-  const { documents } = useCollection("notifications");
-  const openedState = useSelector((state) => state.viewer.isOpened);
-  const dispatch = useDispatch();
 
-  const unreadRequests = useSelector((state) => state.notifications.requests);
-  const unreadNotifications = useSelector(
-    (state) => state.notifications.notifications
-  );
+  const isUsingAdblock = useDetectAdBlock();
+
+  useEffect(() => {
+    if (isUsingAdblock) {
+      console.log("NAUGHTY, NAUGHTY BOI !");
+    } else {
+      console.log("GOOOD BOI !");
+    }
+  }, [isUsingAdblock]);
+
+  const dispatch = useDispatch();
+  const isDarkmode = useSelector((state) => state.mode.isDarkMode);
+
   const warningVisibility = useSelector(
     (state) => state.warning.isWarningVisible
   );
 
-  useEffect(() => {
-    if (user) {
-      const unreadN = documents.filter(
-        (doc) => doc.isRead === false && doc.directedTo === user.uid
-      ).length;
-      const unreadR = orderedDocuments.filter(
-        (doc) => doc.isRead === false && doc.directedTo === user.uid
-      ).length;
-
-      dispatch(
-        notificationActions.updateNotifications({
-          notifications: unreadN,
-          requests: unreadR,
-        })
-      );
-    }
-  }, [dispatch, documents, orderedDocuments, user]);
-
   return (
-    <div className="App">
-      <>
-        {userIsReady && (
-          <>
-            <BrowserRouter>
-              <Navbar
-                unreadNotifications={unreadNotifications}
-                unreadRequests={unreadRequests}
-              />
-              {openedState && user && <NotificationViewer />}
-              {warningVisibility && user && <Warning />}
-              {user && <UnderNav />}
-              {user && <HamburgerMenu />}
-              <div className="container">
-                <AnimatePresence>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <div className="w-full min-h-screen h-full">
+        <>
+          {userIsReady && (
+            <>
+              <BrowserRouter>
+                {user && <Navbar user={user} />}
+                {!user && <UnloggedNavbar />}
+                {!user && <HamburgerMenuUnlogged />}
+                {user && <NotificationViewer />}
+                {warningVisibility && user && <Warning />}
+                {user && <HamburgerMenu />}
+                <div className="container">
                   <Routes>
                     <Route
                       path="/"
@@ -186,22 +175,17 @@ function App() {
                     />
 
                     <Route
-                      path="/competition/:id/*"
+                      path="/competition/:id"
                       element={
                         (user && <Competition />) || (!user && <SignUp />)
                       }
                     />
 
                     <Route
-                      path="/competition/:id/competition-chat"
+                      path="/competition/:id/overall"
                       element={
-                        <CompetitionChat collectionName="competitions" />
+                        (user && <GeneralInfo />) || (!user && <SignUp />)
                       }
-                    />
-
-                    <Route
-                      path="/readers-clubs/:id/chat"
-                      element={<CompetitionChat collectionName="clubs" />}
                     />
 
                     <Route
@@ -217,8 +201,15 @@ function App() {
                     />
 
                     <Route
-                      path="/readers-clubs/:id/*"
+                      path="/readers-clubs/:id"
                       element={(user && <Club />) || (!user && <SignUp />)}
+                    />
+
+                    <Route
+                      path="/readers-clubs/:id/overall"
+                      element={
+                        (user && <OverallClub />) || (!user && <SignUp />)
+                      }
                     />
 
                     <Route
@@ -238,15 +229,18 @@ function App() {
                       element={(user && <Books />) || (!user && <SignUp />)}
                     />
                   </Routes>
-                </AnimatePresence>
-              </div>
-              <Footer />
-            </BrowserRouter>
-            <ToastContainer />
-          </>
-        )}
-      </>
-    </div>
+                </div>
+
+                {isUsingAdblock && <AdblockAlert />}
+
+                <Footer />
+              </BrowserRouter>
+              <ToastContainer />
+            </>
+          )}
+        </>
+      </div>
+    </LocalizationProvider>
   );
 }
 

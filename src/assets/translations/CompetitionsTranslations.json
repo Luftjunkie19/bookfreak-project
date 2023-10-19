@@ -1,0 +1,14 @@
+{
+  "competitionObject": {
+    "members": {
+      "eng": "Members",
+      "ger": "Mitglieder",
+      "pl": "Członków"
+    },
+    "membersAttending": {
+      "eng": "Members attending",
+      "ger": "teilnehmende Mitglieder",
+      "pl": "uczestniczących członków"
+    }
+  }
+}

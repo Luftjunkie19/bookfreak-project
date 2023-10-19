@@ -1,0 +1,21 @@
+.hero-section {
+  background-image: url("https://assets.website-files.com/62a4f0c942b26049e5a75e3b/63f5696339155d073656f760_Transition%20Gradient%20Bottom.png"),
+    url("https://images.unsplash.com/photo-1580192270066-bed2e3055024?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YmxhY2slMjBib29rfGVufDB8fDB8fHww&w=1000&q=80");
+
+  background-position: bottom left, center center;
+
+  background-repeat: no-repeat, no-repeat;
+
+  background-size: cover, cover;
+}
+
+.book-shadow {
+  box-shadow: 1px 5px 7px 3px rgb(219, 219, 219);
+}
+.snap-inline {
+  scroll-snap-type: inline mandatory;
+}
+
+.snap-inline::-webkit-scrollbar {
+  display: none;
+}

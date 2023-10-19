@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { useReducer } from "react";
 
 import {
   addDoc,
@@ -7,8 +7,8 @@ import {
   doc,
   getFirestore,
   updateDoc,
-} from 'firebase/firestore';
-import { useNavigate } from 'react-router';
+} from "firebase/firestore";
+import { useNavigate } from "react-router";
 
 let initialState = {
   error: null,

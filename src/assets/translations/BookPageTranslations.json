@@ -1,0 +1,92 @@
+{
+  "buttonsTexts": {
+    "edit": {
+      "ger": "Bearbeiten",
+      "eng": "Edit",
+      "pl": "Edytuj"
+    },
+    "delete": {
+      "ger": "Löschen",
+      "eng": "Delete",
+      "pl": "Usuń"
+    },
+    "removeShelf": {
+      "ger": "Ausm Regal loswerden",
+      "eng": "Remove from your shelf",
+      "pl": "Usuń z półki"
+    },
+    "updateStatus": {
+      "ger": "Lesestand aktualisieren",
+      "eng": "Update Reading Status",
+      "pl": "Uaktualnij status czytania"
+    },
+    "addToShelf": {
+      "ger": "Ins Regal stellen",
+      "eng": "Add to your shelf",
+      "pl": "Dodaj do półki"
+    },
+    "rateBook": {
+      "ger": "Bewerte das Buch",
+      "eng": "Rate the book",
+      "pl": "Oceń książkę"
+    },
+    "publishBtn": {
+      "ger": "Veröffentlichen",
+      "eng": "Publish",
+      "pl": "Opublikuj"
+    }
+  },
+  "averageRateText": {
+    "ger": "Durchschnittliche Bewertung",
+    "eng": "Average Rate",
+    "pl": "Średnia ocena"
+  },
+  "shareText": {
+    "ger": "Mitteilen",
+    "eng": "Share",
+    "pl": "Udostępnij"
+  },
+  "addedBy": {
+    "ger": "Hinzugefügt von",
+    "eng": "Added by",
+    "pl": "Dodane przez"
+  },
+  "recensionsTo": {
+    "ger": "Rezensionen von",
+    "eng": "Recensions about",
+    "pl": "Recenzje o"
+  },
+  "recensionLabel": {
+    "ger": "Rezension",
+    "eng": "Recension",
+    "pl": "Recenzja"
+  },
+  "recensionPlaceholder": {
+    "ger": "Rezension schreiben...",
+    "eng": "Enter Recension...",
+    "pl": "Napisz Recenzję..."
+  },
+  "authorText": {
+    "ger": "Autor",
+    "eng": "Author",
+    "pl": "Autor"
+  },
+  "andPersons": {
+    "singlePerson": {
+      "ger": "liebt es.",
+      "eng": "loves it.",
+      "pl": "uwielbia to."
+    },
+
+    "part1": {
+      "ger": "und",
+      "eng": "and",
+      "pl": "and"
+    },
+    "part2": {
+      "ger": "andere Personen lieben es.",
+      "eng": "other persons love it.",
+      "pl": "innych osób uwielbiają to."
+    }
+  }
+}

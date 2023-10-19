@@ -1,0 +1,125 @@
+{
+  "stats": {
+    "booksRead": {
+      "eng": "Books read",
+      "pl": "Przeczytane książki",
+      "ger": "Gelesene Bücher"
+    },
+    "addedBooks": {
+      "eng": "Books added",
+      "pl": "Dodane książki",
+      "ger": "Hinzugefügte Bücher"
+    },
+    "likedBooks": {
+      "eng": "Books liked",
+      "pl": "Polubione książki",
+      "ger": "Bücher, die ich mag"
+    }
+  },
+  "managmentButtons": {
+    "editButton": {
+      "eng": "Edit Profile",
+      "pl": "Edytuj Profil",
+      "ger": "Profil bearbeiten"
+    },
+    "addLinkButton": {
+      "eng": "Add Link",
+      "pl": "Dodaj Link",
+      "ger": "Link Hinzufügen"
+    },
+    "removeUserButton": {
+      "eng": "Remove Account",
+      "pl": "Usuń Konto",
+      "ger": "Konto Löschen"
+    }
+  },
+
+  "description": {
+    "title": {
+      "eng": "Description",
+      "pl": "Opis",
+      "ger": "Beschreibung"
+    },
+    "vacancy": {
+      "eng": "No description yet",
+      "pl": "Brak opisu",
+      "ger": "Keine Beschreibung"
+    }
+  },
+
+  "emptyNotifications": {
+    "links": {
+      "eng": "No links available",
+      "pl": "Brak dostępnych linków",
+      "ger": "Keine Links verfügbar"
+    },
+    "books": {
+      "eng": "No books available",
+      "pl": "Brak dodanych książek",
+      "ger": "Keine hinzugefügte Bücher verfügbar"
+    },
+    "favourited": {
+      "eng": "No favourite books available",
+      "pl": "Brak ulubionych książek",
+      "ger": "Keine beliebte Bücher verfügbar"
+    }
+  },
+
+  "featuresButtons": {
+    "booksButton": {
+      "eng": "Books",
+      "pl": "Książki",
+      "ger": "Bücher"
+    },
+    "socialMediaButton": {
+      "eng": "Social Media",
+      "pl": "Media Społecznościowe",
+      "ger": "Sozialmedien"
+    },
+
+    "readBooksBtn": {
+      "eng": "Read books",
+      "pl": "Przeczytane",
+      "ger": "Gelesen"
+    },
+
+    "favouritesButton": {
+      "eng": "Favourites",
+      "pl": "Ulubione",
+      "ger": "Beliebte"
+    }
+  },
+  "addLinkForm": {
+    "topText": {
+      "eng": "Add Link, so people can contact you !",
+      "pl": "Dodaj link, aby ludzie mieli z Tobą kontakt !",
+      "ger": "Füge ein Link hinzu, mit den Leuten Kontakt zu haben !"
+    },
+    "query": {
+      "eng": "Where would you like to direct to ?",
+      "pl": "Dokąd chcesz przez link przekierować?",
+      "ger": "Wo möchten Sie per Link hinrichten ?"
+    },
+
+    "btnText": {
+      "eng": "Add Link",
+      "pl": "Dodaj link",
+      "ger": "Link Hinzufügen"
+    },
+    "placeHolder": {
+      "eng": "Enter a Link...",
+      "pl": "Wprowadź link...",
+      "ger": "Link eingeben..."
+    },
+    "selectType": {
+      "eng": "Select type",
+      "pl": "Wybierz rodzaj",
+      "ger": "Art Auswählen"
+    }
+  },
+  "messageBtn": {
+    "eng": "Message",
+    "pl": "Napisz",
+    "ger": "Nachricht"
+  }
+}

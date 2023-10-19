@@ -1,7 +1,25 @@
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+    match /users/{id} {
+      allow read: if request.auth.uid != null;
+      allow write, update: if request.auth.uid == id;
     }
+    
+    match /books/{id} {
+      allow write, read: if request.auth != null; // Only authenticated users can write posts
+      allow update: if request.resource.data.createdBy.id == request.auth.uid;
+    }
+
+  match /competitions/{id} {
+      allow write, read: if request.auth != null; // Only authenticated users can write posts
+      allow update: if request.resource.data.createdBy.id == request.auth.uid;
+    }
+
+      match /clubs/{id} {
+      allow write, read: if request.auth != null; // Only authenticated users can write posts
+      allow update: if request.resource.data.createdBy.id == request.auth.uid;
+    }
+
   }
 }

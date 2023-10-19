@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   collection,
@@ -7,7 +11,7 @@ import {
   orderBy,
   query,
   where,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 
 export function useCollection(col, _q, _orderedBy) {
   const [documents, setDocuments] = useState([]);
@@ -19,17 +23,17 @@ export function useCollection(col, _q, _orderedBy) {
   const orderedBy = useRef(_orderedBy).current;
 
   let ref = collection(myAuth, col);
-  if (Query) {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    ref = query(ref, where(...Query));
+  if (Query && orderedBy) {
+    ref = query(ref, where(...Query), orderBy(...orderedBy));
   }
 
   if (orderedBy) {
     ref = query(ref, orderBy(...orderedBy));
   }
 
-  if (Query && orderedBy) {
-    ref = query(ref, where(...Query), orderBy(...orderedBy));
+  if (Query) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ref = query(ref, where(...Query));
   }
 
   useEffect(() => {
@@ -41,6 +45,7 @@ export function useCollection(col, _q, _orderedBy) {
           snapshot.docs.forEach((doc) => {
             results.push({ ...doc.data(), id: doc.id });
           });
+
           setDocuments(results);
         },
         (error) => {

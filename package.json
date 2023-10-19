@@ -3,17 +3,32 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@material-tailwind/react": "^2.0.7",
+    "@mui/base": "^5.0.0-beta.16",
+    "@mui/material": "^5.14.10",
+    "@mui/styled-engine-sc": "^5.14.10",
+    "@mui/x-date-pickers": "^6.15.0",
+    "@mui/x-date-pickers-pro": "^6.15.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "adblock-detect-react": "^1.1.0",
+    "animate.css": "^4.1.1",
     "date-fns": "^2.29.3",
+    "dayjs": "^1.11.10",
     "firebase": "^9.17.1",
+    "flowbite": "^1.7.0",
+    "flowbite-react": "^0.5.0",
     "framer-motion": "^10.12.4",
     "react": "^18.2.0",
+    "react-animated-css": "^1.2.1",
     "react-avatar-editor": "^13.0.0",
     "react-dom": "^18.2.0",
     "react-id-generator": "^3.0.2",
+    "react-lazy-load": "^4.0.1",
     "react-phone-input-2": "^2.15.1",
     "react-recaptcha": "^2.3.10",
     "react-redux": "^8.0.5",
@@ -21,7 +36,10 @@
     "react-scripts": "5.0.1",
     "react-select": "^5.7.0",
     "react-toastify": "^9.1.1",
+    "react-verification-input": "^3.3.1",
     "redux": "^4.2.1",
+    "styled-components": "^5.3.11",
+    "uniqid": "^5.4.0",
     "use-clipboard-copy": "^0.2.0",
     "web-vitals": "^2.1.4"
   },
@@ -48,5 +66,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "daisyui": "^3.2.1",
+    "postcss": "^8.4.25",
+    "tailwindcss": "^3.3.2"
   }
 }

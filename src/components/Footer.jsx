@@ -1,88 +1,52 @@
-import "./Footer.css";
-
 import React from "react";
 
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaTiktok,
-  FaTwitch,
-  FaTwitter,
-  FaYoutube,
-} from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <div className="footer">
-      <ul>
-        <li>
-          <h4>Wanna contact us in other way?</h4>
-        </li>
-
-        <li>
-          <Link
-            to="https://www.facebook.com/Lukas.Borkowski.1566/"
-            target="_blank"
-            className="footer-link fb"
-          >
-            <FaFacebookF /> Facebook
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="https://twitter.com/luftjunkie"
-            target="_blank"
-            className="footer-link twitter"
-          >
-            <FaTwitter /> Twitter
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="https://www.instagram.com/luftjunkie_19/?hl=de"
-            target="_blank"
-            className="footer-link instagram"
-          >
-            <FaInstagram /> Instagram
-          </Link>
-        </li>
-      </ul>
-
-      <ul>
-        <li>
-          <h4>Looking for entertainment?</h4>
-        </li>
-        <li>
-          <Link
-            to="https://www.youtube.com/@luftjunkie1573/featured"
-            target="_blank"
-            className="footer-link yt"
-          >
-            <FaYoutube /> Youtube
-          </Link>
-        </li>
-
-        <li>
-          <Link
-            to="https://www.twitch.tv/luftjunkie_19"
-            target="_blank"
-            className="footer-link twitch"
-          >
-            <FaTwitch /> Twitch
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="https://www.tiktok.com/@luftjunkie_19"
-            target="_blank"
-            className="footer-link tiktok"
-          >
-            <FaTiktok /> Tiktok
-          </Link>
-        </li>
-      </ul>
-    </div>
+    <footer className="footer grid-rows-2 p-10 bg-primeColor text-white">
+      <div>
+        <span className="footer-title">Services</span>
+        <Link className="link link-hover">Branding</Link>
+        <Link className="link link-hover">Design</Link>
+        <Link className="link link-hover">Marketing</Link>
+        <Link className="link link-hover">Advertisement</Link>
+      </div>
+      <div>
+        <span className="footer-title">Company</span>
+        <Link className="link link-hover">About us</Link>
+        <Link className="link link-hover">Contact</Link>
+        <Link className="link link-hover">Jobs</Link>
+        <Link className="link link-hover">Press kit</Link>
+      </div>
+      <div>
+        <span className="footer-title">Legal</span>
+        <Link className="link link-hover">Terms of use</Link>
+        <Link className="link link-hover">Privacy policy</Link>
+        <Link className="link link-hover">Cookie policy</Link>
+      </div>
+      <div>
+        <span className="footer-title">Social</span>
+        <Link className="link link-hover">Twitter</Link>
+        <Link className="link link-hover">Instagram</Link>
+        <Link className="link link-hover">Facebook</Link>
+        <Link className="link link-hover">Github</Link>
+      </div>
+      <div>
+        <span className="footer-title">Explore</span>
+        <Link className="link link-hover">Features</Link>
+        <Link className="link link-hover">Enterprise</Link>
+        <Link className="link link-hover">Security</Link>
+        <Link className="link link-hover">Pricing</Link>
+      </div>
+      <div>
+        <span className="footer-title">Apps</span>
+        <Link className="link link-hover">Mac</Link>
+        <Link className="link link-hover">Windows</Link>
+        <Link className="link link-hover">iPhone</Link>
+        <Link className="link link-hover">Android</Link>
+      </div>
+    </footer>
   );
 }
 

@@ -1,48 +1,113 @@
-import "./Login.css";
-import "./Create.css";
+import './stylings/datepicker.css';
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useRef,
+  useState,
+} from 'react';
 
-import { Timestamp } from "firebase/firestore";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { motion } from "framer-motion";
-import { FaBook, FaTrophy, FaUsers } from "react-icons/fa";
-import generateUniqueId from "react-id-generator";
-import { useNavigate } from "react-router";
-import CreatableSelect from "react-select/creatable";
-import { toast } from "react-toastify";
+import {
+  arrayUnion,
+  Timestamp,
+} from 'firebase/firestore';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import { motion } from 'framer-motion';
+import AvatarEditor from 'react-avatar-editor';
+import {
+  FaBook,
+  FaImage,
+  FaWindowClose,
+} from 'react-icons/fa';
+import { GiSwordsPower } from 'react-icons/gi';
+import { RiTeamFill } from 'react-icons/ri';
+import generateUniqueId from 'react-id-generator';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import CreatableSelect from 'react-select/creatable';
+import { toast } from 'react-toastify';
+import uniqid from 'uniqid';
 
-import Loader from "../components/Loader";
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useCollection } from "../hooks/useCollection";
-import { useFirestore } from "../hooks/useFirestore";
-import { useOrderedCollection } from "../hooks/useOrderedCollection";
-import { usePushNotifications } from "../hooks/usePushNotifications";
+import {
+  Alert,
+  Autocomplete,
+  TextField,
+} from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
+
+import {
+  addOptions,
+  bookCategories,
+  competitionTypes,
+} from '../assets/CreateVariables';
+import alertMessages from '../assets/translations/AlertMessages.json';
+import translations from '../assets/translations/FormsTranslations.json';
+import reuseableTranslations
+  from '../assets/translations/ReusableTranslations.json';
+import Loader from '../components/Loader';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useCollection } from '../hooks/useCollection';
+import { useFirestore } from '../hooks/useFirestore';
+import { useOrderedCollection } from '../hooks/useOrderedCollection';
 
 function Create() {
-  const [author, setAuthor] = useState("");
-  const [title, setTitle] = useState("");
-  const [pagesNumber, setPagesNumber] = useState(0);
-  const [readPages, setReadPages] = useState(0);
-  const [cover, setCover] = useState(null);
-  const [error, setError] = useState("");
-  const [isNotCompleted, setIsNotCompleted] = useState(true);
-  const [isPending, setIsPending] = useState(false);
-  const [category, setCategory] = useState("");
-  const [selectedToAdd, setSelectedToAdd] = useState("");
-  const { addDocument } = useFirestore(
-    selectedToAdd.toLowerCase() === "" ? "books" : selectedToAdd.toLowerCase()
+  const [book, setBook] = useState({
+    author: "",
+    title: "",
+    pagesNumber: 1,
+    category: null,
+    bookCover: null,
+  });
+
+  const [competition, setCompetition] = useState({
+    competitionTitle: "",
+    competitionsName: "",
+    expiresAt: null,
+    description: "",
+  });
+
+  const [readersClub, setReadersClub] = useState({
+    clubsName: "",
+    clubLogo: null,
+    description: "",
+    requiredPagesRead: 0,
+  });
+
+  const selectedLanguage = useSelector(
+    (state) => state.languageSelection.selectedLangugage
   );
-  const { documents } = useCollection("users");
-  const { orderedDocuments } = useOrderedCollection("competitions");
-  const { user } = useAuthContext();
-  const recensionArea = useRef();
-  const [competitionsName, setCompetitionsName] = useState("");
-  const [description, setDescription] = useState("");
+  const [usersReadPages, setUsersReadPages] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [editCover, setEditCover] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [radius, setRadius] = useState(0);
+  const [error, setError] = useState("");
+  const [isPending, setIsPending] = useState(false);
+  const [selectedToAdd, setSelectedToAdd] = useState("");
   const [attachedUsers, setAttachedUsers] = useState([]);
-  const { pushNotification } = usePushNotifications();
-  const [isRecommendable, setIsRecommendable] = useState(false);
-  const [expirationDate, setExpirationDate] = useState();
+  const { addDocument } = useFirestore(
+    selectedToAdd?.toLowerCase().trim() === ""
+      ? "books"
+      : selectedToAdd?.toLowerCase()
+  );
+  const { updateDocument } = useFirestore("users");
+
+  const { documents } = useCollection("users");
+  const { orderedDocuments } = useOrderedCollection("clubs");
+  const { user } = useAuthContext();
+  const editorRef = useRef();
+
+  const clubsOwned = orderedDocuments.filter(
+    (doc) => doc.createdBy.id === user.uid
+  );
+
+  const clubsJoined = orderedDocuments.map((doc) => {
+    return doc.users.filter((member) => member.value.id === user.uid);
+  });
 
   let notCurrentUsers = documents
     .filter((doc) => {
@@ -62,74 +127,83 @@ function Create() {
       };
     });
 
-  const addOptions = [
-    { value: "Books", label: "Books" },
-    { value: "Competitions", label: "Competitions" },
-    { value: "Clubs", label: "Clubs" },
-  ];
-
-  const bookCategories = [
-    { value: "Fiction", label: "Fiction" },
-    { value: "Non-fiction", label: "Non-fiction" },
-    { value: "Crime", label: "Crime" },
-    {
-      value: "Science fiction and fantasy",
-      label: "Science fiction and fantasy",
-    },
-    {
-      value: "Children's and young adult literature",
-      label: "Children's and young adult literature",
-    },
-    {
-      value: "Travel and adventure literature",
-      label: "Travel and adventure literature",
-    },
-    {
-      value: "Popular science and popular history",
-      label: "Popular science and popular history",
-    },
-    {
-      value: "Self-help and personal development",
-      label: "Self-help and personal development",
-    },
-    {
-      value: "History and culture",
-      label: "History and culture",
-    },
-    { value: "Art and design", label: "Art and design" },
-    { value: "Business and economics", label: "Business and economics" },
-    { value: "Psychology and philosophy", label: "Psychology and philosophy" },
-    { value: "Health and medicine", label: "Health and medicine" },
-    { value: "Erotic literature", label: "Erotic literature" },
-  ];
-
-  const competitionTypes = [
-    { value: "First read, first served", label: "First read, first served" },
-    {
-      value: "Lift others, rise",
-      label: "Lift others, rise",
-    },
-    { value: "Teach to fish", label: "Teach to fish" },
-  ];
-
-  useEffect(() => {
-    if (pagesNumber === readPages) {
-      setIsNotCompleted(false);
-      recensionArea.current.disabled = isNotCompleted;
-      recensionArea.current.placeholder = "Now you can type your recension 😄";
-    } else {
-      setIsNotCompleted(true);
-      recensionArea.current.disabled = isNotCompleted;
-      recensionArea.current.placeholder =
-        "So long the book won't have the book read, so long will you wait to give a recension 😋.";
-      recensionArea.current.value = "";
-      setIsRecommendable(false);
-    }
-  }, [recensionArea, readPages, pagesNumber, isNotCompleted]);
-
-  const condition = readPages === pagesNumber;
-
   const navigate = useNavigate();
+
+  const handleSelect = (e) => {
+    setError(null);
+    setEditCover(null);
+    setIsPending(false);
+
+    let selected = e.target.files[0];
+
+    if (selected.size > 200000) {
+      setError(alertMessages.notficactions.wrong.tooBigFile[selectedLanguage]);
+      setEditCover(null);
+      return;
+    }
+
+    if (!selected.type.includes("image")) {
+      setError(alertMessages.notficactions.wrong.inAppropriateFile[selectedLanguage]);
+      setEditCover(null);
+      return;
+    }
+
+    if (selected === null) {
+      setError(
+        alertMessages.notifications.wrong.selectAnything[selectedLanguage]
+      );
+      setEditCover(null);
+      return;
+    }
+
+    if (selected.type.includes("image")) {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(selected);
+      fileReader.onload = () => {
+        setEditCover(fileReader.result);
+      };
+      setError(null);
+      return;
+    }
+  };
+
+  const handleSaveCover = async () => {
+    const editorImg = editorRef.current
+      .getImageScaledToCanvas()
+      .toDataURL("image/jpg");
+
+    const byteCharacters = atob(editorImg.split(",")[1]);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+
+    const storageRef = ref(
+      getStorage(),
+      `book-covers/${user.uid}/${
+        book.title ? book.title : `book${uniqid()}`
+      }.jpg`
+    );
+    await uploadBytes(storageRef, byteArray);
+    const url = await getDownloadURL(storageRef);
+    console.log(url);
+
+    if (selectedToAdd.toLowerCase() === "books") {
+      setBook((book) => {
+        book.bookCover = url;
+        return book;
+      });
+    } else {
+      setReadersClub((club) => {
+        club.clubLogo = url;
+        return club;
+      });
+    }
+
+    setEditCover(null);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,45 +211,53 @@ function Create() {
     setIsPending(true);
 
     try {
-      if (selectedToAdd === "Books") {
-        const uploadPath = `cover/uid${user.uid}/${cover.name}`;
-
-        const storage = getStorage();
-
-        const image = ref(storage, uploadPath);
-
-        const snapshot = await uploadBytes(image, cover);
-        const photoURL = await getDownloadURL(image);
-
+      if (selectedToAdd.toLowerCase() === "books") {
         const uniqueId = generateUniqueId("book-");
 
-        if (readPages > pagesNumber) {
+        if (book.category.trim() === "") {
           setError(
-            "The amount of read pages cannot be higher than the amount of overall pages of the book."
+            alertMessages.notifications.wrong.emptyMessage[selectedLanguage]
           );
           setIsPending(false);
-          toast.dark("Tell me, how have you done it?");
+          toast.error(
+            alertMessages.notifications.wrong.emptyMessage[selectedLanguage]
+          );
           return;
         }
 
-        if (category.trim() === "") {
-          setError("Category field is empty.");
-          setIsPending(false);
-          toast.error("You cannot leave category field empty");
+        if (book.pagesNumber < usersReadPages) {
+          setError(
+            alertMessages.notifications.wrong.outOfSpaceReading[
+              selectedLanguage
+            ]
+          );
           return;
         }
 
-        const recensionContent = recensionArea.current.value;
-
-        await addDocument({
-          author,
-          title,
-          pagesNumber,
-          readPages,
-          photoURL,
-          category,
-          isRecommendable,
-          favouriteCount: 0,
+        const bookElement = {
+          author: book.author,
+          title: book.title,
+          pagesNumber: book.pagesNumber,
+          photoURL: book.bookCover,
+          category: book.category,
+          likesData: {
+            likesAmount: 0,
+            likedBy: [],
+          },
+          readers: [
+            {
+              displayName: user.displayName,
+              email: user.email,
+              photoURL: user.photoURL,
+              startedReading: hasStarted,
+              hasFinished: usersReadPages === book.pagesNumber,
+              pagesRead: usersReadPages,
+              bookRate: 0,
+              dateOfFinish: isCompleted ? Timestamp.fromDate(new Date()) : null,
+              recension: "",
+              id: user.uid,
+            },
+          ],
           createdBy: {
             displayName: user.displayName,
             email: user.email,
@@ -183,29 +265,25 @@ function Create() {
             createdAt: Timestamp.fromDate(new Date()),
             id: user.uid,
           },
-          recension: {
-            content: recensionContent,
-            timeOfRecension: Timestamp.fromDate(new Date()),
-          },
           id: uniqueId,
-        });
+        };
 
-        toast.success("Book added successfully");
+        console.log(bookElement);
+
+        await addDocument(bookElement);
+
+        toast.success(
+          alertMessages.notifications.successfull.create[selectedLanguage]
+        );
       }
 
-      if (selectedToAdd === "Competitions") {
-        if (competitionsName.trim() === "" || attachedUsers.length < 2) {
-          setIsPending(false);
-          toast.error("At least 2 users needed to create a club.");
-          return;
-        }
-
+      if (selectedToAdd.toLowerCase() === "competitions") {
         const uniqueId = generateUniqueId("competition-");
 
         await addDocument({
-          competitionTitle: title,
-          competitionsName,
-          expiresAt: Timestamp.fromDate(expirationDate),
+          competitionTitle: competition.competitionTitle,
+          competitionsName: competition.competitionsName,
+          expiresAt: Timestamp.fromDate(new Date(competition.expiresAt)),
           messages: [],
           users: [
             {
@@ -216,9 +294,8 @@ function Create() {
                 photoURL: user.photoURL,
               },
             },
-            ...attachedUsers,
           ],
-          description,
+          description: competition.description,
           createdBy: {
             displayName: user.displayName,
             email: user.email,
@@ -230,40 +307,40 @@ function Create() {
         });
 
         attachedUsers.map(async (member) => {
-          await pushNotification({
-            notificationContent: `You've been added by ${user.displayName} to ${title} competition.`,
-            directedTo: member.value.id,
-            linkTo: `/competitions`,
-            isRead: false,
-            notificationTime: Timestamp.fromDate(new Date()),
-            changeConcering: user.photoURL,
+          await updateDocument(member.value.uid, {
+            notifications: arrayUnion({
+              notificationContent: `You've been invited by ${user.displayName} to join the ${competition.competitionsName} competition.`,
+              directedTo: member.value.id,
+              linkTo: `/competitions`,
+              isRead: false,
+              notificationId: uniqid(),
+              notificationTime: Timestamp.fromDate(new Date()),
+              addedTo: competition.competitionsName,
+            }),
           });
         });
       }
 
-      if (selectedToAdd === "Clubs") {
-        if (attachedUsers.length < 1) {
+      if (selectedToAdd.toLowerCase() === "clubs") {
+        if (
+          clubsOwned.length > 0 ||
+          clubsJoined.filter((club) => club.length !== 0).length > 0
+        ) {
           setIsPending(false);
-          toast.error("Nie Pojebało Cię synu?");
+          toast.error(
+            alertMessages.notifications.wrong.loyality[selectedLanguage]
+          );
           return;
         }
-
-        const uploadPath = `clubLogo/uid${user.uid}/${cover.name}`;
-
-        const storage = getStorage();
-
-        const image = ref(storage, uploadPath);
-
-        const snapshot = await uploadBytes(image, cover);
-        const photoURL = await getDownloadURL(image);
 
         const uniqueId = generateUniqueId("readersClub-");
 
         await addDocument({
-          clubsName: title,
-          clubLogo: photoURL,
+          clubsName: readersClub.clubsName,
+          clubLogo: readersClub.clubLogo,
           messages: [],
-          description,
+          description: readersClub.description,
+          requiredPagesRead: readersClub.requiredPagesRead,
           users: [
             {
               label: user.displayName,
@@ -273,7 +350,6 @@ function Create() {
                 photoURL: user.photoURL,
               },
             },
-            ...attachedUsers,
           ],
           createdBy: {
             displayName: user.displayName,
@@ -286,13 +362,16 @@ function Create() {
         });
 
         attachedUsers.map(async (member) => {
-          await pushNotification({
-            notificationContent: `You've been added by ${user.displayName} to ${title} club.`,
-            directedTo: member.value.id,
-            linkTo: `/readers-clubs`,
-            isRead: false,
-            notificationTime: Timestamp.fromDate(new Date()),
-            changeConcering: user.photoURL,
+          await updateDocument(member.value.id, {
+            notifications: arrayUnion({
+              notificationContent: `You've been invited by ${user.displayName} to ${readersClub.clubsName} club.`,
+              directedTo: member.value.id,
+              linkTo: `/readers-clubs`,
+              notificationId: uniqid(),
+              isRead: false,
+              notificationTime: Timestamp.fromDate(new Date()),
+              addedTo: readersClub.clubsName,
+            }),
           });
         });
       }
@@ -301,295 +380,573 @@ function Create() {
       setError(null);
       navigate("/");
     } catch (error) {
+      console.log(error);
       setError(error.message);
     }
   };
 
-  const handleSelect = (e) => {
-    setCover(null);
-    setIsPending(false);
-
-    let selected = e.target.files[0];
-
-    if (selected.size > 200000) {
-      setError("Too big file's been uploaded.");
-      return;
-    }
-
-    if (!selected.type.includes("image")) {
-      setError("Inappropriate type of file.");
-      return;
-    }
-
-    if (!selected) {
-      setError("Select any image, you have.");
-      return;
-    }
-
-    setCover(selected);
-    setError(null);
-  };
-
   return (
-    <div className="side">
+    <div className="min-h-screen h-full w-full flex flex-col justify-center items-center">
+      {editCover && (
+        <div class="h-screen bg-imgCover w-screen fixed top-0 left-0 z-[9999]">
+          <button
+            className="btn absolute top-0 right-0 m-2"
+            onClick={() => {
+              setEditCover(null);
+            }}
+          >
+            <FaWindowClose /> {reuseableTranslations.closeBtn[selectedLanguage]}
+          </button>
+
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <AvatarEditor
+              image={editCover}
+              ref={editorRef}
+              width={300}
+              height={300}
+              borderRadius={radius}
+              color={[0, 0, 0, 0.5]}
+              scale={zoomLevel}
+            />
+
+            <label className="flex flex-col m-2">
+              <span>Zoom level: x{zoomLevel}</span>
+              <input
+                className="range range-info"
+                type="range"
+                min={1}
+                max={3}
+                step={0.1}
+                value={zoomLevel}
+                onChange={(e) => setZoomLevel(+e.target.value)}
+              />
+              <div className="w-full flex justify-between text-xs px-2">
+                <span>|</span>
+                <span>|</span>
+                <span>|</span>
+                <span>|</span>
+                <span>|</span>
+              </div>
+            </label>
+
+            <label className="flex flex-col m-2">
+              <span>Radius level: {radius / 100}x</span>
+              <input
+                className="range range-info"
+                type="range"
+                min={0}
+                max={150}
+                step={1.5}
+                value={radius}
+                onChange={(e) => setRadius(+e.target.value)}
+              />
+              <div className="w-full flex justify-between text-xs px-2">
+                <span>|</span>
+                <span>|</span>
+                <span>|</span>
+                <span>|</span>
+                <span>|</span>
+              </div>
+            </label>
+
+            <div className="flex justify-center items-center">
+              <button
+                className="btn bg-accColor mt-4 text-white"
+                onClick={handleSaveCover}
+              >
+                {reuseableTranslations.saveBtn[selectedLanguage]}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        className="w-full h-full"
       >
-        <div className="search-container">
-          <div>
-            <h2>Which part would you like to broaden?</h2>
+        <div className="flex justify-around items-center h-full w-full sm:flex-col xl:flex-row">
+          <div className="flex flex-col gap-2 p-4 sm:w-full xl:w-1/2 justify-center">
+            <h2>{translations.selectionQuery[selectedLanguage]}?</h2>
 
-            <CreatableSelect
-              isClearable
-              isSearchable
+            <Autocomplete
+              renderInput={(params) => (
+                <TextField {...params} label="Form type" />
+              )}
               options={addOptions}
-              onChange={(e) => setSelectedToAdd(e.value)}
+              className="sm:w-full lg:w-3/4 xl:w-1/2"
+              onChange={(e, value) => {
+                setSelectedToAdd(value);
+                console.log(selectedToAdd);
+              }}
+              onInputChange={(e, value) => {
+                setSelectedToAdd(value);
+                console.log(selectedToAdd);
+              }}
             />
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            style={
-              selectedToAdd === "Books"
-                ? { display: "flex" }
-                : { display: "none" }
-            }
-          >
-            <h2>
-              Add new Book <FaBook />
-            </h2>
+          <div className="p-4 sm:w-full lg:w-3/4 xl:w-1/2">
+            {selectedToAdd === "Books" && (
+              <>
+                <form
+                  onSubmit={handleSubmit}
+                  className="bg-accColor text-white p-6 rounded-lg w-full"
+                >
+                  <div className="flex flex-col justify-center items-center w-full gap-2 p-2">
+                    <FaBook className="text-6xl font-bold" />
+                    <p className="text-center">
+                      {translations.topText.books[selectedLanguage]}
+                    </p>
+                  </div>
 
-            <label>
-              <span>Author:</span>
-              <input
-                type="text"
-                required
-                onChange={(e) => setAuthor(e.target.value)}
-              />
-            </label>
+                  <div className="grid sm:grid-cols-1 xl:grid-cols-2 gap-2">
+                    <label className="flex flex-col">
+                      <span>
+                        {translations.bookTitleInput.label[selectedLanguage]}:
+                      </span>
+                      <input
+                        required
+                        type="text"
+                        className="input border-none outline-none w-full py-4 px-1"
+                        onChange={(e) =>
+                          setBook((book) => {
+                            book.title = e.target.value;
+                            return book;
+                          })
+                        }
+                        placeholder={`${translations.bookTitleInput.placeholder[selectedLanguage]}`}
+                      />
+                    </label>
+                    <label className="flex flex-col">
+                      <span>
+                        {translations.bookAuthorInput.label[selectedLanguage]}:
+                      </span>
+                      <input
+                        required
+                        type="text"
+                        onChange={(e) =>
+                          setBook((book) => {
+                            book.author = e.target.value;
+                            return book;
+                          })
+                        }
+                        className="input border-none outline-none w-full py-4 px-1"
+                        placeholder={`${translations.bookAuthorInput.placeholder[selectedLanguage]}`}
+                      />
+                    </label>
 
-            <label>
-              <span>Title:</span>
-              <input
-                type="text"
-                required
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </label>
+                    <label className="flex flex-col">
+                      <span>
+                        {translations.bookCategoryInput.label[selectedLanguage]}
+                        :
+                      </span>
 
-            <label>
-              <span>Category:</span>
-              <CreatableSelect
-                required
-                className="select-input"
-                isClearable
-                isSearchable
-                options={bookCategories}
-                onChange={(e) => {
-                  const selectedOption =
-                    e && e.value ? e : { value: "", label: "" };
-                  setCategory(selectedOption.value);
-                }}
-              />
-            </label>
+                      <Autocomplete
+                        className="text-white"
+                        sx={{
+                          color: "white",
+                          borderColor: "white",
+                          colorAdjust: "white",
+                        }}
+                        options={bookCategories}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label={`${translations.bookCategoryInput.label[selectedLanguage]}`}
+                          />
+                        )}
+                        onChange={(e, value) => {
+                          setBook((book) => {
+                            book.category = value;
+                            return book;
+                          });
+                        }}
+                        onInputChange={(e, value) => {
+                          setBook((book) => {
+                            book.category = value;
+                            return book;
+                          });
+                        }}
+                      />
+                    </label>
+                    <label className="flex flex-col">
+                      <span>
+                        {translations.selectImgBtn.label[selectedLanguage]}:
+                      </span>
+                      <div className="flex items-center justify-center">
+                        <input
+                          required
+                          type="file"
+                          onChange={handleSelect}
+                          className="hidden"
+                        />
+                        <p className="btn btn-wide bg-primeColor text-white border-none hover:bg-lime-700">
+                          {translations.selectImgBtn.text[selectedLanguage]}
+                          <FaImage />
+                        </p>
+                      </div>
+                    </label>
 
-            <label>
-              <span>Pages:</span>
-              <input
-                type="number"
-                min={1}
-                required
-                onChange={(e) => setPagesNumber(+e.target.value)}
-              />
-            </label>
+                    <label className="flex flex-col">
+                      <span>
+                        {translations.pagesAmountInput.label[selectedLanguage]}:
+                      </span>
 
-            <label>
-              <span>Read pages:</span>
-              <input
-                type="number"
-                min={0}
-                required
-                onChange={(e) => setReadPages(+e.target.value)}
-              />
-            </label>
+                      <input
+                        min={0}
+                        required
+                        type="number"
+                        onChange={(e) =>
+                          setBook((book) => {
+                            book.pagesNumber = +e.target.value;
+                            return book;
+                          })
+                        }
+                        placeholder={`${translations.pagesAmountInput.placeholder[selectedLanguage]}`}
+                        className="input border-none outline-none w-full py-4 px-1"
+                      />
+                    </label>
 
-            <label>
-              <span>Recension:</span>
-              <textarea ref={recensionArea}></textarea>
-            </label>
+                    <div className="form-control justify-center">
+                      <label className="label cursor-pointer">
+                        <span className="label-text">
+                          {translations.hasStarted.query[selectedLanguage]}?
+                        </span>
 
-            <label>
-              <span>Cover: </span>
-              <input type="file" required onChange={handleSelect} />
-            </label>
+                        <input
+                          type="checkbox"
+                          className="checkbox"
+                          onChange={(e) => {
+                            setHasStarted(e.target.checked);
+                          }}
+                        />
+                      </label>
+                    </div>
+                    {hasStarted && (
+                      <>
+                        <div className="form-control justify-center">
+                          <label className="flex flex-col">
+                            <span className="label-text">
+                              {
+                                translations.readPagesInput.label[
+                                  selectedLanguage
+                                ]
+                              }
+                              ?
+                            </span>
+                            <input
+                              className="input border-none outline-none w-full py-4 px-1"
+                              type="number"
+                              value={usersReadPages}
+                              min={0}
+                              max={book.pagesNumber}
+                              onChange={(e) => {
+                                if (+e.target.value === book.pagesNumber) {
+                                  setIsCompleted(true);
+                                  return;
+                                }
 
-            {condition && (
-              <div>
-                <div className="condition-area">
-                  <h2>Is this book recomendable?</h2>
-                  <div className="pages-buttons">
-                    <button
-                      className={`btn yes ${isRecommendable ? "active" : ""}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsRecommendable(true);
-                      }}
-                    >
-                      Yes
-                    </button>
-                    <button
-                      className={`btn no ${!isRecommendable ? "active" : ""}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsRecommendable(false);
-                      }}
-                    >
-                      No
+                                if (+e.target.value > book.pagesNumber) {
+                                  setIsCompleted(false);
+                                  setUsersReadPages(book.pagesNumber);
+                                  return;
+                                }
+
+                                setUsersReadPages(+e.target.value);
+                              }}
+                            />
+                          </label>
+                        </div>
+
+                        <div className="form-control justify-center">
+                          <label className="label cursor-pointer">
+                            <span className="label-text">
+                              {translations.hasFinished.query[selectedLanguage]}
+                              ?
+                            </span>
+                            <input
+                              type="checkbox"
+                              className="checkbox"
+                              onChange={(e) => {
+                                setIsCompleted(e.target.checked);
+                                if (e.target.checked) {
+                                  setUsersReadPages(book.pagesNumber);
+                                } else {
+                                  setUsersReadPages(0);
+                                }
+                              }}
+                            />
+                          </label>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="flex w-full justify-center items-center my-4">
+                    <button className="btn sm:w-full md:w-1/2 bg-primeColor">
+                      {translations.submit[selectedLanguage]}
                     </button>
                   </div>
+
+                  {error && (
+                    <Alert className="bg-transparent" severity="error">
+                      {error}
+                    </Alert>
+                  )}
+                </form>
+              </>
+            )}
+            {selectedToAdd === "Competitions" && (
+              <form
+                onSubmit={handleSubmit}
+                className="bg-accColor text-white p-6 rounded-lg sm:w-full"
+              >
+                <div className="flex flex-col justify-center items-center gap-2 py-4 mb-2">
+                  <GiSwordsPower className="text-6xl font-semibold" />
+                  <p className="text-center">
+                    {translations.topText.competitions[selectedLanguage]}
+                  </p>
+                </div>
+
+                <div className="flex mb-4 w-full justify-around items-center sm:flex-col lg:flex-row gap-2">
+                  <label className="flex flex-col sm:w-full xl:w-2/5">
+                    <span>
+                      {translations.bookTitleInput.label[selectedLanguage]}:
+                    </span>
+                    <input
+                      type="text"
+                      required
+                      className="input border-none outline-none w-full py-4 px-1"
+                      placeholder={`${translations.bookTitleInput.placeholder[selectedLanguage]}`}
+                      onChange={(e) =>
+                        setCompetition((competition) => {
+                          competition.competitionTitle = e.target.value;
+                          return competition;
+                        })
+                      }
+                    />
+                  </label>
+
+                  <label className="flex flex-col gap-2 sm:w-full xl:w-2/5">
+                    <span>
+                      {translations.expirationDateInput.label[selectedLanguage]}
+                      :
+                    </span>
+
+                    <DatePicker
+                      label={`${translations.expirationDateInput.label[selectedLanguage]}`}
+                      className="myDatePicker w-full"
+                      sx={{
+                        svg: { color: "#fff" },
+                        input: { color: "#fff" },
+                      }}
+                      onChange={(newValue) => {
+                        console.log(new Date(newValue.$d));
+                        setCompetition((competition) => {
+                          competition.expiresAt = new Date(newValue.$d);
+                          return competition;
+                        });
+                      }}
+                    />
+                  </label>
+                </div>
+                <div className="flex w-full justify-around items-center sm:flex-col lg:flex-row gap-2">
+                  <label className="flex flex-col sm:w-full xl:w-2/5">
+                    <span>
+                      {translations.membersInput.label[selectedLanguage]}:
+                    </span>
+                    <CreatableSelect
+                      className="text-black w-full"
+                      isMulti
+                      isClearable
+                      isSearchable
+                      options={notCurrentUsers}
+                      onChange={(e) => {
+                        setAttachedUsers(e);
+                      }}
+                    />
+                  </label>
+
+                  <label className="sm:w-full xl:w-2/5">
+                    <span>
+                      {translations.competitionCategory.label[selectedLanguage]}
+                      :
+                    </span>
+                    <CreatableSelect
+                      className="text-black w-full"
+                      options={competitionTypes}
+                      onChange={(e) => {
+                        setCompetition((competition) => {
+                          competition.competitionsName = e.value;
+                          return competition;
+                        });
+                      }}
+                    />
+                  </label>
+                </div>
+
+                <label className="flex flex-col">
+                  <span>
+                    {translations.descriptionTextarea.label[selectedLanguage]}:
+                  </span>
+                  <textarea
+                    className="outline-none h-48 resize-none py-1 rounded-lg"
+                    placeholder={`${translations.descriptionTextarea.placeholder[selectedLanguage]}`}
+                    onChange={(e) =>
+                      setCompetition((competition) => {
+                        competition.description = e.target.value;
+                        return competition;
+                      })
+                    }
+                  ></textarea>
+                </label>
+
+                <div className="flex justify-center items-center my-2 p-2 w-full ">
+                  <button className="btn sm:w-full md:w-1/2">
+                    {translations.submit[selectedLanguage]}
+                  </button>
+                </div>
+                {error && (
+                  <Alert className="bg-transparent" severity="error">
+                    {error}
+                  </Alert>
+                )}
+              </form>
+            )}
+
+            {selectedToAdd === "Clubs" && (
+              <form
+                onSubmit={handleSubmit}
+                className="bg-accColor text-white p-6 rounded-lg"
+              >
+                <div className="flex flex-col justify-center items-center p-4">
+                  <RiTeamFill className="text-4xl" />
+                  <h2 className="text-2xl text-center py-2">
+                    {translations.topText.clubs[selectedLanguage]}
+                  </h2>
+                  <p className="text-center">
+                    {translations.topText.clubs.underText[selectedLanguage]}
+                  </p>
+                </div>
+
+                <div className="flex w-full flex-wrap justify-around items-center gap-2">
+                  <label className="flex flex-col sm:w-full lg:w-2/5">
+                    <span>
+                      {translations.clubsNameInput.label[selectedLanguage]}:
+                    </span>
+                    <input
+                      required
+                      type="text"
+                      className="input border-none outline-none w-full py-4 px-1"
+                      placeholder={`${translations.clubsNameInput.placeholder[selectedLanguage]}`}
+                      onChange={(e) =>
+                        setReadersClub((club) => {
+                          club.clubsName = e.target.value;
+                          return club;
+                        })
+                      }
+                    />
+                  </label>
+                  <label className="flex flex-col sm:w-full lg:w-2/5">
+                    <span>
+                      {" "}
+                      {translations.membersInput.label[selectedLanguage]}:
+                    </span>
+                    <CreatableSelect
+                      className="text-black w-full"
+                      options={notCurrentUsers}
+                      isMulti
+                      isClearable
+                      isSearchable
+                      onChange={(e) => {
+                        setAttachedUsers(e);
+                      }}
+                    />
+                  </label>
+                  <label className="flex flex-col items-center sm:w-full lg:w-1/2 2xl:w-2/5">
+                    <span>
+                      {translations.clubsLogoInput.label[selectedLanguage]}:
+                    </span>
+                    <div className="flex items-center justify-center w-full p-2">
+                      <input
+                        type="file"
+                        required
+                        onChange={handleSelect}
+                        className="hidden"
+                      />
+                      <p className="btn sm:w-full bg-primeColor text-white border-none hover:bg-lime-700">
+                        {translations.selectImgBtn.text[selectedLanguage]}{" "}
+                        <FaImage />
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex flex-col sm:w-full lg:w-1/2 2xl:w-2/5">
+                    <span className="label-text">
+                      {translations.requiredPagesToJoin.label[selectedLanguage]}
+                    </span>
+                    <input
+                      className="input border-none outline-none w-full"
+                      placeholder={`${translations.requiredPagesToJoin.placeholder[selectedLanguage]}`}
+                      type="number"
+                      min={0}
+                      step={10}
+                      onChange={(e) => {
+                        setReadersClub((club) => {
+                          club.requiredPagesRead = +e.target.value;
+                          return club;
+                        });
+                      }}
+                    />
+                  </label>
+                </div>
+                <label className="flex flex-col">
+                  <span>
+                    {translations.descriptionTextarea.label[selectedLanguage]}:
+                  </span>
+                  <textarea
+                    className="outline-none h-48 resize-none py-1 rounded-lg"
+                    placeholder={`${translations.descriptionTextarea.placeholder[selectedLanguage]}`}
+                    onChange={(e) =>
+                      setReadersClub((club) => {
+                        club.description = e.target.value;
+                        return club;
+                      })
+                    }
+                  ></textarea>
+                </label>
+
+                <div className="flex w-full justify-center items-center p-2 my-2">
+                  <button className="btn sm:w-full md:w-1/2">
+                    {translations.submit[selectedLanguage]}
+                  </button>
+                </div>
+
+                {error && (
+                  <Alert className="bg-transparent" severity="error">
+                    {error}
+                  </Alert>
+                )}
+              </form>
+            )}
+
+            {(selectedToAdd === "" || !selectedToAdd) && (
+              <div className="flex flex-col justify-center items-center h-full sm:w-full lg:w-1/2">
+                <div className="h-1/2 w-full border-2 p-16">
+                  <h1 className="text-xl font-bold text-center">
+                    {translations.nothingSelected[selectedLanguage]} 😥
+                  </h1>
                 </div>
               </div>
             )}
-
-            {error && <p className="wrong">{error}</p>}
-
-            <button className="btn">Add new Book</button>
-          </form>
-
-          <form
-            onSubmit={handleSubmit}
-            style={
-              selectedToAdd === "Competitions"
-                ? { display: "flex" }
-                : { display: "none" }
-            }
-          >
-            <h2>
-              Add new Competition <FaTrophy />
-            </h2>
-
-            <label>
-              <span>Title:</span>
-              <input
-                type="text"
-                required
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </label>
-
-            <label>
-              <span>Competition's type:</span>
-              <CreatableSelect
-                required
-                className="select-input"
-                isClearable
-                isSearchable
-                options={competitionTypes}
-                onChange={(e) => setCompetitionsName(e.value)}
-              />
-            </label>
-
-            <label>
-              <span>Expiration date:</span>
-              <input
-                className="input-date"
-                type="date"
-                required
-                onChange={(e) => {
-                  setExpirationDate(new Date(e.target.value));
-                }}
-              />
-            </label>
-
-            <label>
-              <span>Users:</span>
-              <CreatableSelect
-                required
-                className="select-input"
-                isClearable
-                isSearchable
-                isMulti
-                options={notCurrentUsers}
-                onChange={(e) => {
-                  setAttachedUsers(e);
-                }}
-              />
-            </label>
-
-            <label>
-              <span>Description:</span>
-              <textarea
-                required
-                placeholder="What's this competition about, what's to win?"
-                onChange={(e) => setDescription(e.target.value)}
-              ></textarea>
-            </label>
-
-            {error && <p className="wrong">{error}</p>}
-
-            <button className="btn">Add new Competition</button>
-          </form>
-
-          <form
-            onSubmit={handleSubmit}
-            style={
-              selectedToAdd === "Clubs"
-                ? { display: "flex" }
-                : { display: "none" }
-            }
-          >
-            <h2>
-              Add new Reader's Club <FaUsers />
-            </h2>
-
-            <label>
-              <span>Club's name:</span>
-              <input
-                type="text"
-                required
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </label>
-
-            <label>
-              <span>Users:</span>
-              <CreatableSelect
-                required
-                className="select-input"
-                isClearable
-                isSearchable
-                isMulti
-                options={notCurrentUsers}
-                onChange={(e) => {
-                  setAttachedUsers(e);
-                }}
-              />
-            </label>
-
-            <label>
-              <span>Club's logo: </span>
-              <input type="file" required onChange={handleSelect} />
-            </label>
-
-            <label>
-              <span>Description:</span>
-              <textarea
-                required
-                placeholder="Tell the users, what are you in this club doing."
-                onChange={(e) => setDescription(e.target.value)}
-              ></textarea>
-            </label>
-
-            {error && <p className="wrong">{error}</p>}
-
-            <button className="btn">Add new Club</button>
-          </form>
-
-          {isPending && <Loader />}
+          </div>
         </div>
       </motion.div>
+
+      {isPending && <Loader />}
     </div>
   );
 }
