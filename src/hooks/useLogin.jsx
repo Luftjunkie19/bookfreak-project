@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 import {
   createUserWithEmailAndPassword,
@@ -9,12 +9,22 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   updateProfile,
-} from "firebase/auth";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
+} from 'firebase/auth';
+import {
+  doc,
+  getDoc,
+  getFirestore,
+  setDoc,
+} from 'firebase/firestore';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import { useNavigate } from 'react-router-dom';
 
-import { useAuthContext } from "./useAuthContext";
+import { useAuthContext } from './useAuthContext';
 
 export function useLogin() {
   const [error, setError] = useState("");
@@ -58,6 +68,9 @@ export function useLogin() {
           email: res.user.email,
           photoURL: res.user.photoURL,
           description: "",
+          links: [],
+          notifications: [],
+          chats: [],
           id: res.user.uid,
         });
       }
@@ -70,13 +83,6 @@ export function useLogin() {
       navigate("/");
     } catch (error) {
       setIsPending(false);
-
-      if (
-        error.message ===
-        "Firebase: Error (auth/account-exists-with-different-credential)."
-      ) {
-        setError("There is already an user with such an credentials");
-      }
 
       setError(error.message);
     }
@@ -112,6 +118,9 @@ export function useLogin() {
           email: res.user.email,
           photoURL: res.user.photoURL,
           description: "",
+          links: [],
+          notifications: [],
+          chats: [],
           id: res.user.uid,
         });
       }
@@ -124,13 +133,6 @@ export function useLogin() {
       navigate("/");
     } catch (error) {
       setIsPending(false);
-
-      if (
-        error.message ===
-        "Firebase: Error (auth/account-exists-with-different-credential)."
-      ) {
-        setError("There is already an user with such an credentials");
-      }
 
       setError(error.message);
     }
@@ -150,8 +152,6 @@ export function useLogin() {
       const document = doc(firestore, "users", res.user.uid);
       const userToAdd = await getDoc(document);
 
-      console.log(userToAdd);
-
       if (!userToAdd.exists()) {
         const uploadPath = `profileImg/uid${res.user.uid}/${res.user.photoURL}`;
 
@@ -167,6 +167,9 @@ export function useLogin() {
           email: res.user.email,
           photoURL: res.user.photoURL,
           description: "",
+          links: [],
+          notifications: [],
+          chats: [],
           id: res.user.uid,
         });
       }
@@ -179,13 +182,6 @@ export function useLogin() {
       navigate("/");
     } catch (error) {
       setIsPending(false);
-
-      if (
-        error.message ===
-        "Firebase: Error (auth/account-exists-with-different-credential)."
-      ) {
-        setError("There is already an user with such an credentials");
-      }
 
       setError(error.message);
     }
@@ -209,13 +205,6 @@ export function useLogin() {
     } catch (error) {
       setIsPending(false);
 
-      if (
-        error.message ===
-        "Firebase: Error (auth/account-exists-with-different-credential)."
-      ) {
-        setError("There is already an user with such an credentials");
-      }
-
       setError(error.message);
     }
   };
@@ -227,8 +216,6 @@ export function useLogin() {
       const myAuth = getAuth();
 
       const res = await createUserWithEmailAndPassword(myAuth, email, password);
-
-      console.log(res.user);
 
       const storage = getStorage();
 
@@ -247,13 +234,15 @@ export function useLogin() {
 
       await setDoc(document, {
         nickname: res.user.displayName,
-        email,
-        photoURL,
+        email: res.user.email,
+        photoURL: res.user.photoURL,
         description: "",
+        links: [],
+        notifications: [],
+        chats: [],
         id: res.user.uid,
       });
 
-      console.log(res.user);
       dispatch({ type: "LOGIN", payload: res.user });
 
       setError(null);
@@ -263,15 +252,7 @@ export function useLogin() {
     } catch (error) {
       setIsPending(false);
 
-      if (
-        error.message ===
-        "Firebase: Error (auth/account-exists-with-different-credential)."
-      ) {
-        setError("There is already an user with such an credentials");
-      }
-
       setError(error.message);
-      console.log(error.message);
     }
   };
 

@@ -1,0 +1,145 @@
+{
+  "detailsText": {
+    "ger": "Einzelheiten",
+    "eng": "Details",
+    "pl": "Szczegóły"
+  },
+  "categoryText": {
+    "ger": "Kategorie",
+    "eng": "Category",
+    "pl": "Kategoria"
+  },
+  "joinTo": {
+    "competition": {
+      "ger": "Wettbewerb beitreten",
+      "eng": "Join To Competition",
+      "pl": "Dołącz do konkursu"
+    },
+    "club": {
+      "ger": "Lesegruppe beitreten",
+      "eng": "Join To Club",
+      "pl": "Dołącz do klubu"
+    }
+  },
+
+  "pagesText": {
+    "ger": "Seiten",
+    "eng": "Pages",
+    "pl": "Ilość stron"
+  },
+  "communitiesBar": {
+    "chatBtn": {
+      "ger": "Chat Ansehen",
+      "eng": "Show Chat",
+      "pl": "Zobacz Czat"
+    },
+    "overallBtn": {
+      "ger": "Allgemeine",
+      "eng": "Overall",
+      "pl": "Ogólne"
+    },
+    "leaveBtn": {
+      "ger": "Verlassen",
+      "eng": "Leave",
+      "pl": "Opuść"
+    },
+    "editBtn": {
+      "ger": "Bearbeiten",
+      "eng": "Edit",
+      "pl": "Edytuj"
+    },
+    "deleteBtn": {
+      "ger": "Löschen",
+      "eng": "Delete",
+      "pl": "Usuń"
+    }
+  },
+  "closeBtn": {
+    "ger": "Schließen",
+    "eng": "Close",
+    "pl": "Zamknij"
+  },
+
+  "saveBtn": {
+    "ger": "Speichern",
+    "eng": "Save",
+    "pl": "Zapisz"
+  },
+
+  "updateStatus": {
+    "ger": "Lesestand aktualisieren",
+    "eng": "Update Reading Status",
+    "pl": "Uaktualnij status czytania"
+  },
+
+  "managementBtn": {
+    "ger": "Verwaltung",
+    "eng": "Managment",
+    "pl": "Zarządzanie"
+  },
+
+  "createdBy": {
+    "ger": "Gegründet von",
+    "eng": "Founded by",
+    "pl": "Założone przez"
+  },
+
+  "RankingTranslations": {
+    "heads": {
+      "userHead": {
+        "ger": "Benutzer",
+        "eng": "User",
+        "pl": "Użytkownik"
+      },
+      "booksReadHead": {
+        "ger": "Gelesene Bücher",
+        "eng": "Read books",
+        "pl": "Przeczytane książki"
+      },
+      "currentBookHead": {
+        "ger": "Aktuelles Buch",
+        "eng": "Current Book",
+        "pl": "Aktualna książka"
+      }
+    }
+  },
+
+  "sortTexts": {
+    "ger": "Sortieren nach",
+    "eng": "Sort by",
+    "pl": "Sortuj po"
+  },
+
+  "navigationBetweenBtns": {
+    "forward": {
+      "ger": "Weiter",
+      "eng": "Next",
+      "pl": "Dalej"
+    },
+    "backward": {
+      "ger": "Zurück",
+      "eng": "Back",
+      "pl": "Wstecz"
+    }
+  },
+
+  "messageAreaInput": {
+    "placeholder": {
+      "ger": "Nachricht schreiben...",
+      "eng": "Enter message...",
+      "pl": "Napisz wiadomość..."
+    }
+  },
+  "booksObjects": {
+    "books": {
+      "ger": "Bücher",
+      "eng": "Books",
+      "pl": "Książki"
+    },
+    "book": {
+      "ger": "Buch",
+      "eng": "Book",
+      "pl": "Książka"
+    }
+  }
+}

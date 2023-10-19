@@ -1,0 +1,29 @@
+.scrolled {
+  animation: falling 0.5s;
+  transition: all 0.5s;
+}
+
+.appearing {
+  animation: appearing 0.4s;
+}
+
+@keyframes appearing {
+  0% {
+    transform: rotate(60deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes falling {
+  0% {
+    top: -100%;
+  }
+
+  100% {
+    top: 0;
+  }
+}

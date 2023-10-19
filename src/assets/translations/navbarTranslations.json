@@ -1,0 +1,54 @@
+{
+  "languageSelection": {
+    "eng": "English",
+    "pl": "Polski",
+    "ger": "Deutsch"
+  },
+
+  "unloggedNavbar": {
+    "login": {
+      "eng": "Sign in",
+      "pl": "Zaloguj się",
+      "ger": "Einloggen"
+    },
+    "register": {
+      "eng": "Sign up",
+      "pl": "Zarejestruj się",
+      "ger": "Registrieren"
+    }
+  },
+
+  "hamburgerMenu": {
+    "home": {
+      "eng": "Home",
+      "pl": "Strona Główna",
+      "ger": "Startseite"
+    },
+
+    "profile": {
+      "eng": "Profile",
+      "pl": "Profil",
+      "ger": "Profil"
+    },
+    "chats": {
+      "eng": "Messages",
+      "pl": "Wiadomości",
+      "ger": "Nachrichten"
+    },
+    "addForms": {
+      "eng": "Create",
+      "pl": "Stwórz",
+      "ger": "Erstelle"
+    },
+    "search": {
+      "eng": "Search",
+      "pl": "Wyszukiwarka",
+      "ger": "Suche"
+    },
+    "logOut": {
+      "eng": "Logout",
+      "pl": "Wyloguj się",
+      "ger": "Auslogen"
+    }
+  }
+}

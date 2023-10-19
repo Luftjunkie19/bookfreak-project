@@ -1,0 +1,142 @@
+{
+  "adBlocker": {
+    "topText": {
+      "eng": "We detected an Adblocker!",
+      "pl": "Wykryliśmy Adblocka !",
+      "ger": "Adblock aufgedeckt !"
+    },
+    "requestToUser": {
+      "eng": "Please turn it off in order to keep using our website.",
+      "pl": "Proszę wyłączyć Adblocka, aby korzystać dalej z naszej strony.",
+      "ger": "Schalten Sie bitte den Adblock aus, damit Sie unsere Website weiter nutzen können."
+    }
+  },
+  "leavingWarning": {
+    "query": {
+      "eng": "Are you sure you want to leave the",
+      "pl": "Jesteś pewny, że chcesz opuścić",
+      "ger": "Sind sie sicher, sie wollen den",
+      "part2": {
+        "ger": "zu verlassen ?"
+      }
+    },
+    "consequences": {
+      "eng": "In case you leave the",
+      "pl": "W przypadku opuszczenia",
+      "ger": "Imfalle der Auslassung des",
+      "part2": {
+        "eng": "it will be removed.",
+        "ger": "wird der",
+        "pl": "zostanie usunięty."
+      },
+      "part3": {
+        "ger": "gelöscht"
+      }
+    }
+  },
+  "notifications": {
+    "successfull": {
+      "update": {
+        "ger": "Erfolgreich aktualisiert !",
+        "eng": "Successfully updated !",
+        "pl": "Zaktualizowano pomyślnie !"
+      },
+      "create": {
+        "ger": "Erfolgreich hinzugefügt !",
+        "eng": "Successfully added !",
+        "pl": "Dodano pomyślnie !"
+      },
+      "remove": {
+        "ger": "Erfolgreich gelöscht !",
+        "eng": "Successfully removed !",
+        "pl": "Usunięto pomyślnie !"
+      },
+      "leave": {
+        "ger": "Erfolgreich verlassen !",
+        "eng": "Successfully left !",
+        "pl": "Opuszczono pomyślnie !"
+      },
+      "send": {
+        "ger": "Erfolgreich gesendet !",
+        "eng": "Successfully sent !",
+        "pl": "Wysłano pomyślnie !"
+      },
+      "copied": {
+        "ger": "Erfolgereich kopiert !",
+        "eng": "Successfully copied !",
+        "pl": "Pomyślnie skopiowano !"
+      }
+    },
+    "wrong": {
+      "ger": "Etwas ist schiefgegangen !",
+      "eng": "Something is wrong !",
+      "pl": "Coś poszło nie tak !",
+
+      "emptyMessage": {
+        "ger": "Sie können keine Nachricht, die leer ist senden!",
+        "eng": "You cannot send a message, which is empty!",
+        "pl": "Nie możesz wysłać pustej wiadomości !"
+      },
+
+      "urlError": {
+        "ger": "Dein URL is nicht gültig, ändere es.",
+        "eng": "Your URL is invalid, change it.",
+        "pl": "Twój URL jest nieprawidłowy, zmień to."
+      },
+
+      "discordName": {
+        "ger": "Dein Discord-Benutzername is nicht gültig, ändere es.",
+        "eng": "Your Discord nickname is invalid, change it.",
+        "pl": "Twoja nazwa użytkownika discord jest nieprawidłowa, zmień to."
+      },
+      "loyality": {
+        "ger": "Bleibe loyal, verrate deine Gruppe nicht !",
+        "eng": "Stay loyal, don't betray your club !",
+        "pl": "Pozostań lojalny, nie zdradzaj swojego klubu !"
+      },
+      "emptyField": {
+        "ger": "Das Feld ist noch leer.",
+        "eng": "The Field is still empty.",
+        "pl": "Pole jest jeszcze puste."
+      },
+      "outOfSpaceReading": {
+        "ger": "Du kannst nicht mehr Seiten lesen als das Buch tatsächlich hat.",
+        "eng": "You cannot read more pages than the book has.",
+        "pl": "Nie możesz czytać więcej stron niż ma książka."
+      },
+      "imagesRange": {
+        "ger": "Du kannst nicht mehr als 5 Bilder schicken.",
+        "eng": "You can send maximum 5 pictures.",
+        "pl": "Nie możesz wysłać więcej niż 5 zdjęć."
+      },
+      "filesToSend": {
+        "ger": "Einige Bilder wurden nicht akzeptiert,",
+        "eng": "Some Files were not acceptable.",
+        "pl": "Niektóre zdjęcia nie zostały zaakceptowane."
+      },
+      "noFilesAccepted": {},
+      "tooBigFile": {
+        "ger": "Zu große Datei wurde hochgeladen.",
+        "eng": "Too big file has been loaded.",
+        "pl": "Za duży plik został załadowany."
+      },
+      "inAppropriateFile": {
+        "ger": "Unentsprechende Dateiformat wurde hochgeladen.",
+        "eng": "Inappropriate type of file has been loaded.",
+        "pl": "Nieodpowiedni format pliku został przesłany."
+      },
+      "selectAnything": {
+        "ger": "Wählen Sie bitte das Bild aus.",
+        "eng": "Select any image, please.",
+        "pl": "Proszę wybrać zdjęcie."
+      },
+      "userExistence": {
+        "ger": "Es gibt schonen einen Nutzer mit diesem Benutzernamen, schaffen Sie bitte einen einzigartigen Benutzernamen.",
+        "eng": "There is already user with such an nickname, please create a unique one.",
+        "pl": "Już istnieje użytkownik z taką nazwą, stwórz proszę unikalną nazwę."
+      }
+    },
+    "request": {},
+    "notification": {}
+  }
+}

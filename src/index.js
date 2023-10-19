@@ -19,12 +19,14 @@ import stored from "./context/Stored";
 const firebaseConfig = {
   apiKey: "AIzaSyA7yEQgwGTcxadl5UrZaOD_NCaSWRKugMU",
   authDomain: "bookfreak-3bd4e.firebaseapp.com",
+  databaseURL:
+    "https://bookfreak-3bd4e-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "bookfreak-3bd4e",
   storageBucket: "bookfreak-3bd4e.appspot.com",
   messagingSenderId: "243358621147",
   appId: "1:243358621147:web:356d73d02a7bbb10479bfe",
+  measurementId: "G-HPNMZHPDJ4",
 };
-
 // Initialize Firebase
 
 initializeApp(firebaseConfig);

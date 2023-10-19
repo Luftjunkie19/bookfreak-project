@@ -1,92 +1,130 @@
-import "./Home.css";
+import "./stylings/backgrounds.css";
 
-import { motion } from "framer-motion";
-import { FaBookOpen } from "react-icons/fa";
+import { FaBook, FaUserFriends } from "react-icons/fa";
+import { GiPodiumWinner } from "react-icons/gi";
+import { MdRateReview } from "react-icons/md";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { useOrderedCollection } from "../hooks/useOrderedCollection";
-import HomeClubs from "./HomeClubs";
-import HomeCompetitions from "./HomeCompetitions";
+import translations from "../assets/translations/homePageTranslations.json";
+import HomeBooks from "../components/HomeComponents/HomeBooks";
+import HomeClubs from "../components/HomeComponents/HomeClubs";
+import HomeCompetitions from "../components/HomeComponents/HomeCompetitions";
 
 function Home() {
-  const { orderedDocuments } = useOrderedCollection("books");
-
-  const getNumber = () => {
-    if (document.body.offsetWidth <= 425) {
-      return 5;
-    } else if (
-      425 < document.body.offsetWidth &&
-      document.body.offsetWidth <= 767
-    ) {
-      return 5;
-    } else if (
-      document.body.offsetWidth >= 768 &&
-      document.body.offsetWidth <= 1023
-    ) {
-      return 5;
-    } else if (
-      document.body.offsetWidth >= 1024 &&
-      document.body.offsetWidth <= 1440
-    ) {
-      return 3;
-    } else {
-      return 4;
-    }
-  };
+  const selectedLangugage = useSelector(
+    (state) => state.languageSelection.selectedLangugage
+  );
 
   return (
     <>
-      <motion.div
-        className="home-container"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        {orderedDocuments && (
-          <h2>
-            {orderedDocuments.length > 0
-              ? `We read already ${orderedDocuments.length} books together!`
-              : "Empty YET!"}
-          </h2>
-        )}
-        <div
-          className={
-            orderedDocuments.length > 0 ? "books-holder" : "sort-section"
-          }
-        >
-          {orderedDocuments &&
-            orderedDocuments.slice(0, getNumber()).map((doc, i) => (
-              <Link to={`/book/${doc.id}`} key={i}>
-                <div key={i} className="book">
-                  <div className="prev-cover">
-                    <img src={doc.photoURL && doc.photoURL} alt="cover" />
-                  </div>
+      <div className="min-h-screen h-full">
+        <div className="flex justify-around items-center w-screen min-h-screen hero-section sm:flex-col-reverse md:flex-row">
+          <div className="flex flex-col flex-1 justify-center pt-8 px-3">
+            <h2 className="text-4xl font-extrabold my-4 text-white">
+              {translations.heroSection.title[selectedLangugage]}
+            </h2>
+            <p className=" text-white text-lg">
+              {translations.heroSection.description[selectedLangugage]}
+            </p>
 
-                  <h4> {doc.title}</h4>
-                  <p>Author: {doc.author}</p>
-                  <small>
-                    Added by: {doc.createdBy.displayName}, at:
-                    <br />
-                    {doc.createdBy.createdAt.toDate().toDateString()}
-                  </small>
-                </div>
-              </Link>
-            ))}
+            <Link
+              to="/recensions"
+              className="btn bg-accColor text-white transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor lg:w-1/2 my-2"
+            >
+              {translations.heroSection.button[selectedLangugage]}
+            </Link>
+          </div>
 
-          <Link to="/books">
-            <div className="book">
-              <FaBookOpen style={{ fontSize: 42 }} />
-              <p>To view more</p>
-              <p>Visit here</p>
-            </div>
-          </Link>
+          <div className="flex sm:flex-row sm:justify-around sm:items-center flex-1 p-4 md:flex-col">
+            <img
+              className="sm:w-1/2 sm:h-1/4 sm:self-end md:w-56 md:h-1/2 2xl:w-2/5 2xl:h-2/5"
+              src="https://cdn3d.iconscout.com/3d/premium/thumb/reading-book-5706112-4756522.png?f=webp"
+              alt=""
+            />
+            <img
+              className="sm:w-1/2 sm:h-1/4 sm:self-start md:w-56 md:h-1/2 2xl:w-1/3 2xl:h-1/3"
+              src="https://cdn3d.iconscout.com/3d/premium/thumb/books-5412720-4526315.png"
+              alt=""
+            />
+          </div>
         </div>
 
-        <h2>Competitions:</h2>
+        <div className="w-full p-3">
+          <p className="text-3xl text-center text-white font-bold p-2">
+            {translations.homePage.explorationOptions.title[selectedLangugage]}
+          </p>
+          <div className="flex justify-around items-center w-full flex-wrap gap-4 p-2">
+            <Link
+              to="/books"
+              className="bg-accColor h-48 text-white sm:w-full md:w-2/5 xl:w-1/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor"
+            >
+              <FaBook className="text-5xl" />
+              <p className="text-white group-hover:text-primeColor">
+                {
+                  translations.homePage.explorationOptions.option1[
+                    selectedLangugage
+                  ]
+                }
+              </p>
+            </Link>
+
+            <Link
+              to="/recensions"
+              className="bg-accColor h-48 xl:w-1/5 text-white sm:w-full md:w-2/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor"
+            >
+              <MdRateReview className="text-5xl" />
+              <p className="text-white group-hover:text-primeColor">
+                {
+                  translations.homePage.explorationOptions.option2[
+                    selectedLangugage
+                  ]
+                }
+              </p>
+            </Link>
+
+            <Link
+              to="/competitions"
+              className="bg-accColor xl:w-1/5 sm:w-full md:w-2/5 2xl:w-1/6 h-48 text-white p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor"
+            >
+              <GiPodiumWinner className="text-5xl" />
+              <p className="text-white group-hover:text-primeColor">
+                {
+                  translations.homePage.explorationOptions.option3[
+                    selectedLangugage
+                  ]
+                }
+              </p>
+            </Link>
+
+            <Link
+              to="/readers-clubs"
+              className="bg-accColor xl:w-1/5 sm:w-full md:w-2/5 2xl:w-1/6 h-48 text-white p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor"
+            >
+              <FaUserFriends className="text-5xl" />
+              <p className="text-white group-hover:text-primeColor">
+                {
+                  translations.homePage.explorationOptions.option4[
+                    selectedLangugage
+                  ]
+                }
+              </p>
+            </Link>
+          </div>
+        </div>
+
+        <HomeBooks />
+
+        <h2 className="text-4xl font-bold p-2 text-white">
+          {translations.homePage.recentTexts.competitions[selectedLangugage]}
+        </h2>
         <HomeCompetitions />
-        <h2>Clubs:</h2>
+
+        <h2 className="text-4xl font-bold p-2 text-white">
+          {translations.homePage.recentTexts.clubs[selectedLangugage]}
+        </h2>
         <HomeClubs />
-      </motion.div>
+      </div>
     </>
   );
 }

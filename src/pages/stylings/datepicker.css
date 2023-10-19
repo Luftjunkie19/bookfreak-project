@@ -1,0 +1,37 @@
+.myDatePicker fieldset.MuiOutlinedInput-notchedOutline {
+  border-color: white;
+  transition: all 0.5s;
+}
+
+.myDatePicker {
+  background: #ffffff28;
+  border-radius: 5px;
+}
+
+.myDatePicker:hover .css-1e86fgl-MuiFormControl-root-MuiTextField-root {
+  border-color: #4267b5;
+}
+
+.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root {
+  color: white;
+}
+
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
+  color: white;
+}
+
+.myDatePicker .Mui-focused fieldset.MuiOutlinedInput-notchedOutline {
+  border-color: #4267b5;
+}
+
+.myDatePicker:hover fieldset.MuiOutlinedInput-notchedOutline {
+  border-color: #4267b5;
+}
+
+.myDatePicker:hover .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root {
+  color: #4267b5;
+}
+
+.myDatePicker:hover .css-1e86fgl-MuiFormControl-root-MuiTextField-root svg {
+  color: #4267b5;
+}

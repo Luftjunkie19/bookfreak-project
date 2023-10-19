@@ -1,0 +1,6 @@
+.messages-holder {
+  height: calc(100% - 114px);
+}
+
+@media screen {
+}

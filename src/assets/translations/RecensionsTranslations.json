@@ -1,0 +1,25 @@
+{
+  "textUpOn": {
+    "oneBook": {
+      "ger": "ist rezensiert worden",
+      "eng": "has been recensioned",
+      "pl": "została zrecenzowana"
+    },
+    "moreBooks": {
+      "ger": "sind rezensiert worden",
+      "eng": "have been recensioned",
+      "pl": "zostały zrecenzowane"
+    }
+  },
+
+  "oneRecension": {
+    "ger": "Rezension",
+    "eng": "Recension",
+    "pl": "Recenzja"
+  },
+  "moreRecensions": {
+    "ger": "Rezensionen",
+    "eng": "Recensions",
+    "pl": "Recenzje"
+  }
+}

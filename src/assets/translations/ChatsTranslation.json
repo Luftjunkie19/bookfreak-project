@@ -1,0 +1,17 @@
+{
+  "chatsTitle": {
+    "eng": "Your messages:",
+    "pl": "Twoje wiadomości:",
+    "ger": "Deine Nachrichten:"
+  },
+  "chatsEmpty": {
+    "eng": "No messages available",
+    "pl": "Brak dostępnych wiadomości",
+    "ger": "Keine Nachrichten verfügbar"
+  },
+  "sendBtn": {
+    "eng": "Send",
+    "pl": "Wyślij",
+    "ger": "Senden"
+  }
+}

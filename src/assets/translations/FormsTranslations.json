@@ -1,0 +1,322 @@
+{
+  "nothingSelected": {
+    "eng": "Nothing selected yet.",
+    "pl": "Nie wybrano formularza.",
+    "ger": "Kein Formular wurde noch ausgewählt."
+  },
+  "selectionQuery": {
+    "eng": "What would you like to add",
+    "pl": "Co chciałbyś dodać",
+    "ger": "Was möchten Sie hinzufügen"
+  },
+  "topText": {
+    "books": {
+      "eng": "Add a new book and expand your knowledge !",
+      "pl": "Dodaj nową książkę i poszerzaj swoją wiedzę !",
+      "ger": "Fügen Sie ein Buch hinzu und erweitern Sie ihres Wissen !"
+    },
+    "competitions": {
+      "eng": "Show your might and dominate the others by reading books!",
+      "pl": "Pokaż siłę i zdominuj innych w czytaniu książek !",
+      "ger": "Schauen Sie die Macht und herrschen Sie in dem Bücher lesen vor !"
+    },
+    "clubs": {
+      "eng": "Form a Club!",
+      "pl": "Utwórz Klub !",
+      "ger": "Gründen sie einen Verein !",
+      "underText": {
+        "eng": "Create a community, that'll support you and keep reading !",
+        "pl": "Stwórz społeczność, która będzie Cię wspierać i czytała więcej  !",
+        "ger": "Gründen sie eine Gemeinschaft, die Sie fördern und mehr lesen wird !"
+      }
+    },
+    "editBookText": {
+      "eng": "Update book",
+      "pl": "Zaktualizuj książkę",
+      "ger": "Buch aktualisieren",
+      "underText": {
+        "eng": "Wanna introduce some changes? Here you are !",
+        "pl": "Chcesz dodać jakieś zmiany? Proszę bardzo !",
+        "ger": "Wollen Sie irgendeine Änderungen einführen? Gar kein Problem !"
+      }
+    },
+    "editCompetition": {
+      "eng": "Update competition",
+      "pl": "Zaktualizuj Konkurs",
+      "ger": "Wettbewerb aktualisieren",
+      "underText": {
+        "eng": "Wanna introduce some changes? Here you are !",
+        "pl": "Chcesz dodać jakieś zmiany? Proszę bardzo !",
+        "ger": "Wollen Sie irgendeine Änderungen einführen? Gar kein Problem !"
+      }
+    },
+    "editClub": {
+      "eng": "Update Club",
+      "pl": "Zaktualizuj Klub",
+      "ger": "Lesegruppe aktualisieren"
+    },
+    "editProfile": {
+      "eng": "Update User's Profile",
+      "pl": "Zaktualizuj Profil Użytkownika",
+      "ger": "Benutzerprofil aktualisieren"
+    }
+  },
+
+  "userFields": {
+    "nickname": {
+      "eng": "Nickname",
+      "pl": "Nazwa Użytkownika",
+      "ger": "Benutzername"
+    },
+    "chooseAvatar": {
+      "eng": "Choose Avatar",
+      "pl": "Wybierz Avatar",
+      "ger": "Avatar Auswählen"
+    },
+    "password": {
+      "eng": "Password",
+      "pl": "Hasło",
+      "ger": "Passwort"
+    }
+  },
+
+  "bookTitleInput": {
+    "label": {
+      "eng": "Title",
+      "pl": "Tytuł",
+      "ger": "Titel"
+    },
+    "placeholder": {
+      "eng": "Enter title...",
+      "pl": "Podaj Tytuł...",
+      "ger": "Titel eingeben..."
+    }
+  },
+  "bookAuthorInput": {
+    "label": {
+      "eng": "Author",
+      "pl": "Autor",
+      "ger": "Autor"
+    },
+    "placeholder": {
+      "eng": "Enter author...",
+      "pl": "Podaj autora...",
+      "ger": "Autor eingeben..."
+    }
+  },
+  "bookCategoryInput": {
+    "label": { "eng": "Genre", "pl": "Gatunek", "ger": "Gattung" }
+  },
+  "selectImgBtn": {
+    "label": {
+      "eng": "Book's Cover",
+      "pl": "Okładka Książki",
+      "ger": "Buchumschlag"
+    },
+    "text": {
+      "eng": "Select Image",
+      "pl": "Wybierz zdjęcie",
+      "ger": "Bild Auswählen"
+    }
+  },
+  "pagesAmountInput": {
+    "label": {
+      "eng": "Pages quantity",
+      "pl": "Ilość stron",
+      "ger": "Seitenmenge"
+    },
+    "placeholder": {
+      "eng": "Enter pages quantity...",
+      "pl": "Podaj ilość stron...",
+      "ger": "Seitenmenge eingeben"
+    }
+  },
+  "hasStarted": {
+    "query": {
+      "eng": "Did you start reading this book",
+      "pl": "Czy zacząłęś czytać tę książkę",
+      "ger": "Haben Sie schon angefangen das Buch zu lesen"
+    }
+  },
+  "readPagesInput": {
+    "label": {
+      "eng": "Read pages quantity",
+      "pl": "Ilość przeczytaych stron",
+      "ger": "Gelesene Seitenmenge"
+    },
+    "placeholder": {
+      "eng": "Enter read pages quantity",
+      "pl": "Podaj ilość przeczytaych stron",
+      "ger": "Gelesene Seitenmenge eingeben"
+    }
+  },
+  "hasFinished": {
+    "query": {
+      "eng": "Have you already finished reading this book",
+      "pl": "Czy skończyłeś czytać tę książkę",
+      "ger": "Haben Sie schon beendet das Buch zu lesen"
+    }
+  },
+  "descriptionTextarea": {
+    "label": {
+      "eng": "Description",
+      "pl": "Opis",
+      "ger": "Beschreibung"
+    },
+    "placeholder": {
+      "eng": "Enter description...",
+      "pl": "Napisz Opis...",
+      "ger": " Beschreibung eingeben"
+    }
+  },
+  "clubsNameInput": {
+    "label": {
+      "eng": "Club's name",
+      "pl": "Nazwa klubu",
+      "ger": "Lesegruppenname"
+    },
+    "placeholder": {
+      "eng": "Enter Club's name...",
+      "pl": "Napisz nazwę klubu...",
+      "ger": "Lesegruppennamen eingeben"
+    }
+  },
+  "clubsLogoInput": {
+    "label": {
+      "eng": "Club's Logo",
+      "pl": "Nazwa Logo",
+      "ger": "LesegruppenLogo"
+    }
+  },
+  "competitionCategory": {
+    "label": {
+      "eng": "Competion's Category",
+      "pl": "Kategoria konkursu",
+      "ger": "Kategorie des Wettbewerbes"
+    }
+  },
+  "expirationDateInput": {
+    "label": {
+      "eng": "Expiration Date",
+      "pl": "Data wygaśnięcia",
+      "ger": "Ablaufsdatum"
+    }
+  },
+  "membersInput": {
+    "label": {
+      "eng": "Members",
+      "pl": "Członkowie",
+      "ger": "Mitglieder"
+    }
+  },
+  "requiredPagesToJoin": {
+    "label": {
+      "eng": "Required read pages quantity",
+      "pl": "Wymagana ilość przeczytanych stron",
+      "ger": "Erforderliche Menge gelesenen Bücher"
+    },
+    "placeholder": {
+      "eng": "Enter quantity...",
+      "pl": "Podaj ilość...",
+      "ger": "Menge eingeben..."
+    }
+  },
+  "updateBtn": {
+    "eng": "Update",
+    "pl": "Zaktualizuj",
+    "ger": "Aktualisieren"
+  },
+
+  "signUpForm": {
+    "topText": {
+      "eng": "Sign up to join us !",
+      "pl": "Zarejestuj się, aby dołączyć !",
+      "ger": "Registriere dich, um beizutreten !"
+    },
+    "btnText": {
+      "eng": "Sign up",
+      "pl": "Zarejestuj się",
+      "ger": "Registrieren"
+    },
+
+    "optionsText": {
+      "eng": "You can also sign up with:",
+      "pl": "Zarejestruj się przez:",
+      "ger": "Registriere dich per:"
+    }
+  },
+  "signInForm": {
+    "topText": {
+      "eng": "Login to join us back !",
+      "pl": "Zaloguj się, aby do nas dołączyć ponownie !",
+      "ger": "Logge dich ein, um uns wieder beizutreten !"
+    },
+    "btnText": {
+      "eng": "Sign in",
+      "pl": "Zaloguj się",
+      "ger": "Einloggen"
+    },
+
+    "optionsText": {
+      "eng": "You can also sign in with:",
+      "pl": "Zaloguj się przez:",
+      "ger": "Logge dich ein per:"
+    }
+  },
+  "signingOptions": {
+    "phone": {
+      "eng": "Phone",
+      "pl": "Telefon",
+      "ger": "Handynummer"
+    },
+    "passwordForgotten": {
+      "eng": "Forgot password?",
+      "pl": "Zapmniałeś hasła?",
+      "ger": "Passwort vergessen?",
+
+      "underText": {
+        "eng": "No worries everyone sometimes forgets 'bout something !",
+        "pl": "Bez obaw, każdy czasem czegoś zapomni.",
+        "ger": "Keine Sorgen, jeder vergisst manchmal was !"
+      },
+
+      "sendEmail": {
+        "eng": "Send Email",
+        "pl": "Wyślij Email",
+        "ger": "Email Senden"
+      },
+
+      "verifyBtn": {
+        "eng": "Go to verify",
+        "pl": "Przejdź do Weryfikacji",
+        "ger": "Verifizieren"
+      },
+      "verificationCode": {
+        "eng": "Verification Code",
+        "pl": "Kod Weryfikacyjny",
+        "ger": "Verifizierungscode"
+      },
+
+      "verificationText": {
+        "eng": "Verify and enjoy your freakness !",
+        "pl": "Zweryfikuj się i ciesz się swoim wariactem !",
+        "ger": "Verifiziere dich und Genieße deine Freakness !"
+      },
+      "provideNumber": {
+        "eng": "Provide the number and go to verify !",
+        "pl": "Wprowadź numer i zweryfikuj się",
+        "ger": "Gib deine Handynummer ein und Verifiziere dich !"
+      },
+      "fillTheFields": {
+        "eng": "Fill the fields and verify !",
+        "pl": "Wypełnij pola i zweryfikuj się",
+        "ger": "Fülle die Felde aus und Verifiziere dich !"
+      }
+    }
+  },
+  "submit": {
+    "eng": "Submit",
+    "pl": "Potwierdź",
+    "ger": "Bestätigen"
+  }
+}

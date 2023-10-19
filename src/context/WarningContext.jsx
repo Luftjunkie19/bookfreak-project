@@ -14,7 +14,7 @@ export const warningContext = createSlice({
       state.isWarningVisible = true;
       state.referedTo = action.payload.referedTo;
       state.typeOf = action.payload.typeOf;
-      state.collection=action.payload.collection
+      state.collection = action.payload.collection;
     },
     closeWarning(state) {
       state.isWarningVisible = false;
