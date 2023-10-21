@@ -2,23 +2,22 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   collection,
-  getFirestore,
   onSnapshot,
   orderBy,
   query,
   where,
 } from "firebase/firestore";
 
+import { database } from "../index";
+
 export function useOrderedCollection(col, _orderedBy, _q) {
   const [orderedDocuments, setDocuments] = useState([]);
   const [error, setError] = useState(null);
 
-  const myAuth = getFirestore();
-
   const Query = useRef(_q).current;
   const orderedBy = useRef(_orderedBy).current;
 
-  let ref = collection(myAuth, col);
+  let ref = collection(database, col);
 
   if (orderedBy) {
     ref = query(ref, orderBy(...orderedBy));
@@ -45,7 +44,7 @@ export function useOrderedCollection(col, _orderedBy, _q) {
     };
 
     return () => unsub();
-  }, [error, myAuth, col, Query, orderedBy, ref]);
+  }, [error, col, Query, orderedBy, ref]);
 
   return { orderedDocuments, error };
 }

@@ -23,12 +23,20 @@ function FavouriteBooks({ id }) {
             )
             .map((doc, i) => (
               <Link to={`/book/${doc.id}`} key={doc.id}>
-                <div key={i} className="rounded-lg">
+                <div key={i} className="rounded-lg relative top-0 left-0">
                   <img
                     src={doc.photoURL}
                     alt=""
                     className="rounded-lg w-32 h-40 object-cover"
                   />
+                  <div className="absolute p-1 w-full rounded-b-lg bg-modalAccColor h-1/3 bottom-0 left-0">
+                    <p className=" font-bold text-white">
+                      {doc.title.trim(" ").length > 10
+                        ? `${doc.title.slice(0, 10)}...`
+                        : doc.title}
+                    </p>
+                    <p className=" text-sm text-white">{doc.author}</p>
+                  </div>
                 </div>
               </Link>
             ))}

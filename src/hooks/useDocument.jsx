@@ -1,21 +1,14 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
-import {
-  doc,
-  getFirestore,
-  onSnapshot,
-} from 'firebase/firestore';
+import { doc, onSnapshot } from "firebase/firestore";
+
+import { database } from "../index";
 
 export function useDocument(col, id) {
   const [document, setDocument] = useState();
   const [error, setError] = useState(null);
 
-  const firestore = getFirestore();
-
-  const ref = doc(firestore, col, id);
+  const ref = doc(database, col, id);
   useEffect(() => {
     const unsub = () => {
       onSnapshot(
@@ -32,7 +25,7 @@ export function useDocument(col, id) {
     };
 
     return () => unsub();
-  }, [col, firestore, id, ref]);
+  }, [col, id, ref]);
 
   return { document, error };
 }
