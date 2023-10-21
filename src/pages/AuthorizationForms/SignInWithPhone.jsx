@@ -97,9 +97,12 @@ function SignInWithPhone() {
         await setDoc(document, {
           nickname: result.user.displayName,
           email: result.user.email,
-          photoURL: defaultAvatar,
           description: "",
+          links: [],
+          notifications: [],
+          chats: [],
           id: result.user.uid,
+          photoURL: defaultAvatar,
         });
       }
 
