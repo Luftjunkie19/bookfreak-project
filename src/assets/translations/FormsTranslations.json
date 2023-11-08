@@ -59,6 +59,11 @@
       "eng": "Update User's Profile",
       "pl": "Zaktualizuj Profil Użytkownika",
       "ger": "Benutzerprofil aktualisieren"
+    },
+    "selectNationality": {
+      "eng": "Choose your nationality",
+      "pl": "Wybierz swoją narodowość",
+      "ger": "Wähle deine Nationalität aus"
     }
   },
 

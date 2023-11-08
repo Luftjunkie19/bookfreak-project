@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -6,10 +6,21 @@ import { Link } from "react-router-dom";
 import { Pagination } from "@mui/material";
 
 import clubsTranslations from "../../assets/translations/ClubsTranslations.json";
-import { useCollection } from "../../hooks/useCollection";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function Clubs() {
-  const { documents } = useCollection("clubs");
+  const { getDocuments } = useRealtimeDocuments();
+  const [documents, setElements] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadElements = async () => {
+    const booksEl = await getDocuments("readersClubs");
+    setElements(booksEl);
+  };
+
+  useEffect(() => {
+    loadElements();
+  }, [loadElements]);
 
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
@@ -42,10 +53,10 @@ function Clubs() {
 
               <div className="flex gap-2 flex-col text-white group-hover:text-primeColor p-4">
                 <p className="text-lg font-semibold">{doc.clubsName}</p>
-                <p>
+                {/*  <p>
                   {doc.users.length}{" "}
                   {clubsTranslations.clubObject.members[selectedLanguage]}
-                </p>
+          </p>*/}
               </div>
             </Link>
           ))

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { formatDistanceToNow } from "date-fns";
 import { FaImage } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -6,16 +8,73 @@ import { Link } from "react-router-dom";
 
 import translations from "../../assets/translations/ChatsTranslation.json";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { useCollection } from "../../hooks/useCollection";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function MessagesBar() {
   const { user } = useAuthContext();
   const location = useLocation();
-  const { documents } = useCollection("chats");
+  const { getDocuments } = useRealtimeDocuments();
+  const [documents, setDocuments] = useState([]);
+  const [entitledToChat, setEntitledToChat] = useState([]);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [users, setUsers] = useState([]);
 
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadChats = async () => {
+    const realObjects = await getDocuments("usersChats");
+
+    if (realObjects) {
+      setDocuments(realObjects);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadUsers = async () => {
+    const usersObjects = await getDocuments("users");
+
+    if (usersObjects) {
+      setUsers(usersObjects);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadEntitledToChat = async () => {
+    const realEntitled = await getDocuments("entitledToChat");
+
+    const entitledToChatMembers = realEntitled.map((obj) => {
+      const nestedObject = Object.values(obj);
+      return nestedObject;
+    });
+
+    if (entitledToChatMembers) {
+      setEntitledToChat(entitledToChatMembers.flat());
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadChatMessages = async () => {
+    const chatMessages = await getDocuments("usersChatMessages");
+
+    const chatMessagesArray = chatMessages.map((obj) => {
+      const nestedObject = Object.values(obj);
+      return nestedObject;
+    });
+
+    if (chatMessagesArray) {
+      setChatMessages(chatMessagesArray.flat());
+    }
+  };
+
+  useEffect(() => {
+    loadChats();
+    loadEntitledToChat();
+    loadChatMessages();
+    loadUsers();
+  }, [loadChatMessages, loadChats, loadEntitledToChat, loadUsers]);
 
   const setCurrent = (path) => {
     if (location.pathname === path) {
@@ -30,18 +89,21 @@ function MessagesBar() {
       </h2>
 
       <div className="grid gap-4 p-1 grid-cols-1 sm:justify-items-center md:justify-items-start">
-        {documents &&
-        documents.filter((chat) =>
-          chat.users.find((partner) => partner.id === user.uid)
+        {documents.filter(
+          (chat) =>
+            chat.chatId.split("-")[0] === user.uid ||
+            chat.chatId.split("-")[1] === user.uid
         ).length > 0 ? (
           documents
-            .filter((chat) =>
-              chat.users.find((partner) => partner.id === user.uid)
+            .filter(
+              (chat) =>
+                chat.chatId.split("-")[0] === user.uid ||
+                chat.chatId.split("-")[1] === user.uid
             )
             .map((doc) => (
               <>
                 <Link
-                  to={`/message-to/${doc.id}`}
+                  to={`/message-to/${doc.chatId}`}
                   className={`sm:w-11/12 ${
                     location.pathname.includes("/message-to") &&
                     "lg:w-full xl:w-full 2xl:w-full"
@@ -49,7 +111,7 @@ function MessagesBar() {
                 >
                   <div
                     className={`w-full p-3 rounded-lg text-white hover:bg-accColor duration-500 transition-all ${
-                      setCurrent(`/message-to/${doc.id}`)
+                      setCurrent(`/message-to/${doc.chatId}`)
                         ? "bg-accColor"
                         : "bg-primeColor"
                     }`}
@@ -58,46 +120,90 @@ function MessagesBar() {
                       <img
                         className="rounded-full w-16 h-16 object-cover"
                         src={
-                          doc.users.find((partner) => partner.id !== user.uid)
-                            .photoURL
+                          users
+                            .filter(
+                              (chatter) =>
+                                doc.chatId.split("-")[0] === chatter.id ||
+                                doc.chatId.split("-")[1] === chatter.id
+                            )
+                            .find((chatter) => chatter.id !== user.uid)
+                            ?.photoURL
                         }
                         alt=""
                       />
 
                       <p className="font-semibold">
                         {
-                          doc.users.find((partner) => partner.id !== user.uid)
-                            .nickname
+                          users
+                            .filter(
+                              (user, i) =>
+                                user.id === entitledToChat[i]?.entitledUserId &&
+                                entitledToChat[i]?.entitledChatId === doc.chatId
+                            )
+                            .find((chatter) => chatter.id !== user.uid)
+                            ?.nickname
                         }
                       </p>
                     </div>
+
                     <div className="w-full flex justify-between p-1 gap-2">
                       <p className="flex items-center">
-                        {doc.messages &&
-                          doc.messages[doc.messages.length - 1].sender.nickname}
+                        {chatMessages.filter(
+                          (message) => message.chatId === doc.chatId
+                        ).length > 0 &&
+                          users.find(
+                            (chatter) =>
+                              chatter.id ===
+                              chatMessages.filter(
+                                (message) => message.chatId === doc.chatId
+                              )[
+                                chatMessages.filter(
+                                  (message) => message.chatId === doc.chatId
+                                ).length - 1
+                              ].sender.id
+                          )?.nickname}
                         :{" "}
-                        {doc.messages &&
-                        doc.messages[doc.messages.length - 1].content.includes(
-                          "https://firebasestorage.googleapis.com/"
-                        ) ? (
+                        {chatMessages.filter(
+                          (message) => message.chatId === doc.chatId
+                        ).length > 0 &&
+                        chatMessages
+                          .filter((message) => message.chatId === doc.chatId)
+                          [
+                            chatMessages.filter(
+                              (message) => message.chatId === doc.chatId
+                            ).length - 1
+                          ]?.content.includes(
+                            "https://firebasestorage.googleapis.com/"
+                          ) ? (
                           <>
                             <FaImage className="ml-2" /> Image
                           </>
                         ) : (
                           <>
-                            {doc.messages[
-                              doc.messages.length - 1
-                            ].content.substring(0, 30)}
-                            ...
+                            {chatMessages
+                              .filter(
+                                (message) => message.chatId === doc.chatId
+                              )
+                              [
+                                chatMessages.filter(
+                                  (message) => message.chatId === doc.chatId
+                                ).length - 1
+                              ]?.content.substring(0, 30)}
                           </>
                         )}
                       </p>
                       <p className="time-sent">
-                        {doc.messages &&
+                        {chatMessages.filter(
+                          (message) => message.chatId === doc.chatId
+                        ).length > 0 &&
                           formatDistanceToNow(
-                            doc.messages[
-                              doc.messages.length - 1
-                            ].sentAt.toDate()
+                            chatMessages.filter(
+                              (message) => message.chatId === doc.chatId
+                            )[
+                              chatMessages.filter(
+                                (message) => message.chatId === doc.chatId
+                              ).length - 1
+                            ].sentAt
                           )}{" "}
                         ago
                       </p>

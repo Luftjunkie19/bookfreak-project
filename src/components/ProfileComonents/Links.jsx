@@ -1,25 +1,25 @@
-import React from "react";
+import React from 'react';
 
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import {
   FaDiscord,
   FaGithub,
   FaSpotify,
   FaTrashAlt,
   FaYoutube,
-} from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import { useClipboard } from "use-clipboard-copy";
+} from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useClipboard } from 'use-clipboard-copy';
 
-import translations from "../../assets/translations/AlertMessages.json";
-import { useFirestore } from "../../hooks/useFirestore";
+import translations from '../../assets/translations/AlertMessages.json';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
 
-function Links({ document, user }) {
+function Links({ links, ownerId, userId }) {
   const navigate = useNavigate();
-  const { updateDocument } = useFirestore("users");
+  const { removeFromDataBase } = useRealDatabase();
 
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
@@ -33,12 +33,8 @@ function Links({ document, user }) {
     );
   };
 
-  const deleteLink = async (id, userId) => {
-    const allLinks = document.links;
-
-    await updateDocument(user.uid, {
-      links: allLinks.filter((link) => link.id !== id),
-    });
+  const deleteLink = (id, userId) => {
+    removeFromDataBase("links", id);
 
     navigate(`/profile/${userId}`);
   };
@@ -49,19 +45,21 @@ function Links({ document, user }) {
       exit={{ opacity: 0 }}
       className="flex w-full gap-2 flex-wrap p-2"
     >
-      {document.links.length > 0 ? (
-        document.links
+      {links.filter((link) => {
+        return link.belongsTo === ownerId;
+      }).length > 0 ? (
+        links
           .filter((link) => {
-            return link.addedBy === document.id;
+            return link.belongsTo === ownerId;
           })
           .map((link, i) => (
             <>
               {link.mediaType === "discord" ? (
                 <div className="flex items-center">
-                  {link.addedBy === user.uid && (
+                  {link.belongsTo === userId && link.belongsTo === ownerId && (
                     <button
                       className="text-red-500 pl-4"
-                      onClick={async () => await deleteLink(link.id, user.uid)}
+                      onClick={async () => await deleteLink(link.id, userId)}
                     >
                       <FaTrashAlt className="text-red-500 text-2xl" />
                     </button>
@@ -76,10 +74,10 @@ function Links({ document, user }) {
                 </div>
               ) : (
                 <div className="flex items-center p-2">
-                  {link.addedBy === user.uid && (
+                  {link.belongsTo === userId && link.belongsTo === ownerId && (
                     <button
                       className=" text-red-500 text-2xl flex items-center"
-                      onClick={async () => await deleteLink(link.id, user.uid)}
+                      onClick={async () => await deleteLink(link.id, userId)}
                     >
                       <FaTrashAlt />
                     </button>

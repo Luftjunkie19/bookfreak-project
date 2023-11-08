@@ -1,61 +1,67 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
 
-import { arrayUnion, doc, getFirestore, updateDoc } from "firebase/firestore";
 import { FaInfoCircle } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import translations from "../../assets/translations/NotificationsTranslations.json";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { useDocument } from "../../hooks/useDocument";
-import { useFirestore } from "../../hooks/useFirestore";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function NotificationViewer() {
   const { user } = useAuthContext();
-  const { updateDocument } = useFirestore("users");
-  const { document } = useDocument("users", user.uid);
   const openedModal = useSelector((state) => state.modal.isOpened);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const { updateDatabase, addToDataBase } = useRealDatabase();
+  const { getDocuments } = useRealtimeDocuments();
+  const [documents, setDocuments] = useState([]);
+
+  const loadNotifications = async () => {
+    const notificationsEl = await getDocuments("notifications");
+
+    if (notificationsEl) {
+      setDocuments(notificationsEl);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
+
   const dispatch = useDispatch();
   const secDispatch = useDispatch();
   const [requestId, setRequestId] = useState("");
   const openedState = useSelector((state) => state.viewer.isOpened);
 
-  const acceptRequest = async (
-    notification,
-    communityId,
-    communityType,
-    userData
-  ) => {
-    notification.isRead = true;
-
-    const updatedNotifications = document.notifications.filter(
-      (notifi) => notifi.id !== notification.id
+  const acceptRequest = async (notification, communityId, userData) => {
+    updateDatabase(
+      { ...notification, isRead: true },
+      "notifications",
+      `${notification.clubToJoin}-${notification.notificationTime}`
     );
 
-    await updateDocument(user.uid, {
-      notifications: updatedNotifications,
-    });
+    addToDataBase(
+      `communityMembers/${communityId}/users`,
+      userData.value.id,
+      userData
+    );
 
-    const communityDocument = doc(getFirestore(), communityType, communityId);
-
-    await updateDoc(communityDocument, {
-      users: arrayUnion(userData),
-    });
+    console.log(communityId, userData);
   };
 
-  const declineRequest = async (notification) => {
-    notification.isRead = true;
-
-    const updatedNotifications = document.notifications.filter(
-      (notifi) => notifi.id !== notification.id
+  const readNotification = (notification) => {
+    updateDatabase(
+      {
+        ...notification,
+        isRead: true,
+      },
+      "notifications",
+      `${notification.notificationId}-${notification.notificationTime}`
     );
-
-    await updateDocument(user.uid, {
-      notifications: updatedNotifications,
-    });
   };
   return (
     <>
@@ -69,27 +75,28 @@ function NotificationViewer() {
         <h2 className="text-2xl font-bold">
           {translations.titles.notifiactions[selectedLanguage]}:
         </h2>
-        {document &&
-        document.notifications &&
-        document.notifications.filter(
-          (notification) => !notification.requestContent
+        {documents.length > 0 &&
+        documents.filter(
+          (notification) =>
+            !notification.requestContent &&
+            notification.directedTo === user.uid &&
+            !notification.isRead
         ).length > 0 ? (
-          document.notifications
-            .filter((notification) => !notification.requestContent)
+          documents
+            .filter(
+              (notification) =>
+                !notification.requestContent &&
+                notification.directedTo === user.uid &&
+                !notification.isRead
+            )
             .map((doc) => (
               <Link
-                key={doc.id}
+                key={doc.notificationId}
                 to={doc.linkTo}
                 className={`flex justify-around items-center p-2 my-2 rounded-lg cursor-pointer ${
                   doc.isRead ? "bg-stone-800" : "bg-red-800"
                 } xl:w-1/3 md:w-2/3`}
-                onClick={() => {
-                  doc.isRead = true;
-
-                  updateDocument(user.uid, {
-                    notifications: document.notifications,
-                  });
-                }}
+                onClick={() => readNotification(doc)}
               >
                 <FaInfoCircle
                   className={`mr-4 ${
@@ -116,12 +123,18 @@ function NotificationViewer() {
           {translations.titles.requests[selectedLanguage]}:
         </h2>
         <div className="flex flex-col gap-4 w-full overflow-y-scroll">
-          {document &&
-          document.notifications &&
-          document.notifications.filter((doc) => doc.requestContent).length >
-            0 ? (
-            document.notifications
-              .filter((doc) => doc.requestContent)
+          {documents.length > 0 &&
+          documents.filter(
+            (doc) =>
+              doc.requestContent && doc.directedTo === user.uid && !doc.isRead
+          ).length > 0 ? (
+            documents
+              .filter(
+                (doc) =>
+                  doc.requestContent &&
+                  doc.directedTo === user.uid &&
+                  !doc.isRead
+              )
               .map((doc) => (
                 <div className="alert sm:w-full md:w-4/5 xl:w-1/2">
                   <svg
@@ -141,21 +154,14 @@ function NotificationViewer() {
                   <div className="flex gap-5">
                     <button
                       className="btn btn-sm bg-red-500 text-white"
-                      onClick={() => {
-                        declineRequest(doc);
-                      }}
+                      onClick={() => readNotification(doc)}
                     >
                       {translations.btns.decline[selectedLanguage]}
                     </button>
                     <button
                       className="btn btn-sm btn-success"
                       onClick={() => {
-                        acceptRequest(
-                          doc,
-                          doc.clubToJoin,
-                          doc.requestTo,
-                          doc.joinerData
-                        );
+                        acceptRequest(doc, doc.clubToJoin, doc.joinerData);
                       }}
                     >
                       {translations.btns.accept[selectedLanguage]}

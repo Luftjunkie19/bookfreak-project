@@ -1,8 +1,10 @@
-import "./Loader.css";
+import './Loader.css';
 
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
+import Lottie from 'lottie-react';
 
-import { Box, CircularProgress } from "@mui/material";
+import loadingAnimation
+  from '../assets/lottieAnimations/Animation - 1699205493311.json';
 
 function Loader() {
   return (
@@ -12,9 +14,7 @@ function Loader() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <Box>
-        <CircularProgress className="w-64 h-48" />
-      </Box>
+      <Lottie animationData={loadingAnimation} />
     </motion.div>
   );
 }

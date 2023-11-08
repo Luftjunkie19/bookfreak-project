@@ -2,8 +2,6 @@ import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./components/stylings/effects.css";
 
-import { useEffect } from "react";
-
 import { useDetectAdBlock } from "adblock-detect-react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -19,8 +17,10 @@ import Navbar from "./components/Navbar&MenuComponents/Navbar";
 import NotificationViewer from "./components/Navbar&MenuComponents/NotificationViewer";
 import UnloggedNavbar from "./components/Navbar&MenuComponents/UnloggedNavbar";
 import AdblockAlert from "./components/WarningsComponents/AdblockAlert";
+import LanguageSelection from "./components/WarningsComponents/LanguageSelection";
 import Warning from "./components/WarningsComponents/Warning";
 import { useAuthContext } from "./hooks/useAuthContext";
+import useRealtimeDocument from "./hooks/useRealtimeDocument";
 import Login from "./pages/AuthorizationForms/Login";
 import LogInWithPhone from "./pages/AuthorizationForms/LogInWithPhone";
 import SignInWithPhone from "./pages/AuthorizationForms/SignInWithPhone";
@@ -30,7 +30,7 @@ import YourChats from "./pages/ChatPages/YourChats";
 import Books from "./pages/CollectionsPages/Books";
 import Clubs from "./pages/CollectionsPages/Clubs";
 import Competitions from "./pages/CollectionsPages/Competitions";
-import Recensions from "./pages/CollectionsPages/Recensions";
+import Tests from "./pages/CollectionsPages/TestsCollection.jsx";
 import GeneralInfo from "./pages/CommunitySubPages/GeneralInfo";
 import OverallClub from "./pages/CommunitySubPages/OverallClub";
 import Create from "./pages/Create";
@@ -49,16 +49,8 @@ import Profile from "./pages/SinglePages/Profile";
 
 function App() {
   const { user, userIsReady } = useAuthContext();
-
+  const { getDocument } = useRealtimeDocument();
   const isUsingAdblock = useDetectAdBlock();
-
-  useEffect(() => {
-    if (isUsingAdblock) {
-      console.log("NAUGHTY, NAUGHTY BOI !");
-    } else {
-      console.log("GOOOD BOI !");
-    }
-  }, [isUsingAdblock]);
 
   const dispatch = useDispatch();
   const isDarkmode = useSelector((state) => state.mode.isDarkMode);
@@ -189,10 +181,8 @@ function App() {
                     />
 
                     <Route
-                      path="/recensions"
-                      element={
-                        (user && <Recensions />) || (!user && <SignUp />)
-                      }
+                      path="/tests"
+                      element={(user && <Tests />) || (!user && <SignUp />)}
                     />
 
                     <Route
@@ -232,6 +222,8 @@ function App() {
                 </div>
 
                 {isUsingAdblock && <AdblockAlert />}
+
+                {user && <LanguageSelection />}
 
                 <Footer />
               </BrowserRouter>

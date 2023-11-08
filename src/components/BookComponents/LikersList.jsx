@@ -1,12 +1,13 @@
-import React from "react";
+import React from 'react';
 
-import { motion } from "framer-motion";
-import { FaX } from "react-icons/fa6";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
+import { FaX } from 'react-icons/fa6';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import translations from "../../assets/translations/BookPageTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
+import translations from '../../assets/translations/BookPageTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
 
 function LikersList({ likers, likesAmount, closeList }) {
   const selectedLanguage = useSelector(
@@ -34,12 +35,12 @@ function LikersList({ likers, likesAmount, closeList }) {
         </p>
         {likers &&
           likers.map((liker) => (
-            <Link to={`/profile/${liker.uid}`}>
+            <Link key={liker.lovedBy} to={`/profile/${liker.lovedBy}`}>
               <div className="flex gap-2 items-center text-white">
                 <img
                   className="w-16 h-16 rounded-full object-cover"
                   src={liker.photoURL}
-                  alt={liker.uid}
+                  alt={liker.lovedBy}
                 />
                 <p>{liker.displayName}</p>
               </div>

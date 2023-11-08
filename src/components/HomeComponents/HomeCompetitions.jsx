@@ -1,12 +1,25 @@
 import "../../pages/stylings/backgrounds.css";
 
-import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import { useEffect, useState } from "react";
+
+import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
 
-import { useCollection } from "../../hooks/useCollection";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function HomeCompetitions() {
-  const { documents } = useCollection("competitions");
+  const { getDocuments } = useRealtimeDocuments();
+  const [documents, setElements] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadElements = async () => {
+    const booksEl = await getDocuments("competitions");
+    setElements(booksEl);
+  };
+
+  useEffect(() => {
+    loadElements();
+  }, [loadElements]);
 
   const getNumber = () => {
     if (document.body.clientWidth > 0 && document.body.clientWidth < 768) {
@@ -25,7 +38,7 @@ function HomeCompetitions() {
   const slicedDocuments = documents.slice(0, getNumber());
 
   return (
-    <div className="sm:grid sm:grid-flow-col snap-always snap-inline sm:overflow-x-auto lg:overflow-visible sm:auto-cols-[71%] md:auto-cols-[59%] snap-inline lg:flex lg:flex-row w-full 2xl:justify-around items-center gap-4 p-4">
+    <div className="sm:grid sm:grid-flow-col snap-always snap-inline sm:auto-cols-[83%] md:auto-cols-[67%] sm:overflow-x-auto lg:flex lg:items-center w-full py-8 px-4 gap-5">
       {slicedDocuments && slicedDocuments.length ? (
         slicedDocuments.map((doc) => (
           <Link
@@ -36,30 +49,8 @@ function HomeCompetitions() {
             <div className="flex flex-col justify-around px-2">
               <h3 className="text-lg font-semibold">{doc.competitionTitle}</h3>
               <p>{doc.competitionsName}</p>
-              <p>
-                Est. {formatDistanceToNow(doc.createdBy.createdAt.toDate())} ago
-              </p>
-            </div>
-            <div className="avatar-group mt-2 w-full justify-center">
-              {doc.users &&
-                doc.users.slice(0, 3).map((user, index) => (
-                  <div key={index} className="avatar">
-                    <div className="w-12 h-12 rounded-full overflow-hidden">
-                      <img
-                        src={user.value.photoURL}
-                        alt=""
-                        referrerPolicy="no-referrer"
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </div>
-                ))}
-              {doc.users.length - 3 > 0 && (
-                <div className="avatar">
-                  <div className="w-12 h-12 bg-neutral-focus text-neutral-content rounded-full text-center flex items-center justify-center">
-                    <span className="mt-4">+{doc.users.length - 3}</span>
-                  </div>
-                </div>
+              {doc.createdBy && (
+                <p>Est. {formatDistanceToNow(doc.createdBy.createdAt)} ago</p>
               )}
             </div>
           </Link>

@@ -8,10 +8,22 @@ import { Pagination } from "@mui/material";
 
 import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
 import translations from "../../assets/translations/SearchTranslations.json";
-import { useOrderedCollection } from "../../hooks/useOrderedCollection";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function Books() {
-  const { orderedDocuments } = useOrderedCollection("books");
+  const { getDocuments } = useRealtimeDocuments();
+  const [orderedDocuments, setElements] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadElements = async () => {
+    const booksEl = await getDocuments("books");
+    setElements(booksEl);
+  };
+
+  useEffect(() => {
+    loadElements();
+  }, [loadElements]);
+
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );

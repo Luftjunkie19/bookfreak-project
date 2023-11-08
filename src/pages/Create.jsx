@@ -1,57 +1,34 @@
-import './stylings/datepicker.css';
+import "./stylings/datepicker.css";
 
-import {
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from "react";
 
-import {
-  arrayUnion,
-  Timestamp,
-} from 'firebase/firestore';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import { motion } from 'framer-motion';
-import AvatarEditor from 'react-avatar-editor';
-import {
-  FaBook,
-  FaImage,
-  FaWindowClose,
-} from 'react-icons/fa';
-import { GiSwordsPower } from 'react-icons/gi';
-import { RiTeamFill } from 'react-icons/ri';
-import generateUniqueId from 'react-id-generator';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
-import CreatableSelect from 'react-select/creatable';
-import { toast } from 'react-toastify';
-import uniqid from 'uniqid';
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { motion } from "framer-motion";
+import AvatarEditor from "react-avatar-editor";
+import { FaBook, FaImage, FaWindowClose } from "react-icons/fa";
+import { GiSwordsPower } from "react-icons/gi";
+import { RiTeamFill } from "react-icons/ri";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import CreatableSelect from "react-select/creatable";
+import { toast } from "react-toastify";
+import uniqid from "uniqid";
 
-import {
-  Alert,
-  Autocomplete,
-  TextField,
-} from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
+import { Alert, Autocomplete, TextField } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
 
 import {
   addOptions,
   bookCategories,
   competitionTypes,
-} from '../assets/CreateVariables';
-import alertMessages from '../assets/translations/AlertMessages.json';
-import translations from '../assets/translations/FormsTranslations.json';
-import reuseableTranslations
-  from '../assets/translations/ReusableTranslations.json';
-import Loader from '../components/Loader';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useCollection } from '../hooks/useCollection';
-import { useFirestore } from '../hooks/useFirestore';
-import { useOrderedCollection } from '../hooks/useOrderedCollection';
+} from "../assets/CreateVariables";
+import alertMessages from "../assets/translations/AlertMessages.json";
+import translations from "../assets/translations/FormsTranslations.json";
+import reuseableTranslations from "../assets/translations/ReusableTranslations.json";
+import Loader from "../components/Loader";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useRealDatabase } from "../hooks/useRealDatabase";
+import useRealtimeDocuments from "../hooks/useRealtimeDocuments";
 
 function Create() {
   const [book, setBook] = useState({
@@ -89,23 +66,29 @@ function Create() {
   const [isPending, setIsPending] = useState(false);
   const [selectedToAdd, setSelectedToAdd] = useState("");
   const [attachedUsers, setAttachedUsers] = useState([]);
-  const { addDocument } = useFirestore(
-    selectedToAdd?.toLowerCase().trim() === ""
-      ? "books"
-      : selectedToAdd?.toLowerCase()
-  );
-  const { updateDocument } = useFirestore("users");
+  const { addToDataBase } = useRealDatabase();
+  const { getDocuments } = useRealtimeDocuments();
+  const [documents, setDocuments] = useState([]);
 
-  const { documents } = useCollection("users");
-  const { orderedDocuments } = useOrderedCollection("clubs");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadUsers = async () => {
+    const usersElements = await getDocuments("users");
+
+    if (usersElements) {
+      setDocuments(usersElements);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
   const { user } = useAuthContext();
   const editorRef = useRef();
 
-  const clubsOwned = orderedDocuments.filter(
-    (doc) => doc.createdBy.id === user.uid
-  );
+  const clubsOwned = [].filter((doc) => doc.createdBy.id === user.uid);
 
-  const clubsJoined = orderedDocuments.map((doc) => {
+  const clubsJoined = [].map((doc) => {
     return doc.users.filter((member) => member.value.id === user.uid);
   });
 
@@ -143,7 +126,9 @@ function Create() {
     }
 
     if (!selected.type.includes("image")) {
-      setError(alertMessages.notficactions.wrong.inAppropriateFile[selectedLanguage]);
+      setError(
+        alertMessages.notficactions.wrong.inAppropriateFile[selectedLanguage]
+      );
       setEditCover(null);
       return;
     }
@@ -212,7 +197,7 @@ function Create() {
 
     try {
       if (selectedToAdd.toLowerCase() === "books") {
-        const uniqueId = generateUniqueId("book-");
+        const uniqueId = uniqid();
 
         if (book.category.trim() === "") {
           setError(
@@ -240,29 +225,11 @@ function Create() {
           pagesNumber: book.pagesNumber,
           photoURL: book.bookCover,
           category: book.category,
-          likesData: {
-            likesAmount: 0,
-            likedBy: [],
-          },
-          readers: [
-            {
-              displayName: user.displayName,
-              email: user.email,
-              photoURL: user.photoURL,
-              startedReading: hasStarted,
-              hasFinished: usersReadPages === book.pagesNumber,
-              pagesRead: usersReadPages,
-              bookRate: 0,
-              dateOfFinish: isCompleted ? Timestamp.fromDate(new Date()) : null,
-              recension: "",
-              id: user.uid,
-            },
-          ],
           createdBy: {
             displayName: user.displayName,
             email: user.email,
             photoURL: user.photoURL,
-            createdAt: Timestamp.fromDate(new Date()),
+            createdAt: new Date(),
             id: user.uid,
           },
           id: uniqueId,
@@ -270,7 +237,34 @@ function Create() {
 
         console.log(bookElement);
 
-        await addDocument(bookElement);
+        addToDataBase("books", uniqueId, bookElement);
+        addToDataBase("likesData", uniqueId, {
+          likesAmount: 0,
+        });
+
+        addToDataBase("bookReaders", uniqueId, {
+          id: uniqueId,
+          readers: {
+            [user.uid]: {
+              displayName: user.displayName,
+              email: user.email,
+              photoURL: user.photoURL,
+              startedReading: hasStarted,
+              hasFinished: usersReadPages === book.pagesNumber,
+              pagesRead: usersReadPages,
+              bookRate: 0,
+              dateOfFinish: isCompleted ? new Date().getTime() : null,
+              recension: "",
+              id: user.uid,
+              bookReadingId: uniqueId,
+            },
+          },
+        });
+
+        addToDataBase("bookRecensions", uniqueId, {
+          averageRate: 0,
+          recensions: {},
+        });
 
         toast.success(
           alertMessages.notifications.successfull.create[selectedLanguage]
@@ -278,51 +272,62 @@ function Create() {
       }
 
       if (selectedToAdd.toLowerCase() === "competitions") {
-        const uniqueId = generateUniqueId("competition-");
+        const uniqueId = uniqid();
 
-        await addDocument({
+        addToDataBase("competitions", uniqueId, {
           competitionTitle: competition.competitionTitle,
           competitionsName: competition.competitionsName,
-          expiresAt: Timestamp.fromDate(new Date(competition.expiresAt)),
-          messages: [],
-          users: [
-            {
+          expiresAt: new Date(competition.expiresAt).getTime(),
+          description: competition.description,
+          createdBy: {
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            createdAt: new Date().getTime(),
+            id: user.uid,
+          },
+          id: uniqueId,
+        });
+
+        addToDataBase("communityChats", uniqueId, {
+          messages: {},
+          chatId: uniqueId,
+        });
+
+        addToDataBase("communityMembers", uniqueId, {
+          users: {
+            [user.uid]: {
               label: user.displayName,
+              belongsTo: uniqueId,
               value: {
                 nickname: user.displayName,
                 id: user.uid,
                 photoURL: user.photoURL,
               },
             },
-          ],
-          description: competition.description,
-          createdBy: {
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            createdAt: Timestamp.fromDate(new Date()),
-            id: user.uid,
           },
-          id: uniqueId,
         });
 
-        attachedUsers.map(async (member) => {
-          await updateDocument(member.value.uid, {
-            notifications: arrayUnion({
+        attachedUsers.map((member) =>
+          addToDataBase(
+            "notifications",
+            `${uniqueId}-${new Date().getTime()}`,
+            {
               notificationContent: `You've been invited by ${user.displayName} to join the ${competition.competitionsName} competition.`,
               directedTo: member.value.id,
-              linkTo: `/competitions`,
+              linkTo: `/competition/${uniqueId}`,
               isRead: false,
-              notificationId: uniqid(),
-              notificationTime: Timestamp.fromDate(new Date()),
+              notificationId: uniqueId,
+              notificationTime: new Date().getTime(),
               addedTo: competition.competitionsName,
-            }),
-          });
-        });
+            }
+          )
+        );
       }
 
       if (selectedToAdd.toLowerCase() === "clubs") {
-        if (
+        {
+          /* if (
           clubsOwned.length > 0 ||
           clubsJoined.filter((club) => club.length !== 0).length > 0
         ) {
@@ -331,49 +336,55 @@ function Create() {
             alertMessages.notifications.wrong.loyality[selectedLanguage]
           );
           return;
+        }*/
         }
+        const uniqueId = uniqid();
 
-        const uniqueId = generateUniqueId("readersClub-");
-
-        await addDocument({
+        addToDataBase("readersClubs", uniqueId, {
           clubsName: readersClub.clubsName,
           clubLogo: readersClub.clubLogo,
-          messages: [],
           description: readersClub.description,
           requiredPagesRead: readersClub.requiredPagesRead,
-          users: [
-            {
+          createdBy: {
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            createdAt: new Date().getTime(),
+            id: user.uid,
+          },
+          id: uniqueId,
+        });
+
+        addToDataBase("communityChats", uniqueId, {
+          messages: {},
+          chatId: uniqueId,
+        });
+
+        addToDataBase("communityMembers", uniqueId, {
+          users: {
+            [user.uid]: {
               label: user.displayName,
+              belongsTo: uniqueId,
               value: {
                 nickname: user.displayName,
                 id: user.uid,
                 photoURL: user.photoURL,
               },
             },
-          ],
-          createdBy: {
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            createdAt: Timestamp.fromDate(new Date()),
-            id: user.uid,
           },
-          id: uniqueId,
         });
 
-        attachedUsers.map(async (member) => {
-          await updateDocument(member.value.id, {
-            notifications: arrayUnion({
-              notificationContent: `You've been invited by ${user.displayName} to ${readersClub.clubsName} club.`,
-              directedTo: member.value.id,
-              linkTo: `/readers-clubs`,
-              notificationId: uniqid(),
-              isRead: false,
-              notificationTime: Timestamp.fromDate(new Date()),
-              addedTo: readersClub.clubsName,
-            }),
-          });
-        });
+        attachedUsers.map((member) =>
+          addToDataBase("notifications", member.value.id, {
+            notificationContent: `You've been invited by ${user.displayName} to ${readersClub.clubsName} club.`,
+            directedTo: member.value.id,
+            linkTo: `/readers-club/${uniqueId}`,
+            notificationId: uniqueId,
+            isRead: false,
+            notificationTime: new Date().getTime(),
+            addedTo: readersClub.clubsName,
+          })
+        );
       }
 
       setIsPending(false);

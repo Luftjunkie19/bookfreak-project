@@ -1,6 +1,6 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
 
-import { arrayUnion } from "firebase/firestore";
 import generateUniqueId from "react-id-generator";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -14,8 +14,9 @@ import formTranslations from "../../assets/translations/FormsTranslations.json";
 import profileTranslations from "../../assets/translations/ProfileTranslations.json";
 import Loader from "../../components/Loader";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { useDocument } from "../../hooks/useDocument";
-import { useFirestore } from "../../hooks/useFirestore";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function AddLink() {
   const selectedLanguage = useSelector(
@@ -25,12 +26,38 @@ function AddLink() {
   const [link, setLink] = useState("");
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
-
+  const { getDocument } = useRealtimeDocument();
+  const { getDocuments } = useRealtimeDocuments();
+  const { addToDataBase } = useRealDatabase();
   const { user } = useAuthContext();
+  const [document, setDocument] = useState(null);
+  const [links, setLinks] = useState([]);
 
-  const { document } = useDocument("users", user.uid);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const documentObject = async () => {
+    const doc = await getDocument("users", user.uid);
 
-  const { updateDocument } = useFirestore("users");
+    if (doc) {
+      setDocument(doc);
+    }
+  };
+
+  const loadLinksObjects = async () => {
+    const readerObjects = await getDocuments("links");
+
+    const realObjects = readerObjects
+      .map((bookReader) => {
+        return bookReader;
+      })
+      .filter((reader) => reader.belongsTo === user.uid);
+
+    setLinks(realObjects);
+  };
+
+  useEffect(() => {
+    documentObject();
+    loadLinksObjects();
+  }, [documentObject, loadLinksObjects]);
 
   const navigate = useNavigate();
 
@@ -41,8 +68,9 @@ function AddLink() {
 
     try {
       const uniqueId = generateUniqueId(
-        `${option}${new Date().getTime()}${user.id}${link}`
+        `${option}${new Date().getTime()}${user.uid}`
       );
+
       if (option === "discord") {
         if (!link.match("^.{3,32}#[0-9]{4}$")) {
           setError(
@@ -52,19 +80,17 @@ function AddLink() {
           return;
         }
 
-        if (document.links.find((curLink) => curLink.mediaType === option)) {
+        if (links.find((exLink) => exLink.mediaType === option)) {
           setError(alertMessages.notifications.wrong[selectedLanguage]);
           setIsPending(false);
           return;
         }
 
-        await updateDocument(user.uid, {
-          links: arrayUnion({
-            mediaType: option,
-            nickname: link,
-            addedBy: user.uid,
-            id: uniqueId,
-          }),
+        addToDataBase("links", uniqueId, {
+          mediaType: option,
+          nickname: link,
+          belongsTo: user.uid,
+          id: uniqueId,
         });
       } else {
         if (
@@ -79,19 +105,17 @@ function AddLink() {
           return;
         }
 
-        if (document.links.find((curLink) => curLink.mediaType === option)) {
+        if (links.find((exLink) => exLink.mediaType === option)) {
           setError(alertMessages.notifications.wrong[selectedLanguage]);
           setIsPending(false);
           return;
         }
 
-        await updateDocument(user.uid, {
-          links: arrayUnion({
-            mediaType: option,
-            linkTo: link,
-            addedBy: user.uid,
-            id: uniqueId,
-          }),
+        addToDataBase("links", uniqueId, {
+          mediaType: option,
+          linkTo: link,
+          belongsTo: user.uid,
+          id: uniqueId,
         });
       }
 

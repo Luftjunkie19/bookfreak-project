@@ -1,20 +1,25 @@
 import "./stylings/backgrounds.css";
 
+import Lottie from "lottie-react";
 import { FaBook, FaUserFriends } from "react-icons/fa";
 import { GiPodiumWinner } from "react-icons/gi";
-import { MdRateReview } from "react-icons/md";
+import { PiExamFill } from "react-icons/pi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
+import animationLottie2 from "../assets/lottieAnimations/Animation - 1699176767867.json";
+import animationLottie from "../assets/lottieAnimations/mwUkFOkeLv.json";
 import translations from "../assets/translations/homePageTranslations.json";
 import HomeBooks from "../components/HomeComponents/HomeBooks";
 import HomeClubs from "../components/HomeComponents/HomeClubs";
 import HomeCompetitions from "../components/HomeComponents/HomeCompetitions";
+import { useLogout } from "../hooks/useLogout";
 
 function Home() {
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const { logout } = useLogout();
 
   return (
     <>
@@ -30,6 +35,7 @@ function Home() {
 
             <Link
               to="/recensions"
+              onClick={logout}
               className="btn bg-accColor text-white transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor lg:w-1/2 my-2"
             >
               {translations.heroSection.button[selectedLangugage]}
@@ -37,6 +43,16 @@ function Home() {
           </div>
 
           <div className="flex sm:flex-row sm:justify-around sm:items-center flex-1 p-4 md:flex-col">
+            <Lottie
+              className="sm:w-2/3 sm:h-1/3 sm:self-end md:w-56 md:h-1/2 2xl:w-1/2 2xl:h-1/2"
+              animationData={animationLottie}
+            />
+
+            <Lottie
+              className="sm:w-2/3 sm:h-1/3 sm:self-start md:w-56 md:h-1/2 2xl:w-1/2 2xl:h-1/2"
+              animationData={animationLottie2}
+            />
+            {/**
             <img
               className="sm:w-1/2 sm:h-1/4 sm:self-end md:w-56 md:h-1/2 2xl:w-2/5 2xl:h-2/5"
               src="https://cdn3d.iconscout.com/3d/premium/thumb/reading-book-5706112-4756522.png?f=webp"
@@ -46,7 +62,7 @@ function Home() {
               className="sm:w-1/2 sm:h-1/4 sm:self-start md:w-56 md:h-1/2 2xl:w-1/3 2xl:h-1/3"
               src="https://cdn3d.iconscout.com/3d/premium/thumb/books-5412720-4526315.png"
               alt=""
-            />
+            /> */}
           </div>
         </div>
 
@@ -70,10 +86,10 @@ function Home() {
             </Link>
 
             <Link
-              to="/recensions"
+              to="/tests"
               className="bg-accColor h-48 xl:w-1/5 text-white sm:w-full md:w-2/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor"
             >
-              <MdRateReview className="text-5xl" />
+              <PiExamFill className="text-5xl" />
               <p className="text-white group-hover:text-primeColor">
                 {
                   translations.homePage.explorationOptions.option2[

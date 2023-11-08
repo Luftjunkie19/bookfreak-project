@@ -1,13 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { GiBookmarklet, GiHamburgerMenu } from "react-icons/gi";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import {
+  GiBookmarklet,
+  GiHamburgerMenu,
+} from 'react-icons/gi';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import languageTranslation from "../../assets/translations/navbarTranslations.json";
-import { burgerActions } from "../../context/BurgerContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import LanguageSelect from "./LanguageSelect";
+import languageTranslation
+  from '../../assets/translations/navbarTranslations.json';
+import { burgerActions } from '../../context/BurgerContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import LanguageSelect from './LanguageSelect';
 
 function UnloggedNavbar() {
   const { user } = useAuthContext();
@@ -40,7 +50,7 @@ function UnloggedNavbar() {
     <>
       <div
         className={`${
-          isSticky && "sticky top-0 left-0 z-50 scrolled"
+          isSticky ? "sticky top-0 left-0 z-50 scrolled" : ""
         } flex justify-between items-center px-3 py-4 bg-primeColor text-neutral-50 rounded-b-lg w-screen`}
       >
         <Link

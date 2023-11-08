@@ -8,7 +8,6 @@ import {
   signInWithPhoneNumber,
   updateProfile,
 } from "firebase/auth";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import PhoneInput from "react-phone-input-2";
 import { useSelector } from "react-redux";
@@ -19,6 +18,8 @@ import { Alert } from "@mui/material";
 
 import formsTranslations from "../../assets/translations/FormsTranslations.json";
 import { useAuthContext } from "../../hooks/useAuthContext";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
 
 function SignInWithPhone() {
   const defaultAvatar =
@@ -26,7 +27,8 @@ function SignInWithPhone() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-  const firestore = getFirestore();
+  const { getDocument } = useRealtimeDocument();
+  const { addToDataBase } = useRealDatabase();
   const [phone, setPhone] = useState("");
   const [nickname, setNickname] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
@@ -42,13 +44,10 @@ function SignInWithPhone() {
     setError(null);
     try {
       const recaptchaVerifier = new RecaptchaVerifier(
+        myAuth,
         "recaptcha-container",
-        {
-          size: "invisible",
-        },
-        myAuth
+        { size: "invisible" }
       );
-
       const confirmResult = await signInWithPhoneNumber(
         myAuth,
         phone,
@@ -74,12 +73,11 @@ function SignInWithPhone() {
 
       console.log(result.user);
 
-      const document = doc(firestore, "users", result.user.uid);
-      const userToAdd = await getDoc(document);
+      const userToAdd = await getDocument("users", result.user.uid);
 
       console.log(userToAdd);
 
-      if (!userToAdd.exists()) {
+      if (!userToAdd) {
         const uploadPath = `profileImg/uid${result.user.uid}/${result.user.photoURL}`;
 
         const storage = getStorage();
@@ -94,18 +92,17 @@ function SignInWithPhone() {
           photoURL: photoURL,
         });
 
-        await setDoc(document, {
+        addToDataBase("users", result.user.uid, {
           nickname: result.user.displayName,
           email: result.user.email,
           description: "",
-          links: [],
-          notifications: [],
-          chats: [],
+          links: {},
+          notifications: {},
+          chats: {},
           id: result.user.uid,
           photoURL: defaultAvatar,
         });
       }
-
       dispatch({ type: "LOGIN", payload: result.user });
 
       navigate("/");
