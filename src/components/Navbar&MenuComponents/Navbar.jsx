@@ -18,8 +18,9 @@ import { Link, useLocation } from "react-router-dom";
 import navBarTranslation from "../../assets/translations/navbarTranslations.json";
 import { burgerActions } from "../../context/BurgerContext";
 import { viewerActions } from "../../context/ViewerContext";
-import { useDocument } from "../../hooks/useDocument";
 import { useLogout } from "../../hooks/useLogout";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 import LanguageSelect from "./LanguageSelect";
 
 function Navbar({ user }) {
@@ -32,20 +33,38 @@ function Navbar({ user }) {
   const location = useLocation();
   const isOpened = useSelector((state) => state.notificationViewer.isOpened);
   const [documentBase, setDocumentBase] = useState(null);
-  const { document } = useDocument("users", user.uid);
+  const { getDocument } = useRealtimeDocument();
   const checkLocation = (linkLocation) => {
     if (location.pathname === linkLocation) {
       return true;
     }
   };
+  const { getDocuments } = useRealtimeDocuments();
+  const [documents, setDocuments] = useState([]);
+  /* eslint-disable react-hooks/exhaustive-deps */
+  const loadNotifications = async () => {
+    const notificationsEl = await getDocuments("notifications");
 
-  useEffect(() => {
-    if (document && user) {
-      setDocumentBase(document);
+    if (notificationsEl) {
+      setDocuments(notificationsEl);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const effectFunction = async () => {
+    const userDoc = await getDocument("users", user.uid);
+
+    if (userDoc && user) {
+      setDocumentBase(userDoc);
     } else {
       setDocumentBase(null);
     }
-  }, [document, user]);
+  };
+
+  useEffect(() => {
+    effectFunction();
+    loadNotifications();
+  }, [effectFunction, loadNotifications]);
 
   const dispatch = useDispatch();
 
@@ -53,9 +72,9 @@ function Navbar({ user }) {
 
   useEffect(() => {
     const checkIfScrolled = () => {
-      const scrolledLevel = window.scrollY;
+      const scrolledLevel = document.body.scrollTop;
 
-      if (scrolledLevel >= 70) {
+      if (scrolledLevel <= 70) {
         setIsSticky(true);
       } else {
         setIsSticky(false);
@@ -67,14 +86,16 @@ function Navbar({ user }) {
     return () => {
       window.removeEventListener("scroll", checkIfScrolled);
     };
-  }, [document]);
+  }, []);
 
   return (
     <>
       <div
         className={`${
-          isSticky && "sticky top-0 left-0 scrolled transition-all duration-500"
-        } flex justify-between items-center px-3 py-2 bg-primeColor text-neutral-50 rounded-b-lg w-full z-[9999999] transition-all duration-500`}
+          isSticky
+            ? "sticky top-0 left-0 scrolled transition-all duration-500"
+            : ""
+        } flex justify-between items-center px-3 py-2 bg-primeColor text-neutral-50 rounded-b-lg w-screen z-[9999999] transition-all duration-500`}
       >
         <Link
           to="/"
@@ -112,7 +133,7 @@ function Navbar({ user }) {
           </h2>
         </Link>
 
-        {user && document && (
+        {user && documentBase && (
           <div className="sm:flex md:flex lg:flex xl:hidden">
             <button
               className="btn border-none text-neutral-50 bg-transparent shadow-none hover:bg-modalPrimeColor"
@@ -121,15 +142,15 @@ function Navbar({ user }) {
               }}
             >
               <FaBell className=" text-yellow-400 text-base" />
-              {documentBase &&
-                documentBase.notifications &&
-                documentBase.notifications.filter((doc) => doc.isRead === false)
-                  .length > 0 && (
+              {documents.length > 0 &&
+                documents.filter(
+                  (doc) => !doc.isRead && doc.directedTo === user.uid
+                ).length > 0 && (
                   <div className="badge text-yellow-400 bg-transparent border-none">
                     +
                     {
-                      documentBase.notifications.filter(
-                        (doc) => doc.isRead === false
+                      documents.filter(
+                        (doc) => !doc.isRead && doc.directedTo === user.uid
                       ).length
                     }
                   </div>
@@ -210,16 +231,15 @@ function Navbar({ user }) {
                   className={isOpened ? "text-yellow-400" : "text-neutral-50"}
                 />
 
-                {documentBase &&
-                  documentBase.notifications &&
-                  documentBase.notifications.filter(
-                    (doc) => doc.isRead === false
+                {documents.length > 0 &&
+                  documents.filter(
+                    (doc) => !doc.isRead && doc.directedTo === user.uid
                   ).length > 0 && (
-                    <div className="badge text-yellow-400 bg-transparent border-0">
+                    <div className="badge text-yellow-400 bg-transparent border-none">
                       +
                       {
-                        documentBase.notifications.filter(
-                          (doc) => doc.isRead === false
+                        documents.filter(
+                          (doc) => !doc.isRead && doc.directedTo === user.uid
                         ).length
                       }
                     </div>

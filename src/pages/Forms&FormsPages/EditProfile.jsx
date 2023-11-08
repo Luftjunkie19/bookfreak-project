@@ -1,50 +1,31 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from "react";
 
-import {
-  updateEmail,
-  updateProfile,
-} from 'firebase/auth';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import { motion } from 'framer-motion';
-import AvatarEditor from 'react-avatar-editor';
-import {
-  FaUserAlt,
-  FaWindowClose,
-} from 'react-icons/fa';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { updateEmail, updateProfile } from "firebase/auth";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { motion } from "framer-motion";
+import AvatarEditor from "react-avatar-editor";
+import { FaUserAlt, FaWindowClose } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { Alert } from '@mui/material';
+import { Alert } from "@mui/material";
 
-import alertMessages from '../../assets/translations/AlertMessages.json';
-import formsTranslation from '../../assets/translations/FormsTranslations.json';
-import reuseableTranslations
-  from '../../assets/translations/ReusableTranslations.json';
-import Loader from '../../components/Loader';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useCollection } from '../../hooks/useCollection';
-import { useFirestore } from '../../hooks/useFirestore';
-import { useFormData } from '../../hooks/useFormData';
-import { useUpdateCommunities } from '../../hooks/useUpdateCommunities';
-import { useUpdateDocs } from '../../hooks/useUpdateDocs';
-import { useUpdateChats } from '../../hooks/useUpdateUserChat';
+import alertMessages from "../../assets/translations/AlertMessages.json";
+import formsTranslation from "../../assets/translations/FormsTranslations.json";
+import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
+import Loader from "../../components/Loader";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { useFormRealData } from "../../hooks/useFormRealData";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function EditProfile() {
   const { user } = useAuthContext();
-  const { ownedArray, partneredArray, updateOwnedChats, updatePartneredChats } =
-    useUpdateChats();
 
-  const { document } = useFormData("users", user.uid);
+  const { document } = useFormRealData("users", user.uid);
+  const { getDocuments } = useRealtimeDocuments();
+  const { updateDatabase } = useRealDatabase();
   const defaultImg = user.photoURL;
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
@@ -57,21 +38,32 @@ function EditProfile() {
   const [editProfileImg, setEditProfileImg] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const { updateDocument } = useFirestore("users");
+  const [bookReaders, setBookReaders] = useState([]);
   const editorRef = useRef();
-  const { documents } = useCollection("books", [
-    "createdBy.id",
-    "==",
-    user.uid,
-  ]);
-
-  const { updateDocs } = useUpdateDocs();
 
   const storage = getStorage();
 
   const navigate = useNavigate();
 
-  const { updateComunities } = useUpdateCommunities();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadBookReaders = async () => {
+    const documents = await getDocuments("bookReaders");
+
+    const realObjects = documents.map((bookReader) => {
+      return bookReader.readers;
+    });
+
+    const newArray = realObjects.map((obj) => {
+      const nestedObject = Object.values(obj)[0];
+      return nestedObject;
+    });
+
+    setBookReaders(newArray);
+  };
+
+  useEffect(() => {
+    loadBookReaders();
+  }, [loadBookReaders]);
 
   useEffect(() => {
     if (document) {
@@ -148,39 +140,42 @@ function EditProfile() {
     try {
       console.log(nickname, email, profileImg);
 
-      updateComunities(
-        {
-          label: nickname,
-          value: {
-            nickname: nickname,
-            photoURL: profileImg,
-            id: user.uid,
-          },
-        },
-        nickname,
-        profileImg
-      );
-
       await updateProfile(user, {
         displayName: nickname,
         photoURL: profileImg,
       });
-      await updateDocument(user.uid, {
-        nickname: nickname,
-        email: email,
-        photoURL: profileImg,
-        description: description,
-      });
 
       await updateEmail(user, email);
-      updateDocs(documents, "books", nickname, email, profileImg);
 
-      if (ownedArray.length > 0) {
-        updateOwnedChats(profileImg, nickname);
-      }
+      updateDatabase(
+        {
+          ...document,
+          nickname: nickname,
+          photoURL: profileImg,
+          description: description,
+          email: email,
+        },
+        "users",
+        user.uid
+      );
 
-      if (partneredArray.length > 0) {
-        updatePartneredChats(profileImg, nickname);
+      if (bookReaders.length > 0) {
+        const yourObjects = bookReaders.filter(
+          (reader) => reader.id === user.uid
+        );
+
+        yourObjects.map((reader) => {
+          updateDatabase(
+            {
+              ...reader,
+              displayName: nickname,
+              email: email,
+              photoURL: profileImg,
+            },
+            "bookReaders",
+            `${reader.bookReadingId}/readers/${user.uid}`
+          );
+        });
       }
 
       setIsPending(false);

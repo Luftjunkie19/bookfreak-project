@@ -1,5 +1,7 @@
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 import {
   Paper,
@@ -9,37 +11,63 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@mui/material';
+} from "@mui/material";
 
-import reuseableTranslations
-  from '../assets/translations/ReusableTranslations.json';
-import { useCollection } from '../hooks/useCollection';
+import reuseableTranslations from "../assets/translations/ReusableTranslations.json";
+import useRealtimeDocuments from "../hooks/useRealtimeDocuments";
 
-function Ranking({ users, rankingOf, timeDifference }) {
-  const { documents } = useCollection("books");
+function Ranking({ communityId, communityMembers }) {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const { getDocuments } = useRealtimeDocuments();
+
+  const [books, setBooks] = useState([]);
+  const [readerObjects, setReaderObjects] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadReaderObjects = async () => {
+    const readerObjects = await getDocuments("bookReaders");
+
+    const realObjects = readerObjects.map((bookReader) => {
+      return bookReader.readers;
+    });
+
+    const newArray = realObjects.map((obj) => {
+      const nestedObject = Object.values(obj);
+      return nestedObject;
+    });
+
+    setReaderObjects(newArray.flat());
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadBooks = async () => {
+    const booksEl = await getDocuments("books");
+    setBooks(booksEl);
+  };
+
+  useEffect(() => {
+    loadBooks();
+    loadReaderObjects();
+  }, [loadBooks, loadReaderObjects]);
+
   const getReadBooks = (id) => {
-    return documents.filter((book) =>
-      book.readers.find(
-        (reader) => reader.id === id && reader.pagesRead === book.pagesNumber
-      )
-    ).length;
+    return readerObjects.filter((reader, i) => reader.id === id).length;
   };
 
   const getlastBookRead = (id) => {
-    const lastBookTitle = documents.filter((book) =>
-      book.readers.find(
-        (reader) => reader.id === id && reader.pagesRead === book.pagesNumber
-      )
-    )[0]?.title;
+    const BookTitles = readerObjects.filter((reader, i) => reader.id === id);
 
-    if (lastBookTitle) {
-      return lastBookTitle;
-    } else {
-      return "No data yet.";
-    }
+    const lastBookTitle = books.filter(
+      (book, index) => book.id === BookTitles[index]?.bookReadingId
+    )[
+      books.filter(
+        (book, index) => book.id === BookTitles[index]?.bookReadingId
+      ).length - 1
+    ]?.title;
+
+    return lastBookTitle;
   };
 
   return (
@@ -84,8 +112,8 @@ function Ranking({ users, rankingOf, timeDifference }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {document &&
-            users.slice(0, 3).map((user) => (
+          {communityMembers.length > 0 &&
+            communityMembers.map((user) => (
               <TableRow
                 key={user.label}
                 sx={{

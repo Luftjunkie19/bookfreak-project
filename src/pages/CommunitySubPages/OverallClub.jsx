@@ -1,23 +1,25 @@
-import React, { useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import {
-  collection,
-  deleteDoc,
-  getDocs,
-  getFirestore,
-  query,
-  where,
-} from "firebase/firestore";
-import { BsFillDoorOpenFill } from "react-icons/bs";
+import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
   FaFacebookMessenger,
   FaInfo,
   FaPencilAlt,
   FaTrashAlt,
-} from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+} from 'react-icons/fa';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import {
   Button,
@@ -30,17 +32,19 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@mui/material";
+} from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import translations from "../../assets/translations/ClubsTranslations.json";
-import formsTranslations from "../../assets/translations/FormsTranslations.json";
-import reusableTranslations from "../../assets/translations/ReusableTranslations.json";
-import { warningActions } from "../../context/WarningContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useCollection } from "../../hooks/useCollection";
-import { useDocument } from "../../hooks/useDocument";
-import { useFirestore } from "../../hooks/useFirestore";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import translations from '../../assets/translations/ClubsTranslations.json';
+import formsTranslations
+  from '../../assets/translations/FormsTranslations.json';
+import reusableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import { warningActions } from '../../context/WarningContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function OverallClub() {
   const selectedLanguage = useSelector(
@@ -70,26 +74,49 @@ function OverallClub() {
   const openMangement = Boolean(managmentEl);
   const { id } = useParams();
   const { user } = useAuthContext();
-  const { document } = useDocument("clubs", id);
-  const { documents } = useCollection("books");
+  const { getDocuments } = useRealtimeDocuments();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { updateDocument, deleteDocument } = useFirestore("clubs");
+  const { getDocument } = useRealtimeDocument();
+  const [members, setMembers] = useState([]);
+  const [document, setDocument] = useState();
+  const { removeFromDataBase } = useRealDatabase();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadDocument = async () => {
+    const loadDocumentEl = await getDocument("readersClubs", id);
+
+    if (loadDocumentEl) {
+      setDocument(loadDocumentEl);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadMembers = async () => {
+    const memberElements = await getDocuments("communityMembers");
+
+    const realObjects = memberElements.map((bookReader) => {
+      return bookReader.users;
+    });
+
+    const newArray = realObjects.map((obj) => {
+      const nestedObject = Object.values(obj)[0];
+      return nestedObject;
+    });
+
+    setMembers(newArray);
+  };
+
+  useEffect(() => {
+    loadMembers();
+    loadDocument();
+  }, [loadDocument, loadMembers]);
 
   const getReadBooks = (id) => {
-    return documents.filter((book) =>
-      book.readers.find(
-        (reader) => reader.id === id && reader.pagesRead === book.pagesNumber
-      )
-    ).length;
+    return [].length;
   };
 
   const getlastBookRead = (id) => {
-    const lastBookTitle = documents.filter((book) =>
-      book.readers.find(
-        (reader) => reader.id === id && reader.pagesRead === book.pagesNumber
-      )
-    )[0]?.title;
+    const lastBookTitle = { title: null }.title;
 
     if (lastBookTitle) {
       return lastBookTitle;
@@ -99,9 +126,7 @@ function OverallClub() {
   };
 
   const leaveClub = async () => {
-    const arrayWithoutYou = document.users.filter(
-      (doc) => doc.value.id !== user.uid
-    );
+    const arrayWithoutYou = members.filter((doc) => doc.value.id !== user.uid);
 
     if (arrayWithoutYou && document.createdBy.id === user.uid) {
       dispatch(
@@ -118,34 +143,13 @@ function OverallClub() {
     toast.success(
       alertMessages.notifications.successfull.leave[selectedLanguage]
     );
-
-    await updateDocument(document.id, {
-      users: arrayWithoutYou,
-    });
   };
 
   const deleteClub = async (id) => {
-    const col = collection(getFirestore(), "notifications");
+    removeFromDataBase("readersClubs", id);
+    removeFromDataBase("communityChats", id);
+    removeFromDataBase("communityMembers", id);
 
-    const queriedCol = await getDocs(query(col, where("clubToJoin", "==", id)));
-    const messagesCol = await getDocs(query(col, where("sentTo", "==", id)));
-    const queriedNots = await getDocs(
-      query(col, where("addedTo", "==", document.clubsName))
-    );
-
-    messagesCol.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-    });
-
-    queriedCol.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-    });
-
-    queriedNots.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-    });
-
-    await deleteDocument(id);
     navigate("/");
     toast.success(
       alertMessages.notifications.successfull.update[selectedLanguage]
@@ -155,8 +159,8 @@ function OverallClub() {
   return (
     <div className="min-h-screen h-full">
       {document &&
-        document.users.find((member) => {
-          return member.value.id === user.uid;
+        members.find((member) => {
+          return member.value.id === user.uid && member.belongsTo === id;
         }) && (
           <div className="w-full flex justify-between items-center p-3">
             <div className="flex justify-between text-white items-center">
@@ -164,6 +168,9 @@ function OverallClub() {
                 className="w-16 h-16 rounded-full object-cover"
                 src={document.clubLogo}
                 alt=""
+                onClick={() => {
+                  console.log(members);
+                }}
               />
               <p className="ml-2">{document.clubsName}</p>
             </div>
@@ -351,7 +358,8 @@ function OverallClub() {
                     <span className="text-lg font-semibold">
                       {translations.clubObject.community[selectedLanguage]}
                     </span>
-                    : {document.users.length}{" "}
+                    :{" "}
+                    {members.filter((member) => member.belongsTo === id).length}{" "}
                     {translations.clubObject.members[selectedLanguage]}
                   </p>
                   <p>
@@ -366,7 +374,7 @@ function OverallClub() {
                     {reusableTranslations.pagesText[selectedLanguage]}
                   </p>
                 </div>
-                {document && document.description.trim() !== "" && (
+                {document.description && document.description.trim() !== "" && (
                   <div class="flex flex-col text-white p-3 w-full">
                     <h2 class="text-3xl font-extralight pb-2">
                       {
@@ -425,82 +433,86 @@ function OverallClub() {
                 </TableHead>
                 <TableBody>
                   {document &&
-                    document.users.map((user) => (
-                      <TableRow
-                        key={user.value.uid}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          className="border-r-white border-r-2"
-                          sx={{ color: "#fff" }}
+                    members
+                      .filter((member) => member.belongsTo === id)
+                      .map((user) => (
+                        <TableRow
+                          key={user.value.uid}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
                         >
-                          <Link to={`/user/profile/${user.value.id}`}>
-                            <div className="w-16 h-16">
-                              <img
-                                className="w-full h-full rounded-full"
-                                src={user.value.photoURL}
-                                alt=""
-                              />
-                            </div>
-                          </Link>
-                        </TableCell>
+                          <TableCell
+                            component="th"
+                            scope="row"
+                            className="border-r-white border-r-2"
+                            sx={{ color: "#fff" }}
+                          >
+                            <Link to={`/user/profile/${user.value.id}`}>
+                              <div className="w-16 h-16">
+                                <img
+                                  className="w-full h-full rounded-full"
+                                  src={user.value.photoURL}
+                                  alt=""
+                                />
+                              </div>
+                            </Link>
+                          </TableCell>
 
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          className="border-r-white border-r-2"
-                          sx={{ color: "#fff" }}
-                        >
-                          <p>{user.value.nickname}</p>
-                        </TableCell>
-                        <TableCell
-                          sx={{ color: "#fff" }}
-                          component="th"
-                          scope="row"
-                          className="border-r-white border-r-2"
-                        >
-                          <p className="text-center">
-                            {getReadBooks(user.value.id)}{" "}
-                            {getReadBooks(user.value.id) > 1 ? "books" : "book"}
-                          </p>
-                        </TableCell>
-                        <TableCell
-                          sx={{ color: "#fff" }}
-                          component="th"
-                          scope="row"
-                          className="border-r-white border-r-2"
-                        >
-                          <p className="text-center">
-                            {getlastBookRead(user.value.id)}
-                          </p>
-                        </TableCell>
-                        <TableCell
-                          sx={{ color: "#fff" }}
-                          component="th"
-                          scope="row"
-                        >
-                          <p>
-                            {documents
-                              .filter((book) =>
-                                book.readers.find(
-                                  (reader) =>
-                                    reader.id === user.value.id &&
-                                    reader.pagesRead === book.pagesNumber
+                          <TableCell
+                            component="th"
+                            scope="row"
+                            className="border-r-white border-r-2"
+                            sx={{ color: "#fff" }}
+                          >
+                            <p>{user.value.nickname}</p>
+                          </TableCell>
+                          <TableCell
+                            sx={{ color: "#fff" }}
+                            component="th"
+                            scope="row"
+                            className="border-r-white border-r-2"
+                          >
+                            <p className="text-center">
+                              {getReadBooks(user.value.id)}{" "}
+                              {getReadBooks(user.value.id) > 1
+                                ? "books"
+                                : "book"}
+                            </p>
+                          </TableCell>
+                          <TableCell
+                            sx={{ color: "#fff" }}
+                            component="th"
+                            scope="row"
+                            className="border-r-white border-r-2"
+                          >
+                            <p className="text-center">
+                              {getlastBookRead(user.value.id)}
+                            </p>
+                          </TableCell>
+                          <TableCell
+                            sx={{ color: "#fff" }}
+                            component="th"
+                            scope="row"
+                          >
+                            <p>
+                              {[]
+                                .filter((book) =>
+                                  book.readers.find(
+                                    (reader) =>
+                                      reader.id === user.value.id &&
+                                      reader.pagesRead === book.pagesNumber
+                                  )
                                 )
-                              )
-                              .reduce(
-                                (prev, cur) => prev + cur?.pagesNumber,
-                                0
-                              )}{" "}
-                            Pages
-                          </p>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                                .reduce(
+                                  (prev, cur) => prev + cur?.pagesNumber,
+                                  0
+                                )}{" "}
+                              Pages
+                            </p>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                 </TableBody>
               </Table>
             </TableContainer>

@@ -3,7 +3,7 @@ import "./index.css";
 import React from "react";
 
 import { initializeApp } from "firebase/app";
-import { initializeFirestore } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 
@@ -14,6 +14,7 @@ import stored from "./context/Stored";
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_APIKEY,
   authDomain: process.env.REACT_APP_DOMAINNAME,
+  databaseURL: process.env.REACT_APP_DATABASEURL,
   projectId: process.env.REACT_APP_PROJECTID,
   storageBucket: process.env.REACT_APP_STORAGEBUCKET,
   messagingSenderId: process.env.REACT_APP_MESSENDERID,
@@ -23,11 +24,9 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
-const currentApp = initializeApp(firebaseConfig);
+export const currentApp = initializeApp(firebaseConfig);
 
-export const database = initializeFirestore(currentApp, {
-  experimentalForceLongPolling: true,
-});
+export const database = getFirestore(currentApp);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

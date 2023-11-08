@@ -9,8 +9,6 @@ import { toast } from "react-toastify";
 
 import alertTranslations from "../../assets/translations/AlertMessages.json";
 import { warningActions } from "../../context/WarningContext";
-import { useDocument } from "../../hooks/useDocument";
-import { useFirestore } from "../../hooks/useFirestore";
 
 function Warning() {
   const item = useSelector((state) => state.warning.referedTo);
@@ -21,8 +19,6 @@ function Warning() {
   );
 
   const navigate = useNavigate();
-  const { deleteDocument } = useFirestore(collectionName);
-  const { document } = useDocument(collectionName, item);
 
   const dispatch = useDispatch();
   return (
@@ -65,7 +61,7 @@ function Warning() {
               className="btn w-32 btn-error"
               onClick={() => {
                 dispatch(warningActions.closeWarning());
-                deleteDocument(document.id);
+
                 navigate("/");
                 toast.success(
                   alertTranslations.notifications.successfull.leave[

@@ -1,19 +1,9 @@
 import "../stylings/scrollbarStyling.css";
 import "../stylings/backgrounds.css";
 
+import { useEffect, useState } from "react";
+
 import { deleteUser } from "firebase/auth";
-import {
-  arrayRemove,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  getFirestore,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { Alert } from "flowbite-react";
 import { BiSolidBook, BiSolidLike } from "react-icons/bi";
 import {
   FaBook,
@@ -35,10 +25,10 @@ import FullyReadBooks from "../../components/ProfileComonents/FullyReadBooks";
 import Links from "../../components/ProfileComonents/Links";
 import OwnedBooks from "../../components/ProfileComonents/OwnedBooks";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { useCollection } from "../../hooks/useCollection";
-import { useDocument } from "../../hooks/useDocument";
 import { useLogout } from "../../hooks/useLogout";
-import { useOrderedCollection } from "../../hooks/useOrderedCollection";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function Profile() {
   const { id } = useParams();
@@ -46,102 +36,90 @@ function Profile() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-
   const { logout } = useLogout();
+  const [document, setDocument] = useState(null);
+  const [books, setBooks] = useState([]);
+  const [links, setLinks] = useState([]);
+  const [favBooks, setFavBooks] = useState([]);
+  const [readerObjects, setReaderObjects] = useState([]);
+  const { getDocument } = useRealtimeDocument();
+  const { removeFromDataBase } = useRealDatabase();
+  const { getDocuments } = useRealtimeDocuments();
 
-  const { document, error } = useDocument("users", id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const documentObject = async () => {
+    const doc = await getDocument("users", id);
 
-  const { documents } = useCollection("books");
+    if (doc) {
+      setDocument(doc);
+    }
+  };
 
-  const { orderedDocuments } = useOrderedCollection("chats");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadReaderObjects = async () => {
+    const readerObjects = await getDocuments("bookReaders");
+
+    const realObjects = readerObjects.map((bookReader) => {
+      return bookReader.readers;
+    });
+
+    const newArray = realObjects.map((obj) => {
+      const nestedObject = Object.values(obj);
+      return nestedObject;
+    });
+
+    setReaderObjects(newArray.flat());
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadBooks = async () => {
+    const booksEl = await getDocuments("books");
+    setBooks(booksEl);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadLinks = async () => {
+    const linksEl = await getDocuments("links");
+    setLinks(linksEl);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadFavouritedBooks = async () => {
+    const favBooksEl = await getDocuments("lovedBooks");
+    setFavBooks(favBooksEl);
+  };
+
+  useEffect(() => {
+    documentObject();
+    loadReaderObjects();
+    loadFavouritedBooks();
+    loadBooks();
+    loadLinks();
+  }, [
+    documentObject,
+    loadBooks,
+    loadFavouritedBooks,
+    loadLinks,
+    loadReaderObjects,
+  ]);
 
   const navigate = useNavigate();
 
   const { user } = useAuthContext();
 
+  const booksFilter = books.map((book) => {
+    return { bookId: book.id, pagesNumber: book.pagesNumber };
+  });
+
+  const readersFiltered = readerObjects.filter((reader) => reader.id === id);
+
   const redirectToExistedChat = (providedId) => {
-    if (orderedDocuments) {
-      const existedChat = orderedDocuments.filter((document) => {
-        return providedId === document.id.split("-").reverse().join("-");
-      });
-
-      console.log(existedChat);
-
-      if (existedChat.length > 0) {
-        navigate(`/message-to/${existedChat[0].id}`);
-      } else {
-        navigate(`/message-to/${providedId}`);
-      }
-    }
-  };
-
-  const removeFromParticularCollection = async (collection) => {
-    const collectionDocuments = await getDocs(collection);
-
-    collectionDocuments.forEach((doc) => {
-      deleteDoc(doc.ref);
-    });
-  };
-
-  const removeUserFromArrays = async (collection, user, collectionsName) => {
-    const documents = await getDocs(collection);
-
-    documents.forEach((docu) => {
-      const document = doc(getFirestore(), collectionsName, docu.id);
-
-      updateDoc(document, { users: arrayRemove(user) });
-    });
+    navigate(`/message-to/${providedId}`);
   };
 
   const removeAccount = async () => {
-    const userToRemove = doc(getFirestore(), "users", user.uid);
+    removeFromDataBase("users", user.uid);
 
-    const books = collection(getFirestore(), "books");
-    const chats = collection(getFirestore(), "chats");
-    const ownedBooks = query(books, where("createdBy.id", "==", user.uid));
-    const partneredChats = query(
-      chats,
-      where("users.partner.id", "==", user.uid)
-    );
-
-    const ownedLinks = query(
-      collection(getFirestore(), "links"),
-      where("addedBy", "==", user.uid)
-    );
-
-    const memberPattern = {
-      label: user.displayName,
-      value: {
-        id: user.uid,
-        nickname: user.displayName,
-        photoURL: user.photoURL,
-      },
-    };
-
-    const joinedCompetitions = query(
-      collection(getFirestore(), "competitions"),
-      where("users", "array-contains", memberPattern)
-    );
-    const joinedClubs = collection(getFirestore(), "clubs");
-    const ownedCompetitions = query(
-      joinedCompetitions,
-      where("createdBy.id", "==", user.uid)
-    );
-    const ownedClubs = query(
-      joinedClubs,
-      where("createdBy.id", "==", user.uid)
-    );
-    const ownedChats = query(chats, where("users.you.id", "==", user.uid));
-    removeFromParticularCollection(partneredChats);
-    removeFromParticularCollection(ownedLinks);
-    removeFromParticularCollection(ownedChats);
-    removeFromParticularCollection(ownedBooks);
-    removeFromParticularCollection(ownedClubs);
-    removeFromParticularCollection(ownedCompetitions);
-    removeUserFromArrays(joinedCompetitions, memberPattern, "competitions");
-    removeUserFromArrays(joinedClubs, memberPattern, "clubs");
-
-    await deleteDoc(userToRemove);
     await deleteUser(user);
     await logout();
   };
@@ -158,6 +136,16 @@ function Profile() {
                     <img
                       src={document.photoURL}
                       alt=""
+                      onClick={() => {
+                        console.log(
+                          books.filter(
+                            (book, i) =>
+                              book.id === favBooks[i].lovedBookId &&
+                              favBooks[i].lovedBy === id
+                          ),
+                          favBooks
+                        );
+                      }}
                       referrerPolicy="no-referrer"
                       className="object-cover"
                     />
@@ -171,21 +159,27 @@ function Profile() {
                 </p>
               </div>
 
-              {document && document.links.length > 0 && (
-                <div>
-                  <p className="text-2xl text-white flex gap-2 items-center">
-                    <IoShareSocialSharp />
-                    {
-                      translations.featuresButtons.socialMediaButton[
-                        selectedLanguage
-                      ]
-                    }
-                    :
-                  </p>
+              {document &&
+                links.filter((link) => link.belongsTo === document.id).length >
+                  0 && (
+                  <div>
+                    <p className="text-2xl text-white flex gap-2 items-center">
+                      <IoShareSocialSharp />
+                      {
+                        translations.featuresButtons.socialMediaButton[
+                          selectedLanguage
+                        ]
+                      }
+                      :
+                    </p>
 
-                  <Links document={document && document} user={user && user} />
-                </div>
-              )}
+                    <Links
+                      links={links && links}
+                      ownerId={document && document.id}
+                      userId={user && user.uid}
+                    />
+                  </div>
+                )}
 
               <div className="flex-w-full justify-center items-center">
                 <div className="stats w-full stats-vertical 2xl:stats-horizontal shadow my-3">
@@ -198,12 +192,10 @@ function Profile() {
                     </div>
                     <div className="stat-value">
                       {
-                        documents.filter((book) =>
-                          book.readers.some(
-                            (reader) =>
-                              reader.id === document.id &&
-                              reader.pagesRead === book.pagesNumber
-                          )
+                        readersFiltered.filter(
+                          (reader, i) =>
+                            reader.pagesRead === booksFilter[i]?.pagesNumber &&
+                            booksFilter[i]?.bookId === reader.bookReadingId
                         ).length
                       }
                     </div>
@@ -218,7 +210,7 @@ function Profile() {
                     </div>
                     <div className="stat-value">
                       {
-                        documents.filter(
+                        books.filter(
                           (book) => book.createdBy.id === document.id
                         ).length
                       }
@@ -234,11 +226,8 @@ function Profile() {
                     </div>
                     <div className="stat-value">
                       {
-                        documents.filter((book) =>
-                          book.likesData.likedBy.find(
-                            (liker) => liker.uid === document.id
-                          )
-                        ).length
+                        favBooks.filter((book) => book?.lovedBy === document.id)
+                          .length
                       }
                     </div>
                   </div>
@@ -354,10 +343,7 @@ function Profile() {
                   <Route
                     path="owned-books"
                     element={
-                      <OwnedBooks
-                        ownedBooks={documents}
-                        ownerId={document.id}
-                      />
+                      <OwnedBooks ownedBooks={books} ownerId={document.id} />
                     }
                   />
 
@@ -365,27 +351,45 @@ function Profile() {
                     path="read-books"
                     element={
                       <FullyReadBooks
-                        readBooks={documents}
-                        readerId={document.id}
+                        readBooks={books.filter(
+                          (book, i) =>
+                            readersFiltered[i]?.pagesRead ===
+                              book.pagesNumber && readersFiltered[i]?.id === id
+                        )}
+                        usersReadPages={readersFiltered.filter(
+                          (reader, i) =>
+                            reader.pagesRead === books[i]?.pagesNumber &&
+                            reader.id === id
+                        )}
                       />
                     }
                   />
 
                   <Route
                     path="users-fav"
-                    element={<FavouriteBooks id={document.id} />}
+                    element={
+                      <FavouriteBooks
+                        favBooks={
+                          books &&
+                          favBooks &&
+                          books.filter(
+                            (book, i) =>
+                              book.id ===
+                              favBooks
+                                .filter((book) => book.lovedBy === id)
+                                .map((book) => {
+                                  return book.lovedBookId;
+                                })[i]
+                          )
+                        }
+                      />
+                    }
                   />
                 </Routes>
               </div>
             </div>
           </div>
         </>
-      )}
-
-      {error && (
-        <Alert className="bg-transparent" severity="error">
-          No user found
-        </Alert>
       )}
     </div>
   );

@@ -1,14 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import {
-  arrayUnion,
-  collection,
-  deleteDoc,
-  doc,
-  getFirestore,
-  Timestamp,
-} from "firebase/firestore";
 import { FaHeart, FaPencilAlt, FaShare, FaTrash } from "react-icons/fa";
+import { GiBookshelf } from "react-icons/gi";
+import { MdPlaylistRemove, MdUpdate } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
@@ -24,8 +18,9 @@ import RecensionsForBook from "../../components/BookComponents/RecensionsForBook
 import Loader from "../../components/Loader";
 import { modalActions } from "../../context/ModalContext";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { useDocument } from "../../hooks/useDocument";
-import { useFirestore } from "../../hooks/useFirestore";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 import EditBook from "../Forms&FormsPages/EditBook";
 
 function Book() {
@@ -33,11 +28,18 @@ function Book() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const [isPending, setIsPending] = useState(false);
-  const { document, error } = useDocument("books", id);
-  const { deleteDocument, updateDocument } = useFirestore("books");
+  const [document, setDocument] = useState(null);
+  const { getDocument } = useRealtimeDocument();
+  const { getDocuments } = useRealtimeDocuments();
+  const { removeFromDataBase, addToDataBase, updateDatabase } =
+    useRealDatabase();
+  const [isLiked, setIsLiked] = useState(false);
   const [bookReaderForm, setBookReaderForm] = useState(false);
   const [updateReaderStatus, setUpdateReaderStatus] = useState(false);
+  const [likers, setLikers] = useState([]);
+  const [readers, setReaders] = useState([]);
   const [showLikers, setShowLikers] = useState(false);
+  const [recensions, setRecensions] = useState([]);
 
   const showAllLikers = () => {
     setShowLikers(true);
@@ -47,15 +49,153 @@ function Book() {
     setShowLikers(false);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadLikers = async () => {
+    const likersEls = await getDocuments("lovedBooks");
+
+    if (likersEls) {
+      setLikers(likersEls);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadRecensions = async () => {
+    const likersEls = await getDocuments("bookRecensions");
+
+    const realObjects = likersEls.map((bookReader) => {
+      if (bookReader.recensions) {
+        return bookReader.recensions;
+      } else {
+        return [];
+      }
+    });
+
+    if (realObjects) {
+      const newArray = realObjects.map((obj) => {
+        if (obj !== null && obj !== undefined) {
+          const nestedObject = Object.values(obj);
+          return nestedObject;
+        } else {
+          return;
+        }
+      });
+
+      if (newArray) {
+        setRecensions(newArray.flat());
+      }
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const showIfLiked = async () => {
+    const docElement = await getDocument("lovedBooks", `${id}-${user.uid}`);
+
+    if (docElement) {
+      setIsLiked(true);
+    } else {
+      setIsLiked(false);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadObject = async () => {
+    const docElement = await getDocument("books", id);
+    if (docElement) {
+      setDocument(docElement);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadReaders = async () => {
+    const likersEls = await getDocuments("bookReaders");
+
+    const realObjects = likersEls.map((bookReader) => {
+      return bookReader.readers;
+    });
+
+    const newArray = realObjects.map((obj) => {
+      const nestedObject = Object.values(obj);
+      return nestedObject;
+    });
+
+    if (newArray) {
+      setReaders(newArray.flat());
+    }
+  };
+
+  const publishRecension = (recension, bookRate) => {
+    addToDataBase("bookRecensions", `${id}/recensions/${user.uid}`, {
+      recensionedBook: id,
+      bookRate: bookRate,
+      recension: recension,
+      displayName: user.displayName,
+      email: user.email,
+      id: user.uid,
+      photoURL: user.photoURL,
+      dateOfFinish: new Date().getTime(),
+    });
+
+    const readerObject = readers.find(
+      (reader) => reader.id === user.uid && reader.bookReadingId === id
+    );
+
+    updateDatabase(
+      { ...readerObject, recension: recension },
+      "bookReaders",
+      `${id}/readers/${user.uid}`
+    );
+  };
+
+  useEffect(() => {
+    loadObject();
+    showIfLiked();
+    loadLikers();
+    loadReaders();
+    loadRecensions();
+  }, [loadLikers, loadObject, loadReaders, loadRecensions, showIfLiked]);
+
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
 
-  const clickDelete = async () => {
-    setIsPending(true);
-    const bookObject = doc(collection(getFirestore(), "books"), id);
+  const changeLoveState = () => {
+    getDocument("lovedBooks", `${id}-${user.uid}`).then((element) => {
+      if (!element) {
+        getDocument("likesData", id).then((data) => {
+          updateDatabase(
+            {
+              likesAmount: data.likesAmount + 1,
+            },
+            "likesData",
+            id
+          );
+        });
 
-    await deleteDoc(bookObject);
+        addToDataBase("lovedBooks", `${id}-${user.uid}`, {
+          lovedBy: user.uid,
+          lovedBookId: id,
+          photoURL: user.photoURL,
+          displayName: user.displayName,
+        });
+      } else {
+        removeFromDataBase("lovedBooks", `${id}-${user.uid}`);
+        getDocument("likesData", id).then((data) => {
+          updateDatabase(
+            {
+              likesAmount: data.likesAmount - 1,
+            },
+            "likesData",
+            id
+          );
+        });
+      }
+    });
+  };
+
+  const clickDelete = () => {
+    setIsPending(true);
+
+    removeFromDataBase("books", id);
 
     toast.success(
       alertMessages.notifications.successfull.remove[selectedLanguage]
@@ -91,151 +231,53 @@ function Book() {
     setUpdateReaderStatus(false);
   };
 
-  const addToShelf = async (hasStarted, hasFinished, readPages) => {
-    setIsPending(true);
-    closeBookReaderForm();
+  const removeFromShelf = () => {
+    removeFromDataBase(`bookReaders`, `${id}/readers/${user.uid}`);
+    removeFromDataBase(`bookRecensions`, `${id}/recensions/${user.uid}`);
+  };
 
-    if (
-      document &&
-      !document.readers.find((reader) => reader.id === user.uid)
-    ) {
-      await updateDocument(document.id, {
-        readers: arrayUnion({
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-          startedReading: hasStarted,
-          hasFinished: hasFinished,
-          pagesRead: readPages,
-          dateOfFinish: readPages === document.pagesNumber ? new Date() : null,
-          recension: "",
-          bookRate: 0,
-          id: user.uid,
-        }),
-      });
-      setIsPending(false);
-      return;
+  const addToShelf = (hasStarted, hasFinished, readPages) => {
+    addToDataBase("bookReaders", `${id}/readers/${user.uid}`, {
+      bookRate: 0,
+      bookReadingId: id,
+      displayName: user.displayName,
+      email: user.email,
+      hasFinished,
+      id: user.uid,
+      pagesRead: readPages,
+      startedReading: hasStarted,
+      recension: "",
+      photoURL: user.photoURL,
+    });
+  };
+
+  const updateReaderState = (hasStarted, hasFinished, readPages) => {
+    if (document.pagesNumber > readPages) {
+      removeFromDataBase(`bookRecensions`, `${id}/recensions/${user.uid}`);
     }
 
-    setIsPending(false);
-  };
-
-  const removeFromShelf = async () => {
-    setIsPending(true);
-    await updateDocument(document.id, {
-      readers: document.readers.filter((reader) => reader.id !== user.uid),
+    addToDataBase("bookReaders", `${id}/readers/${user.uid}`, {
+      bookRate: 0,
+      bookReadingId: id,
+      displayName: user.displayName,
+      email: user.email,
+      hasFinished,
+      id: user.uid,
+      pagesRead: readPages,
+      startedReading: hasStarted,
+      recension: "",
+      photoURL: user.photoURL,
     });
-    setIsPending(false);
-  };
-
-  const loveTheBook = async () => {
-    setIsPending(true);
-
-    if (
-      document &&
-      !document.likesData.likedBy.find((liker) => liker.uid === user.uid)
-    ) {
-      await updateDocument(id, {
-        likesData: {
-          likedBy: [
-            ...document.likesData.likedBy,
-            {
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-              uid: user.uid,
-            },
-          ],
-          likesAmount: document.likesData.likesAmount + 1,
-        },
-      });
-      setIsPending(false);
-      return;
-    }
-
-    if (
-      document &&
-      document.likesData.likedBy.find((liker) => liker.uid === user.uid)
-    ) {
-      await updateDocument(id, {
-        likesData: {
-          likedBy: document.likesData.likedBy.filter(
-            (liker) => liker.uid !== user.uid
-          ),
-          likesAmount: document.likesData.likesAmount - 1,
-        },
-      });
-      setIsPending(false);
-      return;
-    }
-    setIsPending(false);
-  };
-
-  const publishRecension = async (recension, bookRate) => {
-    setIsPending(true);
-    const yourReaderIndex = document.readers.findIndex(
-      (reader) => reader.id === user.uid
-    );
-    document.readers[yourReaderIndex].recension = recension;
-    document.readers[yourReaderIndex].bookRate = bookRate;
-
-    await updateDocument(document.id, {
-      readers: [...document.readers],
-    });
-    setIsPending(false);
-  };
-
-  const updateBookState = async (hasStarted, hasFinished, pagesRead) => {
-    console.log(hasStarted, hasFinished, pagesRead);
-    setIsPending(true);
-    closeUpdateReaderForm();
-
-    const updatedReaders = [
-      ...document.readers.filter((reader) => reader.id !== user.uid),
-      {
-        pagesRead: pagesRead,
-        startedReading: hasStarted,
-        hasFinished: hasFinished,
-        dateOfFinish: hasFinished ? Timestamp.fromDate(new Date()) : null,
-        bookRate: 0,
-        recension: "",
-        displayName: user.displayName,
-        email: user.email,
-        id: user.uid,
-        photoURL: user.photoURL,
-      },
-    ];
-
-    await updateDocument(document.id, {
-      readers: updatedReaders,
-    });
-    setIsPending(false);
   };
 
   return (
-    <div className="min-h-screen h-full">
+    <div className="min-h-screen h-full overflow-x-hidden">
       {isOpened && <EditBook id={id} />}
 
-      {updateReaderStatus && document && (
-        <BookReaderForm
-          pagesAmount={document.pagesNumber}
-          handleConfirm={updateBookState}
-          closeForm={closeUpdateReaderForm}
-          readerData={document.readers.find((reader) => reader.id === user.uid)}
-        />
-      )}
-
-      {bookReaderForm && document && (
-        <BookReaderForm
-          closeForm={closeBookReaderForm}
-          handleConfirm={addToShelf}
-          pagesAmount={document.pagesNumber}
-        />
-      )}
-
       {document && (
-        <div className="flex h-full justify-around items-center sm:flex-col lg:flex-row mt-16 mx-6">
+        <div className="flex h-full justify-around items-center sm:flex-col lg:flex-row mt-16">
           <div className="flex flex-col items-center justify-around w-full md:w-1/2">
-            <div className="w-64 h-64">
+            <div className="w-64 h-64 m-2">
               <img
                 className="h-full w-full rounded-md object-cover"
                 src={document.photoURL}
@@ -243,9 +285,9 @@ function Book() {
               />
             </div>
             {document && document.createdBy.id === user.uid && (
-              <div className="flex w-full sm:flex-col md:flex-row items-center justify-center p-2 gap-2">
+              <div className="flex w-full items-center justify-center gap-2">
                 <button
-                  className="btn sm:w-full md:w-fit bg-facebook text-white min-w-[10rem]"
+                  className="btn sm:w-2/5 md:w-fit bg-facebook text-white md:min-w-[10rem]"
                   onClick={() => {
                     dispatch(modalActions.openModal());
                   }}
@@ -254,7 +296,7 @@ function Book() {
                   <FaPencilAlt />
                 </button>
                 <button
-                  className="btn sm:w-full md:w-fit bg-darkRed text-white md:min-w-[10rem]"
+                  className="btn sm:w-2/5 md:w-fit bg-darkRed text-white md:min-w-[10rem]"
                   onClick={clickDelete}
                 >
                   {translations.buttonsTexts.delete[selectedLanguage]}
@@ -269,51 +311,57 @@ function Book() {
               {translations.authorText[selectedLanguage]}: {document.author}
             </span>
             <div className="mt-2">
-              <div className="flex sm:justify-around md:justify-between items-center my-2 sm:w-full lg:w-4/5">
+              <div className="flex gap-4 justify-between items-center my-2 p-2 sm:w-full md:w-3/4 lg:w-4/5">
                 {document && (
                   <div>
                     <button
-                      className={`flex justify-around items-center ${
-                        document &&
-                        document.likesData.likedBy.find(
-                          (liker) => liker.uid === user.uid
-                        ) &&
-                        "text-red-500"
-                      }`}
-                      onClick={loveTheBook}
+                      className={`flex justify-around items-center`}
+                      onClick={changeLoveState}
                     >
-                      <FaHeart className="text-3xl" />
+                      <FaHeart
+                        className={`text-3xl ${isLiked && "text-red-500"}`}
+                      />
                     </button>
-
-                    {document.likesData.likedBy.length > 0 && (
-                      <p className=" text-sm py-2 group">
+                    {likers.filter((liker) => liker.lovedBookId === id).length >
+                      0 && (
+                      <p className="sm:text-sm lg:text-base">
                         <Link
-                          className=" font-semibold"
-                          to={`/profile/${document.likesData.likedBy[0].uid}`}
+                          to={`/profile/${
+                            likers.filter(
+                              (liker) => liker.lovedBookId === id
+                            )[0].lovedBy
+                          }`}
                         >
-                          {document.likesData.likedBy[0].displayName}
-                        </Link>{" "}
-                        {document.likesData.likedBy.length === 1 &&
-                          `${translations.andPersons.singlePerson[selectedLanguage]}`}
-                        {document.likesData.likedBy.length - 1 > 0 && (
-                          <button
-                            onClick={showAllLikers}
-                            className="hover:underline-offset-2 hover:underline"
-                          >
-                            {`${
-                              translations.andPersons.part1[selectedLanguage]
-                            } ${document.likesData.likedBy.length - 1} ${
-                              translations.andPersons.part2[selectedLanguage]
-                            }`}
-                          </button>
-                        )}
+                          {
+                            likers.filter(
+                              (liker) => liker.lovedBookId === id
+                            )[0].displayName
+                          }{" "}
+                        </Link>
+                        <span
+                          onClick={showAllLikers}
+                          className="hover:underline"
+                        >
+                          {likers.filter((liker) => liker.lovedBookId === id)
+                            .length === 1
+                            ? `${translations.andPersons.singlePerson[selectedLanguage]} `
+                            : ` ${
+                                translations.andPersons.part1[selectedLanguage]
+                              } ${
+                                likers.filter(
+                                  (liker) => liker.lovedBookId === id
+                                ).length - 1
+                              } ${
+                                translations.andPersons.part2[selectedLanguage]
+                              }`}
+                        </span>
                       </p>
                     )}
                   </div>
                 )}
 
                 <button
-                  className="btn btn-outline border-accColor text-accColor hover:bg-accColor hover:text-white"
+                  className="sm:btn-sm lg:btn btn btn-outline border-accColor text-accColor hover:bg-accColor hover:text-white"
                   onClick={copyPathName}
                 >
                   <FaShare /> {translations.shareText[selectedLanguage]}
@@ -340,76 +388,104 @@ function Book() {
               </div>
             </div>
 
-            <div className="flex sm:flex-col md:flex-row lg:flex-col xl:flex-row gap-5 w-full justify-around items-center my-3">
+            <div className="flex sm:flex-col md:flex-row lg:flex-col xl:flex-row gap-2 w-full  items-center my-3">
               {document &&
-              !document.readers.find((reader) => reader.id === user.uid) ? (
-                <button onClick={openBookReaderForm} className="btn btn-wide">
-                  {translations.buttonsTexts.addToShelf[selectedLanguage]}
+              !readers.find(
+                (reader) =>
+                  reader.id === user.uid && reader.bookReadingId === id
+              ) ? (
+                <button className="btn lg:btn" onClick={openBookReaderForm}>
+                  {translations.buttonsTexts.addToShelf[selectedLanguage]}{" "}
+                  <GiBookshelf />
                 </button>
               ) : (
-                <button
-                  className="btn sm:btn-wide lg:btn-md"
-                  onClick={removeFromShelf}
-                >
-                  {translations.buttonsTexts.removeShelf[selectedLanguage]}
+                <button className="btn " onClick={removeFromShelf}>
+                  {translations.buttonsTexts.removeShelf[selectedLanguage]}{" "}
+                  <MdPlaylistRemove />
                 </button>
               )}
               {document &&
-                document.readers.find((reader) => reader.id === user.uid) && (
-                  <button
-                    onClick={openUpdateReaderForm}
-                    className="btn sm:btn-wide lg:btn-md"
-                  >
+                readers.find(
+                  (reader) =>
+                    reader.id === user.uid && reader.bookReadingId === id
+                ) && (
+                  <button onClick={openUpdateReaderForm} className="btn ">
                     {translations.buttonsTexts.updateStatus[selectedLanguage]}
+                    <MdUpdate />
                   </button>
                 )}
             </div>
           </div>
         </div>
       )}
-
-      {document && (
+      {document && readers && (
         <RecensionsForBook
           bookPages={document.pagesNumber}
           readPages={
-            document &&
-            document.readers.find((reader) => reader.id === user.uid) &&
-            document.readers.find((reader) => reader.id === user.uid).pagesRead
+            readers &&
+            readers.find(
+              (reader) => reader.id === user.uid && reader.bookReadingId === id
+            )?.pagesRead
           }
           title={document.title}
           hasReadBook={
-            document &&
-            document.readers.find((reader) => reader.id === user.uid) &&
-            document.readers.find((reader) => reader.id === user.uid)
-              .hasFinished
+            readers &&
+            readers.find(
+              (reader) => reader.id === user.uid && reader.bookReadingId === id
+            )?.hasFinished
           }
           hasRecension={
-            document &&
-            document.readers.find((reader) => reader.id === user.uid) &&
-            document.readers
-              .find((reader) => reader.id === user.uid)
-              .recension.trim(" ") !== ""
+            readers &&
+            readers
+              .find(
+                (reader) =>
+                  reader.id === user.uid && reader.bookReadingId === id
+              )
+              ?.recension.trim("") !== ""
           }
           publishRecension={publishRecension}
           recensions={
-            document &&
-            document.readers.filter(
-              (reader) =>
-                reader.hasFinished === true && reader.recension.trim("") !== ""
-            )
+            recensions && recensions.length > 0
+              ? recensions.filter(
+                  (recension) => recension.recensionedBook === id
+                )
+              : []
           }
         />
       )}
 
-      {isPending && <Loader />}
+      {bookReaderForm && document && (
+        <BookReaderForm
+          readerData={readers.find(
+            (reader) => reader.id === user.uid && reader.bookReadingId === id
+          )}
+          handleConfirm={addToShelf}
+          pagesAmount={document.pagesNumber}
+          closeForm={closeBookReaderForm}
+        />
+      )}
+
+      {updateReaderStatus && document && (
+        <BookReaderForm
+          readerData={readers.find(
+            (reader) => reader.id === user.uid && reader.bookReadingId === id
+          )}
+          handleConfirm={updateReaderState}
+          pagesAmount={document.pagesNumber}
+          closeForm={closeUpdateReaderForm}
+        />
+      )}
 
       {showLikers && (
         <LikersList
-          likers={document && document.likesData.likedBy}
+          likers={likers.filter((liker) => liker.lovedBookId === id)}
+          likesAmount={
+            likers.filter((liker) => liker.lovedBookId === id).length
+          }
           closeList={hideAllLikers}
-          likesAmount={document && document.likesData.likesAmount}
         />
       )}
+      {isPending && <Loader />}
     </div>
   );
 }

@@ -1,17 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import {
-  arrayUnion,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  getFirestore,
-  query,
-  Timestamp,
-  updateDoc,
-  where,
-} from "firebase/firestore";
 import { BsFillDoorOpenFill } from "react-icons/bs";
 import {
   FaFacebookMessenger,
@@ -34,9 +22,9 @@ import CompetitionChat from "../../components/ChatComponents/CommunityChat";
 import Ranking from "../../components/Ranking";
 import { warningActions } from "../../context/WarningContext";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { useCollection } from "../../hooks/useCollection";
-import { useDocument } from "../../hooks/useDocument";
-import { useFirestore } from "../../hooks/useFirestore";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function Club() {
   const selectedLanguage = useSelector(
@@ -44,13 +32,45 @@ function Club() {
   );
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { document } = useDocument("clubs", id);
-  const { documents } = useCollection("clubs");
+  const [document, setDocument] = useState(null);
+  const [members, setMembers] = useState([]);
   const { user } = useAuthContext();
-  const { deleteDocument, updateDocument } = useFirestore("clubs");
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
+  const { getDocument } = useRealtimeDocument();
+  const { getDocuments } = useRealtimeDocuments();
+  const { removeFromDataBase } = useRealDatabase();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadDocument = async () => {
+    const loadDocumentEl = await getDocument("readersClubs", id);
+
+    if (loadDocumentEl) {
+      setDocument(loadDocumentEl);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadMembers = async () => {
+    const memberElements = await getDocuments("communityMembers");
+
+    const realObjects = memberElements.map((bookReader) => {
+      return bookReader.users;
+    });
+
+    const newArray = realObjects.map((obj) => {
+      const nestedObject = Object.values(obj)[0];
+
+      return nestedObject;
+    });
+
+    setMembers(newArray);
+  };
+
+  useEffect(() => {
+    loadDocument();
+    loadMembers();
+  }, [loadDocument, loadMembers]);
 
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
@@ -71,32 +91,17 @@ function Club() {
   const open = Boolean(anchorEl);
   const openMangement = Boolean(managmentEl);
 
-  const joinedClub = documents.map((doc) => {
+  {
+    /*  const joinedClub = documents.map((doc) => {
     return doc.users.filter((member) => member.value.id === user.uid);
   });
-
+*/
+  }
   const deleteClub = async (id) => {
-    const col = collection(getFirestore(), "notifications");
+    removeFromDataBase("readersClubs", id);
+    removeFromDataBase("communityChats", id);
+    removeFromDataBase("communityMembers", id);
 
-    const queriedCol = await getDocs(query(col, where("clubToJoin", "==", id)));
-    const messagesCol = await getDocs(query(col, where("sentTo", "==", id)));
-    const queriedNots = await getDocs(
-      query(col, where("addedTo", "==", document.clubsName))
-    );
-
-    messagesCol.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-    });
-
-    queriedCol.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-    });
-
-    queriedNots.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-    });
-
-    await deleteDocument(id);
     navigate("/");
     toast.success(
       alertTranslations.notifications.successfull.remove[selectedLanguage]
@@ -123,14 +128,12 @@ function Club() {
     toast.success(
       alertTranslations.notifications.successfull.leave[selectedLanguage]
     );
-
-    await updateDocument(document.id, {
-      users: arrayWithoutYou,
-    });
   };
 
   const sendJoiningRequest = async () => {
     try {
+      {
+        /** 
       if (joinedClub.filter((club) => club.length !== 0).length > 0) {
         toast.error(
           alertTranslations.notifications.wrong.loyality[selectedLanguage]
@@ -158,7 +161,8 @@ function Club() {
           },
         }),
       });
-
+*/
+      }
       toast.success(
         alertTranslations.notifications.successfull.send[selectedLanguage]
       );
@@ -171,13 +175,15 @@ function Club() {
     <div
       className={`min-h-screen h-full ${
         document &&
-        !document.users.find((member) => member.value.id === user.uid) &&
+        !members.find(
+          (member) => member.value.id === user.uid && member.belongsTo === id
+        ) &&
         "flex justify-center items-center flex-col"
       }`}
     >
       {document &&
-        document.users.find((member) => {
-          return member.value.id === user.uid;
+        members.find((member) => {
+          return member.value.id === user.uid && member.belongsTo === id;
         }) && (
           <div className="w-full flex justify-between items-center p-3 bg-accColor">
             <div className="flex justify-between text-white items-center">
@@ -347,26 +353,34 @@ function Club() {
         )}
 
       {document &&
-        !document.users.find((member) => member.value.id === user.uid) && (
+        !members.find(
+          (member) => member.value.id === user.uid && member.belongsTo === id
+        ) && (
           <div className="flex justify-between items-center w-full h-full sm:flex-col xl:flex-row px-4 py-4 gap-6">
             <div className="sm:w-full xl:w-1/3 h-full text-white flex flex-col items-center justify-between rounded-md py-4">
               <div className="sm:w-36 sm:h-36 md:w-48 md:h-48 lg:h-64 lg:w-64">
                 <img
-                  className="w-full h-full rounded-full object-cover"
+                  className="w-full h-full rounded-full object-cover border-accColor border-2"
                   src={document.clubLogo}
                   alt=""
                 />
               </div>
               <div className="flex gap-3 items-center sm:flex-col xl:flex-row w-full justify-around mt-6">
                 <div className="flex flex-col gap-2">
-                  <h3 className=" text-xl font-semibold text-center">
+                  <h3
+                    className=" text-xl font-semibold text-center"
+                    onClick={() => {
+                      console.log(members);
+                    }}
+                  >
                     {document.clubsName}
                   </h3>
                   <p>
                     <span className="text-lg font-semibold">
                       {translations.clubObject.community[selectedLanguage]}
                     </span>
-                    : {document.users.length}{" "}
+                    :{" "}
+                    {members.filter((member) => member.belongsTo === id).length}{" "}
                     {translations.clubObject.members[selectedLanguage]}
                   </p>
                   <p>
@@ -416,14 +430,21 @@ function Club() {
               )}
             </div>
 
-            <Ranking users={document.users} rankingOf={"clubs"} />
+            <Ranking
+              communityId={id}
+              communityMembers={members.filter((member) => {
+                return member.belongsTo === id;
+              })}
+            />
           </div>
         )}
 
       {document &&
-        document.users.find((member) => {
-          return member.value.id === user.uid;
-        }) && <CompetitionChat collectionName="clubs" id={document.id} />}
+        members.find((member) => {
+          return member.value.id === user.uid && member.belongsTo === id;
+        }) && (
+          <CompetitionChat collectionName="readersClubs" id={document.id} />
+        )}
     </div>
   );
 }

@@ -6,14 +6,12 @@ import { Pagination } from "@mui/material";
 
 import translations from "../../assets/translations/RecensionsTranslations.json";
 import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import { useCollection } from "../../hooks/useCollection";
 
-function Recensions() {
-  const { documents } = useCollection("books");
+function Tests() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-  let recensionedBooks = documents.filter((book) => {
+  let recensionedBooks = [].filter((book) => {
     return (
       book.readers.length > 0 &&
       book.readers.some(
@@ -106,4 +104,4 @@ function Recensions() {
   );
 }
 
-export default Recensions;
+export default Tests;

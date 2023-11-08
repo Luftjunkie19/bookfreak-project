@@ -1,13 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import {
-  collection,
-  deleteDoc,
-  getDocs,
-  getFirestore,
-  query,
-  where,
-} from "firebase/firestore";
 import { BsFillDoorOpenFill } from "react-icons/bs";
 import {
   FaFacebookMessenger,
@@ -27,14 +19,19 @@ import translations from "../../assets/translations/CompetitionsTranslations.jso
 import formsTranslations from "../../assets/translations/FormsTranslations.json";
 import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
 import Ranking from "../../components/Ranking";
-import { warningActions } from "../../context/WarningContext";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { useDocument } from "../../hooks/useDocument";
-import { useFirestore } from "../../hooks/useFirestore";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function GeneralInfo() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
+  const [document, setDocument] = useState(null);
+  const [members, setMembers] = useState([]);
+  const { getDocument } = useRealtimeDocument();
+  const { getDocuments } = useRealtimeDocuments();
+  const { removeFromDataBase } = useRealDatabase();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
@@ -58,26 +55,45 @@ function GeneralInfo() {
   const openMangement = Boolean(managmentEl);
 
   const { id } = useParams();
-  const { document } = useDocument("competitions", id);
   const { user } = useAuthContext();
-  const expirationTime =
-    document && new Date(document.expiresAt.toDate()).getTime();
-
-  let timesDifference = expirationTime - new Date().getTime();
 
   const navigate = useNavigate();
 
-  const { deleteDocument, updateDocument } = useFirestore("competitions");
-  const deleteCompetition = async (id) => {
-    const col = collection(getFirestore(), "notifications");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadDocument = async () => {
+    const documentEl = await getDocument("competitions", id);
 
-    const documents = await getDocs(query(col, where("sentTo", "==", id)));
+    if (documentEl) {
+      setDocument(documentEl);
+    }
+  };
 
-    documents.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadMembers = async () => {
+    const memberElements = await getDocuments("communityMembers");
+
+    const realObjects = memberElements.map((bookReader) => {
+      return bookReader.users;
     });
 
-    await deleteDocument(id);
+    const newArray = realObjects.map((obj) => {
+      const nestedObject = Object.values(obj);
+      return nestedObject;
+    });
+
+    setMembers(...newArray);
+  };
+
+  useEffect(() => {
+    loadDocument();
+    loadMembers();
+  }, [loadDocument, loadMembers]);
+
+  const deleteCompetition = async (id) => {
+    removeFromDataBase("competitions", id);
+    removeFromDataBase("communityChats", id);
+    removeFromDataBase("communityMembers", id);
+
     navigate("/");
 
     toast.success(
@@ -88,7 +104,8 @@ function GeneralInfo() {
   const dispatch = useDispatch();
 
   const leaveCompetition = async () => {
-    const arrayWithoutYou = document.users.filter(
+    {
+      /*  const arrayWithoutYou = document.users.filter(
       (doc) => doc.value.id !== user.uid
     );
 
@@ -101,11 +118,8 @@ function GeneralInfo() {
         })
       );
       return;
+    }*/
     }
-
-    await updateDocument(document.id, {
-      users: arrayWithoutYou,
-    });
 
     navigate("/");
     toast.success(
@@ -113,10 +127,16 @@ function GeneralInfo() {
     );
   };
 
+  const competitionExpirationDate =
+    document && document.expiresAt / 1000 / 24 / 12 / 30 / 60 / 60;
+
   return (
     <div className="min-h-screen h-full">
       {document &&
-        document.users.find((member) => member.value.id === user.uid) && (
+        members.find(
+          (member) =>
+            member.value.id === user.uid && member.belongsTo === document.id
+        ) && (
           <div className="w-full flex justify-between items-center p-3 bg-accColor">
             <div className="flex flex-col text-white items-center">
               <p>{document.competitionTitle}</p>
@@ -149,21 +169,17 @@ function GeneralInfo() {
 
               {document.createdBy.id === user.uid && (
                 <div className="mx-2 flex justify-around items-center">
-                  {Math.round(timesDifference / (1000 * 60 * 60 * 24)) > 0 && (
-                    <button
-                      className="btn"
-                      onClick={() =>
-                        navigate(`/edit-competition/${document.id}`)
-                      }
-                    >
-                      {
-                        reuseableTranslations.communitiesBar.editBtn[
-                          selectedLanguage
-                        ]
-                      }
-                      <FaPencilAlt />
-                    </button>
-                  )}
+                  <button
+                    className="btn"
+                    onClick={() => navigate(`/edit-competition/${document.id}`)}
+                  >
+                    {
+                      reuseableTranslations.communitiesBar.editBtn[
+                        selectedLanguage
+                      ]
+                    }
+                    <FaPencilAlt />
+                  </button>
 
                   <button
                     className="btn ml-2"
@@ -304,7 +320,10 @@ function GeneralInfo() {
                   {document.competitionsName}
                 </h3>
                 <p className=" font-medium">
-                  {document.users.length}{" "}
+                  {
+                    members.filter((member) => member.belongsTo === document.id)
+                      .length
+                  }{" "}
                   {
                     translations.competitionObject.membersAttending[
                       selectedLanguage
@@ -324,6 +343,12 @@ function GeneralInfo() {
             </div>
             {document && document.description.trim() !== "" && (
               <div class="flex flex-col text-white p-3 w-full">
+                <p>
+                  Expires in{" "}
+                  <span className="text-2xl font-bold text-red-500">
+                    {Math.round(competitionExpirationDate)} days
+                  </span>
+                </p>
                 <h2 class="text-3xl font-extralight pb-2">
                   {
                     formsTranslations.descriptionTextarea.label[
@@ -340,9 +365,10 @@ function GeneralInfo() {
           </div>
 
           <Ranking
-            users={document.users}
-            rankingOf={"competition"}
-            timeDifference={timesDifference}
+            communityMembers={members.filter(
+              (member) => member.belongsTo === id
+            )}
+            communityId={document.id}
           />
         </div>
       )}

@@ -1,28 +1,20 @@
 import "../stylings/sizes.css";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { formatDistanceToNow } from "date-fns";
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  getFirestore,
-  setDoc,
-  Timestamp,
-  updateDoc,
-} from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { FaArrowLeft, FaCamera, FaPaperPlane } from "react-icons/fa";
+import { FaCamera, FaPaperPlane } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import uniqid from "uniqid";
 
 import alertsMessages from "../../assets/translations/AlertMessages.json";
 import profileTranslations from "../../assets/translations/ProfileTranslations.json";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { useDocument } from "../../hooks/useDocument";
-import { useFirestore } from "../../hooks/useFirestore";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function MessageArea({ chatId, messagedUser }) {
   const { user } = useAuthContext();
@@ -30,65 +22,87 @@ function MessageArea({ chatId, messagedUser }) {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-  const firestore = getFirestore();
-
-  const { document } = useDocument("chats", chatId);
-  const { updateDocument } = useFirestore("chats");
-
+  const { getDocument } = useRealtimeDocument();
+  const { addToDataBase } = useRealDatabase();
+  const { getDocuments } = useRealtimeDocuments();
   const messagesHolder = useRef();
+  const [messages, setMessages] = useState([]);
+  const [currentChat, setCurrentChat] = useState(null);
+  const [entitledUsers, setEntitledUsers] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadUsersChat = async () => {
+    const existingChat = await getDocument("usersChats", chatId);
+    const entitledToChat = await getDocuments("entitledToChat");
+    const usersChatMessages = await getDocuments("usersChatMessages");
+    const usersObjects = await getDocuments("users");
+
+    const entitledToChatMembers = entitledToChat.map((obj) => {
+      const nestedObject = Object.values(obj);
+      return nestedObject;
+    });
+
+    const chatMessagesArray = usersChatMessages.map((obj) => {
+      const nestedObject = Object.values(obj);
+      return nestedObject;
+    });
+
+    setCurrentChat(existingChat);
+    setMessages(chatMessagesArray.flat());
+    setEntitledUsers(entitledToChatMembers.flat());
+    setUsers(usersObjects);
+  };
+
+  useEffect(() => {
+    loadUsersChat();
+  }, [loadUsersChat]);
 
   const sendMessage = async () => {
-    const chat = doc(firestore, "chats", chatId);
+    if (!currentChat) {
+      const entitledUsers = chatId.split("-");
 
-    const chatDocument = await getDoc(chat);
+      addToDataBase("usersChats", chatId, {
+        chatId: chatId,
+        createdAt: new Date().getTime(),
+      });
 
-    if (!chatDocument.exists()) {
-      await setDoc(chat, {
-        users: [
-          {
-            nickname: user.displayName,
-            photoURL: user.photoURL,
+      addToDataBase(
+        "entitledToChat",
+        `${chatId}/${entitledUsers.find((id) => id === user.uid)}`,
+        {
+          entitledUserId: entitledUsers.find((id) => id === user.uid),
+          entitledChatId: chatId,
+        }
+      );
+
+      addToDataBase(
+        "entitledToChat",
+        `${chatId}/${entitledUsers.find((id) => id !== user.uid)}`,
+        {
+          entitledUserId: entitledUsers.find((id) => id !== user.uid),
+          entitledChatId: chatId,
+        }
+      );
+
+      addToDataBase(
+        "usersChatMessages",
+        `${chatId}/${new Date().getTime()}${uniqid()}`,
+        {
+          content: message,
+          chatId,
+          sender: {
             id: user.uid,
           },
-          {
-            nickname: messagedUser.nickname,
-            photoURL: messagedUser.photoURL,
-            id: messagedUser.id,
+          receiver: {
+            id: entitledUsers.find((id) => id !== user.uid),
           },
-        ],
-        messages: [
-          {
-            content: message,
-            sender: {
-              nickname: user.displayName,
-              photoURL: user.photoURL,
-              id: user.uid,
-            },
-            receiver: {
-              nickname: messagedUser.nickname,
-              photoURL: messagedUser.photoURL,
-              id: messagedUser.id,
-            },
-            sentAt: Timestamp.fromDate(new Date()),
-          },
-        ],
-        id: `${user.uid}-${messagedUser.id}`,
-        createdAt: Timestamp.fromDate(new Date()),
-        chatId: chatId,
-      });
-      setMessage("");
+          sentAt: new Date().getTime(),
+        }
+      );
 
-      const messagedUserDoc = doc(getFirestore(), "users", messagedUser.id);
-      await updateDoc(messagedUserDoc, {
-        notifications: arrayUnion({
-          notificationContent: `${user.displayName} has sent you a message`,
-          directedTo: messagedUser.id,
-          linkTo: `message-to/${chatId}`,
-          isRead: false,
-          notificationTime: Timestamp.fromDate(new Date()),
-          changeConcering: user.photoURL,
-        }),
-      });
+      setMessage("");
+      return;
     }
 
     if (message.trim() === "") {
@@ -97,52 +111,32 @@ function MessageArea({ chatId, messagedUser }) {
       );
       return;
     }
-    let newArray;
 
-    if (document) {
-      newArray = document.messages;
-
-      newArray.push({
-        content: message,
-        sender: {
-          nickname: user.displayName,
-          photoURL: user.photoURL,
-          id: user.uid,
-        },
-        receiver: {
-          nickname: messagedUser.nickname,
-          photoURL: messagedUser.photoURL,
-          id: messagedUser.id,
-        },
-        sentAt: Timestamp.fromDate(new Date()),
-      });
-
-      await updateDocument(chatId, {
-        messages: newArray,
-      });
-
-      const messagedUserDoc = doc(getFirestore(), "users", messagedUser.id);
-      await updateDoc(messagedUserDoc, {
-        notifications: arrayUnion({
-          notificationContent: `${user.displayName} has sent you a message`,
-          directedTo: messagedUser.id,
-          linkTo: `message-to/${chatId}`,
-          isRead: false,
-          notificationTime: Timestamp.fromDate(new Date()),
-          changeConcering: user.photoURL,
-        }),
-      });
+    if (currentChat) {
+      const entitledUsers = chatId.split("-");
+      addToDataBase(
+        "usersChatMessages",
+        `${chatId}/${new Date().getTime()}${uniqid()}`,
+        {
+          content: message,
+          chatId,
+          sender: {
+            id: user.uid,
+          },
+          receiver: {
+            id: entitledUsers.find((id) => id !== user.uid),
+          },
+          sentAt: new Date().getTime(),
+        }
+      );
 
       setMessage("");
+      return;
     }
   };
 
   const addImageMessage = async (e) => {
     const files = Array.from(e.target.files);
-
-    const chat = doc(firestore, "chats", chatId);
-
-    const chatDocument = await getDoc(chat);
 
     const inacceptableFiles = files.filter((file) => {
       return file.size > 100000 || !file.type.includes("image");
@@ -183,178 +177,199 @@ function MessageArea({ chatId, messagedUser }) {
       const snapshot = await uploadBytes(image, file);
       const messagedPhoto = await getDownloadURL(image);
 
-      if (!chatDocument.exists()) {
-        await setDoc(chat, {
-          users: [
+      const entitledUsers = chatId.split("-");
+      if (!currentChat) {
+        addToDataBase("usersChats", chatId, {
+          chatId: chatId,
+          createdAt: new Date().getTime(),
+        });
+
+        entitledUsers.map((entitledUserId) =>
+          addToDataBase(
+            "entitledToChat",
+            `${chatId}/${entitledUsers.find((id) => id === user.uid)}`,
             {
-              nickname: user.displayName,
-              photoURL: user.photoURL,
+              entitledUserId: entitledUserId,
+              entitledChatId: chatId,
+            }
+          )
+        );
+
+        addToDataBase(
+          "usersChatMessages",
+          `${chatId}/${new Date().getTime()}${uniqid()}`,
+          {
+            content: messagedPhoto,
+            chatId,
+            sender: {
               id: user.uid,
             },
-            {
-              nickname: messagedUser.nickname,
-              photoURL: messagedUser.photoURL,
-              id: messagedUser.id,
+            receiver: {
+              id: entitledUsers.find((id) => id !== user.uid),
             },
-          ],
-          messages: [
-            {
-              content: messagedPhoto,
-              sender: {
-                nickname: user.displayName,
-                photoURL: user.photoURL,
-                id: user.uid,
-              },
-              receiver: {
-                nickname: messagedUser.nickname,
-                photoURL: messagedUser.photoURL,
-                id: messagedUser.id,
-              },
-              sentAt: Timestamp.fromDate(new Date()),
-            },
-          ],
-          id: `${user.uid}-${messagedUser.id}`,
-          createdAt: Timestamp.fromDate(new Date()),
-          chatId: chatId,
-        });
+            sentAt: new Date().getTime(),
+          }
+        );
 
-        const messagedUserDoc = doc(getFirestore(), "users", messagedUser.id);
-        await updateDoc(messagedUserDoc, {
-          notifications: arrayUnion({
-            notificationContent: `${user.displayName} has sent you a message`,
-            directedTo: messagedUser.id,
-            linkTo: `message-to/${chatId}`,
-            isRead: false,
-            notificationTime: Timestamp.fromDate(new Date()),
-          }),
-        });
+        setMessage("");
+        return;
       }
 
-      let newArray;
-
-      if (document) {
-        newArray = document.messages;
-
-        newArray.push({
-          content: messagedPhoto,
-          sender: {
-            nickname: user.displayName,
-            photoURL: user.photoURL,
-            id: user.uid,
-          },
-          receiver: {
-            nickname: messagedUser.nickname,
-            photoURL: messagedUser.photoURL,
-            id: messagedUser.id,
-          },
-          sentAt: Timestamp.fromDate(new Date()),
-        });
-        await updateDocument(chatId, {
-          messages: newArray,
-        });
-
-        const messagedUserDoc = doc(getFirestore(), "users", messagedUser.id);
-        await updateDoc(messagedUserDoc, {
-          notifications: arrayUnion({
-            notificationContent: `${user.displayName} has sent you a message`,
-            directedTo: messagedUser.id,
-            linkTo: `message-to/${chatId}`,
-            isRead: false,
-            notificationTime: Timestamp.fromDate(new Date()),
-          }),
-        });
+      if (currentChat) {
+        addToDataBase(
+          "usersChatMessages",
+          `${chatId}/${new Date().getTime()}${uniqid()}`,
+          {
+            content: messagedPhoto,
+            chatId,
+            sender: {
+              id: user.uid,
+            },
+            receiver: {
+              id: entitledUsers.find((id) => id !== user.uid),
+            },
+            sentAt: new Date().getTime(),
+          }
+        );
       }
     });
   };
 
   return (
     <>
-      <div className="relative top-0 left-0 col-span-3 sm:col-span-4 xl:col-span-3">
-        <Link
-          to="/your-chats"
-          className="m-2 sm:sticky sm:top-0 sm:left-0 z-50 text-white xl:hidden "
-        >
-          <span className="flex gap-3 ">
-            <FaArrowLeft /> Back
-          </span>
-        </Link>
-
+      <div className="col-span-3 sm:col-span-4 xl:col-span-3 ">
         <div ref={messagesHolder} className="messages-holder">
-          {document &&
-            document.messages.map((message, i) => (
-              <>
-                {message.sender.id === user.uid ? (
-                  <>
-                    <div class="chat chat-start">
-                      <div class="chat-image avatar">
-                        <div class="w-10 rounded-full">
-                          <img src={message.sender.photoURL} alt="" />
+          {messages.length > 0 &&
+            messages
+              .filter((message) => message.chatId === chatId)
+              .map((message, i) => (
+                <>
+                  {message.sender.id === user.uid ? (
+                    <>
+                      <div class="chat chat-start" key={message.sentAt}>
+                        <div class="chat-image avatar">
+                          <div class="w-10 rounded-full">
+                            <img
+                              src={
+                                users
+                                  .filter(
+                                    (chatter) =>
+                                      chatter.id ===
+                                        message.chatId.split("-")[0] ||
+                                      chatter.id ===
+                                        message.chatId.split("-")[1]
+                                  )
+                                  .find(
+                                    (chatter) =>
+                                      chatter.id === message.sender.id &&
+                                      chatter.id === user.uid
+                                  )?.photoURL
+                              }
+                              alt=""
+                            />
+                          </div>
+                        </div>
+                        <div class="chat-header">
+                          {
+                            users
+                              .filter(
+                                (chatter) =>
+                                  chatter.id === message.chatId.split("-")[0] ||
+                                  chatter.id === message.chatId.split("-")[1]
+                              )
+                              .find(
+                                (chatter) =>
+                                  chatter.id === message.sender.id &&
+                                  chatter.id === user.uid
+                              )?.nickname
+                          }
+                          ,{" "}
+                          <time class="text-xs opacity-50">
+                            {formatDistanceToNow(message.sentAt)} ago
+                          </time>
+                        </div>
+                        <div class="chat-bubble bg-accColor text-white">
+                          {" "}
+                          {message?.content &&
+                          message?.content.includes(
+                            "https://firebasestorage.googleapis.com/"
+                          ) ? (
+                            <>
+                              <img
+                                src={message?.content}
+                                alt=""
+                                className=" max-w-[10rem] max-h-64 rounded-lg"
+                              />
+                            </>
+                          ) : (
+                            <p className="break-words">{message?.content}</p>
+                          )}
                         </div>
                       </div>
-                      <div class="chat-header">
-                        {message.sender.nickname},{" "}
-                        <time class="text-xs opacity-50">
-                          {formatDistanceToNow(message.sentAt.toDate())} ago
-                        </time>
-                      </div>
-                      <div class="chat-bubble bg-accColor text-white">
-                        {" "}
-                        {message.content &&
-                        message.content.includes(
-                          "https://firebasestorage.googleapis.com/"
-                        ) ? (
-                          <>
+                    </>
+                  ) : (
+                    <>
+                      <div class="chat chat-end">
+                        <div class="chat-image avatar">
+                          <div class="w-10 rounded-full">
                             <img
-                              src={message.content}
+                              src={
+                                users
+                                  .filter(
+                                    (chatter) =>
+                                      chatter.id ===
+                                        message.chatId.split("-")[0] ||
+                                      chatter.id ===
+                                        message.chatId.split("-")[1]
+                                  )
+                                  .find((chatter) => chatter.id !== user.uid)
+                                  ?.photoURL
+                              }
                               alt=""
-                              className=" max-w-[16rem] max-h-64 rounded-lg"
                             />
-                          </>
-                        ) : (
-                          <p className="break-words">{message.content}</p>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div class="chat chat-end">
-                      <div class="chat-image avatar">
-                        <div class="w-10 rounded-full">
-                          <img src={message.sender.photoURL} alt="" />
+                          </div>
+                        </div>
+                        <div class="chat-header">
+                          {
+                            users
+                              .filter(
+                                (chatter) =>
+                                  chatter.id === message.chatId.split("-")[0] ||
+                                  chatter.id === message.chatId.split("-")[1]
+                              )
+                              .find((chatter) => chatter.id !== user.uid)
+                              ?.nickname
+                          }
+                          ,{" "}
+                          <time class="text-xs opacity-50">
+                            {formatDistanceToNow(message.sentAt)} ago
+                          </time>
+                        </div>
+                        <div class="chat-bubble bg-primeColor text-white">
+                          {" "}
+                          {message?.content &&
+                          message?.content.includes(
+                            "https://firebasestorage.googleapis.com/"
+                          ) ? (
+                            <>
+                              <img
+                                src={message?.content}
+                                alt=""
+                                className="max-h-64 rounded-lg"
+                              />
+                            </>
+                          ) : (
+                            <p className=" break-words">{message?.content}</p>
+                          )}
                         </div>
                       </div>
-                      <div class="chat-header">
-                        {message.sender.nickname},{" "}
-                        <time class="text-xs opacity-50">
-                          {formatDistanceToNow(message.sentAt.toDate())} ago
-                        </time>
-                      </div>
-                      <div class="chat-bubble bg-primeColor text-white">
-                        {" "}
-                        {message.content &&
-                        message.content.includes(
-                          "https://firebasestorage.googleapis.com/"
-                        ) ? (
-                          <>
-                            <img
-                              src={message.content}
-                              alt=""
-                              className="max-h-64 rounded-lg"
-                            />
-                          </>
-                        ) : (
-                          <p className=" break-words">{message.content}</p>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </>
-            ))}
+                    </>
+                  )}
+                </>
+              ))}
         </div>
 
-        <div className="flex gap-6 justify-around items-center bg-accColor p-2 w-full sticky bottom-0 right-0 rounded-t-md rounded-tr-md z-50">
+        <div className="flex w-full justify-between items-center gap-4 bg-accColor py-3 px-6 sticky bottom-0 left-0 rounded-t-lg">
           <label>
             <input
               type="file"
@@ -375,7 +390,7 @@ function MessageArea({ chatId, messagedUser }) {
           </label>
 
           <button onClick={sendMessage}>
-            <FaPaperPlane className=" text-white text-2xl" />
+            <FaPaperPlane className="text-white text-2xl" />
           </button>
         </div>
       </div>

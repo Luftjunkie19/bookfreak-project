@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
   createUserWithEmailAndPassword,
@@ -9,34 +9,25 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   updateProfile,
-} from 'firebase/auth';
-import {
-  doc,
-  getDoc,
-  getFirestore,
-  setDoc,
-} from 'firebase/firestore';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import { useNavigate } from 'react-router-dom';
+} from "firebase/auth";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { useNavigate } from "react-router-dom";
 
-import { useAuthContext } from './useAuthContext';
+import { useAuthContext } from "./useAuthContext";
+import { useRealDatabase } from "./useRealDatabase";
+import useRealtimeDocument from "./useRealtimeDocument";
 
 export function useLogin() {
   const [error, setError] = useState("");
   const [isPending, setIsPending] = useState(false);
+  const { getDocument } = useRealtimeDocument();
+  const { addToDataBase } = useRealDatabase();
 
   const context = useAuthContext();
 
   const { dispatch, user } = context;
 
   const navigate = useNavigate();
-
-  const firestore = getFirestore();
 
   const signInWithGoogle = async () => {
     setError(null);
@@ -49,11 +40,11 @@ export function useLogin() {
 
       const res = await signInWithPopup(myAuth, googleProvider);
 
-      const document = doc(firestore, "users", res.user.uid);
+      const documentExistence = await getDocument("users", res.user.uid);
 
-      const userToAdd = await getDoc(document);
+      console.log(documentExistence);
 
-      if (!userToAdd.exists()) {
+      if (!documentExistence) {
         const uploadPath = `profileImg/uid${res.user.uid}/${res.user.photoURL}`;
 
         const storage = getStorage();
@@ -63,24 +54,24 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        await setDoc(document, {
+        addToDataBase("users", res.user.uid, {
           nickname: res.user.displayName,
           email: res.user.email,
           photoURL: res.user.photoURL,
           description: "",
-          links: [],
-          notifications: [],
-          chats: [],
+          links: {},
+          notifications: {},
+          chats: {},
           id: res.user.uid,
         });
       }
 
       dispatch({ type: "LOGIN", payload: res.user });
 
+      navigate("/");
+
       setError(null);
       setIsPending(false);
-
-      navigate("/");
     } catch (error) {
       setIsPending(false);
 
@@ -99,11 +90,11 @@ export function useLogin() {
 
       const res = await signInWithPopup(myAuth, facebookProvider);
 
-      const document = doc(firestore, "users", res.user.uid);
+      const documentExistence = await getDocument("users", res.user.uid);
 
-      const userToAdd = await getDoc(document);
+      console.log(documentExistence);
 
-      if (!userToAdd.exists()) {
+      if (!documentExistence) {
         const uploadPath = `profileImg/uid${res.user.uid}/${res.user.photoURL}`;
 
         const storage = getStorage();
@@ -113,14 +104,14 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        await setDoc(document, {
+        addToDataBase("users", res.user.uid, {
           nickname: res.user.displayName,
           email: res.user.email,
           photoURL: res.user.photoURL,
           description: "",
-          links: [],
-          notifications: [],
-          chats: [],
+          links: {},
+          notifications: {},
+          chats: {},
           id: res.user.uid,
         });
       }
@@ -149,10 +140,11 @@ export function useLogin() {
 
       const res = await signInWithPopup(myAuth, githubProvider);
 
-      const document = doc(firestore, "users", res.user.uid);
-      const userToAdd = await getDoc(document);
+      const documentExistence = await getDocument("users", res.user.uid);
 
-      if (!userToAdd.exists()) {
+      console.log(documentExistence);
+
+      if (!documentExistence) {
         const uploadPath = `profileImg/uid${res.user.uid}/${res.user.photoURL}`;
 
         const storage = getStorage();
@@ -162,14 +154,14 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        await setDoc(document, {
+        addToDataBase("users", res.user.uid, {
           nickname: res.user.displayName,
           email: res.user.email,
           photoURL: res.user.photoURL,
           description: "",
-          links: [],
-          notifications: [],
-          chats: [],
+          links: {},
+          notifications: {},
+          chats: {},
           id: res.user.uid,
         });
       }
@@ -230,16 +222,14 @@ export function useLogin() {
 
       await updateProfile(res.user, { displayName, photoURL });
 
-      const document = doc(firestore, "users", res.user.uid);
-
-      await setDoc(document, {
+      addToDataBase("users", res.user.uid, {
         nickname: res.user.displayName,
         email: res.user.email,
         photoURL: res.user.photoURL,
         description: "",
-        links: [],
-        notifications: [],
-        chats: [],
+        links: {},
+        notifications: {},
+        chats: {},
         id: res.user.uid,
       });
 

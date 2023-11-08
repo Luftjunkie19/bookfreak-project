@@ -1,35 +1,26 @@
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import React, { useEffect, useState } from "react";
 
-import { Timestamp } from 'firebase/firestore';
-import { motion } from 'framer-motion';
-import { useSelector } from 'react-redux';
-import {
-  useNavigate,
-  useParams,
-} from 'react-router';
-import CreatableSelect from 'react-select';
-import { toast } from 'react-toastify';
+import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import CreatableSelect from "react-select";
+import { toast } from "react-toastify";
 
-import { Alert } from '@mui/material';
+import { Alert } from "@mui/material";
 
-import alertMessages from '../../assets/translations/AlertMessages.json';
-import formsTranslation from '../../assets/translations/FormsTranslations.json';
-import Loader from '../../components/Loader';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useCollection } from '../../hooks/useCollection';
-import { useFirestore } from '../../hooks/useFirestore';
-import { useFormData } from '../../hooks/useFormData';
+import alertMessages from "../../assets/translations/AlertMessages.json";
+import formsTranslation from "../../assets/translations/FormsTranslations.json";
+import Loader from "../../components/Loader";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { useFormRealData } from "../../hooks/useFormRealData";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
 
 function EditCompetition() {
   const { id } = useParams();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-
-  const { document } = useFormData("competitions", id);
+  const { updateDatabase } = useRealDatabase();
   const { user } = useAuthContext();
   const [title, setTitle] = useState("");
   const [competitionsName, setCompetitionsName] = useState("");
@@ -37,22 +28,21 @@ function EditCompetition() {
   const [expirationDate, setExpirationDate] = useState(null);
   const [attachedUsers, setAttachedUsers] = useState([]);
   const [description, setDescription] = useState("");
-  const { documents } = useCollection("users");
+
   const [isPending, setIsPending] = useState(false);
-  const { updateDocument } = useFirestore("competitions");
   const navigate = useNavigate();
+  const { document } = useFormRealData("competitions", id);
 
   useEffect(() => {
     if (document) {
       setTitle(document.competitionTitle);
       setCompetitionsName(document.competitionsName);
-      setAttachedUsers(document.users.slice(1, document.users.length));
       setDescription(document.description);
-      setExpirationDate(document.expiresAt.toDate());
+      setExpirationDate(document.expiresAt);
     }
-  }, [document]);
+  }, []);
 
-  const notCurrentUsers = documents.filter((doc) => {
+  const notCurrentUsers = [].filter((doc) => {
     return doc.id !== user.uid;
   });
 
@@ -81,37 +71,23 @@ function EditCompetition() {
     setError(null);
     setIsPending(true);
 
-    await updateDocument(id, {
-      competitionTitle: title,
-      competitionsName,
-      messages: document.messages,
-      expiresAt: Timestamp.fromDate(expirationDate),
-      users: [
-        {
-          label: user.displayName,
-          value: {
-            nickname: user.displayName,
-            id: user.uid,
-            photoURL: user.photoURL,
-          },
-        },
-        ...attachedUsers,
-      ],
-      description,
-      createdBy: {
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        createdAt: Timestamp.fromDate(new Date()),
-        id: user.uid,
-      },
-    });
-
     setError(null);
     setIsPending(false);
     navigate(`/competition/${id}`);
     toast.success(
       alertMessages.notifications.successfull.update[selectedLanguage]
+    );
+
+    updateDatabase(
+      {
+        ...document,
+        competitionTitle: title,
+        competitionsName: competitionsName,
+        description: description,
+        expiresAt: expirationDate,
+      },
+      "competitions",
+      id
     );
 
     attachedUsers.map(async (member) => {
@@ -191,7 +167,7 @@ function EditCompetition() {
                 type="date"
                 value={expirationDate}
                 onChange={(e) => {
-                  setExpirationDate(new Date(e.target.value));
+                  setExpirationDate(new Date(e.target.value).getTime());
                 }}
               />
             </label>
@@ -201,11 +177,10 @@ function EditCompetition() {
                 {formsTranslation.membersInput.label[selectedLanguage]}:
               </span>
               <CreatableSelect
-                required
                 isClearable
                 isSearchable
                 isMulti
-                options={usersAvailable}
+                options={[]}
                 value={attachedUsers}
                 onChange={(e) => {
                   setAttachedUsers(e);

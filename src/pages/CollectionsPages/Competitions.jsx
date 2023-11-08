@@ -1,14 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
 
 import { Pagination } from "@mui/material";
 
-import { useCollection } from "../../hooks/useCollection";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function Competitions() {
-  const { documents } = useCollection("competitions");
+  const { getDocuments } = useRealtimeDocuments();
+  const [documents, setElements] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadElements = async () => {
+    const booksEl = await getDocuments("competitions");
+    setElements(booksEl);
+  };
+
+  useEffect(() => {
+    loadElements();
+  }, [loadElements]);
 
   return (
     <div className="min-h-screen h-full">
@@ -19,15 +30,12 @@ function Competitions() {
             <Link
               to={`/competition/${doc.id}`}
               key={doc.id}
-              className="flex 2xl:w-[15%] sm:w-full md:w-[30%] lg:w-1/6 flex-col py-4 rounded-lg text-white bg-accColor hover:bg-lightModeCol hover:text-primeColor shadow-md hover:shadow-lg  hover:shadow-black transition-all duration-300 hover:-translate-y-1"
+              className="flex 2xl:w-[15%] sm:w-full md:w-[45%] lg:w-1/6 flex-col py-4 rounded-lg text-white bg-accColor hover:bg-lightModeCol hover:text-primeColor shadow-md hover:shadow-lg  hover:shadow-black transition-all duration-300 hover:-translate-y-1"
             >
               <div className="flex flex-col justify-around px-2">
                 <h3 className=" font-semibold">{doc.competitionTitle}</h3>
                 <p>{doc.competitionsName}</p>
-                <p>
-                  Est. {formatDistanceToNow(doc.createdBy.createdAt.toDate())}{" "}
-                  ago
-                </p>
+                <p>Est. {formatDistanceToNow(doc.createdBy.createdAt)} ago</p>
               </div>
               <div className="avatar-group mt-2 w-full justify-center">
                 {doc.users &&

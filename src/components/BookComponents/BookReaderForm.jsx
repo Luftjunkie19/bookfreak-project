@@ -14,10 +14,10 @@ function BookReaderForm({ closeForm, handleConfirm, pagesAmount, readerData }) {
     (state) => state.languageSelection.selectedLangugage
   );
   const [hasStarted, setHasStarted] = useState(
-    readerData ? readerData.hasFinished : false
+    readerData ? readerData.startedReading : false
   );
   const [hasFinished, setHasFinished] = useState(
-    readerData ? readerData.startedReading : false
+    readerData ? readerData.hasFinished : false
   );
   const [readPages, setReadPages] = useState(
     readerData ? readerData.pagesRead : 0
@@ -26,6 +26,7 @@ function BookReaderForm({ closeForm, handleConfirm, pagesAmount, readerData }) {
   const confirmForm = (e) => {
     e.preventDefault();
     handleConfirm(hasStarted, hasFinished, readPages);
+    closeForm();
   };
 
   return (

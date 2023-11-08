@@ -1,40 +1,29 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import { motion } from 'framer-motion';
-import { FaUsers } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
-import {
-  useNavigate,
-  useParams,
-} from 'react-router';
-import CreatableSelect from 'react-select';
-import { toast } from 'react-toastify';
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { motion } from "framer-motion";
+import { FaUsers } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import CreatableSelect from "react-select";
+import { toast } from "react-toastify";
 
-import { Alert } from '@mui/material';
+import { Alert } from "@mui/material";
 
-import alertMessages from '../../assets/translations/AlertMessages.json';
-import formsTranslation from '../../assets/translations/FormsTranslations.json';
-import Loader from '../../components/Loader';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useCollection } from '../../hooks/useCollection';
-import { useFirestore } from '../../hooks/useFirestore';
-import { useFormData } from '../../hooks/useFormData';
+import alertMessages from "../../assets/translations/AlertMessages.json";
+import formsTranslation from "../../assets/translations/FormsTranslations.json";
+import Loader from "../../components/Loader";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { useFormRealData } from "../../hooks/useFormRealData";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
 
 function EditClub() {
   const { id } = useParams();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-  const { document } = useFormData("clubs", id);
+  const { updateDatabase } = useRealDatabase();
+  const { document } = useFormRealData("readersClubs", id);
   const { user } = useAuthContext();
   const [clubsName, setClubsName] = useState("");
   const [error, setError] = useState("");
@@ -42,11 +31,19 @@ function EditClub() {
   const [description, setDescription] = useState("");
   const [clubLogo, setClubLogo] = useState(null);
   const [isPending, setIsPending] = useState(false);
-  const { documents } = useCollection("users");
-  const { updateDocument } = useFirestore("clubs");
+  const [requiredPagesRead, setRequiredPagesRead] = useState(0);
   const navigate = useNavigate();
 
-  const notCurrentUsers = documents.filter((doc) => {
+  useEffect(() => {
+    if (document) {
+      setClubsName(document.clubsName);
+      setClubLogo(document.clubLogo);
+      setDescription(document.description);
+      setRequiredPagesRead(document.requiredPagesRead);
+    }
+  }, [document]);
+
+  const notCurrentUsers = [].filter((doc) => {
     return doc.id !== user.uid;
   });
 
@@ -60,15 +57,6 @@ function EditClub() {
       },
     };
   });
-
-  useEffect(() => {
-    if (document) {
-      setClubsName(document.clubsName);
-      setClubLogo(document.clubLogo);
-      setDescription(document.description);
-      setAttachedUsers(document.users.slice(1, document.users.length));
-    }
-  }, [document]);
 
   const handleSelect = (e) => {
     setError(null);
@@ -113,23 +101,17 @@ function EditClub() {
         const snapshot = await uploadBytes(image, clubLogo);
         const photoURL = await getDownloadURL(image);
 
-        await updateDocument(id, {
-          clubsName: clubsName,
-          clubLogo: photoURL,
-          messages: document.messages,
-          description,
-          users: [
-            {
-              label: user.displayName,
-              value: {
-                nickname: user.displayName,
-                id: user.uid,
-                photoURL: user.photoURL,
-              },
-            },
-            ...attachedUsers,
-          ],
-        });
+        updateDatabase(
+          {
+            ...document,
+            clubsName: clubsName,
+            clubLogo: photoURL,
+            description: description,
+            requiredPagesRead: requiredPagesRead,
+          },
+          "readersClubs",
+          id
+        );
 
         attachedUsers.map(async (member) => {
           /**({
@@ -148,24 +130,17 @@ function EditClub() {
           alertMessages.notifications.successfull.update[selectedLanguage]
         );
       } else {
-        await updateDocument(id, {
-          clubsName: clubsName,
-          clubLogo: clubLogo,
-          messages: document.messages,
-          description,
-          users: [
-            {
-              label: user.displayName,
-              value: {
-                nickname: user.displayName,
-                id: user.uid,
-                photoURL: user.photoURL,
-              },
-            },
-            ...attachedUsers,
-          ],
-        });
-
+        updateDatabase(
+          {
+            ...document,
+            clubsName: clubsName,
+            clubLogo: clubLogo,
+            description: description,
+            requiredPagesRead: requiredPagesRead,
+          },
+          "readersClubs",
+          id
+        );
         attachedUsers.map(async (member) => {
           /**({
             notificationContent: `${user.displayName} has comitted some changes in ${clubsName} club`,
@@ -225,7 +200,6 @@ function EditClub() {
               {formsTranslation.membersInput.label[selectedLanguage]}:
             </span>
             <CreatableSelect
-              required
               className="select-input"
               isClearable
               isSearchable
@@ -246,6 +220,23 @@ function EditClub() {
               className="file-input file-input-bordered w-full"
               type="file"
               onChange={handleSelect}
+            />
+          </label>
+
+          <label className="flex flex-col sm:w-full lg:w-1/2 2xl:w-2/5">
+            <span className="label-text">
+              {formsTranslation.requiredPagesToJoin.label[selectedLanguage]}
+            </span>
+            <input
+              className="input border-none outline-none w-full"
+              placeholder={`${formsTranslation.requiredPagesToJoin.placeholder[selectedLanguage]}`}
+              type="number"
+              min={0}
+              value={requiredPagesRead}
+              step={10}
+              onChange={(e) => {
+                setRequiredPagesRead(+e.target.value);
+              }}
             />
           </label>
 

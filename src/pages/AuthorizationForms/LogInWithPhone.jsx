@@ -1,27 +1,23 @@
-import 'react-phone-input-2/lib/material.css';
+import "react-phone-input-2/lib/material.css";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
   getAuth,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-} from 'firebase/auth';
-import {
-  doc,
-  getDoc,
-  getFirestore,
-} from 'firebase/firestore';
-import { Alert } from 'flowbite-react';
-import PhoneInput from 'react-phone-input-2';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import VerificationInput from 'react-verification-input';
+} from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { Alert } from "flowbite-react";
+import PhoneInput from "react-phone-input-2";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import VerificationInput from "react-verification-input";
 
-import formsTranslations
-  from '../../assets/translations/FormsTranslations.json';
-import { useAuthContext } from '../../hooks/useAuthContext';
+import formsTranslations from "../../assets/translations/FormsTranslations.json";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
 
 function LogInWithPhone() {
   const firestore = getFirestore();
@@ -33,7 +29,7 @@ function LogInWithPhone() {
   const { dispatch } = useAuthContext();
   const myAuth = getAuth();
   const navigate = useNavigate();
-
+  const { getDocument } = useRealtimeDocument();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
@@ -43,11 +39,9 @@ function LogInWithPhone() {
     setError(null);
     try {
       const recaptchaVerifier = new RecaptchaVerifier(
+        myAuth,
         "recaptcha-container",
-        {
-          size: "invisible",
-        },
-        myAuth
+        { size: "invisible" }
       );
 
       const confirmResult = await signInWithPhoneNumber(
@@ -73,20 +67,17 @@ function LogInWithPhone() {
 
       console.log(result.user);
 
-      const document = doc(firestore, "users", result.user.uid);
-      const userToAdd = await getDoc(document);
+      const userToAdd = await getDocument("users", result.user.uid);
 
       console.log(userToAdd);
 
-      if (!userToAdd.exists()) {
+      if (!userToAdd) {
         toast.error(
           "You cannot login, without creating first the account. Move back and sign up."
         );
         return;
-      } else {
-        dispatch({ type: "LOGIN", payload: result.user });
       }
-
+      dispatch({ type: "LOGIN", payload: result.user });
       navigate("/");
 
       setError(null);

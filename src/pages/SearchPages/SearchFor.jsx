@@ -1,10 +1,20 @@
-import { useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { Link, useSearchParams } from "react-router-dom";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import poopURL from "../../assets/0_Dd1V0zBy8S8VoLc8-removebg-preview.png";
-import translations from "../../assets/translations/SearchTranslations.json";
-import { useCollection } from "../../hooks/useCollection";
+import Lottie from 'lottie-react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router';
+import {
+  Link,
+  useSearchParams,
+} from 'react-router-dom';
+
+import lottieAnimation
+  from '../../assets/lottieAnimations/Animation - 1699294838586.json';
+import translations from '../../assets/translations/SearchTranslations.json';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function SearchFor() {
   const { id } = useParams();
@@ -13,10 +23,20 @@ function SearchFor() {
     (state) => state.languageSelection.selectedLangugage
   );
   const query = queries.get("q");
+  const { getDocuments } = useRealtimeDocuments();
+  const [elements, setElements] = useState([]);
 
-  const { documents } = useCollection(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadElements = async () => {
+    const booksEl = await getDocuments(id);
+    setElements(booksEl);
+  };
 
-  const searchedArray = documents.filter((doc) => {
+  useEffect(() => {
+    loadElements();
+  }, [loadElements]);
+
+  const searchedArray = elements.filter((doc) => {
     return id === "books"
       ? doc.title.toLowerCase().includes(query.toLocaleLowerCase())
       : doc.nickname.toLowerCase().includes(query.toLocaleLowerCase());
@@ -93,7 +113,8 @@ function SearchFor() {
                     ? "Type anything to find who you want."
                     : `${translations.noResults[selectedLanguage]} ${query}`}
                 </h2>
-                <img src={poopURL} alt="" />
+
+                <Lottie animationData={lottieAnimation} />
               </div>
             )}
           </>

@@ -1,13 +1,25 @@
 import "../../pages/stylings/backgrounds.css";
 
+import { useEffect, useState } from "react";
+
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import translations from "../../assets/translations/ClubsTranslations.json";
-import { useCollection } from "../../hooks/useCollection";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function HomeClubs() {
-  const { documents } = useCollection("clubs");
+  const { getDocuments } = useRealtimeDocuments();
+  const [documents, setElements] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadElements = async () => {
+    const booksEl = await getDocuments("readersClubs");
+    setElements(booksEl);
+  };
+
+  useEffect(() => {
+    loadElements();
+  }, [loadElements]);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
@@ -20,7 +32,7 @@ function HomeClubs() {
   };
 
   return (
-    <div className="sm:grid sm:grid-flow-col sm:auto-cols-[89%] md:auto-cols-[47%] lg:auto-cols-[31%] sm:snap-mandatory snap-inline xl:flex xl:flex-wrap gap-4 p-4">
+    <div className="sm:grid sm:grid-flow-col snap-always snap-inline sm:auto-cols-[83%] md:auto-cols-[67%] lg:auto-cols-[41%] sm:overflow-x-auto xl:flex xl:items-center w-full py-8 px-4 gap-5">
       {documents ? (
         documents.slice(0, getSliceNumber()).map((doc) => (
           <Link
@@ -37,10 +49,10 @@ function HomeClubs() {
 
             <div className="flex justify-between items-center sm:flex-col xl:flex-row text-white group-hover:text-accColor p-4">
               <p className="text-lg font-semibold">{doc.clubsName}</p>
-              <p>
+              {/* <p>
                 {doc.users.length}{" "}
                 {translations.clubObject.members[selectedLanguage]}
-              </p>
+        </p>*/}
             </div>
           </Link>
         ))

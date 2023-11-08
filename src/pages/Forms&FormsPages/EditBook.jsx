@@ -1,31 +1,47 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { motion } from "framer-motion";
-import AvatarEditor from "react-avatar-editor";
-import { FaBookOpen, FaWindowClose } from "react-icons/fa";
-import { GrClose } from "react-icons/gr";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import { motion } from 'framer-motion';
+import AvatarEditor from 'react-avatar-editor';
+import {
+  FaBookOpen,
+  FaWindowClose,
+} from 'react-icons/fa';
+import { GrClose } from 'react-icons/gr';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import { Alert } from "@mui/material";
+import { Alert } from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import translations from "../../assets/translations/FormsTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import Loader from "../../components/Loader";
-import { modalActions } from "../../context/ModalContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useFirestore } from "../../hooks/useFirestore";
-import { useFormData } from "../../hooks/useFormData";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import translations from '../../assets/translations/FormsTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import Loader from '../../components/Loader';
+import { modalActions } from '../../context/ModalContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useFormRealData } from '../../hooks/useFormRealData';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
 
 function EditBook({ id }) {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-  const { document, error, loading } = useFormData("books", id);
-  const { updateDocument } = useFirestore("books");
+  const { document } = useFormRealData("books", id);
+  const { updateDatabase } = useRealDatabase();
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [pagesNumber, setPagesNumber] = useState(1);
@@ -34,11 +50,9 @@ function EditBook({ id }) {
   const [photoImg, setPhotoImg] = useState(null);
   const [editPhotoImg, setEditPhotoImg] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
-
   const storage = getStorage();
   const { user } = useAuthContext();
   const editorRef = useRef();
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -115,23 +129,29 @@ function EditBook({ id }) {
     setEditPhotoImg(null);
   };
 
-  const handleUpdate = async (e) => {
+  const handleUpdate = (e) => {
     e.preventDefault();
     setError(null);
     setIsPending(true);
     try {
-      await updateDocument(id, {
-        title: title,
-        author: author,
-        pagesNumber: pagesNumber,
-        photoURL: photoImg,
-      });
-
       setError(null);
       setIsPending(false);
       toast.success(
         alertMessages.notifications.successfull.update[selectedLanguage]
       );
+
+      updateDatabase(
+        {
+          ...document,
+          title: title,
+          author: author,
+          pagesNumber: pagesNumber,
+          photoURL: photoImg,
+        },
+        "books",
+        id
+      );
+
       navigate(`/book/${id}`);
       dispatch(modalActions.closeModal());
     } catch (error) {
@@ -171,9 +191,10 @@ function EditBook({ id }) {
             <input
               className="outline-none rounded-md p-2 w-full"
               type="text"
+              name="title"
               required
-              value={title}
               onChange={(e) => setTitle(e.target.value)}
+              value={title}
             />
           </label>
           <label className="flex flex-col w-full">
@@ -183,6 +204,7 @@ function EditBook({ id }) {
             <input
               className="outline-none rounded-md p-2 w-full"
               type="text"
+              name="author"
               required
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
@@ -195,6 +217,7 @@ function EditBook({ id }) {
             </span>
             <input
               type="number"
+              name="pagesNumber"
               className="outline-none rounded-md p-2 w-full"
               min={1}
               required
