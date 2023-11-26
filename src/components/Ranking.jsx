@@ -13,14 +13,24 @@ import {
   TableRow,
 } from "@mui/material";
 
+import { CompetitionRules } from "../assets/CompetitionsRules/CompetitionRules";
 import reuseableTranslations from "../assets/translations/ReusableTranslations.json";
 import useRealtimeDocuments from "../hooks/useRealtimeDocuments";
+import Top3Winners from "./Top3Winners";
 
-function Ranking({ communityObject, communityMembers, expirationTime }) {
+function Ranking({
+  communityObject,
+  communityMembers,
+  expirationTime,
+  expirationTimeNumber,
+}) {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
   const { getDocuments } = useRealtimeDocuments();
+
+  const { teachToFishRule, liftOthersRiseJointlyRule, firstComeServedRule } =
+    CompetitionRules();
 
   const [books, setBooks] = useState([]);
   const [readerObjects, setReaderObjects] = useState([]);
@@ -53,15 +63,31 @@ function Ranking({ communityObject, communityMembers, expirationTime }) {
   }, [loadBooks, loadReaderObjects]);
 
   const getReadBooks = (id) => {
-    return readerObjects.filter(
-      (reader, i) => reader.id === id && reader.hasFinished
-    ).length;
+    return !communityObject?.expiresAt
+      ? readerObjects.filter(
+          (reader, i) => reader.id === id && reader.hasFinished
+        ).length
+      : readerObjects.filter(
+          (reader, i) =>
+            reader.id === id &&
+            reader.hasFinished &&
+            reader.dateOfFinish >= communityObject.createdBy.createdAt &&
+            reader.dateOfFinish <= communityObject.expiresAt
+        ).length;
   };
 
   const getlastBookRead = (id) => {
-    const BookTitles = readerObjects.filter(
-      (reader, i) => reader.id === id && reader.hasFinished
-    );
+    const BookTitles = !communityObject?.expiresAt
+      ? readerObjects.filter(
+          (reader, i) => reader.id === id && reader.hasFinished
+        )
+      : readerObjects.filter(
+          (reader, i) =>
+            reader.id === id &&
+            reader.hasFinished &&
+            reader.dateOfFinish >= communityObject.createdBy.createdAt &&
+            reader.dateOfFinish <= communityObject.expiresAt
+        );
 
     const lastBookTitle = books.filter(
       (book, index) => book.id === BookTitles[index]?.bookReadingId
@@ -74,101 +100,157 @@ function Ranking({ communityObject, communityMembers, expirationTime }) {
     return lastBookTitle ? lastBookTitle : "No book yet";
   };
 
+  const [suitableMembers, setSuitMembers] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const accurateMembers = async () => {
+    if (
+      readerObjects.length > 0 &&
+      communityMembers &&
+      communityObject &&
+      communityObject.competitionsName
+    ) {
+      if (communityObject.competitionsName === "Lift others, rise") {
+        const arr = await liftOthersRiseJointlyRule(
+          communityMembers,
+          getReadBooks,
+          expirationTimeNumber,
+          communityObject.createdBy.createdAt,
+          getlastBookRead
+        );
+        setSuitMembers(arr);
+      }
+      if (communityObject.competitionsName === "First read, first served") {
+        const arr = firstComeServedRule(
+          communityMembers,
+          getReadBooks,
+          getlastBookRead
+        );
+        setSuitMembers(arr);
+      }
+
+      if (communityObject.competitionsName === "Teach to fish") {
+        const arr = await teachToFishRule(
+          readerObjects,
+          communityMembers,
+          getReadBooks,
+          getlastBookRead
+        );
+        setSuitMembers(arr);
+      }
+    } else {
+      const arr = firstComeServedRule(
+        communityMembers,
+        getReadBooks,
+        getlastBookRead
+      );
+      setSuitMembers(arr);
+    }
+  };
+
+  useEffect(() => {
+    accurateMembers();
+  }, [accurateMembers]);
+
   return (
     <>
-      {expirationTime <= 0 && <p>{readerObjects.length}</p>}
-      <TableContainer
-        component={Paper}
-        className="sm:w-full xl:w-1/2 bg-accColor"
-      >
-        <Table aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell
-                className="bg-primeColor border-r-white border-r-2 font-bold text-lg text-center"
-                sx={{ color: "#fff" }}
-              >
-                {
-                  reuseableTranslations.RankingTranslations.heads.userHead[
-                    selectedLanguage
-                  ]
-                }
-              </TableCell>
-
-              <TableCell
-                className="bg-primeColor text-center border-r-white border-r-2 font-bold text-lg"
-                sx={{ color: "#fff" }}
-              >
-                {
-                  reuseableTranslations.RankingTranslations.heads.booksReadHead[
-                    selectedLanguage
-                  ]
-                }
-              </TableCell>
-              <TableCell
-                className="bg-primeColor font-bold text-lg text-center"
-                sx={{ color: "#fff" }}
-              >
-                {
-                  reuseableTranslations.RankingTranslations.heads
-                    .currentBookHead[selectedLanguage]
-                }
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {communityMembers.length > 0 &&
-              communityMembers.map((user) => (
-                <TableRow
-                  key={user.label}
-                  sx={{
-                    "&:last-child td, &:last-child th": { border: 0 },
-                  }}
+      {(expirationTime > 0 || !expirationTime) && (
+        <TableContainer
+          component={Paper}
+          className="sm:w-full xl:w-1/2 bg-accColor"
+        >
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  className="bg-primeColor border-r-white border-r-2 font-bold text-lg text-center"
+                  sx={{ color: "#fff" }}
                 >
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    className="border-r-white border-r-2"
-                    sx={{ color: "#fff" }}
-                  >
-                    <Link
-                      to={`/user/profile/${user.value.id}`}
-                      className="flex gap-3 items-center"
-                    >
-                      <div className="sm:w-10 sm:h-10 md:w-16 md:h-16">
-                        <img
-                          className="w-full h-full rounded-full object-cover"
-                          src={user.value.photoURL}
-                          alt=""
-                        />
-                      </div>
-                      <p>{user.value.nickname}</p>
-                    </Link>
-                  </TableCell>
+                  {
+                    reuseableTranslations.RankingTranslations.heads.userHead[
+                      selectedLanguage
+                    ]
+                  }
+                </TableCell>
 
-                  <TableCell
-                    sx={{ color: "#fff" }}
-                    component="th"
-                    scope="row"
-                    className="border-r-white border-r-2"
+                <TableCell
+                  className="bg-primeColor text-center border-r-white border-r-2 font-bold text-lg"
+                  sx={{ color: "#fff" }}
+                >
+                  {
+                    reuseableTranslations.RankingTranslations.heads
+                      .booksReadHead[selectedLanguage]
+                  }
+                </TableCell>
+                <TableCell
+                  className="bg-primeColor font-bold text-lg text-center"
+                  sx={{ color: "#fff" }}
+                >
+                  {
+                    reuseableTranslations.RankingTranslations.heads
+                      .currentBookHead[selectedLanguage]
+                  }
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {suitableMembers.length > 0 &&
+                suitableMembers.map((user) => (
+                  <TableRow
+                    key={user.nickname}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                    }}
                   >
-                    <p className="text-center">
-                      {getReadBooks(user.value.id)}{" "}
-                      {getReadBooks(user.value.id) > 1
-                        ? `${reuseableTranslations.booksObjects.books[selectedLanguage]}`
-                        : `${reuseableTranslations.booksObjects.book[selectedLanguage]}`}
-                    </p>
-                  </TableCell>
-                  <TableCell sx={{ color: "#fff" }} component="th" scope="row">
-                    <p className="text-center">
-                      {getlastBookRead(user.value.id)}
-                    </p>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      className="border-r-white border-r-2"
+                      sx={{ color: "#fff" }}
+                    >
+                      <Link
+                        to={`/user/profile/${user.id}`}
+                        className="flex gap-3 items-center"
+                      >
+                        <div className="sm:w-10 sm:h-10 md:w-16 md:h-16">
+                          <img
+                            className="w-full h-full rounded-full object-cover"
+                            src={user.photoURL}
+                            alt=""
+                          />
+                        </div>
+                        <p className="sm:hidden lg:block">{user.nickname}</p>
+                      </Link>
+                    </TableCell>
+
+                    <TableCell
+                      sx={{ color: "#fff" }}
+                      component="th"
+                      scope="row"
+                      className="border-r-white border-r-2"
+                    >
+                      <p className="text-center">
+                        {user.readBooks}{" "}
+                        {user.readBooks > 1
+                          ? `${reuseableTranslations.booksObjects.books[selectedLanguage]}`
+                          : `${reuseableTranslations.booksObjects.book[selectedLanguage]}`}
+                      </p>
+                    </TableCell>
+                    <TableCell
+                      sx={{ color: "#fff" }}
+                      component="th"
+                      scope="row"
+                    >
+                      <p className="text-center">{user.lastReadBook}</p>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
+      {expirationTime <= 0 && <Top3Winners topWinners={suitableMembers} />}
     </>
   );
 }

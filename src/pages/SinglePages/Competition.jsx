@@ -34,6 +34,7 @@ import competitionTranslations
 import translations from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
+import AllMembersModal from '../../components/AllMembersModal';
 import CompetitionChat from '../../components/ChatComponents/CommunityChat';
 import Ranking from '../../components/Ranking';
 import Warning from '../../components/WarningsComponents/Warning';
@@ -391,6 +392,7 @@ function Competition() {
                   <h3 className=" text-lg font-semibold">
                     {document.competitionsName}
                   </h3>
+                  <AllMembersModal users={members} />
                   {/** 
                 <p className=" font-medium">
                     {document.users.length}{" "}
@@ -481,10 +483,12 @@ function Competition() {
             </div>
 
             <Ranking
-              communityId={document.id}
+              communityObject={document}
               communityMembers={members.filter(
                 (member) => member.belongsTo === document.id
-              )}
+            )}
+            expirationTimeNumber={document.expiresAt}
+              expirationTime={competitionExpirationDate}
             />
           </div>
         )}

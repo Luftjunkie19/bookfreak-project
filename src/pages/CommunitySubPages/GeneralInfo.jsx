@@ -36,6 +36,7 @@ import formsTranslations
   from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
+import AllMembersModal from '../../components/AllMembersModal';
 import Ranking from '../../components/Ranking';
 import Warning from '../../components/WarningsComponents/Warning';
 import { warningActions } from '../../context/WarningContext';
@@ -293,7 +294,12 @@ function GeneralInfo() {
                     }}
                   >
                     {competitionExpirationDate / 86400000 >= 0 && (
-                      <MenuItem onClick={handleCloseManagent}>
+                      <MenuItem
+                        onClick={() => {
+                          navigate(`/edit-competition/${document.id}`);
+                          handleCloseManagent();
+                        }}
+                      >
                         <Link className="flex justify-around items-center w-full">
                           {
                             reuseableTranslations.communitiesBar.editBtn[
@@ -305,7 +311,12 @@ function GeneralInfo() {
                       </MenuItem>
                     )}
 
-                    <MenuItem onClick={handleCloseManagent}>
+                    <MenuItem
+                      onClick={() => {
+                        handleCloseManagent();
+                        deleteCompetition(document.id);
+                      }}
+                    >
                       <button className="flex justify-around items-center w-full">
                         {
                           reuseableTranslations.communitiesBar.deleteBtn[
@@ -356,6 +367,7 @@ function GeneralInfo() {
                     {document.createdBy.displayName}
                   </Link>
                 </p>
+                <AllMembersModal users={members} />
               </div>
             </div>
             {document && document.description.trim() !== "" && (
@@ -380,6 +392,14 @@ function GeneralInfo() {
                             competitionTranslations.competitionObject.expiration
                               .notExpired.part2.notToday[selectedLanguage]
                           }
+                        </span>
+                      )}
+                      {Math.round(competitionExpirationDate) === 0 && (
+                        <span>
+                          {
+                            competitionTranslations.competitionObject.expiration
+                              .notExpired.part2.today[selectedLanguage]
+                          }{" "}
                         </span>
                       )}
                     </span>
@@ -419,6 +439,7 @@ function GeneralInfo() {
           </div>
 
           <Ranking
+          expirationTimeNumber={document.expiresAt}
             communityMembers={members.filter(
               (member) => member.belongsTo === id
             )}

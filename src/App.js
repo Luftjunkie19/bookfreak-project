@@ -41,10 +41,12 @@ import AddLink from "./pages/Forms&FormsPages/AddLink";
 import EditClub from "./pages/Forms&FormsPages/EditClub";
 import EditCompetition from "./pages/Forms&FormsPages/EditCompetition";
 import EditProfile from "./pages/Forms&FormsPages/EditProfile";
+import EditTest from "./pages/Forms&FormsPages/EditTest.jsx";
 import ForgotPassword from "./pages/Forms&FormsPages/ForgotPassword.jsx";
 import Home from "./pages/Home";
 import SearchFor from "./pages/SearchPages/SearchFor";
 import SearchOption from "./pages/SearchPages/SearchOption";
+import AuthorProfile from "./pages/SinglePages/AuthorProfile.jsx";
 import Book from "./pages/SinglePages/Book";
 import Club from "./pages/SinglePages/Club";
 import Competition from "./pages/SinglePages/Competition.jsx";
@@ -95,6 +97,13 @@ function App() {
                       path="/book/:id"
                       element={(user && <Book />) || (!user && <SignUp />)}
                     />
+
+                    <Route
+                      path="/author/:authorName"
+                      element={<AuthorProfile />}
+                    />
+
+                    <Route path="/edit-test/:testId" element={<EditTest />} />
 
                     <Route
                       path="/test/:testId"

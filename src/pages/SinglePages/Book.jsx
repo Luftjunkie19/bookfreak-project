@@ -1,29 +1,52 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { FaHeart, FaPencilAlt, FaShare, FaTrash } from "react-icons/fa";
-import { FaX } from "react-icons/fa6";
-import { GiBookshelf } from "react-icons/gi";
-import { MdPlaylistRemove, MdUpdate } from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
-import { useClipboard } from "use-clipboard-copy";
+import {
+  FaHeart,
+  FaPencilAlt,
+  FaShare,
+  FaTrash,
+} from 'react-icons/fa';
+import { FaX } from 'react-icons/fa6';
+import { GiBookshelf } from 'react-icons/gi';
+import {
+  MdPlaylistRemove,
+  MdRecommend,
+  MdUpdate,
+} from 'react-icons/md';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  useNavigate,
+  useParams,
+} from 'react-router';
+import { Link } from 'react-router-dom';
+import uniqid from 'uniqid';
+import { useClipboard } from 'use-clipboard-copy';
 
-import { Snackbar } from "@mui/material";
+import { Snackbar } from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import translations from "../../assets/translations/BookPageTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import BookReaderForm from "../../components/BookComponents/BookReaderForm";
-import LikersList from "../../components/BookComponents/LikersList";
-import RecensionsForBook from "../../components/BookComponents/RecensionsForBook";
-import Loader from "../../components/Loader";
-import { modalActions } from "../../context/ModalContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
-import EditBook from "../Forms&FormsPages/EditBook";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import translations from '../../assets/translations/BookPageTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import BookReaderForm from '../../components/BookComponents/BookReaderForm';
+import LikersList from '../../components/BookComponents/LikersList';
+import RecensionsForBook
+  from '../../components/BookComponents/RecensionsForBook';
+import CompetitionMembers
+  from '../../components/CommunityComponents/CompetitionMembers';
+import Loader from '../../components/Loader';
+import { modalActions } from '../../context/ModalContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import EditBook from '../Forms&FormsPages/EditBook';
 
 function Book() {
   const { id } = useParams();
@@ -152,17 +175,87 @@ function Book() {
     );
   };
 
+  const [competitionsMembers, setCompetitionsMembers] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadCompetitionsMembers = async () => {
+    const communityMembers = await getDocuments("communityMembers");
+
+    const realObjects = communityMembers.map((communityMember) => {
+      return communityMember.users;
+    });
+
+    const alreadyObjects = realObjects.map((member) => {
+      return Object.values(member);
+    });
+
+    setCompetitionsMembers(alreadyObjects.flat());
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadCompetitions = async () => {
+    const communityMembers = await getDocuments("competitions");
+
+    setCompetitions(communityMembers);
+  };
+
   useEffect(() => {
     loadObject();
     showIfLiked();
     loadLikers();
     loadReaders();
     loadRecensions();
-  }, [loadLikers, loadObject, loadReaders, loadRecensions, showIfLiked]);
+    loadCompetitionsMembers();
+    loadCompetitions();
+  }, [
+    loadCompetitions,
+    loadCompetitionsMembers,
+    loadLikers,
+    loadObject,
+    loadReaders,
+    loadRecensions,
+    showIfLiked,
+  ]);
 
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+
+  const getCompetitionMembers = () => {
+    const userCompetitions = competitionsMembers
+      .filter((doc) => doc.value.id === user.uid)
+      .map((communityMember) => communityMember.belongsTo);
+
+    let result = [];
+    let visitedCompetitions = [];
+
+    while (userCompetitions.length > 0) {
+      const currentCompetition = userCompetitions.pop();
+
+      if (!visitedCompetitions.includes(currentCompetition)) {
+        const membersInCurrentCompetition = competitionsMembers.filter(
+          (member) => member.belongsTo === currentCompetition
+        );
+
+        result = result.concat(membersInCurrentCompetition);
+
+        const newMembersCompetitions = membersInCurrentCompetition
+          .filter((member) => !visitedCompetitions.includes(member.belongsTo))
+          .map((member) => member.belongsTo);
+
+        userCompetitions.push(...newMembersCompetitions);
+        visitedCompetitions.push(currentCompetition);
+      }
+    }
+
+    result = result.filter(
+      (value, index, self) =>
+        self.findIndex((m) => m.value.id === value.value.id) === index
+    );
+
+    return result.filter((member) => member.value.id !== user.uid);
+  };
 
   const changeLoveState = async () => {
     const likerDoc = await getDocument("lovedBooks", `${id}-${user.uid}`);
@@ -284,6 +377,77 @@ function Book() {
     });
   };
 
+  const [showList, setShowList] = useState(false);
+  const showListsOfUsers = () => {
+    setShowList(true);
+  };
+
+  const closeListsOfUsers = () => {
+    setShowList(false);
+  };
+
+  const recommendToUser = async (receiverId) => {
+    const firstPossibility = `${user.uid}-${receiverId}`;
+    const secondPossibility = `${receiverId}-${user.uid}`;
+
+    const existingChat1 = await getDocument("usersChats", firstPossibility);
+    const existingChat2 = await getDocument("usersChats", secondPossibility);
+
+    let chatId;
+
+    if (existingChat1 || existingChat2) {
+      chatId = existingChat1 ? firstPossibility : secondPossibility;
+    } else {
+      chatId = firstPossibility;
+
+      addToDataBase("usersChats", firstPossibility, {
+        chatId: firstPossibility,
+        createdAt: new Date().getTime(),
+      });
+
+      addToDataBase("entitledToChat", `${firstPossibility}/${user.uid}`, {
+        entitledUserId: user.uid,
+        entitledChatId: firstPossibility,
+      });
+
+      addToDataBase("entitledToChat", `${firstPossibility}/${receiverId}`, {
+        entitledUserId: receiverId,
+        entitledChatId: firstPossibility,
+      });
+    }
+
+    const messageId = `${chatId}/${new Date().getTime()}${uniqid()}`;
+
+    addToDataBase("usersChatMessages", messageId, {
+      content: document.photoURL,
+      message: `Hi, I want to recommend you the book ${document.title} written by ${document.author}.`,
+      chatId: chatId,
+      sender: {
+        id: user.uid,
+      },
+      receiver: {
+        id: receiverId,
+      },
+      sentAt: new Date().getTime(),
+    });
+
+    addToDataBase("recommendations", messageId, {
+      content: document.photoURL,
+      message: `Hi, I want to recommend you the book ${document.title} written by ${document.author}.`,
+      chatId: chatId,
+      messageId,
+      sender: {
+        id: user.uid,
+      },
+      receiver: {
+        id: receiverId,
+      },
+      sentAt: new Date().getTime(),
+    });
+
+    setOpenState({ open: true, message: "Recommendation sent successfully!" });
+  };
+
   return (
     <div className="min-h-screen h-full overflow-x-hidden">
       {isOpened && <EditBook id={id} />}
@@ -321,9 +485,12 @@ function Book() {
           </div>
           <div className="w-full text-white mt-5 md:ml-8 md:mt-0 max-w-2xl">
             <h3 className="text-white uppercase text-2xl">{document.title}</h3>
-            <span className="text-gray-500 mt-3">
+            <Link
+              to={`/author/${document.author}`}
+              className="text-gray-500 mt-3"
+            >
               {translations.authorText[selectedLanguage]}: {document.author}
-            </span>
+            </Link>
             <div className="mt-2">
               <div className="flex gap-4 justify-between items-center my-2 p-2 sm:w-full md:w-3/4 lg:w-4/5">
                 {document && (
@@ -381,6 +548,22 @@ function Book() {
                   <FaShare /> {translations.shareText[selectedLanguage]}
                 </button>
               </div>
+              <button
+                onClick={() => {
+                  showListsOfUsers();
+                }}
+                className="btn bg-accColor text-white"
+              >
+                Recommend <MdRecommend className=" text-lg" />{" "}
+              </button>
+              {showList && (
+                <CompetitionMembers
+                  open={showList}
+                  handleClose={closeListsOfUsers}
+                  users={getCompetitionMembers()}
+                  handleCreateRecommendation={recommendToUser}
+                />
+              )}
             </div>
             <div className="mt-3">
               <p className="text-3xl font-light">

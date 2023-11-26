@@ -1,19 +1,24 @@
-import "./stylings/backgrounds.css";
+import './stylings/backgrounds.css';
 
-import Lottie from "lottie-react";
-import { FaBook, FaUserFriends } from "react-icons/fa";
-import { GiPodiumWinner } from "react-icons/gi";
-import { PiExamFill } from "react-icons/pi";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import Lottie from 'lottie-react';
+import {
+  FaBook,
+  FaUserFriends,
+} from 'react-icons/fa';
+import { GiPodiumWinner } from 'react-icons/gi';
+import { PiExamFill } from 'react-icons/pi';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import animationLottie2 from "../assets/lottieAnimations/Animation - 1699176767867.json";
-import animationLottie from "../assets/lottieAnimations/mwUkFOkeLv.json";
-import translations from "../assets/translations/homePageTranslations.json";
-import HomeBooks from "../components/HomeComponents/HomeBooks";
-import HomeClubs from "../components/HomeComponents/HomeClubs";
-import HomeCompetitions from "../components/HomeComponents/HomeCompetitions";
-import { useLogout } from "../hooks/useLogout";
+import animationLottie2
+  from '../assets/lottieAnimations/Animation - 1699176767867.json';
+import animationLottie from '../assets/lottieAnimations/mwUkFOkeLv.json';
+import translations from '../assets/translations/homePageTranslations.json';
+import HomeBooks from '../components/HomeComponents/HomeBooks';
+import HomeClubs from '../components/HomeComponents/HomeClubs';
+import HomeCompetitions from '../components/HomeComponents/HomeCompetitions';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useLogout } from '../hooks/useLogout';
 
 function Home() {
   const selectedLangugage = useSelector(
@@ -21,11 +26,13 @@ function Home() {
   );
   const { logout } = useLogout();
 
+  const { user } = useAuthContext();
+
   return (
     <>
       <div className="min-h-screen h-full">
         <div className="flex justify-around items-center w-screen min-h-screen hero-section sm:flex-col-reverse md:flex-row">
-          <div className="flex flex-col flex-1 justify-center pt-8 px-3">
+          <div className="flex flex-col flex-1 justify-center pt-8 px-3 z-10">
             <h2 className="text-4xl font-extrabold my-4 text-white">
               {translations.heroSection.title[selectedLangugage]}
             </h2>
@@ -35,33 +42,23 @@ function Home() {
 
             <Link
               to="/tests"
+              onClick={logout}
               className="btn bg-accColor text-white transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor lg:w-1/2 my-2"
             >
               {translations.heroSection.button[selectedLangugage]}
             </Link>
           </div>
 
-          <div className="flex sm:flex-row sm:justify-around sm:items-center flex-1 p-4 md:flex-col">
+          <div className="flex sm:flex-row sm:justify-around sm:items-center flex-1 p-4 md:flex-col z-10">
             <Lottie
-              className="sm:w-2/3 sm:h-1/3 sm:self-end md:w-56 md:h-1/2 2xl:w-1/2 2xl:h-1/2"
+              className=" sm:w-2/3 sm:h-1/3 sm:self-end md:w-56 md:h-1/2 2xl:w-1/2 2xl:h-1/2"
               animationData={animationLottie}
             />
 
             <Lottie
-              className="sm:w-2/3 sm:h-1/3 sm:self-start md:w-56 md:h-1/2 2xl:w-1/2 2xl:h-1/2"
+              className="sm:w-4/5 sm:h-1/3 sm:self-start md:w-56 md:h-1/2 2xl:w-1/2 2xl:h-1/2"
               animationData={animationLottie2}
             />
-            {/**
-            <img
-              className="sm:w-1/2 sm:h-1/4 sm:self-end md:w-56 md:h-1/2 2xl:w-2/5 2xl:h-2/5"
-              src="https://cdn3d.iconscout.com/3d/premium/thumb/reading-book-5706112-4756522.png?f=webp"
-              alt=""
-            />
-            <img
-              className="sm:w-1/2 sm:h-1/4 sm:self-start md:w-56 md:h-1/2 2xl:w-1/3 2xl:h-1/3"
-              src="https://cdn3d.iconscout.com/3d/premium/thumb/books-5412720-4526315.png"
-              alt=""
-            /> */}
           </div>
         </div>
 

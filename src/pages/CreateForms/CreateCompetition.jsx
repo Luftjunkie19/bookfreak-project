@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from "react";
 
+import countryToCurrency from "country-to-currency";
 import { Alert } from "flowbite-react";
+import CurrencyInput from "react-currency-input-field";
+import ReactFlagsSelect from "react-flags-select";
+import { FaX } from "react-icons/fa6";
 import { GiSwordsPower } from "react-icons/gi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import CreatableSelect from "react-select/creatable";
 import uniqid from "uniqid";
 
+import { Snackbar } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 
-import { competitionTypes } from "../../assets/CreateVariables";
+import {
+  competitionTypes,
+  differentPrize,
+  prizeTypes,
+} from "../../assets/CreateVariables";
 import translations from "../../assets/translations/FormsTranslations.json";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { useRealDatabase } from "../../hooks/useRealDatabase";
@@ -26,7 +35,12 @@ function CreateCompetition() {
   );
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
-
+  const [currency, setCurrency] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [openState, setOpenState] = useState({
+    open: false,
+    message: "",
+  });
   const navigate = useNavigate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadUsers = async () => {
@@ -64,6 +78,11 @@ function CreateCompetition() {
     competitionsName: "",
     expiresAt: null,
     description: "",
+    prizeType: null,
+    prize: {
+      moneyPrize: { amount: null, currency: null },
+      itemPrize: { title: null, typeOfPrize: null },
+    },
   });
 
   const submitForm = (e) => {
@@ -72,11 +91,21 @@ function CreateCompetition() {
     setIsPending(true);
     const uniqueId = uniqid();
 
+    if (!competition.expiresAt) {
+      setOpenState((state) => {
+        state.message = "You cannot set the earlier date than today.";
+        state.open = true;
+        return state;
+      });
+      return;
+    }
+
     addToDataBase("competitions", uniqueId, {
       competitionTitle: competition.competitionTitle,
       competitionsName: competition.competitionsName,
       expiresAt: new Date(competition.expiresAt).getTime(),
       description: competition.description,
+      prize: competition.prize,
       createdBy: {
         displayName: user.displayName,
         email: user.email,
@@ -159,6 +188,7 @@ function CreateCompetition() {
             </span>
 
             <DateTimePicker
+              required
               label={`${translations.expirationDateInput.label[selectedLanguage]}`}
               className="myDatePicker w-full"
               sx={{
@@ -167,10 +197,20 @@ function CreateCompetition() {
               }}
               onChange={(newValue) => {
                 console.log(new Date(newValue.$d));
-                setCompetition((competition) => {
-                  competition.expiresAt = new Date(newValue.$d);
-                  return competition;
-                });
+                if (new Date(newValue.$d).getTime() < new Date().getTime()) {
+                  setOpenState((state) => {
+                    state.message =
+                      "You cannot set the earlier date than today.";
+                    state.open = true;
+                    return state;
+                  });
+                  return;
+                } else {
+                  setCompetition((competition) => {
+                    competition.expiresAt = new Date(newValue.$d);
+                    return competition;
+                  });
+                }
               }}
             />
           </label>
@@ -195,6 +235,7 @@ function CreateCompetition() {
               {translations.competitionCategory.label[selectedLanguage]}:
             </span>
             <CreatableSelect
+              required
               className="text-black w-full"
               options={competitionTypes}
               onChange={(e) => {
@@ -205,6 +246,93 @@ function CreateCompetition() {
               }}
             />
           </label>
+        </div>
+        <div className="flex flex-wrap w-full justify-around items-center sm:flex-col lg:flex-row gap-2">
+          <label className="sm:w-full xl:w-2/5">
+            <span>Competition's prize</span>
+            <CreatableSelect
+              required
+              className="text-black w-full"
+              onChange={(value) => {
+                setCompetition((comp) => {
+                  comp.prizeType = value.value;
+                  return comp;
+                });
+              }}
+              options={prizeTypes}
+            />
+          </label>
+
+          {competition.prizeType === "Money" && (
+            <>
+              <label className="sm:w-full xl:w-2/5 ">
+                <span>Competition's prize</span>
+                <ReactFlagsSelect
+                  required
+                  selected={selectedCountry}
+                  className="text-black w-full"
+                  onSelect={(code) => {
+                    setSelectedCountry(code);
+                    setCurrency(countryToCurrency[code]);
+                    setCompetition((comp) => {
+                      comp.prize.moneyPrize.currency = countryToCurrency[code];
+                      return comp;
+                    });
+                  }}
+                  options={prizeTypes}
+                />
+              </label>
+
+              <label className=" flex flex-col">
+                <span>Prize amount:</span>
+                <CurrencyInput
+                  suffix={currency}
+                  className="input"
+                  onValueChange={(value) => {
+                    setCompetition((comp) => {
+                      comp.prize.moneyPrize.amount = +value;
+                      return comp;
+                    });
+                    console.log(competition);
+                  }}
+                />
+              </label>
+            </>
+          )}
+
+          {competition.prizeType === "item" && (
+            <>
+              <label className="sm:w-full xl:w-2/5 ">
+                <span>Competition's prize </span>
+                <CreatableSelect
+                  required
+                  className="text-black w-full"
+                  onChange={(value) => {
+                    setCompetition((comp) => {
+                      comp.prize.itemPrize.typeOfPrize = value.value;
+                      return comp;
+                    });
+                  }}
+                  options={differentPrize}
+                />
+              </label>
+
+              <label className="flex flex-col max-w-sm">
+                <span>Prize Details:</span>
+                <input
+                  className="input border-accColor rounded-md border-2 outline-none w-full py-4 px-1"
+                  required
+                  type="text"
+                  onChange={(e) => {
+                    setCompetition((comp) => {
+                      comp.prize.itemPrize.title = e.target.value;
+                      return comp;
+                    });
+                  }}
+                />
+              </label>
+            </>
+          )}
         </div>
 
         <label className="flex flex-col">
@@ -235,6 +363,31 @@ function CreateCompetition() {
           </Alert>
         )}
       </form>
+
+      {openState.open === true && (
+        <>
+          <Snackbar
+            onClose={() => {
+              setOpenState({ message: "", open: false });
+            }}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            open={openState.open}
+            autoHideDuration={3000}
+            severity="success"
+            message={openState.message}
+            action={
+              <button
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setOpenState({ message: "", open: false });
+                }}
+              >
+                <FaX className=" text-red-500" /> Close
+              </button>
+            }
+          />
+        </>
+      )}
     </div>
   );
 }
