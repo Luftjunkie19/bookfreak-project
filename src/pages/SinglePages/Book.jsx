@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 
 import { FaHeart, FaPencilAlt, FaShare, FaTrash } from "react-icons/fa";
+import { FaX } from "react-icons/fa6";
 import { GiBookshelf } from "react-icons/gi";
 import { MdPlaylistRemove, MdUpdate } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useClipboard } from "use-clipboard-copy";
+
+import { Snackbar } from "@mui/material";
 
 import alertMessages from "../../assets/translations/AlertMessages.json";
 import translations from "../../assets/translations/BookPageTranslations.json";
@@ -39,6 +41,10 @@ function Book() {
   const [likers, setLikers] = useState([]);
   const [readers, setReaders] = useState([]);
   const [showLikers, setShowLikers] = useState(false);
+  const [openState, setOpenState] = useState({
+    open: false,
+    message: "",
+  });
   const [recensions, setRecensions] = useState([]);
 
   const showAllLikers = () => {
@@ -158,38 +164,38 @@ function Book() {
     (state) => state.languageSelection.selectedLangugage
   );
 
-  const changeLoveState = () => {
-    getDocument("lovedBooks", `${id}-${user.uid}`).then((element) => {
-      if (!element) {
-        getDocument("likesData", id).then((data) => {
-          updateDatabase(
-            {
-              likesAmount: data.likesAmount + 1,
-            },
-            "likesData",
-            id
-          );
-        });
+  const changeLoveState = async () => {
+    const likerDoc = await getDocument("lovedBooks", `${id}-${user.uid}`);
 
-        addToDataBase("lovedBooks", `${id}-${user.uid}`, {
-          lovedBy: user.uid,
-          lovedBookId: id,
-          photoURL: user.photoURL,
-          displayName: user.displayName,
-        });
-      } else {
-        removeFromDataBase("lovedBooks", `${id}-${user.uid}`);
-        getDocument("likesData", id).then((data) => {
-          updateDatabase(
-            {
-              likesAmount: data.likesAmount - 1,
-            },
-            "likesData",
-            id
-          );
-        });
-      }
-    });
+    if (!likerDoc) {
+      addToDataBase("lovedBooks", `${id}-${user.uid}`, {
+        displayName: user.displayName,
+        lovedBookId: id,
+        lovedBy: user.uid,
+        photoURL: user.photoURL,
+      });
+
+      getDocument("likesData", id).then((data) => {
+        updateDatabase(
+          {
+            likesAmount: data.likesAmount + 1,
+          },
+          "likesData",
+          id
+        );
+      });
+    } else {
+      removeFromDataBase("lovedBooks", `${id}-${user.uid}`);
+      getDocument("likesData", id).then((data) => {
+        updateDatabase(
+          {
+            likesAmount: data.likesAmount - 1,
+          },
+          "likesData",
+          id
+        );
+      });
+    }
   };
 
   const clickDelete = () => {
@@ -197,9 +203,12 @@ function Book() {
 
     removeFromDataBase("books", id);
 
-    toast.success(
-      alertMessages.notifications.successfull.remove[selectedLanguage]
-    );
+    setOpenState((state) => {
+      state.message =
+        alertMessages.notifications.successfull.remove[selectedLanguage];
+      state.open = true;
+      return state;
+    });
     setIsPending(false);
     navigate("/");
   };
@@ -210,9 +219,12 @@ function Book() {
 
   const copyPathName = () => {
     clipboard.copy(window.location.href);
-    toast.success(
-      alertMessages.notifications.successfull.copied[selectedLanguage]
-    );
+    setOpenState((state) => {
+      state.message =
+        alertMessages.notifications.successfull.copied[selectedLanguage];
+      state.open = true;
+      return state;
+    });
   };
 
   const openBookReaderForm = () => {
@@ -246,6 +258,7 @@ function Book() {
       id: user.uid,
       pagesRead: readPages,
       startedReading: hasStarted,
+      dateOfFinish: hasFinished ? new Date().getTime() : null,
       recension: "",
       photoURL: user.photoURL,
     });
@@ -265,6 +278,7 @@ function Book() {
       id: user.uid,
       pagesRead: readPages,
       startedReading: hasStarted,
+      dateOfFinish: hasFinished ? new Date().getTime() : null,
       recension: "",
       photoURL: user.photoURL,
     });
@@ -277,7 +291,7 @@ function Book() {
       {document && (
         <div className="flex h-full justify-around items-center sm:flex-col lg:flex-row mt-16">
           <div className="flex flex-col items-center justify-around w-full md:w-1/2">
-            <div className="w-64 h-64 m-2">
+            <div className="w-64 h-72 m-2">
               <img
                 className="h-full w-full rounded-md object-cover"
                 src={document.photoURL}
@@ -486,6 +500,31 @@ function Book() {
         />
       )}
       {isPending && <Loader />}
+
+      {openState.open === true && (
+        <>
+          <Snackbar
+            onClose={() => {
+              setOpenState({ message: "", open: false });
+            }}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            open={openState.open}
+            autoHideDuration={3000}
+            severity="success"
+            message={openState.message}
+            action={
+              <button
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setOpenState({ message: "", open: false });
+                }}
+              >
+                <FaX className=" text-red-500" /> Close
+              </button>
+            }
+          />
+        </>
+      )}
     </div>
   );
 }

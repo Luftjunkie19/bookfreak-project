@@ -1,40 +1,24 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from "react";
 
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import { motion } from 'framer-motion';
-import AvatarEditor from 'react-avatar-editor';
-import {
-  FaBookOpen,
-  FaWindowClose,
-} from 'react-icons/fa';
-import { GrClose } from 'react-icons/gr';
-import {
-  useDispatch,
-  useSelector,
-} from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { motion } from "framer-motion";
+import AvatarEditor from "react-avatar-editor";
+import { FaBookOpen, FaWindowClose } from "react-icons/fa";
+import { GrClose } from "react-icons/gr";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { Alert } from '@mui/material';
+import { Alert } from "@mui/material";
 
-import alertMessages from '../../assets/translations/AlertMessages.json';
-import translations from '../../assets/translations/FormsTranslations.json';
-import reuseableTranslations
-  from '../../assets/translations/ReusableTranslations.json';
-import Loader from '../../components/Loader';
-import { modalActions } from '../../context/ModalContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useFormRealData } from '../../hooks/useFormRealData';
-import { useRealDatabase } from '../../hooks/useRealDatabase';
+import alertMessages from "../../assets/translations/AlertMessages.json";
+import translations from "../../assets/translations/FormsTranslations.json";
+import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
+import Loader from "../../components/Loader";
+import { modalActions } from "../../context/ModalContext";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { useFormRealData } from "../../hooks/useFormRealData";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
 
 function EditBook({ id }) {
   const selectedLanguage = useSelector(
@@ -78,13 +62,13 @@ function EditBook({ id }) {
       setPhotoImg(document.photoURL);
       return;
     }
-    if (selected.size > 100000) {
+    if (selected?.size > 100000) {
       setError(alertMessages.notficactions.wrong.tooBigFile[selectedLanguage]);
       setEditPhotoImg(null);
       return;
     }
 
-    if (!selected.type.includes("image")) {
+    if (!selected?.type.includes("image")) {
       setError(
         alertMessages.notficactions.wrong.inAppropriateFile[selectedLanguage]
       );
@@ -92,7 +76,7 @@ function EditBook({ id }) {
       return;
     }
 
-    if (selected.type.includes("image")) {
+    if (selected?.type.includes("image")) {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(selected);
       fileReader.onload = () => {

@@ -96,7 +96,9 @@ function CompetitionChat({ collectionName, id }) {
   };
 
   const competitionExpirationDate =
-    document && document.expiresAt / 1000 / 24 / 12 / 30 / 60 / 60;
+    document && document.expiresAt
+      ? (document.expiresAt - new Date().getTime()) / 86400000
+      : false;
 
   return (
     <>
@@ -155,7 +157,10 @@ function CompetitionChat({ collectionName, id }) {
 
       <div className="flex w-full justify-between items-center gap-4 bg-accColor py-3 px-6 sticky bottom-0 left-0 rounded-t-lg">
         <textarea
-          disabled={competitionExpirationDate <= 0}
+          disabled={
+            document?.expiresAt &&
+            (document?.expiresAt - new Date().getTime()) / 86400000 <= 0
+          }
           className="resize-none outline-none sm:w-4/5 lg:w-2/3 xl:w-1/2 py-3 px-2 rounded-md"
           placeholder={`${reuseableTranslations.messageAreaInput.placeholder[selectedLanguage]}`}
           value={message}
@@ -163,11 +168,19 @@ function CompetitionChat({ collectionName, id }) {
         ></textarea>
 
         <button
-          disabled={competitionExpirationDate <= 0}
+          disabled={
+            document?.expiresAt &&
+            (document?.expiresAt - new Date().getTime()) / 86400000 <= 0
+              ? (document.expiresAt - new Date().getTime()) / 86400000 <= 0
+              : false
+          }
           onClick={sendMessage}
-          className="btn bg-transparent border-none justify-self-end text-white"
+          className={`btn ${
+            competitionExpirationDate <= 0 &&
+            "bg-[rgba(109,107,107,0.79)] disabled:text-black "
+          }  bg-transparent border-none justify-self-end text-white disabled:cursor-pointer`}
         >
-          <FaPaperPlane className="text-white text-2xl" />
+          <FaPaperPlane className="text-white text-2xl disabled:text-black" />
           <span className="sm:hidden lg:block">
             {" "}
             {chatsTranslations.sendBtn[selectedLanguage]}

@@ -1,25 +1,15 @@
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import React, { useEffect, useState } from "react";
 
-import { BsFillDoorOpenFill } from 'react-icons/bs';
+import { BsFillDoorOpenFill } from "react-icons/bs";
 import {
   FaFacebookMessenger,
   FaInfo,
   FaPencilAlt,
   FaTrashAlt,
-} from 'react-icons/fa';
-import {
-  useDispatch,
-  useSelector,
-} from 'react-redux';
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import {
   Button,
@@ -32,19 +22,17 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@mui/material';
+} from "@mui/material";
 
-import alertMessages from '../../assets/translations/AlertMessages.json';
-import translations from '../../assets/translations/ClubsTranslations.json';
-import formsTranslations
-  from '../../assets/translations/FormsTranslations.json';
-import reusableTranslations
-  from '../../assets/translations/ReusableTranslations.json';
-import { warningActions } from '../../context/WarningContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import alertMessages from "../../assets/translations/AlertMessages.json";
+import translations from "../../assets/translations/ClubsTranslations.json";
+import formsTranslations from "../../assets/translations/FormsTranslations.json";
+import reusableTranslations from "../../assets/translations/ReusableTranslations.json";
+import { warningActions } from "../../context/WarningContext";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function OverallClub() {
   const selectedLanguage = useSelector(
@@ -69,7 +57,7 @@ function OverallClub() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  const [books, setBooks] = useState([]);
   const open = Boolean(anchorEl);
   const openMangement = Boolean(managmentEl);
   const { id } = useParams();
@@ -91,38 +79,64 @@ function OverallClub() {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadBooks = async () => {
+    const booksEl = await getDocuments("books");
+    setBooks(booksEl);
+  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadMembers = async () => {
-    const memberElements = await getDocuments("communityMembers");
+    const memberElements = await getDocuments(`communityMembers/${id}/users`);
 
-    const realObjects = memberElements.map((bookReader) => {
-      return bookReader.users;
+    if (memberElements) {
+      setMembers(memberElements);
+    }
+  };
+
+  const [readerObjects, setReaderObjects] = useState([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadReaderObjects = async () => {
+    const readerObjects = await getDocuments("bookReaders");
+
+    const realObjects = readerObjects.map((bookReader) => {
+      return bookReader.readers;
     });
 
     const newArray = realObjects.map((obj) => {
-      const nestedObject = Object.values(obj)[0];
+      const nestedObject = Object.values(obj);
       return nestedObject;
     });
 
-    setMembers(newArray);
+    setReaderObjects(newArray.flat());
   };
 
   useEffect(() => {
     loadMembers();
     loadDocument();
-  }, [loadDocument, loadMembers]);
+    loadBooks();
+    loadReaderObjects();
+  }, [loadBooks, loadDocument, loadMembers, loadReaderObjects]);
 
   const getReadBooks = (id) => {
-    return [].length;
+    return readerObjects.filter(
+      (reader, i) => reader.id === id && reader.hasFinished
+    ).length;
   };
 
   const getlastBookRead = (id) => {
-    const lastBookTitle = { title: null }.title;
+    const BookTitles = readerObjects.filter(
+      (reader, i) => reader.id === id && reader.hasFinished
+    );
 
-    if (lastBookTitle) {
-      return lastBookTitle;
-    } else {
-      return "No data yet.";
-    }
+    const lastBookTitle = books.filter(
+      (book, index) => book.id === BookTitles[index]?.bookReadingId
+    )[
+      books.filter(
+        (book, index) => book.id === BookTitles[index]?.bookReadingId
+      ).length - 1
+    ]?.title;
+
+    return lastBookTitle ? lastBookTitle : "No book yet";
   };
 
   const leaveClub = async () => {
@@ -132,8 +146,8 @@ function OverallClub() {
       dispatch(
         warningActions.openWarning({
           referedTo: document.id,
-          typeOf: "club",
-          collection: "clubs",
+          typeOf: document.clubsName,
+          collection: "readersClubs",
         })
       );
       return;
@@ -496,18 +510,15 @@ function OverallClub() {
                             scope="row"
                           >
                             <p>
-                              {[]
-                                .filter((book) =>
-                                  book.readers.find(
-                                    (reader) =>
-                                      reader.id === user.value.id &&
-                                      reader.pagesRead === book.pagesNumber
+                              {readerObjects.length > 0 &&
+                                readerObjects
+                                  .filter(
+                                    (reader, i) => reader.id === user.value.id
                                   )
-                                )
-                                .reduce(
-                                  (prev, cur) => prev + cur?.pagesNumber,
-                                  0
-                                )}{" "}
+                                  .reduce(
+                                    (prev, cur) => prev + cur.pagesRead,
+                                    0
+                                  )}{" "}
                               Pages
                             </p>
                           </TableCell>

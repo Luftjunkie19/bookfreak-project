@@ -1,21 +1,32 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { motion } from "framer-motion";
-import { FaUsers } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import CreatableSelect from "react-select";
-import { toast } from "react-toastify";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import { motion } from 'framer-motion';
+import { FaUsers } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import {
+  useNavigate,
+  useParams,
+} from 'react-router';
+import CreatableSelect from 'react-select';
+import { toast } from 'react-toastify';
 
-import { Alert } from "@mui/material";
+import { Alert } from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import formsTranslation from "../../assets/translations/FormsTranslations.json";
-import Loader from "../../components/Loader";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useFormRealData } from "../../hooks/useFormRealData";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import formsTranslation from '../../assets/translations/FormsTranslations.json';
+import Loader from '../../components/Loader';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useFormRealData } from '../../hooks/useFormRealData';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
 
 function EditClub() {
   const { id } = useParams();
@@ -63,12 +74,12 @@ function EditClub() {
     setClubLogo(null);
     let selected = e.target.files[0];
 
-    if (selected.size > 200000) {
+    if (selected?.size > 200000) {
       setError(alertMessages.notficactions.wrong.tooBigFile[selectedLanguage]);
       return;
     }
 
-    if (!selected.type.includes("image")) {
+    if (!selected?.type.includes("image")) {
       setError(
         alertMessages.notficactions.wrong.inAppropriateFile[selectedLanguage]
       );

@@ -87,6 +87,18 @@ function RecensionManagmentBar({ recensions, applyFilters, applySort }) {
         return array.slice().sort((a, b) => a.bookRate - b.bookRate);
       },
     },
+    {
+      label: "Earliest Recensions",
+      sort: (array) => {
+        return array.slice().sort((a, b) => a.dateOfFinish - b.dateOfFinish);
+      },
+    },
+    {
+      label: "Latest Recensions",
+      sort: (array) => {
+        return array.slice().sort((a, b) => b.dateOfFinish - a.dateOfFinish);
+      },
+    },
   ];
 
   const [sortSelected, setSort] = useState("");

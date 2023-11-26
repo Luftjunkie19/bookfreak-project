@@ -1,10 +1,4 @@
-import {
-  FaComments,
-  FaHome,
-  FaPlusCircle,
-  FaSearch,
-  FaUser,
-} from "react-icons/fa";
+import { FaComments, FaHome, FaSearch, FaUser } from "react-icons/fa";
 import { RiLogoutBoxRFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -13,6 +7,7 @@ import languageTranslation from "../../assets/translations/navbarTranslations.js
 import { burgerActions } from "../../context/BurgerContext";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { useLogout } from "../../hooks/useLogout";
+import CreateBtn from "./CreateBtn";
 import LanguageSelect from "./LanguageSelect";
 
 function HamburgerMenu() {
@@ -67,16 +62,10 @@ function HamburgerMenu() {
           {translations.hamburgerMenu.chats[selectedLangugage]}
         </Link>
 
-        <Link
-          to="/create"
-          className="flex items-center justify-around w-2/5 hover:font-extrabold hover:text-xl transition-all duration-500"
-          onClick={() => {
-            dispatch(burgerActions.closedBurger());
-          }}
-        >
-          <FaPlusCircle className="text-xl font-extrabold" />
+        <span className="flex items-center justify-around w-2/5 hover:font-extrabold hover:text-xl transition-all duration-500">
+          <CreateBtn />
           {translations.hamburgerMenu.addForms[selectedLangugage]}
-        </Link>
+        </span>
 
         <Link
           to="/search"

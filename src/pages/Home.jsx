@@ -34,8 +34,7 @@ function Home() {
             </p>
 
             <Link
-              to="/recensions"
-              onClick={logout}
+              to="/tests"
               className="btn bg-accColor text-white transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor lg:w-1/2 my-2"
             >
               {translations.heroSection.button[selectedLangugage]}

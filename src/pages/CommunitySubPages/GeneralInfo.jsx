@@ -1,28 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { BsFillDoorOpenFill } from "react-icons/bs";
+import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
   FaFacebookMessenger,
   FaInfo,
   FaPencilAlt,
   FaTrashAlt,
-} from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+} from 'react-icons/fa';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  useNavigate,
+  useParams,
+} from 'react-router';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import { Button, Menu, MenuItem } from "@mui/material";
+import {
+  Button,
+  Menu,
+  MenuItem,
+} from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import translations from "../../assets/translations/CompetitionsTranslations.json";
-import formsTranslations from "../../assets/translations/FormsTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import Ranking from "../../components/Ranking";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import competitionTranslations
+  from '../../assets/translations/CompetitionsTranslations.json';
+import translations
+  from '../../assets/translations/CompetitionsTranslations.json';
+import formsTranslations
+  from '../../assets/translations/FormsTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import Ranking from '../../components/Ranking';
+import Warning from '../../components/WarningsComponents/Warning';
+import { warningActions } from '../../context/WarningContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function GeneralInfo() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -70,18 +90,11 @@ function GeneralInfo() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadMembers = async () => {
-    const memberElements = await getDocuments("communityMembers");
+    const memberElements = await getDocuments(`communityMembers/${id}/users`);
 
-    const realObjects = memberElements.map((bookReader) => {
-      return bookReader.users;
-    });
-
-    const newArray = realObjects.map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    });
-
-    setMembers(...newArray);
+    if (memberElements) {
+      setMembers(memberElements);
+    }
   };
 
   useEffect(() => {
@@ -104,31 +117,29 @@ function GeneralInfo() {
   const dispatch = useDispatch();
 
   const leaveCompetition = async () => {
-    {
-      /*  const arrayWithoutYou = document.users.filter(
-      (doc) => doc.value.id !== user.uid
-    );
+    const arrayWithoutYou = members.filter((doc) => doc.value.id !== user.uid);
 
     if (arrayWithoutYou && document.createdBy.id === user.uid) {
       dispatch(
         warningActions.openWarning({
           referedTo: document.id,
-          typeOf: "competition",
+          typeOf: document.competitionTitle,
           collection: "competitions",
         })
       );
-      return;
-    }*/
+    } else {
+      removeFromDataBase("communityMembers", `${id}/users/${user.uid}`);
+      navigate("/");
+      toast.success(
+        alertMessages.notifications.successfull.leave[selectedLanguage]
+      );
     }
-
-    navigate("/");
-    toast.success(
-      alertMessages.notifications.successfull.leave[selectedLanguage]
-    );
   };
 
+  const isWarningVisible = useSelector((state) => state.isWarningVisible);
+
   const competitionExpirationDate =
-    document && document.expiresAt / 1000 / 24 / 12 / 30 / 60 / 60;
+    document && (document.expiresAt - new Date().getTime()) / 86400000;
 
   return (
     <div className="min-h-screen h-full">
@@ -169,17 +180,21 @@ function GeneralInfo() {
 
               {document.createdBy.id === user.uid && (
                 <div className="mx-2 flex justify-around items-center">
-                  <button
-                    className="btn"
-                    onClick={() => navigate(`/edit-competition/${document.id}`)}
-                  >
-                    {
-                      reuseableTranslations.communitiesBar.editBtn[
-                        selectedLanguage
-                      ]
-                    }
-                    <FaPencilAlt />
-                  </button>
+                  {competitionExpirationDate / 86400000 >= 0 && (
+                    <button
+                      className="btn"
+                      onClick={() =>
+                        navigate(`/edit-competition/${document.id}`)
+                      }
+                    >
+                      {
+                        reuseableTranslations.communitiesBar.editBtn[
+                          selectedLanguage
+                        ]
+                      }
+                      <FaPencilAlt />
+                    </button>
+                  )}
 
                   <button
                     className="btn ml-2"
@@ -277,16 +292,18 @@ function GeneralInfo() {
                       "aria-labelledby": "basic-button",
                     }}
                   >
-                    <MenuItem onClick={handleCloseManagent}>
-                      <Link className="flex justify-around items-center w-full">
-                        {
-                          reuseableTranslations.communitiesBar.editBtn[
-                            selectedLanguage
-                          ]
-                        }{" "}
-                        <FaPencilAlt />
-                      </Link>
-                    </MenuItem>
+                    {competitionExpirationDate / 86400000 >= 0 && (
+                      <MenuItem onClick={handleCloseManagent}>
+                        <Link className="flex justify-around items-center w-full">
+                          {
+                            reuseableTranslations.communitiesBar.editBtn[
+                              selectedLanguage
+                            ]
+                          }{" "}
+                          <FaPencilAlt />
+                        </Link>
+                      </MenuItem>
+                    )}
 
                     <MenuItem onClick={handleCloseManagent}>
                       <button className="flex justify-around items-center w-full">
@@ -343,12 +360,49 @@ function GeneralInfo() {
             </div>
             {document && document.description.trim() !== "" && (
               <div class="flex flex-col text-white p-3 w-full">
-                <p>
-                  Expires in{" "}
-                  <span className="text-2xl font-bold text-red-500">
-                    {Math.round(competitionExpirationDate)} days
-                  </span>
-                </p>
+                {competitionExpirationDate > 0 && (
+                  <p>
+                    {
+                      competitionTranslations.competitionObject.expiration
+                        .notExpired.part1[selectedLanguage]
+                    }{" "}
+                    <span className="text-2xl font-bold text-red-500">
+                      {Math.round(competitionExpirationDate) > 0 && (
+                        <span>
+                          {
+                            competitionTranslations.competitionObject.expiration
+                              .notExpired.part2.notToday.expiresIN[
+                              selectedLanguage
+                            ]
+                          }{" "}
+                          {Math.round(competitionExpirationDate)}{" "}
+                          {
+                            competitionTranslations.competitionObject.expiration
+                              .notExpired.part2.notToday[selectedLanguage]
+                          }
+                        </span>
+                      )}
+                    </span>
+                  </p>
+                )}
+
+                {competitionExpirationDate <= 0 && (
+                  <p>
+                    {
+                      competitionTranslations.competitionObject.expiration
+                        .Expired.part1[selectedLanguage]
+                    }{" "}
+                    <span className="text-2xl font-bold text-red-500">
+                      {competitionExpirationDate <= -1
+                        ? `${Math.round(competitionExpirationDate) * -1} ${
+                            competitionTranslations.competitionObject.expiration
+                              .Expired.part2.notToday[selectedLanguage]
+                          }`
+                        : ` ${competitionTranslations.competitionObject.expiration.Expired.part2.today[selectedLanguage]}`}
+                    </span>
+                  </p>
+                )}
+
                 <h2 class="text-3xl font-extralight pb-2">
                   {
                     formsTranslations.descriptionTextarea.label[
@@ -368,10 +422,13 @@ function GeneralInfo() {
             communityMembers={members.filter(
               (member) => member.belongsTo === id
             )}
-            communityId={document.id}
+            communityObject={document}
+            expirationTime={competitionExpirationDate}
           />
         </div>
       )}
+
+      {isWarningVisible && <Warning />}
     </div>
   );
 }

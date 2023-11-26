@@ -9,6 +9,40 @@
       "eng": "Members attending",
       "ger": "teilnehmende Mitglieder",
       "pl": "uczestniczących członków"
+    },
+    "expiration": {
+      "notExpired": {
+        "part1": {
+          "eng": "Expires",
+          "ger": "Läuft",
+          "pl": "Wygasa"
+        },
+        "part2": {
+          "notToday": {
+            "expiresIN": {
+              "eng": "in",
+              "ger": "in",
+              "pl": "za"
+            },
+
+            "eng": "days",
+            "ger": "Tagen ab",
+            "pl": "dni"
+          },
+          "today": { "eng": "Today", "ger": "Heute ab", "pl": "Dzisiaj" }
+        }
+      },
+      "Expired": {
+        "part1": { "eng": "Expired", "ger": "Abgelaufen vor", "pl": "Wygasło" },
+        "part2": {
+          "notToday": {
+            "eng": "days ago",
+            "ger": "Tagen",
+            "pl": "dni temu"
+          },
+          "today": { "eng": "Today", "ger": "Heute", "pl": "Dzisiaj" }
+        }
+      }
     }
   }
 }

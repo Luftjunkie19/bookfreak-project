@@ -6,7 +6,6 @@ import {
   FaBell,
   FaComments,
   FaHome,
-  FaPlusCircle,
   FaSearch,
   FaUserAlt,
 } from "react-icons/fa";
@@ -21,6 +20,7 @@ import { viewerActions } from "../../context/ViewerContext";
 import { useLogout } from "../../hooks/useLogout";
 import useRealtimeDocument from "../../hooks/useRealtimeDocument";
 import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import CreateBtn from "./CreateBtn";
 import LanguageSelect from "./LanguageSelect";
 
 function Navbar({ user }) {
@@ -95,7 +95,7 @@ function Navbar({ user }) {
           isSticky
             ? "sticky top-0 left-0 scrolled transition-all duration-500"
             : ""
-        } flex justify-between items-center px-3 py-2 bg-primeColor text-neutral-50 rounded-b-lg w-screen z-[9999999] transition-all duration-500`}
+        } flex justify-between items-center px-3 py-2 bg-primeColor text-neutral-50 rounded-b-lg w-screen z-[99999] transition-all duration-500`}
       >
         <Link
           to="/"
@@ -144,13 +144,13 @@ function Navbar({ user }) {
               <FaBell className=" text-yellow-400 text-base" />
               {documents.length > 0 &&
                 documents.filter(
-                  (doc) => !doc.isRead && doc.directedTo === user.uid
+                  (doc) => !doc?.isRead && doc.directedTo === user.uid
                 ).length > 0 && (
                   <div className="badge text-yellow-400 bg-transparent border-none">
                     +
                     {
                       documents.filter(
-                        (doc) => !doc.isRead && doc.directedTo === user.uid
+                        (doc) => !doc?.isRead && doc.directedTo === user.uid
                       ).length
                     }
                   </div>
@@ -195,7 +195,9 @@ function Navbar({ user }) {
                 <FaUserAlt />
               </Link>
 
-              <Link
+              <CreateBtn />
+
+              {/**         <Link
                 to="/create"
                 className={
                   checkLocation(`/create`)
@@ -204,7 +206,7 @@ function Navbar({ user }) {
                 }
               >
                 <FaPlusCircle />
-              </Link>
+              </Link>*/}
 
               <Link
                 to="/your-chats"
@@ -233,13 +235,13 @@ function Navbar({ user }) {
 
                 {documents.length > 0 &&
                   documents.filter(
-                    (doc) => !doc.isRead && doc.directedTo === user.uid
+                    (doc) => !doc?.isRead && doc.directedTo === user.uid
                   ).length > 0 && (
                     <div className="badge text-yellow-400 bg-transparent border-none">
                       +
                       {
                         documents.filter(
-                          (doc) => !doc.isRead && doc.directedTo === user.uid
+                          (doc) => !doc?.isRead && doc.directedTo === user.uid
                         ).length
                       }
                     </div>

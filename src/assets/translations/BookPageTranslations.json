@@ -88,5 +88,10 @@
       "eng": "other persons love it.",
       "pl": "innych osób uwielbiają to."
     }
+  },
+  "noRecensionYet": {
+    "ger": "Keine Rezensionen bisher.",
+    "eng": "No Recensions yet.",
+    "pl": "Brak recenzji do teraz."
   }
 }

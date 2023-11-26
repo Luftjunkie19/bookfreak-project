@@ -10,6 +10,11 @@
     "ger": "Was möchten Sie hinzufügen"
   },
   "topText": {
+    "tests": {
+      "eng": "Welcome to Test-creator !",
+      "pl": "Witamy w kreatorze testu !",
+      "ger": "Willkommen bei Testersteller !"
+    },
     "books": {
       "eng": "Add a new book and expand your knowledge !",
       "pl": "Dodaj nową książkę i poszerzaj swoją wiedzę !",
@@ -323,5 +328,76 @@
     "eng": "Submit",
     "pl": "Potwierdź",
     "ger": "Bestätigen"
+  },
+  "testFields": {
+    "testName": {
+      "label": {
+        "eng": "Test name:",
+        "pl": "Nazwa testu:",
+        "ger": "Testname: "
+      },
+      "placeholder": {
+        "eng": "Enter a test name...",
+        "pl": "Wpisz nazwę testu...",
+        "ger": "Testnamen eingeben..."
+      }
+    },
+    "bookSelection": {
+      "eng": "Select a book",
+      "pl": "Wybierz książkę",
+      "ger": "Buch auswählen"
+    },
+    "buttonText": {
+      "addNewQuery": {
+        "eng": "Add new Query",
+        "pl": "Dodaj nowe pytanie",
+        "ger": "Neue Frage erstellen"
+      },
+      "createBtn": {
+        "eng": "Create",
+        "pl": "Stwórz",
+        "ger": "Erstellen"
+      },
+      "createTestBtn": {
+        "eng": "Create Test",
+        "pl": "Stwórz Test",
+        "ger": "Test Erstellen"
+      },
+      "anotherQuestion": {
+        "eng": "Another Answer",
+        "pl": "Następna odpowiedź",
+        "ger": "Nächste Antwort"
+      }
+    },
+    "questionLabel": {
+      "eng": "Question:",
+      "pl": "Pytanie:",
+      "ger": "Frage:"
+    },
+    "possibleAnswers": {
+      "eng": "Possible answers:",
+      "pl": "Możliwe odpowiedzi:",
+      "ger": "Mögliche Antworten:"
+    }
+  },
+  "playBtn": {
+    "eng": "Play",
+    "pl": "Zagraj",
+    "ger": "Spielen"
+  },
+  "queries": {
+    "eng": "Queries",
+    "pl": "Pytania",
+    "ger": "Fragen"
+  },
+  "allAttempts": {
+    "eng": "All Attempts",
+    "pl": "Wszystkie Próby",
+    "ger": "Alle Versuche"
+  },
+  "yourAttempts": {
+    "eng": "Your Queries",
+    "pl": "Twoje Próby",
+    "ger": "Deine Versuche"
   }
 }
