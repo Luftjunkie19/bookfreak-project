@@ -332,16 +332,41 @@ function CreateTests() {
                 setQueries((queries) => {
                   return [...queries, newQuery];
                 });
-                setCreateNewQuery(false);
-                setNewQuery({
-                  question: "",
-                  correctAnswer: null,
-                  possibleAnswers: [
-                    { label: 1, answer: "", id: uniqid("answer1") },
-                    { label: 2, answer: "", id: uniqid("answer2") },
-                  ],
-                  queryId: uniqid(`${uniqid(`query${queries.length}`)}`),
-                });
+                if (queries.find((q) => q.queryId === newQuery.queryId)) {
+                  let queryExisted = queries.find(
+                    (q) => q.queryId === newQuery.queryId
+                  );
+
+                  queryExisted = newQuery;
+
+                  setQueries((queries) => {
+                    const newArr = queries.filter(
+                      (q) => q.queryId !== newQuery.queryId
+                    );
+                    return [...newArr, queryExisted];
+                  });
+                  setCreateNewQuery(false);
+                  setNewQuery({
+                    question: "",
+                    correctAnswer: null,
+                    possibleAnswers: [
+                      { label: 1, answer: "", id: uniqid("answer1") },
+                      { label: 2, answer: "", id: uniqid("answer2") },
+                    ],
+                    queryId: uniqid(`${uniqid(`query${queries.length}`)}`),
+                  });
+                } else {
+                  setCreateNewQuery(false);
+                  setNewQuery({
+                    question: "",
+                    correctAnswer: null,
+                    possibleAnswers: [
+                      { label: 1, answer: "", id: uniqid("answer1") },
+                      { label: 2, answer: "", id: uniqid("answer2") },
+                    ],
+                    queryId: uniqid(`${uniqid(`query${queries.length}`)}`),
+                  });
+                }
               }}
             >
               {

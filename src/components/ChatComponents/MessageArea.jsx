@@ -30,6 +30,13 @@ function MessageArea({ chatId, messagedUser }) {
   const [currentChat, setCurrentChat] = useState(null);
   const [entitledUsers, setEntitledUsers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [imageMessages, setImageMessages] = useState([]);
+
+  const updateImageMessage = (index, message) => {
+    const updatedImageMessages = [...imageMessages];
+    updatedImageMessages[index].message = message;
+    setImageMessages(updatedImageMessages);
+  };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadUsersChat = async () => {
@@ -167,72 +174,98 @@ function MessageArea({ chatId, messagedUser }) {
       return;
     }
 
-    acceptableFiles.map(async (file) => {
-      const storage = getStorage();
+    // Initialize imageMessages with empty messages for each image
+    const messagesForImages = acceptableFiles.map((file) => ({
+      file,
+      message: "", // Default to empty string
+    }));
 
-      const uploadPath = `messages/uid${user.uid}-${messagedUser.id}/${file.name}`;
+    setImageMessages(messagesForImages);
+  };
 
-      const image = ref(storage, uploadPath);
+  const sendAllImages = async () => {
+    try {
+      for (let i = 0; i < imageMessages.length; i++) {
+        const { file, message } = imageMessages[i];
 
-      const snapshot = await uploadBytes(image, file);
-      const messagedPhoto = await getDownloadURL(image);
+        const storage = getStorage();
+        const uploadPath = `messages/uid${user.uid}-${messagedUser.id}/${file.name}`;
+        const image = ref(storage, uploadPath);
 
-      const entitledUsers = chatId.split("-");
-      if (!currentChat) {
-        addToDataBase("usersChats", chatId, {
-          chatId: chatId,
-          createdAt: new Date().getTime(),
-        });
+        const snapshot = await uploadBytes(image, file);
+        const messagedPhoto = await getDownloadURL(image);
 
-        entitledUsers.map((entitledUserId) =>
+        const entitledUsers = chatId.split("-");
+        if (!currentChat) {
+          addToDataBase("usersChats", chatId, {
+            chatId: chatId,
+            createdAt: new Date().getTime(),
+          });
+
           addToDataBase(
             "entitledToChat",
             `${chatId}/${entitledUsers.find((id) => id === user.uid)}`,
             {
-              entitledUserId: entitledUserId,
+              entitledUserId: entitledUsers.find((id) => id === user.uid),
               entitledChatId: chatId,
             }
-          )
-        );
+          );
 
-        addToDataBase(
-          "usersChatMessages",
-          `${chatId}/${new Date().getTime()}${uniqid()}`,
-          {
-            content: messagedPhoto,
-            chatId,
-            sender: {
-              id: user.uid,
-            },
-            receiver: {
-              id: entitledUsers.find((id) => id !== user.uid),
-            },
-            sentAt: new Date().getTime(),
-          }
-        );
+          addToDataBase(
+            "entitledToChat",
+            `${chatId}/${entitledUsers.find((id) => id !== user.uid)}`,
+            {
+              entitledUserId: entitledUsers.find((id) => id !== user.uid),
+              entitledChatId: chatId,
+            }
+          );
 
-        setMessage("");
-        return;
+          // ... (similar logic as before)
+
+          await addToDataBase(
+            "usersChatMessages",
+            `${chatId}/${new Date().getTime()}${uniqid()}`,
+            {
+              content: messagedPhoto,
+              message,
+              chatId,
+              sender: {
+                id: user.uid,
+              },
+              receiver: {
+                id: entitledUsers.find((id) => id !== user.uid),
+              },
+              sentAt: new Date().getTime(),
+            }
+          );
+        } else {
+          // ... (similar logic as before)
+
+          await addToDataBase(
+            "usersChatMessages",
+            `${chatId}/${new Date().getTime()}${uniqid()}`,
+            {
+              content: messagedPhoto,
+              message,
+              chatId,
+              sender: {
+                id: user.uid,
+              },
+              receiver: {
+                id: entitledUsers.find((id) => id !== user.uid),
+              },
+              sentAt: new Date().getTime(),
+            }
+          );
+        }
       }
 
-      if (currentChat) {
-        addToDataBase(
-          "usersChatMessages",
-          `${chatId}/${new Date().getTime()}${uniqid()}`,
-          {
-            content: messagedPhoto,
-            chatId,
-            sender: {
-              id: user.uid,
-            },
-            receiver: {
-              id: entitledUsers.find((id) => id !== user.uid),
-            },
-            sentAt: new Date().getTime(),
-          }
-        );
-      }
-    });
+      // Clear all messages after sending
+      setImageMessages([]);
+    } catch (error) {
+      console.error("Error sending messages:", error);
+      toast.error("Error sending messages. Please try again.");
+    }
   };
 
   return (
@@ -300,6 +333,7 @@ function MessageArea({ chatId, messagedUser }) {
                                 alt=""
                                 className=" max-w-[10rem] max-h-64 rounded-lg"
                               />
+                              <span>{message?.message}</span>
                             </>
                           ) : (
                             <p className="break-words">{message?.content}</p>
@@ -357,6 +391,7 @@ function MessageArea({ chatId, messagedUser }) {
                                 alt=""
                                 className="max-h-64 rounded-lg"
                               />
+                              <span>{message?.message}</span>
                             </>
                           ) : (
                             <p className=" break-words">{message?.content}</p>
@@ -368,6 +403,28 @@ function MessageArea({ chatId, messagedUser }) {
                 </>
               ))}
         </div>
+
+        {imageMessages.length > 0 && (
+          <div className=" p-3 sm:grid sm:grid-flow-col snap-always snap-inline sm:auto-cols-[100%] md:auto-cols-[67%] lg:auto-cols-[41%] sm:overflow-x-auto xl:flex w-full gap-5">
+            {imageMessages.map((imageMessage, index) => (
+              <div
+                key={index}
+                className="bg-accColor border-2 border-accColor text-white max-w-[16rem] max-h-[16rem] relative top-0 left-0"
+              >
+                <img
+                  className="w-full h-full object-cover"
+                  src={URL.createObjectURL(imageMessage.file)}
+                  alt=""
+                />
+                <textarea
+                  className="textarea resize-none outline-none w-full rounded-none rounded-t-lg max-h-16 absolute bottom-0 left-0"
+                  value={imageMessage.message}
+                  onChange={(e) => updateImageMessage(index, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="flex w-full justify-between items-center gap-4 bg-accColor py-3 px-6 sticky bottom-0 left-0 rounded-t-lg">
           <label>
@@ -389,7 +446,15 @@ function MessageArea({ chatId, messagedUser }) {
             ></textarea>
           </label>
 
-          <button onClick={sendMessage}>
+          <button
+            onClick={() => {
+              if (imageMessages.length > 0) {
+                sendAllImages();
+              } else {
+                sendMessage();
+              }
+            }}
+          >
             <FaPaperPlane className="text-white text-2xl" />
           </button>
         </div>

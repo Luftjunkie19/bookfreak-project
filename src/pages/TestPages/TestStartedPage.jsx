@@ -87,7 +87,12 @@ function TestStartedPage() {
           </div>
 
           <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 justify-center items-center w-full h-full flex-col gap-3">
-            <p className="text-white">
+            <p
+              className="text-white"
+              onClick={() =>
+                console.log(Object.values(test.queries)[currentQuestion])
+              }
+            >
               {Object.values(test.queries)[currentQuestion].question}
             </p>
 

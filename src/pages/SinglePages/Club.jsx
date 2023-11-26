@@ -340,7 +340,10 @@ function Club() {
                     }}
                   >
                     <MenuItem onClick={handleCloseManagent}>
-                      <Link className="flex justify-around items-center w-full">
+                      <Link
+                        to={`/edit-club/${document.id}`}
+                        className="flex justify-around items-center w-full"
+                      >
                         {
                           reusableTranslations.communitiesBar.editBtn[
                             selectedLanguage
@@ -350,7 +353,13 @@ function Club() {
                       </Link>
                     </MenuItem>
 
-                    <MenuItem onClick={handleCloseManagent}>
+                    <MenuItem
+                      onClick={async () => {
+                        handleCloseManagent();
+
+                        await deleteClub(document.id);
+                      }}
+                    >
                       <button className="flex justify-around items-center w-full">
                         {
                           reusableTranslations.communitiesBar.deleteBtn[

@@ -1,7 +1,7 @@
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import translations from "../../assets/translations/ProfileTranslations.json";
+import translations from '../../assets/translations/ProfileTranslations.json';
 
 function FullyReadBooks({ readBooks, usersReadPages }) {
   const selectedLanguage = useSelector(

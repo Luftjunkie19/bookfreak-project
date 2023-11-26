@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 
 import { motion } from "framer-motion";
+import { FaX } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import CreatableSelect from "react-select";
 import { toast } from "react-toastify";
 
-import { Alert } from "@mui/material";
+import { Alert, Snackbar } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 
 import alertMessages from "../../assets/translations/AlertMessages.json";
@@ -29,7 +30,10 @@ function EditCompetition() {
   const [expirationDate, setExpirationDate] = useState(null);
   const [attachedUsers, setAttachedUsers] = useState([]);
   const [description, setDescription] = useState("");
-
+  const [openState, setOpenState] = useState({
+    open: false,
+    message: "",
+  });
   const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
   const { document } = useFormRealData("competitions", id);
@@ -72,12 +76,13 @@ function EditCompetition() {
     setError(null);
     setIsPending(true);
 
-    setError(null);
-    setIsPending(false);
-    navigate(`/competition/${id}`);
-    toast.success(
-      alertMessages.notifications.successfull.update[selectedLanguage]
-    );
+    if (!expirationDate || expirationDate - new Date().getTime() <= 0) {
+      setOpenState({
+        open: true,
+        message: "Cannot be set earlier date than today",
+      });
+      return;
+    }
 
     updateDatabase(
       {
@@ -89,6 +94,13 @@ function EditCompetition() {
       },
       "competitions",
       id
+    );
+
+    setError(null);
+    setIsPending(false);
+    navigate(`/competition/${id}`);
+    toast.success(
+      alertMessages.notifications.successfull.update[selectedLanguage]
     );
 
     attachedUsers.map(async (member) => {
@@ -171,7 +183,15 @@ function EditCompetition() {
                   input: { color: "#fff" },
                 }}
                 onChange={(newValue) => {
-                  setExpirationDate(new Date(newValue.$d).getTime());
+                  if (new Date(newValue.$d).getTime() < new Date().getTime()) {
+                    setOpenState({
+                      open: true,
+                      message: "Cannot be set earlier date than today",
+                    });
+                    return;
+                  } else {
+                    setExpirationDate(new Date(newValue.$d).getTime());
+                  }
                 }}
               />
             </label>
@@ -218,6 +238,30 @@ function EditCompetition() {
         </form>
       </motion.div>
       {isPending && <Loader />}
+      {openState.open === true && (
+        <>
+          <Snackbar
+            onClose={() => {
+              setOpenState({ message: "", open: false });
+            }}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            open={openState.open}
+            autoHideDuration={3000}
+            severity="success"
+            message={openState.message}
+            action={
+              <button
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setOpenState({ message: "", open: false });
+                }}
+              >
+                <FaX className=" text-red-500" /> Close
+              </button>
+            }
+          />
+        </>
+      )}
     </>
   );
 }

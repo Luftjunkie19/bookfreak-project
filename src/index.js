@@ -1,15 +1,16 @@
-import "./index.css";
+import './index.css';
 
-import React from "react";
+import React from 'react';
 
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import ReactDOM from "react-dom/client";
-import { Provider } from "react-redux";
+import AOS from 'aos';
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
 
-import App from "./App";
-import AuthContextProvider from "./context/AuthContext";
-import stored from "./context/Stored";
+import App from './App';
+import AuthContextProvider from './context/AuthContext';
+import stored from './context/Stored';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_APIKEY,
@@ -23,6 +24,9 @@ const firebaseConfig = {
 // Initialize Firebase
 
 initializeApp(firebaseConfig);
+
+AOS.init();
+
 
 export const currentApp = initializeApp(firebaseConfig);
 

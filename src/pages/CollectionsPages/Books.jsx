@@ -1,23 +1,17 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import Lottie from 'lottie-react';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import CreatableSelect from 'react-select/creatable';
+import Lottie from "lottie-react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import CreatableSelect from "react-select/creatable";
 
-import { Pagination } from '@mui/material';
+import { Pagination } from "@mui/material";
 
-import lottieAnimation
-  from '../../assets/lottieAnimations/Animation - 1700320134586.json';
-import reuseableTranslations
-  from '../../assets/translations/ReusableTranslations.json';
-import translations from '../../assets/translations/SearchTranslations.json';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import lottieAnimation from "../../assets/lottieAnimations/Animation - 1700320134586.json";
+import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
+import translations from "../../assets/translations/SearchTranslations.json";
+import typesTranslation from "../../assets/translations/TypesTranslations.json";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function Books() {
   const { getDocuments } = useRealtimeDocuments();
@@ -41,47 +35,83 @@ function Books() {
   }, []);
 
   const categoryTypes = [
-    { value: "All", label: "All" },
-    { value: "Fiction", label: "Fiction" },
-    { value: "Non-fiction", label: "Non-fiction" },
-    { value: "Crime", label: "Crime" },
+    { value: "All", label: typesTranslation.bookFilter.all[selectedLanguage] },
+    {
+      value: "Fiction",
+      label: typesTranslation.bookFilter.fiction[selectedLanguage],
+    },
+    {
+      value: "Non-fiction",
+      label: typesTranslation.bookFilter["non-fiction"][selectedLanguage],
+    },
+    {
+      value: "Crime",
+      label: typesTranslation.bookFilter.crime[selectedLanguage],
+    },
     {
       value: "Science fiction and fantasy",
-      label: "Science fiction and fantasy",
+      label: typesTranslation.bookFilter.scienceFF[selectedLanguage],
     },
     {
       value: "Children's and young adult literature",
-      label: "Children's and young adult literature",
+      label: typesTranslation.bookFilter.cayal[selectedLanguage],
     },
     {
       value: "Travel and adventure literature",
-      label: "Travel and adventure literature",
+      label: typesTranslation.bookFilter.travelaal[selectedLanguage],
     },
     {
       value: "Popular science and popular history",
-      label: "Popular science and popular history",
+      label: typesTranslation.bookFilter.popularScience[selectedLanguage],
     },
     {
       value: "Self-help and personal development",
-      label: "Self-help and personal development",
+      label: typesTranslation.bookFilter.selfHelp[selectedLanguage],
     },
     {
       value: "History and culture",
-      label: "History and culture",
+      label: typesTranslation.bookFilter.history[selectedLanguage],
     },
-    { value: "Art and design", label: "Art and design" },
-    { value: "Business and economics", label: "Business and economics" },
-    { value: "Psychology and philosophy", label: "Psychology and philosophy" },
-    { value: "Health and medicine", label: "Health and medicine" },
-    { value: "Erotic literature", label: "Erotic literature" },
+    {
+      value: "Art and design",
+      label: typesTranslation.bookFilter.artDesign[selectedLanguage],
+    },
+    {
+      value: "Business and economics",
+      label: typesTranslation.bookFilter.Business[selectedLanguage],
+    },
+    {
+      value: "Psychology and philosophy",
+      label: typesTranslation.bookFilter.Psychology[selectedLanguage],
+    },
+    {
+      value: "Health and medicine",
+      label: typesTranslation.bookFilter.Health[selectedLanguage],
+    },
+    {
+      value: "Erotic literature",
+      label: typesTranslation.bookFilter.Erotic[selectedLanguage],
+    },
   ];
 
   const sortTypes = [
-    { label: "Default", value: "" },
-    { label: "Pages (descending)", value: "pages-desc" },
-    { label: "Pages (ascending)", value: "pages-asc" },
-    { label: "Time (descending)", value: "time-desc" },
-    { label: "Time (ascending)", value: "time-asc" },
+    { label: typesTranslation.bookSort.Default[selectedLanguage], value: "" },
+    {
+      label: typesTranslation.bookSort.pagesDescending[selectedLanguage],
+      value: "pages-desc",
+    },
+    {
+      label: typesTranslation.bookSort.pagesAscending[selectedLanguage],
+      value: "pages-asc",
+    },
+    {
+      label: typesTranslation.bookSort.timeDesc[selectedLanguage],
+      value: "time-desc",
+    },
+    {
+      label: typesTranslation.bookSort.timeAsc[selectedLanguage],
+      value: "time-asc",
+    },
   ];
 
   const timeAsc = (a, b) => {

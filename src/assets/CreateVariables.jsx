@@ -25,3 +25,20 @@ export const competitionTypes = [
   },
   { value: "Teach to fish", label: "Teach to fish" },
 ];
+
+export const prizeTypes = [
+  { value: "item", label: "Item eg. Book" },
+  {
+    value: "Money",
+    label: "Money",
+  },
+];
+
+export const differentPrize = [
+  { value: "book", label: "Book" },
+  {
+    value: "Voucher",
+    label: "Voucher",
+  },
+  { value: "ticket", label: "Ticket" },
+];

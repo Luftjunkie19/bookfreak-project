@@ -1,10 +1,16 @@
-import "../stylings/scrollbarStyling.css";
-import "../stylings/backgrounds.css";
+import '../stylings/scrollbarStyling.css';
+import '../stylings/backgrounds.css';
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { deleteUser } from "firebase/auth";
-import { BiSolidBook, BiSolidLike } from "react-icons/bi";
+import { deleteUser } from 'firebase/auth';
+import {
+  BiSolidBook,
+  BiSolidLike,
+} from 'react-icons/bi';
 import {
   FaBook,
   FaCommentAlt,
@@ -12,23 +18,30 @@ import {
   FaPlusCircle,
   FaStar,
   FaUserAltSlash,
-} from "react-icons/fa";
-import { FaBookBookmark } from "react-icons/fa6";
-import { IoShareSocialSharp } from "react-icons/io5";
-import { useSelector } from "react-redux";
-import { Route, Routes, useParams } from "react-router";
-import { Link, useNavigate } from "react-router-dom";
+} from 'react-icons/fa';
+import { FaBookBookmark } from 'react-icons/fa6';
+import { IoShareSocialSharp } from 'react-icons/io5';
+import { useSelector } from 'react-redux';
+import {
+  Route,
+  Routes,
+  useParams,
+} from 'react-router';
+import {
+  Link,
+  useNavigate,
+} from 'react-router-dom';
 
-import translations from "../../assets/translations/ProfileTranslations.json";
-import FavouriteBooks from "../../components/ProfileComonents/FavouriteBooks";
-import FullyReadBooks from "../../components/ProfileComonents/FullyReadBooks";
-import Links from "../../components/ProfileComonents/Links";
-import OwnedBooks from "../../components/ProfileComonents/OwnedBooks";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useLogout } from "../../hooks/useLogout";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import translations from '../../assets/translations/ProfileTranslations.json';
+import FavouriteBooks from '../../components/ProfileComonents/FavouriteBooks';
+import FullyReadBooks from '../../components/ProfileComonents/FullyReadBooks';
+import Links from '../../components/ProfileComonents/Links';
+import OwnedBooks from '../../components/ProfileComonents/OwnedBooks';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useLogout } from '../../hooks/useLogout';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Profile() {
   const { id } = useParams();
@@ -118,10 +131,9 @@ function Profile() {
   };
 
   const removeAccount = async () => {
-    removeFromDataBase("users", user.uid);
-
-    await deleteUser(user);
     await logout();
+    await deleteUser(user);
+    removeFromDataBase("users", user.uid);
   };
 
   return (
@@ -137,14 +149,8 @@ function Profile() {
                       src={document.photoURL}
                       alt=""
                       onClick={() => {
-                        console.log(
-                          books.filter(
-                            (book, i) =>
-                              book.id === favBooks[i].lovedBookId &&
-                              favBooks[i].lovedBy === id
-                          ),
-                          favBooks
-                        );
+                        console.log(favBooks);
+                        console.log(readerObjects);
                       }}
                       referrerPolicy="no-referrer"
                       className="object-cover"
@@ -281,7 +287,7 @@ function Profile() {
                   <h2 class="text-3xl font-extralight pb-2">
                     {translations.description.title[selectedLanguage]}:
                   </h2>
-                  <p class="overflow-y-scroll overflow-x-hidden h-40 py-2 pr-4">
+                  <p className="overflow-y-scroll overflow-x-hidden h-40 py-2 pr-4">
                     {document.description}
                   </p>
                 </div>
@@ -359,7 +365,8 @@ function Profile() {
                         usersReadPages={readersFiltered.filter(
                           (reader, i) =>
                             reader.pagesRead === books[i]?.pagesNumber &&
-                            reader.id === id
+                            reader.id === id &&
+                            reader.hasFinished
                         )}
                       />
                     }
@@ -369,19 +376,15 @@ function Profile() {
                     path="users-fav"
                     element={
                       <FavouriteBooks
-                        favBooks={
-                          books &&
-                          favBooks &&
-                          books.filter(
-                            (book, i) =>
-                              book.id ===
-                              favBooks
-                                .filter((book) => book.lovedBy === id)
-                                .map((book) => {
-                                  return book.lovedBookId;
-                                })[i]
-                          )
-                        }
+                        favBooks={books.filter((book, i) => {
+                          const arr = favBooks
+                            .filter((book) => book.lovedBy === id)
+                            .map((bookEl) => {
+                              return bookEl.lovedBookId;
+                            });
+
+                          return book.id === arr[i];
+                        })}
                       />
                     }
                   />

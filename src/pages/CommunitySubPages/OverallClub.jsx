@@ -1,15 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { BsFillDoorOpenFill } from "react-icons/bs";
+import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
   FaFacebookMessenger,
   FaInfo,
   FaPencilAlt,
   FaTrashAlt,
-} from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+} from 'react-icons/fa';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import {
   Button,
@@ -22,17 +32,22 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@mui/material";
+} from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import translations from "../../assets/translations/ClubsTranslations.json";
-import formsTranslations from "../../assets/translations/FormsTranslations.json";
-import reusableTranslations from "../../assets/translations/ReusableTranslations.json";
-import { warningActions } from "../../context/WarningContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import {
+  CompetitionRules,
+} from '../../assets/CompetitionsRules/CompetitionRules';
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import translations from '../../assets/translations/ClubsTranslations.json';
+import formsTranslations
+  from '../../assets/translations/FormsTranslations.json';
+import reusableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import { warningActions } from '../../context/WarningContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function OverallClub() {
   const selectedLanguage = useSelector(
@@ -41,7 +56,7 @@ function OverallClub() {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
-
+  const { firstComeServedRule } = CompetitionRules();
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
   };
@@ -170,6 +185,12 @@ function OverallClub() {
     );
   };
 
+  const sortedArray = firstComeServedRule(
+    members.filter((member) => member.belongsTo === id),
+    getReadBooks,
+    getlastBookRead
+  );
+
   return (
     <div className="min-h-screen h-full">
       {document &&
@@ -182,9 +203,6 @@ function OverallClub() {
                 className="w-16 h-16 rounded-full object-cover"
                 src={document.clubLogo}
                 alt=""
-                onClick={() => {
-                  console.log(members);
-                }}
               />
               <p className="ml-2">{document.clubsName}</p>
             </div>
@@ -319,7 +337,10 @@ function OverallClub() {
                     }}
                   >
                     <MenuItem onClick={handleCloseManagent}>
-                      <Link className="flex justify-around items-center w-full">
+                      <Link
+                        to={`/edit-club/${document.id}`}
+                        className="flex justify-around items-center w-full"
+                      >
                         {
                           reusableTranslations.communitiesBar.editBtn[
                             selectedLanguage
@@ -330,7 +351,10 @@ function OverallClub() {
                     </MenuItem>
 
                     <MenuItem onClick={handleCloseManagent}>
-                      <button className="flex justify-around items-center w-full">
+                      <button
+                        onClick={async () => deleteClub(document.id)}
+                        className="flex justify-around items-center w-full"
+                      >
                         {
                           reusableTranslations.communitiesBar.deleteBtn[
                             selectedLanguage
@@ -447,83 +471,77 @@ function OverallClub() {
                 </TableHead>
                 <TableBody>
                   {document &&
-                    members
-                      .filter((member) => member.belongsTo === id)
-                      .map((user) => (
-                        <TableRow
-                          key={user.value.uid}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
+                    sortedArray.map((member) => (
+                      <TableRow
+                        key={member.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell
+                          component="th"
+                          scope="row"
+                          className="border-r-white border-r-2"
+                          sx={{ color: "#fff" }}
                         >
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            className="border-r-white border-r-2"
-                            sx={{ color: "#fff" }}
-                          >
-                            <Link to={`/user/profile/${user.value.id}`}>
-                              <div className="w-16 h-16">
-                                <img
-                                  className="w-full h-full rounded-full"
-                                  src={user.value.photoURL}
-                                  alt=""
-                                />
-                              </div>
-                            </Link>
-                          </TableCell>
+                          <Link to={`/user/profile/${member.id}`}>
+                            <div className="w-16 h-16">
+                              <img
+                                className="w-full h-full rounded-full"
+                                src={member.photoURL}
+                                alt=""
+                              />
+                            </div>
+                          </Link>
+                        </TableCell>
 
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            className="border-r-white border-r-2"
-                            sx={{ color: "#fff" }}
-                          >
-                            <p>{user.value.nickname}</p>
-                          </TableCell>
-                          <TableCell
-                            sx={{ color: "#fff" }}
-                            component="th"
-                            scope="row"
-                            className="border-r-white border-r-2"
-                          >
-                            <p className="text-center">
-                              {getReadBooks(user.value.id)}{" "}
-                              {getReadBooks(user.value.id) > 1
-                                ? "books"
-                                : "book"}
-                            </p>
-                          </TableCell>
-                          <TableCell
-                            sx={{ color: "#fff" }}
-                            component="th"
-                            scope="row"
-                            className="border-r-white border-r-2"
-                          >
-                            <p className="text-center">
-                              {getlastBookRead(user.value.id)}
-                            </p>
-                          </TableCell>
-                          <TableCell
-                            sx={{ color: "#fff" }}
-                            component="th"
-                            scope="row"
-                          >
-                            <p>
-                              {readerObjects.length > 0 &&
-                                readerObjects
-                                  .filter(
-                                    (reader, i) => reader.id === user.value.id
-                                  )
-                                  .reduce(
-                                    (prev, cur) => prev + cur.pagesRead,
-                                    0
-                                  )}{" "}
-                              Pages
-                            </p>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                        <TableCell
+                          component="th"
+                          scope="row"
+                          className="border-r-white border-r-2"
+                          sx={{ color: "#fff" }}
+                        >
+                          <p>{member.nickname}</p>
+                        </TableCell>
+                        <TableCell
+                          sx={{ color: "#fff" }}
+                          component="th"
+                          scope="row"
+                          className="border-r-white border-r-2"
+                        >
+                          <p className="text-center">
+                            {member.readBooks}{" "}
+                            {member.readBooks > 1 ? "books" : "book"}
+                          </p>
+                        </TableCell>
+                        <TableCell
+                          sx={{ color: "#fff" }}
+                          component="th"
+                          scope="row"
+                          className="border-r-white border-r-2"
+                        >
+                          <p className="text-center">{member.lastReadBook}</p>
+                        </TableCell>
+                        <TableCell
+                          sx={{ color: "#fff" }}
+                          component="th"
+                          scope="row"
+                        >
+                          <p>
+                            {readerObjects.length > 0 &&
+                              readerObjects
+                                .filter(
+                                  (reader, i) => reader.id === member.id
+                                )
+                                .reduce(
+                                  (prev, cur) => prev + cur.pagesRead,
+                                  0
+                                )}{" "}
+                            Pages
+                          </p>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>

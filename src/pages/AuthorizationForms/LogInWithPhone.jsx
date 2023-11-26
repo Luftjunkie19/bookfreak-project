@@ -1,23 +1,24 @@
-import "react-phone-input-2/lib/material.css";
+import 'react-phone-input-2/lib/material.css';
 
-import { useState } from "react";
+import { useState } from 'react';
 
 import {
   getAuth,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-} from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { Alert } from "flowbite-react";
-import PhoneInput from "react-phone-input-2";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import VerificationInput from "react-verification-input";
+} from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { Alert } from 'flowbite-react';
+import PhoneInput from 'react-phone-input-2';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import VerificationInput from 'react-verification-input';
 
-import formsTranslations from "../../assets/translations/FormsTranslations.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import formsTranslations
+  from '../../assets/translations/FormsTranslations.json';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function LogInWithPhone() {
   const firestore = getFirestore();
@@ -133,7 +134,7 @@ function LogInWithPhone() {
         <>
           <form
             onSubmit={handleVerifyCode}
-            className="flex flex-col sm:w-full md:w-4/5 xl:w-3/5 2xl:w-1/2 sm:bg-transparent md:bg-accColor shadow-md shadow-primeColor p-4 rounded-md"
+            className="flex flex-col sm:w-full md:w-4/5 xl:w-3/5 2xl:w-1/2 justify-center items-center gap-3 sm:bg-transparent md:bg-accColor shadow-md shadow-primeColor p-4 rounded-md"
           >
             <p className="text-3xl text-white">
               {

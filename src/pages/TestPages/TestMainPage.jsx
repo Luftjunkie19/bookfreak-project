@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 
 import { formatDistanceToNow } from "date-fns";
 import Lottie from "lottie-react";
-import { FaTrashCan } from "react-icons/fa6";
+import { FaGamepad, FaPencil, FaTrashCan } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import uniqid from "uniqid";
 
@@ -68,7 +69,7 @@ function TestMainPage() {
                   />
                 </div>
                 {document.createdBy.id === user.uid && (
-                  <div className="sm:w-3/4 lg:w-1/4 flex">
+                  <div className="sm:w-3/4 lg:w-1/4 flex justify-around items-center gap-2">
                     <Button
                       className="my-2 gap-2 self-start"
                       color="error"
@@ -81,6 +82,16 @@ function TestMainPage() {
                     >
                       {translations.buttonsTexts.delete[selectedLanguage]}{" "}
                       <FaTrashCan />
+                    </Button>{" "}
+                    <Button
+                      className="my-2 gap-2"
+                      color="primary"
+                      variant="contained"
+                      onClick={() => {
+                        navigate(`/edit-test/${testId}`);
+                      }}
+                    >
+                      Edit <FaPencil />
                     </Button>
                   </div>
                 )}
@@ -98,7 +109,7 @@ function TestMainPage() {
                   />
                 </div>
                 {document.createdBy.id === user.uid && (
-                  <div>
+                  <div className="sm:w-4/5 md:w-3/5 lg:w-2/5 flex justify-around items-center">
                     <Button
                       className="my-2 gap-2"
                       color="error"
@@ -112,21 +123,40 @@ function TestMainPage() {
                       {translations.buttonsTexts.delete[selectedLanguage]}{" "}
                       <FaTrashCan />
                     </Button>
+                    <Button
+                      className="my-2 gap-2"
+                      color="primary"
+                      variant="contained"
+                      onClick={() => {
+                        navigate(`/edit-test/${testId}`);
+                      }}
+                    >
+                      Edit <FaPencil />
+                    </Button>
                   </div>
                 )}
                 <p>{document.refersToBook}</p>
               </>
             )}
-            <p>
-              {Object.values(document.queries).length}{" "}
-              {formTranslations.queries[selectedLanguage]}
-            </p>
-            <p>Created: {formatDistanceToNow(document.createdAt)} ago</p>
+            <div className="flex sm:w-4/5 md:w-3/5 lg:w-2/5 flex-col">
+              <p>
+                {Object.values(document.queries).length}{" "}
+                {formTranslations.queries[selectedLanguage]}
+              </p>
+              <p>Created: {formatDistanceToNow(document.createdAt)} ago</p>
+              <p>
+                Made by:{" "}
+                <Link to={`/profile/${document.createdBy.id}`}>
+                  {document.createdBy.nickname}
+                </Link>
+              </p>
+            </div>
             <button
               className="btn text-white bg-accColor w-36 hover:bg-primeColor hover:scale-95 transition-all duration-500"
               onClick={moveToTest}
             >
               {formTranslations.playBtn[selectedLanguage]}
+              <FaGamepad />
             </button>
           </div>{" "}
           {document.attempts && Object.values(document.attempts).length > 0 ? (
