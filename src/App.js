@@ -33,7 +33,10 @@ import Competitions from "./pages/CollectionsPages/Competitions";
 import Tests from "./pages/CollectionsPages/TestsCollection.jsx";
 import GeneralInfo from "./pages/CommunitySubPages/GeneralInfo";
 import OverallClub from "./pages/CommunitySubPages/OverallClub";
-import Create from "./pages/Create";
+import CreateBook from "./pages/CreateForms/CreateBook.jsx";
+import CreateClub from "./pages/CreateForms/CreateClub.jsx";
+import CreateCompetition from "./pages/CreateForms/CreateCompetition.jsx";
+import CreateTests from "./pages/CreateForms/CreateTests.jsx";
 import AddLink from "./pages/Forms&FormsPages/AddLink";
 import EditClub from "./pages/Forms&FormsPages/EditClub";
 import EditCompetition from "./pages/Forms&FormsPages/EditCompetition";
@@ -46,6 +49,8 @@ import Book from "./pages/SinglePages/Book";
 import Club from "./pages/SinglePages/Club";
 import Competition from "./pages/SinglePages/Competition.jsx";
 import Profile from "./pages/SinglePages/Profile";
+import TestMainPage from "./pages/TestPages/TestMainPage";
+import TestStartedPage from "./pages/TestPages/TestStartedPage";
 
 function App() {
   const { user, userIsReady } = useAuthContext();
@@ -90,10 +95,49 @@ function App() {
                       path="/book/:id"
                       element={(user && <Book />) || (!user && <SignUp />)}
                     />
+
                     <Route
-                      path="/create"
-                      element={(user && <Create />) || (!user && <SignUp />)}
+                      path="/test/:testId"
+                      element={
+                        (user && <TestMainPage />) || (!user && <SignUp />)
+                      }
                     />
+
+                    <Route
+                      path="/test/:testId/play/:startTime/:attemptId"
+                      element={
+                        (user && <TestStartedPage />) || (!user && <SignUp />)
+                      }
+                    />
+
+                    <Route
+                      path="/create/book"
+                      element={
+                        (user && <CreateBook />) || (!user && <SignUp />)
+                      }
+                    />
+
+                    <Route
+                      path="/create/club"
+                      element={
+                        (user && <CreateClub />) || (!user && <SignUp />)
+                      }
+                    />
+
+                    <Route
+                      path="/create/competition"
+                      element={
+                        (user && <CreateCompetition />) || (!user && <SignUp />)
+                      }
+                    />
+
+                    <Route
+                      path="/create/test"
+                      element={
+                        (user && <CreateTests />) || (!user && <SignUp />)
+                      }
+                    />
+
                     <Route
                       path="/profile/:id/*"
                       element={(!user && <SignUp />) || (user && <Profile />)}

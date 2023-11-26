@@ -1,13 +1,12 @@
-import React from 'react';
+import React from "react";
 
-import { motion } from 'framer-motion';
-import { FaX } from 'react-icons/fa6';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { motion } from "framer-motion";
+import { FaX } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
-import translations from '../../assets/translations/BookPageTranslations.json';
-import reuseableTranslations
-  from '../../assets/translations/ReusableTranslations.json';
+import translations from "../../assets/translations/BookPageTranslations.json";
+import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
 
 function LikersList({ likers, likesAmount, closeList }) {
   const selectedLanguage = useSelector(
@@ -19,7 +18,7 @@ function LikersList({ likers, likesAmount, closeList }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="h-full w-full fixed top-0 left-0 bg-imgCover"
+      className="h-full w-full fixed top-0 left-0 bg-imgCover z-[99999]"
     >
       <button
         onClick={closeList}

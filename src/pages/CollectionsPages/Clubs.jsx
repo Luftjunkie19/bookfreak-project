@@ -1,16 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import Lottie from 'lottie-react';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import { Pagination } from "@mui/material";
+import { Pagination } from '@mui/material';
 
-import clubsTranslations from "../../assets/translations/ClubsTranslations.json";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import lottieAnimation
+  from '../../assets/lottieAnimations/Animation - 1700320134586.json';
+import clubsTranslations
+  from '../../assets/translations/ClubsTranslations.json';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Clubs() {
   const { getDocuments } = useRealtimeDocuments();
   const [documents, setElements] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadElements = async () => {
@@ -18,9 +27,52 @@ function Clubs() {
     setElements(booksEl);
   };
 
+  const objectsOnPage = () => {
+    if (document.body.clientWidth > 0 && document.body.clientWidth < 1024) {
+      return 10;
+    } else {
+      return 45;
+    }
+  };
+  const fetchObjects = useCallback(
+    (page) => {
+      const start = (page - 1) * objectsOnPage();
+      const end = start + objectsOnPage();
+      const pageObjects = documents.slice(start, end);
+      return pageObjects;
+    },
+    [documents]
+  );
+
+  const handlePagesChange = (e, value) => {
+    if (currentPage < pagesAmount) {
+      setCurrentPage(currentPage + 1);
+      const pageObjects = fetchObjects(currentPage + 1);
+      setElements(pageObjects);
+      return;
+    }
+
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      const pageObjects = fetchObjects(currentPage - 1);
+      setElements(pageObjects);
+      return;
+    }
+    setCurrentPage(value);
+  };
+
+  const pagesAmount = Math.ceil(documents.length / objectsOnPage());
+
   useEffect(() => {
     loadElements();
   }, [loadElements]);
+
+  useEffect(() => {
+    if (documents.length > 0) {
+      const fetchedObjects = fetchObjects(currentPage);
+      setElements(fetchedObjects);
+    }
+  }, [currentPage, documents, fetchObjects]);
 
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
@@ -61,7 +113,12 @@ function Clubs() {
             </Link>
           ))
         ) : (
-          <p>No clubs added yet</p>
+          <div className="flex w-full flex-col justify-center items-center gap-3">
+            <Lottie animationData={lottieAnimation} />
+            <p className="text-2xl font-bold text-white text-center">
+              No clubs added yet
+            </p>
+          </div>
         )}
       </div>
 
@@ -88,7 +145,8 @@ function Clubs() {
           color="primary"
           showLastButton
           showFirstButton
-          count={2}
+          count={pagesAmount}
+          onChange={handlePagesChange}
         />
       </div>
     </div>

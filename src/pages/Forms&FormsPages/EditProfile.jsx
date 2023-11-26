@@ -78,13 +78,13 @@ function EditProfile() {
 
     let selected = e.target.files[0];
 
-    if (selected.size > 100000) {
+    if (selected?.size > 100000) {
       setImgError(`The ${selected.name} is to big file`);
       setEditProfileImg(null);
       return;
     }
 
-    if (!selected.type.includes("image")) {
+    if (!selected?.type.includes("image")) {
       setImgError("Selected file is not an Img");
       setEditProfileImg(null);
       return;
@@ -96,7 +96,7 @@ function EditProfile() {
       return;
     }
 
-    if (selected.type.includes("image")) {
+    if (selected?.type.includes("image")) {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(selected);
       fileReader.onload = () => {

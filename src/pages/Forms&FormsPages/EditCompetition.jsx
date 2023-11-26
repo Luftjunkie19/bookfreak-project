@@ -7,6 +7,7 @@ import CreatableSelect from "react-select";
 import { toast } from "react-toastify";
 
 import { Alert } from "@mui/material";
+import { DateTimePicker } from "@mui/x-date-pickers";
 
 import alertMessages from "../../assets/translations/AlertMessages.json";
 import formsTranslation from "../../assets/translations/FormsTranslations.json";
@@ -40,7 +41,7 @@ function EditCompetition() {
       setDescription(document.description);
       setExpirationDate(document.expiresAt);
     }
-  }, []);
+  }, [document]);
 
   const notCurrentUsers = [].filter((doc) => {
     return doc.id !== user.uid;
@@ -157,17 +158,20 @@ function EditCompetition() {
                 {competitionsName}
               </small>
             </label>
-
-            <label className="flex flex-col sm:w-full lg:w-2/5">
+            <label className="flex flex-col gap-2 sm:w-full xl:w-2/5">
               <span>
                 {formsTranslation.expirationDateInput.label[selectedLanguage]}:
               </span>
-              <input
-                className="outline-none p-2 rounded-lg w-full"
-                type="date"
-                value={expirationDate}
-                onChange={(e) => {
-                  setExpirationDate(new Date(e.target.value).getTime());
+
+              <DateTimePicker
+                label={`${formsTranslation.expirationDateInput.label[selectedLanguage]}`}
+                className="myDatePicker w-full"
+                sx={{
+                  svg: { color: "#fff" },
+                  input: { color: "#fff" },
+                }}
+                onChange={(newValue) => {
+                  setExpirationDate(new Date(newValue.$d).getTime());
                 }}
               />
             </label>

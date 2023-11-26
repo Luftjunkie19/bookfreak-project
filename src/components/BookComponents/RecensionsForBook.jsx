@@ -4,10 +4,13 @@ import React, {
 } from 'react';
 
 import { formatDistanceToNow } from 'date-fns';
+import Lottie from 'lottie-react';
 import { useSelector } from 'react-redux';
 
 import { Rating } from '@mui/material';
 
+import guyAnimation
+  from '../../assets/lottieAnimations/Animation - 1700233510410.json';
 import translations from '../../assets/translations/BookPageTranslations.json';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 import RecensionManagmentBar
@@ -20,6 +23,7 @@ function RecensionsForBook({
   hasReadBook,
   hasRecension,
   recensions,
+  setRecensions,
   publishRecension,
 }) {
   const [bookRate, setBookRate] = useState(0);
@@ -58,6 +62,7 @@ function RecensionsForBook({
 
   const applyFilters = (filters) => {
     setSelectedFilters(filters);
+    console.log(filters);
   };
 
   const applySort = (sort) => {
@@ -74,6 +79,18 @@ function RecensionsForBook({
       label: "Lowest Rating",
       sort: (array) => {
         return array.slice().sort((a, b) => a.bookRate - b.bookRate);
+      },
+    },
+    {
+      label: "Earliest Recensions",
+      sort: (array) => {
+        return array.slice().sort((a, b) => a.dateOfFinish - b.dateOfFinish);
+      },
+    },
+    {
+      label: "Latest Recensions",
+      sort: (array) => {
+        return array.slice().sort((a, b) => b.dateOfFinish - a.dateOfFinish);
       },
     },
   ];
@@ -140,19 +157,30 @@ function RecensionsForBook({
     },
   ];
 
-  const filteredRecensions = selectedFilters.length
-    ? selectedFilters.reduce((filtered, filter) => {
-        return filterOptions
-          .find((option) => option.label === filter)
-          .filter(filtered);
-      }, recensions)
-    : recensions;
+  const filteredItems = () => {
+    if (selectedFilters.length > 0) {
+      const temps = selectedFilters.map((selectedFilter) => {
+        const temp = recensions.filter(
+          (recension) => recension.bookRate === +selectedFilter
+        );
+        return temp;
+      });
 
-  const sortedRecensions = selectedSort
-    ? sortOptions
+      return temps.flat();
+    } else {
+      return recensions;
+    }
+  };
+
+  const sortedRecensions = () => {
+    if (selectedSort.trim("") !== "") {
+      return sortOptions
         .find((option) => option.label === selectedSort)
-        .sort(filteredRecensions)
-    : filteredRecensions;
+        .sort(filteredItems());
+    } else {
+      return filteredItems();
+    }
+  };
 
   return (
     <div className="sm:w-full xl:w-11/12 mt-4">
@@ -240,9 +268,9 @@ function RecensionsForBook({
         />
       </div>
 
-      {sortedRecensions.length > 0 ? (
+      {sortedRecensions().length > 0 ? (
         <div className="flex flex-col sm:justify-center lg:justify-start w-full sm:items-center lg:items-start gap-4 sm:p-3 xl:p-0">
-          {sortedRecensions.map((recensioner) => (
+          {sortedRecensions().map((recensioner) => (
             <div
               key={recensioner.id}
               className="flex sm:w-full flex-col lg:w-3/4 justify-between xl:w-1/2 bg-accColor py-2 relative top-0 left-0"
@@ -250,7 +278,7 @@ function RecensionsForBook({
               {" "}
               {users.find((member) => member.id === recensioner.id) && (
                 <img
-                  className="w-12 h-8 m-1 absolute top-0 right-0"
+                  className="sm:w-6 sm:h-4 md:w-12 md:h-8 absolute top-0 right-0"
                   src={
                     users.find((member) => member.id === recensioner.id)
                       .nationality.nationalityFlag
@@ -308,7 +336,12 @@ function RecensionsForBook({
           ))}
         </div>
       ) : (
-        <p>No recensions yet.</p>
+        <div className="flex flex-col sm:justify-center lg:justify-start w-full sm:items-center lg:items-start gap-4 sm:p-3 xl:px-2">
+          <p className="text-white font-bold sm:text-lg  lg:text-2xl">
+            {translations.noRecensionYet[selectedLanguage]}
+          </p>
+          <Lottie className=" max-w-md" animationData={guyAnimation} />
+        </div>
       )}
     </div>
   );

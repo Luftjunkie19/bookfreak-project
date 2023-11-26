@@ -1,30 +1,47 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { BsFillDoorOpenFill } from "react-icons/bs";
+import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
   FaFacebookMessenger,
   FaInfo,
   FaPencilAlt,
   FaTrashAlt,
   FaUserPlus,
-} from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+} from 'react-icons/fa';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { useParams } from 'react-router';
+import {
+  Link,
+  useNavigate,
+} from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import { Button, Menu, MenuItem } from "@mui/material";
+import {
+  Button,
+  Menu,
+  MenuItem,
+} from '@mui/material';
 
-import alertTranslations from "../../assets/translations/AlertMessages.json";
-import translations from "../../assets/translations/FormsTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import CompetitionChat from "../../components/ChatComponents/CommunityChat";
-import Ranking from "../../components/Ranking";
-import { warningActions } from "../../context/WarningContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import alertTranslations from '../../assets/translations/AlertMessages.json';
+import competitionTranslations
+  from '../../assets/translations/CompetitionsTranslations.json';
+import translations from '../../assets/translations/FormsTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import CompetitionChat from '../../components/ChatComponents/CommunityChat';
+import Ranking from '../../components/Ranking';
+import Warning from '../../components/WarningsComponents/Warning';
+import { warningActions } from '../../context/WarningContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Competition() {
   {
@@ -66,6 +83,8 @@ function Competition() {
   const { removeFromDataBase, updateDatabase, addToDataBase } =
     useRealDatabase();
 
+  const isWarningVisible = useSelector((state) => state.isWarningVisible);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadDocument = async () => {
     const documentEl = await getDocument("competitions", id);
@@ -77,18 +96,11 @@ function Competition() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadDocuments = async () => {
-    const documentsEl = await getDocuments("communityMembers");
+    const documentsEl = await getDocuments(`communityMembers/${id}/users`);
 
-    const realObjects = documentsEl.map((bookReader) => {
-      return bookReader.users;
-    });
-
-    const newArray = realObjects.map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    });
-
-    setMembers(...newArray);
+    if (documentsEl) {
+      setMembers(documentsEl);
+    }
   };
 
   useEffect(() => {
@@ -102,7 +114,6 @@ function Competition() {
     removeFromDataBase("communityMembers", id);
 
     navigate("/");
-
     toast.success(
       alertTranslations.notifications.successfull.remove[selectedLanguage]
     );
@@ -111,25 +122,23 @@ function Competition() {
   const dispatch = useDispatch();
 
   const leaveCompetition = async () => {
-    const arrayWithoutYou = document.users.filter(
-      (doc) => doc.value.id !== user.uid
-    );
+    const arrayWithoutYou = members.filter((doc) => doc.value.id !== user.uid);
 
     if (arrayWithoutYou && document.createdBy.id === user.uid) {
       dispatch(
         warningActions.openWarning({
           referedTo: document.id,
-          typeOf: "competition",
+          typeOf: document.competitionTitle,
           collection: "competitions",
         })
       );
-      return;
+    } else {
+      removeFromDataBase("communityMembers", `${id}/users/${user.uid}`);
+      navigate("/");
+      toast.success(
+        alertTranslations.notifications.successfull.leave[selectedLanguage]
+      );
     }
-
-    navigate("/");
-    toast.success(
-      alertTranslations.notifications.successfull.leave[selectedLanguage]
-    );
   };
 
   const sendJoiningRequest = async () => {
@@ -163,7 +172,7 @@ function Competition() {
   };
 
   const competitionExpirationDate =
-    document && document.expiresAt / 1000 / 24 / 12 / 30 / 60 / 60;
+    document && (document.expiresAt - new Date().getTime()) / 86400000;
 
   return (
     <div
@@ -270,21 +279,23 @@ function Competition() {
                         "aria-labelledby": "basic-button",
                       }}
                     >
-                      <MenuItem>
-                        <button
-                          className="flex justify-between items-center w-full gap-2"
-                          onClick={() =>
-                            navigate(`/edit-competition/${document.id}`)
-                          }
-                        >
-                          {
-                            reuseableTranslations.communitiesBar.editBtn[
-                              selectedLanguage
-                            ]
-                          }{" "}
-                          <FaPencilAlt />
-                        </button>
-                      </MenuItem>
+                      {competitionExpirationDate >= 0 && (
+                        <MenuItem>
+                          <button
+                            className="flex justify-between items-center w-full gap-2"
+                            onClick={() =>
+                              navigate(`/edit-competition/${document.id}`)
+                            }
+                          >
+                            {
+                              reuseableTranslations.communitiesBar.editBtn[
+                                selectedLanguage
+                              ]
+                            }{" "}
+                            <FaPencilAlt />
+                          </button>
+                        </MenuItem>
+                      )}
                       <MenuItem>
                         <button
                           className="flex justify-between items-center w-full gap-2"
@@ -332,17 +343,21 @@ function Competition() {
 
               {document.createdBy.id === user.uid && (
                 <div className="mx-2 flex justify-around items-center">
-                  <button
-                    className="btn"
-                    onClick={() => navigate(`/edit-competition/${document.id}`)}
-                  >
-                    {
-                      reuseableTranslations.communitiesBar.editBtn[
-                        selectedLanguage
-                      ]
-                    }
-                    <FaPencilAlt />
-                  </button>
+                  {competitionExpirationDate > 0 && (
+                    <button
+                      className="btn"
+                      onClick={() =>
+                        navigate(`/edit-competition/${document.id}`)
+                      }
+                    >
+                      {
+                        reuseableTranslations.communitiesBar.editBtn[
+                          selectedLanguage
+                        ]
+                      }
+                      <FaPencilAlt />
+                    </button>
+                  )}
 
                   <button
                     className="btn ml-2"
@@ -397,23 +412,64 @@ function Competition() {
                     </Link>
                   </p>
                 </div>
-
-                <button
-                  className="btn bg-accColor hover:bg-info text-white border-none"
-                  onClick={sendJoiningRequest}
-                >
-                  {reuseableTranslations.joinTo.competition[selectedLanguage]}{" "}
-                  <FaUserPlus />
-                </button>
+                {competitionExpirationDate > 0 && (
+                  <button
+                    className="btn bg-accColor hover:bg-info text-white border-none"
+                    onClick={sendJoiningRequest}
+                  >
+                    {reuseableTranslations.joinTo.competition[selectedLanguage]}{" "}
+                    <FaUserPlus />
+                  </button>
+                )}
               </div>
               {document && document.description.trim() !== "" && (
                 <div class="flex flex-col text-white p-3 w-full">
-                  <p>
-                    Expires in{" "}
-                    <span className="text-2xl font-bold text-red-500">
-                      {Math.round(competitionExpirationDate)} days
-                    </span>
-                  </p>
+                  {competitionExpirationDate > 0 && (
+                    <p>
+                      {
+                        competitionTranslations.competitionObject.expiration
+                          .notExpired.part1[selectedLanguage]
+                      }{" "}
+                      {
+                        competitionTranslations.competitionObject.expiration
+                          .notExpired.part2.notToday.expiresIN[selectedLanguage]
+                      }
+                      <span className="text-2xl font-bold text-red-500">
+                        {Math.round(competitionExpirationDate) > 0 && (
+                          <span>
+                            {" "}
+                            {Math.round(competitionExpirationDate)}{" "}
+                            {
+                              competitionTranslations.competitionObject
+                                .expiration.notExpired.part2.notToday[
+                                selectedLanguage
+                              ]
+                            }
+                          </span>
+                        )}
+                      </span>
+                    </p>
+                  )}
+
+                  {competitionExpirationDate <= 0 && (
+                    <p>
+                      {
+                        competitionTranslations.competitionObject.expiration
+                          .Expired.part1[selectedLanguage]
+                      }{" "}
+                      <span className="text-2xl font-bold text-red-500">
+                        {" "}
+                        {competitionExpirationDate <= -1
+                          ? `${Math.round(competitionExpirationDate) * -1} ${
+                              competitionTranslations.competitionObject
+                                .expiration.Expired.part2.notToday[
+                                selectedLanguage
+                              ]
+                            }`
+                          : ` ${competitionTranslations.competitionObject.expiration.Expired.part2.today[selectedLanguage]}`}
+                      </span>
+                    </p>
+                  )}
                   <h2 class="text-3xl font-extralight pb-2">
                     {translations.descriptionTextarea.label[selectedLanguage]}:
                   </h2>
@@ -434,9 +490,10 @@ function Competition() {
         )}
       {document &&
         members.find(
-          (member) =>
-            member.value.id === user.uid && member.belongsTo === document.id
+          (member) => member.value.id === user.uid && member.belongsTo === id
         ) && <CompetitionChat collectionName="competitions" id={document.id} />}
+
+      {isWarningVisible && <Warning deleteCompetition={leaveCompetition} />}
     </div>
   );
 }

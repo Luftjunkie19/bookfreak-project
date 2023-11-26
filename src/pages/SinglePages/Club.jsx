@@ -8,11 +8,12 @@ import {
   FaTrashAlt,
   FaUserPlus,
 } from "react-icons/fa";
+import { FaX } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { Button, Menu, MenuItem } from "@mui/material";
+import { Button, Menu, MenuItem, Snackbar } from "@mui/material";
 
 import alertTranslations from "../../assets/translations/AlertMessages.json";
 import translations from "../../assets/translations/ClubsTranslations.json";
@@ -40,7 +41,8 @@ function Club() {
   const [managmentEl, setManagmentEl] = useState(null);
   const { getDocument } = useRealtimeDocument();
   const { getDocuments } = useRealtimeDocuments();
-  const { removeFromDataBase } = useRealDatabase();
+  const { removeFromDataBase, addToDataBase } = useRealDatabase();
+  const [message, setMessage] = useState({ open: false, message: null });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadDocument = async () => {
     const loadDocumentEl = await getDocument("readersClubs", id);
@@ -52,19 +54,11 @@ function Club() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadMembers = async () => {
-    const memberElements = await getDocuments("communityMembers");
+    const memberElements = await getDocuments(`communityMembers/${id}/users`);
 
-    const realObjects = memberElements.map((bookReader) => {
-      return bookReader.users;
-    });
-
-    const newArray = realObjects.map((obj) => {
-      const nestedObject = Object.values(obj)[0];
-
-      return nestedObject;
-    });
-
-    setMembers(newArray);
+    if (memberElements) {
+      setMembers(memberElements);
+    }
   };
 
   useEffect(() => {
@@ -109,63 +103,84 @@ function Club() {
   };
 
   const leaveClub = async () => {
-    const arrayWithoutYou = document.users.filter(
-      (doc) => doc.value.id !== user.uid
-    );
+    const arrayWithoutYou = members.filter((doc) => doc.value.id !== user.uid);
 
     if (arrayWithoutYou && document.createdBy.id === user.uid) {
       dispatch(
         warningActions.openWarning({
           referedTo: document.id,
-          typeOf: "club",
-          collection: "clubs",
+          typeOf: document.clubsName,
+          collection: "readersClubs",
         })
       );
       return;
+    } else {
+      removeFromDataBase(`communityMembers/${id}/users`, user.uid);
     }
 
     navigate("/");
-    toast.success(
-      alertTranslations.notifications.successfull.leave[selectedLanguage]
-    );
+    setMessage({
+      open: true,
+      message:
+        alertTranslations.notifications.successfull.leave[selectedLanguage],
+    });
   };
 
   const sendJoiningRequest = async () => {
     try {
-      {
-        /** 
-      if (joinedClub.filter((club) => club.length !== 0).length > 0) {
-        toast.error(
-          alertTranslations.notifications.wrong.loyality[selectedLanguage]
-        );
+      const ClubswithMembers = await getDocuments("communityMembers");
+
+      const membersOfClubsEls = ClubswithMembers.map((club) => {
+        return club.users;
+      });
+
+      const allMembersEls = membersOfClubsEls.map((object) => {
+        return Object.values(object);
+      });
+
+      const finalConversion = allMembersEls.flat();
+
+      if (
+        finalConversion.find(
+          (member) =>
+            member.value.id === user.uid &&
+            member.belongsTo.includes("readersClub")
+        )
+      ) {
+        setMessage({
+          open: true,
+          message:
+            alertTranslations.notifications.wrong.loyality[selectedLanguage],
+        });
+
         return;
       }
 
-      const clubObject = doc(getFirestore(), "users", document.createdBy.id);
-
-      await updateDoc(clubObject, {
-        notifications: arrayUnion({
-          requestContent: `${user.displayName} sent a request to join ${document.clubsName}`,
-          directedTo: `${document.createdBy.id}`,
-          clubToJoin: `${document.id}`,
-          isRead: false,
-          requestTo: "clubs",
-          notificationTime: Timestamp.fromDate(new Date()),
-          joinerData: {
-            label: `${user.displayName}`,
-            value: {
-              id: `${user.uid}`,
-              nickname: `${user.displayName}`,
-              photoURL: `${user.photoURL}`,
-            },
+      addToDataBase("notifications", `${document.id}-${new Date().getTime()}`, {
+        requestContent: `${user.displayName} sent a request to join ${document.clubsName}`,
+        directedTo: `${document.createdBy.id}`,
+        clubToJoin: `${document.id}`,
+        isRead: false,
+        requestTo: "readersClubs",
+        notificationTime: new Date().getTime(),
+        joinerData: {
+          label: user.displayName,
+          belongsTo: document.id,
+          value: {
+            nickname: user.displayName,
+            id: user.uid,
+            photoURL: user.photoURL,
           },
-        }),
+        },
       });
-*/
-      }
-      toast.success(
-        alertTranslations.notifications.successfull.send[selectedLanguage]
-      );
+
+      console.log(members);
+
+      setMessage({
+        open: true,
+        message:
+          alertTranslations.notifications.successfull.send[selectedLanguage],
+      });
     } catch (err) {
       console.log(err);
     }
@@ -438,6 +453,28 @@ function Club() {
             />
           </div>
         )}
+
+      {message.open && (
+        <Snackbar
+          onClose={() => {
+            setMessage({ message: "", open: false });
+          }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={message.open}
+          autoHideDuration={3000}
+          message={message.message}
+          action={
+            <button
+              className="flex items-center gap-2"
+              onClick={() => {
+                setMessage({ message: "", open: false });
+              }}
+            >
+              <FaX className=" text-red-500" /> Close
+            </button>
+          }
+        />
+      )}
 
       {document &&
         members.find((member) => {

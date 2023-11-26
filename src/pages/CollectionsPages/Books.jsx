@@ -1,14 +1,23 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import CreatableSelect from "react-select/creatable";
+import Lottie from 'lottie-react';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import CreatableSelect from 'react-select/creatable';
 
-import { Pagination } from "@mui/material";
+import { Pagination } from '@mui/material';
 
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import translations from "../../assets/translations/SearchTranslations.json";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import lottieAnimation
+  from '../../assets/lottieAnimations/Animation - 1700320134586.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import translations from '../../assets/translations/SearchTranslations.json';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Books() {
   const { getDocuments } = useRealtimeDocuments();
@@ -76,17 +85,11 @@ function Books() {
   ];
 
   const timeAsc = (a, b) => {
-    return (
-      a.createdBy.createdAt.toDate().getTime() -
-      b.createdBy.createdAt.toDate().getTime()
-    );
+    return a.createdBy.createdAt - b.createdBy.createdAt;
   };
 
   const timeDesc = (a, b) => {
-    return (
-      b.createdBy.createdAt.toDate().getTime() -
-      a.createdBy.createdAt.toDate().getTime()
-    );
+    return b.createdBy.createdAt - a.createdBy.createdAt;
   };
 
   const pagesDesc = (a, b) => {
@@ -105,10 +108,7 @@ function Books() {
   const [sortType, setSortType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const objectsOnPage = () => {
-    if (document.body.clientWidth > 0 && document.body.clientWidth < 768) {
-      return 6;
-    }
-    if (document.body.clientWidth > 768 && document.body.clientWidth < 1024) {
+    if (document.body.clientWidth > 0 && document.body.clientWidth < 1024) {
       return 10;
     } else {
       return 45;
@@ -280,10 +280,11 @@ function Books() {
         ) : (
           <>
             {sortedArray.length === 0 && (
-              <div>
+              <div className="w-full flex flex-col justify-center items-center">
                 <h2>
                   {translations.noResults[selectedLanguage]} {sortParam}
                 </h2>
+                <Lottie animationData={lottieAnimation} />
               </div>
             )}
           </>

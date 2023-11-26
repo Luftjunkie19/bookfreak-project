@@ -44,7 +44,10 @@ function HomeCompetitions() {
           <Link
             to={`/competition/${doc.id}`}
             key={doc.id}
-            className="flex lg:w-2/5 2xl:w-1/6 xl:w-3/10 snap-start flex-col py-4 rounded-lg text-white bg-accColor shadow-md hover:shadow-lg hover:bg-lightModeCol hover:text-accColor hover:shadow-black transition-all duration-300 hover:-translate-y-1"
+            className={`flex ${
+              (doc.expiresAt - new Date().getTime()) / 86400000 <= 0 &&
+              "bg-gray-500 text-black"
+            } lg:w-2/5 2xl:w-1/6 xl:w-3/10 snap-start flex-col py-4 rounded-lg text-white bg-accColor shadow-md hover:shadow-lg hover:bg-lightModeCol hover:text-accColor hover:shadow-black transition-all duration-300 hover:-translate-y-1`}
           >
             <div className="flex flex-col justify-around px-2">
               <h3 className="text-lg font-semibold">{doc.competitionTitle}</h3>

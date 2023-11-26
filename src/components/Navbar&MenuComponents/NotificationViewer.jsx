@@ -154,7 +154,20 @@ function NotificationViewer() {
                   <div className="flex gap-5">
                     <button
                       className="btn btn-sm bg-red-500 text-white"
-                      onClick={() => readNotification(doc)}
+                      onClick={() => {
+                        updateDatabase(
+                          {
+                            ...doc,
+                            isRead: true,
+                          },
+                          "notifications",
+                          `${
+                            doc.notificationId
+                              ? doc.notificationId
+                              : doc.clubToJoin
+                          }-${doc.notificationTime}`
+                        );
+                      }}
                     >
                       {translations.btns.decline[selectedLanguage]}
                     </button>
