@@ -68,7 +68,7 @@ function App() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className="w-full min-h-screen h-full">
+      <div className="w-full min-h-screen h-full overflow-x-hidden">
         <>
           {userIsReady && (
             <>
@@ -79,200 +79,182 @@ function App() {
                 {user && <NotificationViewer />}
                 {warningVisibility && user && <Warning />}
                 {user && <HamburgerMenu />}
-                <div className="container">
-                  <Routes>
-                    <Route
-                      path="/"
-                      element={(user && <Home />) || (!user && <SignUp />)}
-                    />
-                    <Route
-                      path="/login"
-                      element={(!user && <Login />) || (user && <Home />)}
-                    />
-                    <Route
-                      path="/sign-up"
-                      element={(!user && <SignUp />) || (user && <Home />)}
-                    />
-                    <Route
-                      path="/book/:id"
-                      element={(user && <Book />) || (!user && <SignUp />)}
-                    />
 
-                    <Route
-                      path="/author/:authorName"
-                      element={<AuthorProfile />}
-                    />
+                <Routes>
+                  <Route
+                    path="/"
+                    element={(user && <Home />) || (!user && <SignUp />)}
+                  />
+                  <Route
+                    path="/login"
+                    element={(!user && <Login />) || (user && <Home />)}
+                  />
+                  <Route
+                    path="/sign-up"
+                    element={(!user && <SignUp />) || (user && <Home />)}
+                  />
+                  <Route
+                    path="/book/:id"
+                    element={(user && <Book />) || (!user && <SignUp />)}
+                  />
 
-                    <Route path="/edit-test/:testId" element={<EditTest />} />
+                  <Route
+                    path="/author/:authorName"
+                    element={<AuthorProfile />}
+                  />
 
-                    <Route
-                      path="/test/:testId"
-                      element={
-                        (user && <TestMainPage />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route path="/edit-test/:testId" element={<EditTest />} />
 
-                    <Route
-                      path="/test/:testId/play/:startTime/:attemptId"
-                      element={
-                        (user && <TestStartedPage />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/test/:testId"
+                    element={
+                      (user && <TestMainPage />) || (!user && <SignUp />)
+                    }
+                  />
 
-                    <Route
-                      path="/create/book"
-                      element={
-                        (user && <CreateBook />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/test/:testId/play/:startTime/:attemptId"
+                    element={
+                      (user && <TestStartedPage />) || (!user && <SignUp />)
+                    }
+                  />
 
-                    <Route
-                      path="/create/club"
-                      element={
-                        (user && <CreateClub />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/create/book"
+                    element={(user && <CreateBook />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/create/competition"
-                      element={
-                        (user && <CreateCompetition />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/create/club"
+                    element={(user && <CreateClub />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/create/test"
-                      element={
-                        (user && <CreateTests />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/create/competition"
+                    element={
+                      (user && <CreateCompetition />) || (!user && <SignUp />)
+                    }
+                  />
 
-                    <Route
-                      path="/profile/:id/*"
-                      element={(!user && <SignUp />) || (user && <Profile />)}
-                    />
+                  <Route
+                    path="/create/test"
+                    element={(user && <CreateTests />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/user/profile/:id/*"
-                      element={(!user && <SignUp />) || (user && <Profile />)}
-                    />
+                  <Route
+                    path="/profile/:id/*"
+                    element={(!user && <SignUp />) || (user && <Profile />)}
+                  />
 
-                    <Route
-                      path="/edit-profile"
-                      element={
-                        (user && <EditProfile />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/user/profile/:id/*"
+                    element={(!user && <SignUp />) || (user && <Profile />)}
+                  />
 
-                    <Route
-                      path="/add-link"
-                      element={(!user && <SignUp />) || (user && <AddLink />)}
-                    />
+                  <Route
+                    path="/edit-profile"
+                    element={(user && <EditProfile />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/message-to/:chatId"
-                      element={
-                        (user && <MessagesHolder />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/add-link"
+                    element={(!user && <SignUp />) || (user && <AddLink />)}
+                  />
 
-                    <Route
-                      path="/your-chats/*"
-                      element={(user && <YourChats />) || (!user && <SignUp />)}
-                    />
+                  <Route
+                    path="/message-to/:chatId"
+                    element={
+                      (user && <MessagesHolder />) || (!user && <SignUp />)
+                    }
+                  />
 
-                    <Route
-                      path="/forgot-password"
-                      element={<ForgotPassword />}
-                    />
+                  <Route
+                    path="/your-chats/*"
+                    element={(user && <YourChats />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/sign-in-with-phone"
-                      element={
-                        (!user && <SignInWithPhone />) || (user && <Home />)
-                      }
-                    />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
 
-                    <Route
-                      path="/login-with-phone"
-                      element={
-                        (!user && <LogInWithPhone />) || (user && <Home />)
-                      }
-                    />
+                  <Route
+                    path="/sign-in-with-phone"
+                    element={
+                      (!user && <SignInWithPhone />) || (user && <Home />)
+                    }
+                  />
 
-                    <Route
-                      path="/search"
-                      element={
-                        (user && <SearchOption />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/login-with-phone"
+                    element={
+                      (!user && <LogInWithPhone />) || (user && <Home />)
+                    }
+                  />
 
-                    <Route
-                      path="/search/:id"
-                      element={(user && <SearchFor />) || (!user && <SignUp />)}
-                    />
+                  <Route
+                    path="/search"
+                    element={
+                      (user && <SearchOption />) || (!user && <SignUp />)
+                    }
+                  />
 
-                    <Route
-                      path="/competitions"
-                      element={
-                        (user && <Competitions />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/search/:id"
+                    element={(user && <SearchFor />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/competition/:id"
-                      element={
-                        (user && <Competition />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/competitions"
+                    element={
+                      (user && <Competitions />) || (!user && <SignUp />)
+                    }
+                  />
 
-                    <Route
-                      path="/competition/:id/overall"
-                      element={
-                        (user && <GeneralInfo />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/competition/:id"
+                    element={(user && <Competition />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/tests"
-                      element={(user && <Tests />) || (!user && <SignUp />)}
-                    />
+                  <Route
+                    path="/competition/:id/overall"
+                    element={(user && <GeneralInfo />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/readers-clubs"
-                      element={(user && <Clubs />) || (!user && <SignUp />)}
-                    />
+                  <Route
+                    path="/tests"
+                    element={(user && <Tests />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/readers-clubs/:id"
-                      element={(user && <Club />) || (!user && <SignUp />)}
-                    />
+                  <Route
+                    path="/readers-clubs"
+                    element={(user && <Clubs />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/readers-clubs/:id/overall"
-                      element={
-                        (user && <OverallClub />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/readers-clubs/:id"
+                    element={(user && <Club />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/edit-competition/:id"
-                      element={
-                        (user && <EditCompetition />) || (!user && <SignUp />)
-                      }
-                    />
+                  <Route
+                    path="/readers-clubs/:id/overall"
+                    element={(user && <OverallClub />) || (!user && <SignUp />)}
+                  />
 
-                    <Route
-                      path="/edit-club/:id"
-                      element={(user && <EditClub />) || (!user && <SignUp />)}
-                    />
+                  <Route
+                    path="/edit-competition/:id"
+                    element={
+                      (user && <EditCompetition />) || (!user && <SignUp />)
+                    }
+                  />
 
-                    <Route
-                      path="/books"
-                      element={(user && <Books />) || (!user && <SignUp />)}
-                    />
-                  </Routes>
-                </div>
+                  <Route
+                    path="/edit-club/:id"
+                    element={(user && <EditClub />) || (!user && <SignUp />)}
+                  />
+
+                  <Route
+                    path="/books"
+                    element={(user && <Books />) || (!user && <SignUp />)}
+                  />
+                </Routes>
 
                 {isUsingAdblock && <AdblockAlert />}
 

@@ -1,28 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import countryToCurrency from "country-to-currency";
-import { Alert } from "flowbite-react";
-import CurrencyInput from "react-currency-input-field";
-import ReactFlagsSelect from "react-flags-select";
-import { FaX } from "react-icons/fa6";
-import { GiSwordsPower } from "react-icons/gi";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import CreatableSelect from "react-select/creatable";
-import uniqid from "uniqid";
+import countryToCurrency from 'country-to-currency';
+import { Alert } from 'flowbite-react';
+import CurrencyInput from 'react-currency-input-field';
+import ReactFlagsSelect from 'react-flags-select';
+import { FaX } from 'react-icons/fa6';
+import { GiSwordsPower } from 'react-icons/gi';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import CreatableSelect from 'react-select/creatable';
+import uniqid from 'uniqid';
 
-import { Snackbar } from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers";
+import { Snackbar } from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 import {
   competitionTypes,
   differentPrize,
   prizeTypes,
-} from "../../assets/CreateVariables";
-import translations from "../../assets/translations/FormsTranslations.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+} from '../../assets/CreateVariables';
+import translations from '../../assets/translations/FormsTranslations.json';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import StripeComponent from './StripeComponent';
 
 function CreateCompetition() {
   const { user } = useAuthContext();
@@ -33,6 +39,7 @@ function CreateCompetition() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const [clientSecret, setClientSecret] = useState(null);
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const [currency, setCurrency] = useState(null);
@@ -41,6 +48,10 @@ function CreateCompetition() {
     open: false,
     message: "",
   });
+  const [stripePromise, setStripePromise] = useState(() =>
+    loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
+  );
+
   const navigate = useNavigate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadUsers = async () => {
@@ -85,7 +96,7 @@ function CreateCompetition() {
     },
   });
 
-  const submitForm = (e) => {
+  const submitForm = async (e) => {
     e.preventDefault();
     setError(null);
     setIsPending(true);
@@ -100,6 +111,34 @@ function CreateCompetition() {
       return;
     }
 
+    if (competition.prize.moneyPrize) {
+      try {
+        const response = await fetch(
+          "http://localhost:4000/create-payment-intent",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              amount: competition.prize.moneyPrize.amount,
+              currency: competition.prize.moneyPrize.currency,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to create payment intent");
+        }
+
+        const data = await response.json();
+        setClientSecret(data.clientSecret);
+      } catch (error) {
+        console.error("Error creating payment intent:", error);
+        setError("Failed to create payment intent");
+      }
+    }
+
+    {
+      /**
     addToDataBase("competitions", uniqueId, {
       competitionTitle: competition.competitionTitle,
       competitionsName: competition.competitionsName,
@@ -150,6 +189,8 @@ function CreateCompetition() {
     setIsPending(false);
     setError(null);
     navigate("/");
+    */
+    }
   };
 
   return (
@@ -387,6 +428,20 @@ function CreateCompetition() {
             }
           />
         </>
+      )}
+
+      {clientSecret && (
+        <Elements
+          stripe={stripePromise}
+          options={{
+            apperance: {
+              theme: "stripe",
+            },
+            clientSecret,
+          }}
+        >
+          <StripeComponent clientSecret={clientSecret} />
+        </Elements>
       )}
     </div>
   );
