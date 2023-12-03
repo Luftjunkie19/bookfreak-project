@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 import {
   createUserWithEmailAndPassword,
@@ -9,13 +9,18 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   updateProfile,
-} from "firebase/auth";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
+} from 'firebase/auth';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import { useNavigate } from 'react-router-dom';
 
-import { useAuthContext } from "./useAuthContext";
-import { useRealDatabase } from "./useRealDatabase";
-import useRealtimeDocument from "./useRealtimeDocument";
+import { useAuthContext } from './useAuthContext';
+import { useRealDatabase } from './useRealDatabase';
+import useRealtimeDocument from './useRealtimeDocument';
 
 export function useLogin() {
   const [error, setError] = useState("");

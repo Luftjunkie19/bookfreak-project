@@ -1,24 +1,21 @@
-import './stylings/backgrounds.css';
+import "./stylings/backgrounds.css";
 
-import Lottie from 'lottie-react';
-import {
-  FaBook,
-  FaUserFriends,
-} from 'react-icons/fa';
-import { GiPodiumWinner } from 'react-icons/gi';
-import { PiExamFill } from 'react-icons/pi';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import Lottie from "lottie-react";
+import { FaBook, FaUserFriends } from "react-icons/fa";
+import { GiPodiumWinner } from "react-icons/gi";
+import { PiExamFill } from "react-icons/pi";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
-import animationLottie2
-  from '../assets/lottieAnimations/Animation - 1699176767867.json';
-import animationLottie from '../assets/lottieAnimations/mwUkFOkeLv.json';
-import translations from '../assets/translations/homePageTranslations.json';
-import HomeBooks from '../components/HomeComponents/HomeBooks';
-import HomeClubs from '../components/HomeComponents/HomeClubs';
-import HomeCompetitions from '../components/HomeComponents/HomeCompetitions';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useLogout } from '../hooks/useLogout';
+import animationLottie2 from "../assets/lottieAnimations/Animation - 1699176767867.json";
+import animationLottie from "../assets/lottieAnimations/mwUkFOkeLv.json";
+import translations from "../assets/translations/homePageTranslations.json";
+import BookBucksComponent from "../components/HomeComponents/BookBucksComponent";
+import HomeBooks from "../components/HomeComponents/HomeBooks";
+import HomeClubs from "../components/HomeComponents/HomeClubs";
+import HomeCompetitions from "../components/HomeComponents/HomeCompetitions";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useLogout } from "../hooks/useLogout";
 
 function Home() {
   const selectedLangugage = useSelector(
@@ -136,6 +133,8 @@ function Home() {
           {translations.homePage.recentTexts.clubs[selectedLangugage]}
         </h2>
         <HomeClubs />
+
+        <BookBucksComponent />
       </div>
     </>
   );
