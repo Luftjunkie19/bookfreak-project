@@ -43,6 +43,7 @@ import EditCompetition from "./pages/Forms&FormsPages/EditCompetition";
 import EditProfile from "./pages/Forms&FormsPages/EditProfile";
 import EditTest from "./pages/Forms&FormsPages/EditTest.jsx";
 import ForgotPassword from "./pages/Forms&FormsPages/ForgotPassword.jsx";
+import PaymentForm from "./pages/Forms&FormsPages/PaymentForm.jsx";
 import Home from "./pages/Home";
 import SearchFor from "./pages/SearchPages/SearchFor";
 import SearchOption from "./pages/SearchPages/SearchOption";
@@ -187,6 +188,11 @@ function App() {
                     element={
                       (!user && <LogInWithPhone />) || (user && <Home />)
                     }
+                  />
+
+                  <Route
+                    path="/paymentForm/:paymentId/:sessionId"
+                    element={<PaymentForm />}
                   />
 
                   <Route
