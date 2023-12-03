@@ -25,10 +25,10 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
+export const currentApp = initializeApp(firebaseConfig);
+
 AOS.init();
 
-
-export const currentApp = initializeApp(firebaseConfig);
 
 export const database = getFirestore(currentApp);
 

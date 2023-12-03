@@ -1,22 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import generateUniqueId from "react-id-generator";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import Select from "react-select";
-import { toast } from "react-toastify";
+import generateUniqueId from 'react-id-generator';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
+import { toast } from 'react-toastify';
 
-import { Alert } from "@mui/material";
+import { Alert } from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import formTranslations from "../../assets/translations/FormsTranslations.json";
-import profileTranslations from "../../assets/translations/ProfileTranslations.json";
-import Loader from "../../components/Loader";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import formTranslations from '../../assets/translations/FormsTranslations.json';
+import profileTranslations
+  from '../../assets/translations/ProfileTranslations.json';
+import Loader from '../../components/Loader';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function AddLink() {
   const selectedLanguage = useSelector(
