@@ -1,13 +1,16 @@
-import "../../pages/stylings/backgrounds.css";
+import '../../pages/stylings/backgrounds.css';
 
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import translations from "../../assets/translations/homePageTranslations.json";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
-import SkeletonBook from "../SkeletonsObjects/SkeletonBook";
+import translations from '../../assets/translations/homePageTranslations.json';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import SkeletonBook from '../SkeletonsObjects/SkeletonBook';
 
 function HomeBooks() {
   const { getDocuments, loadingDocs } = useRealtimeDocuments();
@@ -21,7 +24,7 @@ function HomeBooks() {
 
   useEffect(() => {
     loadElements();
-  }, [loadElements]);
+  }, []);
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );

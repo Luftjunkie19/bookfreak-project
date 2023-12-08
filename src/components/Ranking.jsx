@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { increment } from 'firebase/database';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import {
   Paper,
@@ -11,12 +16,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@mui/material";
+} from '@mui/material';
 
-import { CompetitionRules } from "../assets/CompetitionsRules/CompetitionRules";
-import reuseableTranslations from "../assets/translations/ReusableTranslations.json";
-import useRealtimeDocuments from "../hooks/useRealtimeDocuments";
-import Top3Winners from "./Top3Winners";
+import { CompetitionRules } from '../assets/CompetitionsRules/CompetitionRules';
+import reuseableTranslations
+  from '../assets/translations/ReusableTranslations.json';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useRealDatabase } from '../hooks/useRealDatabase';
+import useRealtimeDocument from '../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../hooks/useRealtimeDocuments';
+import Top3Winners from './Top3Winners';
 
 function Ranking({
   communityObject,
@@ -28,10 +37,11 @@ function Ranking({
     (state) => state.languageSelection.selectedLangugage
   );
   const { getDocuments } = useRealtimeDocuments();
-
+  const {getDocument}= useRealtimeDocument();
+  const {updateDatabase}= useRealDatabase();
   const { teachToFishRule, liftOthersRiseJointlyRule, firstComeServedRule } =
     CompetitionRules();
-
+  const { user } = useAuthContext();
   const [books, setBooks] = useState([]);
   const [readerObjects, setReaderObjects] = useState([]);
 
@@ -62,6 +72,7 @@ function Ranking({
     loadReaderObjects();
   }, [loadBooks, loadReaderObjects]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getReadBooks = (id) => {
     return !communityObject?.expiresAt
       ? readerObjects.filter(
@@ -76,6 +87,7 @@ function Ranking({
         ).length;
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getlastBookRead = (id) => {
     const BookTitles = !communityObject?.expiresAt
       ? readerObjects.filter(
@@ -102,8 +114,9 @@ function Ranking({
 
   const [suitableMembers, setSuitMembers] = useState([]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const accurateMembers = async () => {
+
+
+    const accurateMembers = useCallback(async () => {
     if (
       readerObjects.length > 0 &&
       communityMembers &&
@@ -146,11 +159,38 @@ function Ranking({
       );
       setSuitMembers(arr);
     }
-  };
+  }, [readerObjects, communityMembers, communityObject, liftOthersRiseJointlyRule, getReadBooks, expirationTimeNumber, getlastBookRead, firstComeServedRule, teachToFishRule]);
 
   useEffect(() => {
     accurateMembers();
   }, [accurateMembers]);
+
+    const payoutTheWinningUser = async () => {
+      const winnerDoc = await getDocument('users', suitableMembers[0].id);
+      const hostId = await getDocument('users', communityObject.createdBy.id);
+
+      if (winnerDoc && hostId && communityObject.prize.moneyPrize) {
+        updateDatabase({ creditsAvailable: increment(communityObject.prize.moneyPrize.amount) }, "users", winnerDoc.id);
+
+      const payoutObject =  await fetch('http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createTransferToWinner', {
+           method: "POST",
+        headers: {
+      "Content-Type": "application/json",
+        'Connection': 'keep-alive',
+            'Accept': '*',
+          },
+          body: JSON.stringify({
+            destinationId: winnerDoc.stripeAccountData.id,
+            organizatorId: hostId.stripeAccountData.id,
+            amount: communityObject.prize.moneyPrize.amount,
+            currency: winnerDoc.stripeAccountData.default_currency,
+        })
+        })
+        const payoutFullfilled = await payoutObject.json();
+        console.log(payoutFullfilled);
+      }
+
+}
 
   return (
     <>
@@ -197,7 +237,7 @@ function Ranking({
               {suitableMembers.length > 0 &&
                 suitableMembers.map((user) => (
                   <TableRow
-                    key={user.nickname}
+                    key={user.id}
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}
@@ -250,7 +290,9 @@ function Ranking({
         </TableContainer>
       )}
 
-      {expirationTime <= 0 && <Top3Winners topWinners={suitableMembers} />}
+      {expirationTime <= 0 && <><Top3Winners topWinners={suitableMembers} />
+</>}
+      {communityObject.createdBy.id === user.uid && expirationTime <= 0 && <button onClick={payoutTheWinningUser}>Send user money</button>}
     </>
   );
 }

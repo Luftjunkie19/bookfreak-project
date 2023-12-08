@@ -1,11 +1,14 @@
-import "../../pages/stylings/backgrounds.css";
+import '../../pages/stylings/backgrounds.css';
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function HomeClubs() {
   const { getDocuments } = useRealtimeDocuments();
@@ -19,7 +22,7 @@ function HomeClubs() {
 
   useEffect(() => {
     loadElements();
-  }, [loadElements]);
+  }, []);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );

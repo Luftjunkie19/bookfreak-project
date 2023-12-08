@@ -47,8 +47,6 @@ export function useLogin() {
 
       const documentExistence = await getDocument("users", res.user.uid);
 
-      console.log(documentExistence);
-
       if (!documentExistence) {
         const uploadPath = `profileImg/uid${res.user.uid}/${res.user.photoURL}`;
 
@@ -59,6 +57,40 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
+        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccount", {
+          method:"POST",
+             headers: {
+              'Content-Type': 'application/json',
+               'Connection': 'keep-alive',
+            'Accept': '*',
+          },
+          body: JSON.stringify({
+            accountData: {
+              id: res.user.uid,
+              nickname: res.user.displayName,
+              email: res.user.email,
+             }})
+        });
+
+        const stripeAccountData = await fetchedObject.json();
+   
+          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink", {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+               'Connection': 'keep-alive',
+            'Accept': '*',
+            },
+            body: JSON.stringify({accountId: stripeAccountData.id})
+          });
+  
+     const {accountLinkObject} = await accountLinkResponse.json();
+  
+        console.log(accountLinkObject);
+
+        
+        console.log(stripeAccountData);
+
         addToDataBase("users", res.user.uid, {
           nickname: res.user.displayName,
           email: res.user.email,
@@ -68,6 +100,9 @@ export function useLogin() {
           notifications: {},
           chats: {},
           id: res.user.uid,
+          creditsAvailable:{coins:0, valueInMoney:0, currency:stripeAccountData.default_currency },
+          stripeAccountData,
+          accountLinkObject:{...accountLinkObject}
         });
       }
 
@@ -99,7 +134,7 @@ export function useLogin() {
 
       console.log(documentExistence);
 
-      if (!documentExistence) {
+       if (!documentExistence) {
         const uploadPath = `profileImg/uid${res.user.uid}/${res.user.photoURL}`;
 
         const storage = getStorage();
@@ -108,6 +143,40 @@ export function useLogin() {
 
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
+
+        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccount", {
+          method:"POST",
+             headers: {
+              'Content-Type': 'application/json',
+               'Connection': 'keep-alive',
+            'Accept': '*',
+          },
+          body: JSON.stringify({
+            accountData: {
+              id: res.user.uid,
+              nickname: res.user.displayName,
+              email: res.user.email,
+             }})
+        });
+
+        const stripeAccountData = await fetchedObject.json();
+   
+          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink", {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+               'Connection': 'keep-alive',
+            'Accept': '*',
+            },
+            body: JSON.stringify({accountId: stripeAccountData.id})
+          });
+  
+         const {accountLinkObject} = await accountLinkResponse.json();
+  
+        console.log(accountLinkObject);
+
+        
+        console.log(stripeAccountData);
 
         addToDataBase("users", res.user.uid, {
           nickname: res.user.displayName,
@@ -118,6 +187,9 @@ export function useLogin() {
           notifications: {},
           chats: {},
           id: res.user.uid,
+          stripeAccountData,
+          accountLinkObject:{...accountLinkObject},
+           creditsAvailable:{coins:0, valueInMoney:0, currency:stripeAccountData.default_currency },
         });
       }
 
@@ -149,7 +221,7 @@ export function useLogin() {
 
       console.log(documentExistence);
 
-      if (!documentExistence) {
+     if (!documentExistence) {
         const uploadPath = `profileImg/uid${res.user.uid}/${res.user.photoURL}`;
 
         const storage = getStorage();
@@ -159,6 +231,40 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
+        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccount", {
+          method:"POST",
+             headers: {
+              'Content-Type': 'application/json',
+               'Connection': 'keep-alive',
+            'Accept': '*',
+          },
+          body: JSON.stringify({
+            accountData: {
+              id: res.user.uid,
+              nickname: res.user.displayName,
+              email: res.user.email,
+             }})
+        });
+
+        const stripeAccountData = await fetchedObject.json();
+   
+          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink", {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+               'Connection': 'keep-alive',
+            'Accept': '*',
+            },
+            body: JSON.stringify({accountId: stripeAccountData.id})
+          });
+  
+          const {accountLinkObject} = await accountLinkResponse.json();
+  
+        console.log(accountLinkObject);
+
+        
+        console.log(stripeAccountData);
+
         addToDataBase("users", res.user.uid, {
           nickname: res.user.displayName,
           email: res.user.email,
@@ -167,7 +273,10 @@ export function useLogin() {
           links: {},
           notifications: {},
           chats: {},
+           creditsAvailable:{coins:0, valueInMoney:0, currency:stripeAccountData.default_currency },
           id: res.user.uid,
+          stripeAccountData,
+           accountLinkObject:{...accountLinkObject},
         });
       }
 
@@ -227,15 +336,53 @@ export function useLogin() {
 
       await updateProfile(res.user, { displayName, photoURL });
 
+   const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccount", {
+          method:"POST",
+             headers: {
+              'Content-Type': 'application/json',
+               'Connection': 'keep-alive',
+            'Accept': '*',
+          },
+          body: JSON.stringify({
+            accountData: {
+              id: res.user.uid,
+              nickname: res.user.displayName,
+              email: res.user.email,
+             }})
+        });
+
+        const stripeAccountData = await fetchedObject.json();
+   
+        const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink", {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+               'Connection': 'keep-alive',
+            'Accept': '*',
+            },
+            body: JSON.stringify({accountId: stripeAccountData.id})
+          });
+  
+        const {accountLinkObject} = await accountLinkResponse.json();
+  
+      
+
+        
+        console.log(stripeAccountData);
+      
       addToDataBase("users", res.user.uid, {
         nickname: res.user.displayName,
         email: res.user.email,
         photoURL: res.user.photoURL,
         description: "",
+         creditsAvailable:{coins:0, valueInMoney:0, currency:stripeAccountData.default_currency },
         links: {},
         notifications: {},
         chats: {},
         id: res.user.uid,
+        accountLinkObject: { ...accountLinkObject },
+        stripeAccountData,
+        
       });
 
       dispatch({ type: "LOGIN", payload: res.user });

@@ -1,40 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import countryToCurrency from "country-to-currency";
-import { Alert } from "flowbite-react";
-import CurrencyInput from "react-currency-input-field";
-import ReactFlagsSelect from "react-flags-select";
-import { FaX } from "react-icons/fa6";
-import { GiSwordsPower } from "react-icons/gi";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import CreatableSelect from "react-select/creatable";
-import uniqid from "uniqid";
+import { Alert } from 'flowbite-react';
+import { FaX } from 'react-icons/fa6';
+import { GiSwordsPower } from 'react-icons/gi';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import CreatableSelect from 'react-select/creatable';
+import uniqid from 'uniqid';
 
-import { Snackbar } from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers";
-import { loadStripe } from "@stripe/stripe-js";
+import { Snackbar } from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers';
 
 import {
   competitionTypes,
   differentPrize,
   prizeTypes,
-} from "../../assets/CreateVariables";
-import translations from "../../assets/translations/FormsTranslations.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+} from '../../assets/CreateVariables';
+import translations from '../../assets/translations/FormsTranslations.json';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function CreateCompetition() {
   const { user } = useAuthContext();
-  const { addToDataBase } = useRealDatabase();
+  const { addToDataBase, updateDatabase } = useRealDatabase();
   const { getDocuments } = useRealtimeDocuments();
+  const { getDocument} = useRealtimeDocument();
   const [documents, setDocuments] = useState([]);
   const [attachedUsers, setAttachedUsers] = useState([]);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-  const [clientSecret, setClientSecret] = useState(null);
+  const [document, setDocument] = useState(null);
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const [currency, setCurrency] = useState(null);
@@ -43,9 +44,6 @@ function CreateCompetition() {
     open: false,
     message: "",
   });
-  const [stripePromise, setStripePromise] = useState(() =>
-    loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
-  );
 
   const navigate = useNavigate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,6 +55,18 @@ function CreateCompetition() {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadUser= async ()=>{
+    const userObject= await getDocument('users', user.uid);
+    if (userObject) {
+      setDocument(userObject);
+    }
+  }
+
+  useEffect(() => {
+    loadUser();
+  }, [loadUser])
+  
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
@@ -86,7 +96,7 @@ function CreateCompetition() {
     description: "",
     prizeType: null,
     prize: {
-      moneyPrize: { amount: null, currency: null },
+      moneyPrize: { amount: 0, },
       itemPrize: { title: null, typeOfPrize: null },
     },
   });
@@ -159,6 +169,37 @@ function CreateCompetition() {
         return;
       }
 
+      if (competition.prize.moneyPrize.amount === 0) {
+    setOpenState((state) => {
+          state.message = "You cannot create competition, where the prize is 0.";
+          state.open = true;
+          return state;
+        });
+        return;
+}
+
+      if (competition.prize.moneyPrize.amount > document.creditsAvailable) {
+  setOpenState((state) => {
+          state.message = "You do not have so many credits enough.";
+          state.open = true;
+          return state;
+        });
+        return;
+      }
+      
+      if (competition.prize.itemPrize === undefined || competition.prize.itemPrize === null ||  competition.prize.moneyPrize === null || competition.prize.moneyPrize === undefined) {
+          setOpenState((state) => {
+          state.message = "Something went wrong.";
+          state.open = true;
+          return state;
+        });
+        return;
+      }
+
+      if (competition.prize.moneyPrize) {
+        updateDatabase({coins: document.creditsAvailable.coins - competition.prize.moneyPrize.amount}, "users", `${user.uid}/creditsAvailable`);
+      }
+      
       finalizeAll();
     } catch (err) {
       console.log(err);
@@ -220,7 +261,7 @@ function CreateCompetition() {
                   return;
                 } else {
                   setCompetition((competition) => {
-                    competition.expiresAt = new Date(newValue.$d);
+                    competition.expiresAt = new Date(newValue.$d).getTime();
                     return competition;
                   });
                 }
@@ -276,34 +317,19 @@ function CreateCompetition() {
             />
           </label>
 
-          {competition.prizeType === "Money" && (
+               {competition.prizeType === "Money" && document &&  (
             <>
-              <label className="sm:w-full xl:w-2/5 ">
-                <span>Competition's prize</span>
-                <ReactFlagsSelect
-                  required
-                  selected={selectedCountry}
-                  className="text-black w-full"
-                  onSelect={(code) => {
-                    setSelectedCountry(code);
-                    setCurrency(countryToCurrency[code]);
+              <label className="flex flex-col">
+                <span>Prize amount (in BookBucks):</span>
+                <input
+                 className="input"
+                 type='number'
+                  step={100}
+                  min={0}
+                  max={document.creditsAvailable}
+                  onChange={(e) => {
                     setCompetition((comp) => {
-                      comp.prize.moneyPrize.currency = countryToCurrency[code];
-                      return comp;
-                    });
-                  }}
-                  options={prizeTypes}
-                />
-              </label>
-
-              <label className=" flex flex-col">
-                <span>Prize amount:</span>
-                <CurrencyInput
-                  suffix={currency}
-                  className="input"
-                  onValueChange={(value) => {
-                    setCompetition((comp) => {
-                      comp.prize.moneyPrize.amount = +value;
+                      comp.prize.moneyPrize.amount = +e.target.value;
                       return comp;
                     });
                     console.log(competition);
@@ -313,6 +339,7 @@ function CreateCompetition() {
             </>
           )}
 
+     
           {competition.prizeType === "item" && (
             <>
               <label className="sm:w-full xl:w-2/5 ">

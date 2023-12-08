@@ -136,6 +136,35 @@ function Profile() {
     removeFromDataBase("users", user.uid);
   };
 
+  const getBalance = async () => {
+    const response = await fetch(`http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/getBalance`, {
+      method: "POST",
+      headers: {
+      'Content-Type': 'application/json',
+      'Connection': 'keep-alive',
+      'Accept': '*',
+      }, 
+      body:JSON.stringify({accountId: document.stripeAccountData.id})
+    });
+
+    const data = await response.json();
+
+    return data.available;
+  }
+
+  const payoutAminimum = async () => {
+    const response= fetch(`http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createPayout`, {
+      method: "POST",
+      headers: {
+      'Content-Type': 'application/json',
+      'Connection': 'keep-alive',
+      'Accept': '*',
+      }, 
+      body:JSON.stringify({amount:500, userId: document.stripeAccountData.id ,currency: document.stripeAccountData.default_currency, destinationAccount:document.stripeAccountData.external_accounts.data["0"].id })
+    });
+    return response;
+  }
+
   return (
     <div className="min-h-screen h-full">
       {document && (
@@ -144,14 +173,12 @@ function Profile() {
             <div className="p-2 sm:border-b-4 sm:border-white xl:border-none bg-userColumnBgCol xl:rounded-b-lg">
               <div className="flex xl:justify-start sm:justify-center p-2">
                 <div className="avatar">
-                  <div className="w-48 rounded-full ring border-accColor ring-offset-base-100 ring-offset-2">
+                  <div className="w-48 rounded-full ring border-accColor ring-offset-base-100 ring-offset-2" onClick={async ()=>{
+                    console.log(await getBalance());
+                  }}>
                     <img
                       src={document.photoURL}
                       alt=""
-                      onClick={() => {
-                        console.log(favBooks);
-                        console.log(readerObjects);
-                      }}
                       referrerPolicy="no-referrer"
                       className="object-cover"
                     />
@@ -163,6 +190,8 @@ function Profile() {
                 <p className="text-white font-bold text-3xl tracking-wide py-3">
                   {document.nickname}
                 </p>
+            <button  className='btn' onClick={payoutAminimum}>Payout</button>
+              
               </div>
 
               {document &&
