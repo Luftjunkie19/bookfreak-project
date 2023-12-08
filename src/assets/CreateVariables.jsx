@@ -45,33 +45,33 @@ export const differentPrize = [
 
 export const allOffers = [
   {
-    name: "100 BookBucks",
-    id: "price_1OJMFKL8z1e5mvb6zxgLWKoG",
+    name: "299 BookBucks",
+    id: "price_1OIYglL8z1e5mvb6lvRq3ttw",
     price: 2.99,
-    bucksToToUp: 100,
+    bucksToToUp: 299,
   },
   {
-    name: "500 BookBucks",
-    id: "price_1OJMDtL8z1e5mvb6ftOOBcVK",
+    name: "999 BookBucks",
+    id: "price_1OIYjTL8z1e5mvb6kYVn0Caq",
     price: 9.99,
-    bucksToToUp: 500,
+    bucksToToUp: 999,
   },
   {
-    name: "1200 BookBucks",
-    id: "price_1OJMDEL8z1e5mvb62toWwFaW",
+    name: "1999 BookBucks",
+    id: "price_1OIYscL8z1e5mvb6XhKbApa5",
     price: 19.99,
-    bucksToToUp: 1200,
+    bucksToToUp: 1999,
   },
   {
-    name: "2500 BookBucks",
-    id: "price_1OJMAnL8z1e5mvb6mI7NXObR",
+    name: "3999 BookBucks",
+    id: "price_1OIYxBL8z1e5mvb6xeZWB66o",
     price: 39.99,
-    bucksToToUp: 2500,
+    bucksToToUp: 3999,
   },
   {
-    name: "6500 BookBucks",
-    id: "price_1OJMCZL8z1e5mvb63denRFys",
+    name: "6999 BookBucks",
+    id: "price_1OIYvRL8z1e5mvb61fsmkwLa",
     price: 69.99,
-    bucksToToUp: 6500,
+    bucksToToUp: 6999,
   },
 ];

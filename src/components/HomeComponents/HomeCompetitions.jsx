@@ -1,11 +1,14 @@
-import "../../pages/stylings/backgrounds.css";
+import '../../pages/stylings/backgrounds.css';
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { formatDistanceToNow } from "date-fns";
-import { Link } from "react-router-dom";
+import { formatDistanceToNow } from 'date-fns';
+import { Link } from 'react-router-dom';
 
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function HomeCompetitions() {
   const { getDocuments } = useRealtimeDocuments();
@@ -19,7 +22,7 @@ function HomeCompetitions() {
 
   useEffect(() => {
     loadElements();
-  }, [loadElements]);
+  }, []);
 
   const getNumber = () => {
     if (document.body.clientWidth > 0 && document.body.clientWidth < 768) {

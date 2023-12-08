@@ -104,10 +104,13 @@ function Competition() {
     }
   };
 
+  useEffect(()=>{
+      loadDocument();
+},[loadDocument])
+
   useEffect(() => {
-    loadDocument();
     loadDocuments();
-  }, [loadDocument, loadDocuments]);
+  }, [loadDocuments]);
 
   const deleteCompetition = async (id) => {
     removeFromDataBase("competitions", id);

@@ -6,13 +6,19 @@ import { useNavigate } from 'react-router';
 
 import { allOffers } from '../../assets/CreateVariables';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function BookBucksComponent() {
   const { user } = useAuthContext();
+  const { getDocument } = useRealtimeDocument();
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
   const purchaseItem = async (offer) => {
+
+    const document = await getDocument('users', user.uid);
+
+
     const response = await fetch(
       "http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createStripeCheckout",
       {
@@ -24,14 +30,15 @@ function BookBucksComponent() {
         }
         ,
         body: JSON.stringify({
-          quantity: 1, price: offer.id, customer: {
+          quantity: 1, price: offer.id, destinationId: document.stripeAccountData.id,customer: {
             id: user.uid,
             nickname: user.displayName,
             selectedOptionName: offer.name,
             priceForOffer: offer.id,
             priceInNumber: offer.price,
             boughtOption: offer.bucksToToUp,
-         }}),
+            destinationId: document.stripeAccountData.id
+         }, customerCurrency: document.stripeAccountData.default_currency}),
       }
     );
 
@@ -55,7 +62,7 @@ function BookBucksComponent() {
             Price:{" "}
             {new Intl.NumberFormat(selectedLangugage, {
               style: "currency",
-              currency: "EUR",
+              currency: "USD",
             }).format(offer.price)}
           </p>
           <button

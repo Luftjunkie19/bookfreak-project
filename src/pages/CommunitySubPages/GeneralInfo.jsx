@@ -99,9 +99,12 @@ function GeneralInfo() {
   };
 
   useEffect(() => {
-    loadDocument();
     loadMembers();
-  }, [loadDocument, loadMembers]);
+  }, [loadMembers]);
+
+  useEffect(()=>{
+    loadDocument();
+  },[loadDocument])
 
   const deleteCompetition = async (id) => {
     removeFromDataBase("competitions", id);
