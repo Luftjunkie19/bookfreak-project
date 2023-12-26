@@ -1,23 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { formatDistanceToNow } from "date-fns";
-import Lottie from "lottie-react";
-import { FaGamepad, FaPencil, FaTrashCan } from "react-icons/fa6";
-import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import uniqid from "uniqid";
+import { formatDistanceToNow } from 'date-fns';
+import Lottie from 'lottie-react';
+import {
+  FaGamepad,
+  FaPencil,
+  FaTrashCan,
+} from 'react-icons/fa6';
+import { useSelector } from 'react-redux';
+import {
+  useNavigate,
+  useParams,
+} from 'react-router';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import uniqid from 'uniqid';
 
-import { Button, ButtonGroup } from "@mui/material";
+import {
+  Button,
+  ButtonGroup,
+} from '@mui/material';
 
-import animationLottie from "../../assets/lottieAnimations/Animation - 1700236886731.json";
-import translations from "../../assets/translations/BookPageTranslations.json";
-import formTranslations from "../../assets/translations/FormsTranslations.json";
-import TestRanking from "../../components/TestTable/TestRanking";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import animationLottie
+  from '../../assets/lottieAnimations/Animation - 1700236886731.json';
+import translations from '../../assets/translations/BookPageTranslations.json';
+import formTranslations from '../../assets/translations/FormsTranslations.json';
+import TestRanking from '../../components/TestTable/TestRanking';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function TestMainPage() {
   const { user } = useAuthContext();
@@ -58,7 +72,7 @@ function TestMainPage() {
     <div className="min-h-screen h-full w-full">
       {document && (
         <div className="max-w-[110rem] flex sm:flex-col lg:flex-row flex-wrap gap-4 justify-around items-center max-h-[64rem]">
-          <div className="sm:w-full xl:w-2/5 flex items-center justify-center flex-col gap-2">
+          <div className="sm:w-full xl:w-2/5 flex items-center justify-center flex-col gap-2 py-6">
             {document.refersToBook.photoURL ? (
               <div className="w-full flex items-center justify-center flex-col gap-2">
                 <div className=" w-56 h-72">
@@ -69,9 +83,10 @@ function TestMainPage() {
                   />
                 </div>
                 {document.createdBy.id === user.uid && (
-                  <div className="sm:w-3/4 lg:w-1/4 flex justify-around items-center gap-2">
+                  <div className=" max-w-md flex justify-around items-center gap-2">
                     <Button
-                      className="my-2 gap-2 self-start"
+                    sx={{fontFamily:"Montserrat"}}
+                      className="my-2 self-start"
                       color="error"
                       variant="contained"
                       onClick={() => {
@@ -79,19 +94,22 @@ function TestMainPage() {
                         toast.success("Removed successfully");
                         navigate("/tests");
                       }}
+                      endIcon={<FaTrashCan />}
                     >
                       {translations.buttonsTexts.delete[selectedLanguage]}{" "}
-                      <FaTrashCan />
+                      
                     </Button>{" "}
                     <Button
+                       sx={{fontFamily:"Montserrat"}}
                       className="my-2 gap-2"
                       color="primary"
                       variant="contained"
                       onClick={() => {
                         navigate(`/edit-test/${testId}`);
                       }}
+                      endIcon={<FaPencil />}
                     >
-                      Edit <FaPencil />
+                      Edit 
                     </Button>
                   </div>
                 )}
@@ -111,7 +129,8 @@ function TestMainPage() {
                 {document.createdBy.id === user.uid && (
                   <div className="sm:w-4/5 md:w-3/5 lg:w-2/5 flex justify-around items-center">
                     <Button
-                      className="my-2 gap-2"
+                    sx={{fontFamily:"Montserrat"}}
+                      className="my-2 self-start"
                       color="error"
                       variant="contained"
                       onClick={() => {
@@ -119,34 +138,37 @@ function TestMainPage() {
                         toast.success("Removed successfully");
                         navigate("/tests");
                       }}
+                      endIcon={<FaTrashCan />}
                     >
                       {translations.buttonsTexts.delete[selectedLanguage]}{" "}
-                      <FaTrashCan />
-                    </Button>
+                      
+                    </Button>{" "}
                     <Button
+                       sx={{fontFamily:"Montserrat"}}
                       className="my-2 gap-2"
                       color="primary"
                       variant="contained"
                       onClick={() => {
                         navigate(`/edit-test/${testId}`);
                       }}
+                      endIcon={<FaPencil />}
                     >
-                      Edit <FaPencil />
+                      Edit 
                     </Button>
                   </div>
                 )}
-                <p>{document.refersToBook}</p>
+                <p className="text-lg text-white font-semibold">{document.refersToBook}</p>
               </>
             )}
             <div className="flex sm:w-4/5 md:w-3/5 lg:w-2/5 flex-col">
-              <p>
+              <p classsName="text-white font-medium">
                 {Object.values(document.queries).length}{" "}
                 {formTranslations.queries[selectedLanguage]}
               </p>
-              <p>Created: {formatDistanceToNow(document.createdAt)} ago</p>
-              <p>
+              <p classsName="text-white font-medium">Created: {formatDistanceToNow(document.createdAt)} ago</p>
+              <p className="text-white">
                 Made by:{" "}
-                <Link to={`/profile/${document.createdBy.id}`}>
+                <Link className=' underline text-info' to={`/profile/${document.createdBy.id}`}>
                   {document.createdBy.nickname}
                 </Link>
               </p>
@@ -166,10 +188,10 @@ function TestMainPage() {
                 variant="contained"
                 aria-label="outlined primary button group"
               >
-                <Button onClick={() => setShowOnlyYours(false)}>
+                <Button      sx={{ fontFamily:"Montserrat", backgroundColor:"#4266b5 "}} onClick={() => setShowOnlyYours(false)}>
                   <p>{formTranslations.allAttempts[selectedLanguage]}</p>
                 </Button>
-                <Button onClick={() => setShowOnlyYours(true)}>
+                <Button sx={{ fontFamily:"Montserrat", backgroundColor:"#4266b5 "}} onClick={() => setShowOnlyYours(true)}>
                   <p>{formTranslations.yourAttempts[selectedLanguage]}</p>
                 </Button>
               </ButtonGroup>

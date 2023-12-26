@@ -1,8 +1,8 @@
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import '../stylings/scrollbarStyling.css';
 
+import React, { useState } from 'react';
+
+import { increment } from 'firebase/database';
 import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
   FaFacebookMessenger,
@@ -10,6 +10,7 @@ import {
   FaPencilAlt,
   FaTrashAlt,
 } from 'react-icons/fa';
+import { FaX } from 'react-icons/fa6';
 import {
   useDispatch,
   useSelector,
@@ -25,6 +26,7 @@ import {
   Button,
   Menu,
   MenuItem,
+  Snackbar,
 } from '@mui/material';
 
 import alertMessages from '../../assets/translations/AlertMessages.json';
@@ -37,10 +39,13 @@ import formsTranslations
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
 import AllMembersModal from '../../components/AllMembersModal';
+import Loader from '../../components/Loader';
 import Ranking from '../../components/Ranking';
 import Warning from '../../components/WarningsComponents/Warning';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
@@ -48,18 +53,20 @@ import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 function GeneralInfo() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
-  const [document, setDocument] = useState(null);
-  const [members, setMembers] = useState([]);
+  const [isPending, setIsPending] = useState(false);
   const { getDocument } = useRealtimeDocument();
   const { getDocuments } = useRealtimeDocuments();
-  const { removeFromDataBase } = useRealDatabase();
+  const { removeFromDataBase, updateDatabase } = useRealDatabase();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
   };
-
+  const [openState, setOpenState] = useState({
+    open: false,
+    message: "",
+  });
   const handleOpenManagement = (e) => {
     setManagmentEl(e.currentTarget);
   };
@@ -79,40 +86,92 @@ function GeneralInfo() {
   const { user } = useAuthContext();
 
   const navigate = useNavigate();
+  const { documentData: document } = useGetDocument("competitions", id);
+  const { documents: members } = useGetDocuments(
+    `communityMembers/${id}/users`
+  );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadDocument = async () => {
-    const documentEl = await getDocument("competitions", id);
-
-    if (documentEl) {
-      setDocument(documentEl);
-    }
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadMembers = async () => {
-    const memberElements = await getDocuments(`communityMembers/${id}/users`);
-
-    if (memberElements) {
-      setMembers(memberElements);
-    }
-  };
-
-  useEffect(() => {
-    loadMembers();
-  }, [loadMembers]);
-
-  useEffect(()=>{
-    loadDocument();
-  },[loadDocument])
+  const competitionExpirationDate =
+    document && (document.expiresAt - new Date().getTime()) / 86400000;
 
   const deleteCompetition = async (id) => {
-    removeFromDataBase("competitions", id);
-    removeFromDataBase("communityChats", id);
-    removeFromDataBase("communityMembers", id);
+    setIsPending(true);
+    if (
+      competitionExpirationDate > 0 &&
+      !document.prizeHandedIn &&
+      document.prize.moneyPrize &&
+      !document.prize.itemPrize
+    ) {
+      const userDoc = await getDocument("users", document.createdBy.id);
 
-    navigate("/");
+      const response = await fetch(
+        "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/sendRefund",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Connection: "keep-alive",
+            Accept: "*",
+          },
+          body: JSON.stringify({
+            chargeId: document.chargeId,
+          }),
+        }
+      );
 
+      const { error } = await response.json();
+
+      if (error) {
+        setIsPending(false);
+        setOpenState({ open: true, message: error });
+        return;
+      }
+      console.log(error, userDoc);
+
+      updateDatabase(
+        {
+          ...userDoc,
+          creditsAvailable: {
+            ...userDoc.creditsAvailable,
+            valueInMoney: increment(document.prize.moneyPrize.amount),
+            balance: {
+              ...userDoc.creditsAvailable.balance,
+              0: {
+                ...userDoc.creditsAvailable.balance["0"],
+                amount: increment(document.prize.moneyPrize.amount),
+              },
+            },
+          },
+        },
+        "users",
+        userDoc.id
+      );
+      removeFromDataBase("competitions", id);
+      removeFromDataBase("communityChats", id);
+      removeFromDataBase("communityMembers", id);
+      setIsPending(false);
+      navigate("/");
+    }
+
+    if (
+      competitionExpirationDate <= 0 &&
+      !document.prizeHandedIn &&
+      document.prize.moneyPrize &&
+      !document.prize.itemPrize
+    ) {
+      setIsPending(false);
+      setOpenState({
+        open: true,
+        message: "The winner has to claim the reward !",
+      });
+      return;
+    } else {
+      removeFromDataBase("competitions", id);
+      removeFromDataBase("communityChats", id);
+      removeFromDataBase("communityMembers", id);
+      setIsPending(false);
+      navigate("/");
+    }
     toast.success(
       alertMessages.notifications.successfull.remove[selectedLanguage]
     );
@@ -142,29 +201,58 @@ function GeneralInfo() {
 
   const isWarningVisible = useSelector((state) => state.isWarningVisible);
 
-  const competitionExpirationDate =
-    document && (document.expiresAt - new Date().getTime()) / 86400000;
-
   return (
     <div className="min-h-screen h-full">
+      {isPending && <Loader />}
+      {openState.open === true && (
+        <>
+          <Snackbar
+            onClose={() => {
+              setOpenState({ message: "", open: false });
+            }}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            open={openState.open}
+            autoHideDuration={3000}
+            severity="success"
+            message={openState.message}
+            action={
+              <button
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setOpenState({ message: "", open: false });
+                }}
+              >
+                <FaX className=" text-red-500" /> Close
+              </button>
+            }
+          />
+        </>
+      )}
+
       {document &&
         members.find(
           (member) =>
             member.value.id === user.uid && member.belongsTo === document.id
         ) && (
-          <div className="w-full flex justify-between items-center p-3 bg-accColor">
+          <div className="w-full flex justify-between items-center p-3 bg-primeColor z-[99999] sticky top-[4.5rem] left-0">
             <div className="flex flex-col text-white items-center">
               <p>{document.competitionTitle}</p>
               <p>{document.competitionsName}</p>
             </div>
 
             <div className="sm:hidden xl:flex justify-around items-center">
-              <Link to={`/competition/${id}`} className="btn mx-2">
+              <Link
+                to={`/competition/${id}`}
+                className="btn border-none bg-transparent text-white mx-2"
+              >
                 <FaFacebookMessenger />{" "}
                 {reuseableTranslations.communitiesBar.chatBtn[selectedLanguage]}
               </Link>
 
-              <Link className="btn mr-2" to={`/competition/${id}/overall`}>
+              <Link
+                className="btn border-none bg-transparent text-white mr-2"
+                to={`/competition/${id}/overall`}
+              >
                 <FaInfo />{" "}
                 {
                   reuseableTranslations.communitiesBar.overallBtn[
@@ -173,7 +261,10 @@ function GeneralInfo() {
                 }
               </Link>
 
-              <button className="btn" onClick={leaveCompetition}>
+              <button
+                className="btn btn-error text-white"
+                onClick={leaveCompetition}
+              >
                 {
                   reuseableTranslations.communitiesBar.leaveBtn[
                     selectedLanguage
@@ -184,9 +275,9 @@ function GeneralInfo() {
 
               {document.createdBy.id === user.uid && (
                 <div className="mx-2 flex justify-around items-center">
-                  {competitionExpirationDate / 86400000 >= 0 && (
+                  {competitionExpirationDate >= 0 && (
                     <button
-                      className="btn"
+                      className="btn btn-info text-white"
                       onClick={() =>
                         navigate(`/edit-competition/${document.id}`)
                       }
@@ -201,7 +292,7 @@ function GeneralInfo() {
                   )}
 
                   <button
-                    className="btn ml-2"
+                    className="btn btn-error ml-2 text-white"
                     onClick={async () => await deleteCompetition(document.id)}
                   >
                     {
@@ -296,7 +387,7 @@ function GeneralInfo() {
                       "aria-labelledby": "basic-button",
                     }}
                   >
-                    {competitionExpirationDate / 86400000 >= 0 && (
+                    {competitionExpirationDate >= 0 && (
                       <MenuItem
                         onClick={() => {
                           navigate(`/edit-competition/${document.id}`);
@@ -337,12 +428,12 @@ function GeneralInfo() {
         )}
 
       {document && (
-        <div className="flex sm:flex-col xl:flex-row justify-between w-full items-center gap-4 p-4">
+        <div className="flex sm:flex-col xl:flex-row justify-between w-full items-center gap-4 py-4">
           <div className="h-full sm:w-full xl:w-2/5 gap-6 text-white flex flex-col items-center justify-between rounded-md py-4">
             <p className="sm:text-2xl lg:text-4xl font-bold">
               {document.competitionTitle}
             </p>
-            <div className="flex sm:flex-col gap-4 xl:flex-row w-full justify-around items-center border-t-2 border-accColor p-4">
+            <div className="flex sm:flex-col gap-4 2xl:flex-row w-full justify-around items-center border-t-2 border-accColor p-4">
               <p className=" text-2xl font-thin">
                 {reuseableTranslations.detailsText[selectedLanguage]}:
               </p>
@@ -373,6 +464,27 @@ function GeneralInfo() {
                 <AllMembersModal users={members} />
               </div>
             </div>
+            <div className="self-start gap-3">
+              {document.prize.moneyPrize &&
+                document.prize.moneyPrize.amount > 0 && (
+                  <div className="p-2">
+                    <p className="font-bold text-4xl">Prize for the winner</p>
+                    <span className="text-2xl text-yellow-500 font-semibold">
+                      {(document.prize.moneyPrize.amount / 100).toFixed(2)}{" "}
+                      {document.prize.moneyPrize.currency.toUpperCase()}
+                    </span>
+                  </div>
+                )}
+              {document.prize.itemPrize !== undefined && (
+                <>
+                  <p className="text-3xl font-bold">Details about the prize:</p>
+                  <p className="text-lg font-semibold">
+                    {document.prize.itemPrize.title}
+                  </p>
+                </>
+              )}
+            </div>
+
             {document && document.description.trim() !== "" && (
               <div class="flex flex-col text-white p-3 w-full">
                 {competitionExpirationDate > 0 && (
@@ -442,7 +554,7 @@ function GeneralInfo() {
           </div>
 
           <Ranking
-          expirationTimeNumber={document.expiresAt}
+            expirationTimeNumber={document.expiresAt}
             communityMembers={members.filter(
               (member) => member.belongsTo === id
             )}
@@ -451,6 +563,8 @@ function GeneralInfo() {
           />
         </div>
       )}
+
+      {isPending && <Loader />}
 
       {isWarningVisible && <Warning />}
     </div>

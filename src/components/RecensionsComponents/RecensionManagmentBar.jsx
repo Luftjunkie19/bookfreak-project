@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import '../../components/stylings/mui-stylings.css';
+
+import React, { useState } from 'react';
+
+import { FaStar } from 'react-icons/fa';
 
 import {
   Box,
@@ -8,9 +12,9 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
-} from "@mui/material";
+} from '@mui/material';
 
-function RecensionManagmentBar({ recensions, applyFilters, applySort }) {
+function RecensionManagmentBar({ applyFilters, applySort }) {
   const filterOptions = [
     {
       label: "10.0",
@@ -123,14 +127,23 @@ function RecensionManagmentBar({ recensions, applyFilters, applySort }) {
 
   return (
     <div>
-      <FormControl sx={{ m: 1, width: 300 }} className=" text-white">
-        <InputLabel className=" text-white" id="demo-multiple-name-label">
+      <FormControl sx={{ m: 1, width: 300 }} className="text-white">
+        <InputLabel
+          className="text-white"
+          id="demo-multiple-name-label"
+          sx={{ ":placeholder-shown": { color: "white" } }}
+        >
           Filters
         </InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
+          sx={{
+            backgroundColor: "rgba(66, 102, 181, 0.7)",
+            ":active": { borderColor: "white" },
+          }}
           multiple
+          defaultValue=""
           value={filtersSelected}
           onChange={handleChange}
           input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
@@ -143,8 +156,20 @@ function RecensionManagmentBar({ recensions, applyFilters, applySort }) {
           )}
         >
           {filterOptions.map((option) => (
-            <MenuItem value={option.label} key={option.label}>
-              {option.label}
+            <MenuItem
+              value={option.label}
+              key={option.label}
+              className="flex w-full items-center gap-3 "
+              sx={{
+                backgroundColor: "#4267B5",
+                gap: 3,
+                color: "white",
+                ":hover": {
+                  backgroundColor: "#4253B5",
+                },
+              }}
+            >
+              <FaStar className=" text-yellow-500" /> {option.label}
             </MenuItem>
           ))}
         </Select>
@@ -155,14 +180,21 @@ function RecensionManagmentBar({ recensions, applyFilters, applySort }) {
           Sort by
         </InputLabel>
         <Select
+          sx={{
+            backgroundColor: "rgba(66, 102, 181, 0.7)",
+            color: "white",
+            ":active": { borderColor: "white" },
+          }}
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={sortOptions}
-          label={sortSelected}
+          value={sortSelected}
+          label="Sort by"
           onChange={handleSortChange}
         >
           {sortOptions.map((option) => (
-            <MenuItem value={option.label}>{option.label}</MenuItem>
+            <MenuItem value={option.label} key={option.label}>
+              {option.label}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>

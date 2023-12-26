@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { getDatabase, onValue, ref } from "firebase/database";
+import {
+  getDatabase,
+  onValue,
+  ref,
+} from 'firebase/database';
 
 export default function useRealtimeDocuments() {
   const [loadingDocs, setIsLoading] = useState(false);
@@ -15,7 +19,7 @@ export default function useRealtimeDocuments() {
           snapshot.forEach((child) => {
             array.push(child.val());
           });
-          unsubscribe(); // Unsubscribe from the real-time updates once data is retrieved
+          unsubscribe(); 
           resolve(array);
         }
       });

@@ -1,31 +1,50 @@
-import { useEffect, useState } from "react";
+import '../stylings/scrollbarStyling.css';
 
-import { BsFillDoorOpenFill } from "react-icons/bs";
+import {
+  useEffect,
+  useState,
+} from 'react';
+
+import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
   FaFacebookMessenger,
   FaInfo,
   FaPencilAlt,
   FaTrashAlt,
   FaUserPlus,
-} from "react-icons/fa";
-import { FaX } from "react-icons/fa6";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+} from 'react-icons/fa';
+import { FaX } from 'react-icons/fa6';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import { Button, Menu, MenuItem, Snackbar } from "@mui/material";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Snackbar,
+} from '@mui/material';
 
-import alertTranslations from "../../assets/translations/AlertMessages.json";
-import translations from "../../assets/translations/ClubsTranslations.json";
-import formsTranslations from "../../assets/translations/FormsTranslations.json";
-import reusableTranslations from "../../assets/translations/ReusableTranslations.json";
-import CompetitionChat from "../../components/ChatComponents/CommunityChat";
-import Ranking from "../../components/Ranking";
-import { warningActions } from "../../context/WarningContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import alertTranslations from '../../assets/translations/AlertMessages.json';
+import translations from '../../assets/translations/ClubsTranslations.json';
+import formsTranslations
+  from '../../assets/translations/FormsTranslations.json';
+import reusableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import CompetitionChat from '../../components/ChatComponents/CommunityChat';
+import Ranking from '../../components/Ranking';
+import { warningActions } from '../../context/WarningContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Club() {
   const selectedLanguage = useSelector(
@@ -200,7 +219,7 @@ function Club() {
         members.find((member) => {
           return member.value.id === user.uid && member.belongsTo === id;
         }) && (
-          <div className="w-full flex justify-between items-center p-3 bg-accColor">
+          <div className="w-full flex justify-between items-center p-3 bg-primeColor z-[9999] sticky sm:top-16 xl:top-20 left-0">
             <div className="flex justify-between text-white items-center">
               <img
                 className="w-16 h-16 rounded-full object-cover"
@@ -210,13 +229,19 @@ function Club() {
               <p className="ml-2">{document.clubsName}</p>
             </div>
 
-            <div className="sm:hidden xl:flex justify-around items-center">
-              <Link to={`/readers-clubs/${id}`} className="btn mx-2">
+            <div className="sm:hidden xl:flex justify-around items-center gap-2">
+              <Link
+                to={`/readers-clubs/${id}`}
+                className="btn text-white border-none bg-transparent"
+              >
                 <FaFacebookMessenger />{" "}
                 {reusableTranslations.communitiesBar.chatBtn[selectedLanguage]}
               </Link>
 
-              <Link className="btn mr-2" to={`/readers-clubs/${id}/overall`}>
+              <Link
+                className="btn text-white border-none bg-transparent"
+                to={`/readers-clubs/${id}/overall`}
+              >
                 <FaInfo />{" "}
                 {
                   reusableTranslations.communitiesBar.overallBtn[
@@ -225,14 +250,17 @@ function Club() {
                 }
               </Link>
 
-              <button className="btn" onClick={leaveClub}>
+              <button
+                className="btn text-white border-none bg-error"
+                onClick={leaveClub}
+              >
                 {reusableTranslations.communitiesBar.leaveBtn[selectedLanguage]}{" "}
                 <BsFillDoorOpenFill />{" "}
               </button>
               {document && document.createdBy.id === user.uid && (
-                <div className="mx-2 flex justify-around items-center">
+                <div className="mx-2 gap-2 flex justify-around items-center">
                   <button
-                    className="btn"
+                    className="btn text-white border-none bg-info"
                     onClick={() => navigate(`/edit-club/${document.id}`)}
                   >
                     {
@@ -244,7 +272,7 @@ function Club() {
                   </button>
 
                   <button
-                    className="btn ml-2"
+                    className="btn text-white border-none bg-error"
                     onClick={async () => await deleteClub(document.id)}
                   >
                     {
@@ -258,7 +286,7 @@ function Club() {
               )}
             </div>
 
-            <div className="sm:flex xl:hidden justify-around items-center sm:flex-col lg:flex-row">
+            <div className="sm:flex xl:hidden justify-around items-center sm:flex-col md:flex-row">
               <Button
                 className="text-white"
                 id="basic-button"

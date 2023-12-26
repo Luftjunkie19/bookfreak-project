@@ -1,17 +1,24 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
-import Lottie from "lottie-react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import CreatableSelect from "react-select/creatable";
+import Lottie from 'lottie-react';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import CreatableSelect from 'react-select/creatable';
 
-import { Pagination } from "@mui/material";
+import { Pagination } from '@mui/material';
 
-import lottieAnimation from "../../assets/lottieAnimations/Animation - 1700320134586.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import translations from "../../assets/translations/SearchTranslations.json";
-import typesTranslation from "../../assets/translations/TypesTranslations.json";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import lottieAnimation
+  from '../../assets/lottieAnimations/Animation - 1700320134586.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import translations from '../../assets/translations/SearchTranslations.json';
+import typesTranslation from '../../assets/translations/TypesTranslations.json';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Books() {
   const { getDocuments } = useRealtimeDocuments();
@@ -235,7 +242,7 @@ function Books() {
           <span>{reuseableTranslations.categoryText[selectedLanguage]}:</span>
           <CreatableSelect
             className="w-full"
-            required
+         
             isClearable
             isSearchable
             options={categoryTypes}
@@ -253,7 +260,7 @@ function Books() {
           </span>
           <CreatableSelect
             className="w-full"
-            required
+
             isClearable
             isSearchable
             options={sortTypes}

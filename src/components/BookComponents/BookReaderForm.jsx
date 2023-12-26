@@ -47,7 +47,7 @@ function BookReaderForm({ closeForm, handleConfirm, pagesAmount, readerData }) {
         <p>Wanna add some changes? Here you are !</p>
 
         <div className="form-control">
-          <label className="label cursor-pointer">
+          <label className="label cursor-pointer gap-2">
             <span className="label-text">
               {formsTranslations.hasStarted.query[selectedLanguage]}
             </span>
@@ -55,7 +55,7 @@ function BookReaderForm({ closeForm, handleConfirm, pagesAmount, readerData }) {
               value={hasStarted}
               checked={hasStarted}
               type="checkbox"
-              className="checkbox checkbox-primary"
+              className="checkbox checkbox-info"
               onChange={(e) => {
                 setHasStarted(e.target.checked);
               }}
@@ -81,14 +81,14 @@ function BookReaderForm({ closeForm, handleConfirm, pagesAmount, readerData }) {
             </label>
 
             <div className="form-control">
-              <label className="label cursor-pointer">
+              <label className="label cursor-pointer gap-2">
                 <span className="label-text">
                   {formsTranslations.hasFinished.query[selectedLanguage]}
                 </span>
                 <input
                   type="checkbox"
                   checked={pagesAmount === readPages}
-                  className="checkbox checkbox-primary"
+                  className="checkbox checkbox-info"
                   onChange={(e) => {
                     setHasFinished(e.target.checked);
                     console.log(e.target.checked);

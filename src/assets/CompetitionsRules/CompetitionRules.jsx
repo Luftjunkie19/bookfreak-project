@@ -1,7 +1,8 @@
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import useGetDocuments from "../../hooks/useGetDocuments";
 
 export function CompetitionRules() {
-  const { getDocuments } = useRealtimeDocuments();
+  const { documents: recommendations } = useGetDocuments("recommendations");
+  const { documents: tests } = useGetDocuments("tests");
 
   const firstComeServedRule = (members, getReadBooks, getlastBookRead) => {
     const usersWithReadBooks = members.map((user) => ({
@@ -17,14 +18,13 @@ export function CompetitionRules() {
       .slice(0, 3);
   };
 
-  const liftOthersRiseJointlyRule = async (
+  const liftOthersRiseJointlyRule = (
     communityMembers,
     getReadBooks,
     expirationDate,
     creationDate,
     getlastBookRead
   ) => {
-    const recommendations = await getDocuments("recommendations");
     if (recommendations) {
       const getReccomendationsNumber = (id) => {
         const recommendationsArr = recommendations
@@ -59,14 +59,12 @@ export function CompetitionRules() {
     }
   };
 
-  const teachToFishRule = async (
+  const teachToFishRule = (
     readerObjects,
     membersObjects,
     getReadBooks,
     getlastBookRead
   ) => {
-    const tests = await getDocuments("tests");
-
     const allAttempts = tests.map((test) => {
       const attemptsObjects = Object.values(test.attempts);
 

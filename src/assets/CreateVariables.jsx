@@ -1,3 +1,9 @@
+import firstImage from "../assets/moneyOption1.webp";
+import secondImage from "../assets/moneyOption2.webp";
+import thirdImage from "../assets/moneyOption3.webp";
+import fourthImage from "../assets/moneyOption4.png";
+import fifthImage from "../assets/moneyOption5.webp";
+
 export const addOptions = ["Books", "Competitions", "Clubs"];
 
 export const bookCategories = [
@@ -45,33 +51,41 @@ export const differentPrize = [
 
 export const allOffers = [
   {
-    name: "299 BookBucks",
-    id: "price_1OIYglL8z1e5mvb6lvRq3ttw",
+    name: "2.99$ Credits",
+    id: "price_1OMrgvL8z1e5mvb6MRq8xS50",
     price: 2.99,
     bucksToToUp: 299,
   },
   {
-    name: "999 BookBucks",
-    id: "price_1OIYjTL8z1e5mvb6kYVn0Caq",
+    name: "9.99$ Credits ",
+    id: "price_1OMrhcL8z1e5mvb6anibomYF",
     price: 9.99,
     bucksToToUp: 999,
   },
   {
-    name: "1999 BookBucks",
-    id: "price_1OIYscL8z1e5mvb6XhKbApa5",
+    name: "19,99$ Credits ",
+    id: "price_1OMriCL8z1e5mvb6rfznTSIs",
     price: 19.99,
     bucksToToUp: 1999,
   },
   {
-    name: "3999 BookBucks",
-    id: "price_1OIYxBL8z1e5mvb6xeZWB66o",
+    name: "39.99$ Credits",
+    id: "price_1OMricL8z1e5mvb6asqUag5t",
     price: 39.99,
     bucksToToUp: 3999,
   },
   {
-    name: "6999 BookBucks",
-    id: "price_1OIYvRL8z1e5mvb61fsmkwLa",
+    name: "69.99$ Credits ",
+    id: "price_1OMrjJL8z1e5mvb6SNLEzYrj",
     price: 69.99,
     bucksToToUp: 6999,
   },
+];
+
+export const offerImages = [
+  { src: firstImage },
+  { src: secondImage },
+  { src: thirdImage },
+  { src: fourthImage },
+  { src: fifthImage },
 ];

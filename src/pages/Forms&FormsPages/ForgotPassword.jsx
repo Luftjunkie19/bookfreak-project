@@ -29,9 +29,9 @@ function ForgotPassword() {
     <div className="min-h-screen h-full flex justify-center items-center flex-col">
       <form
         onSubmit={submitForm}
-        className="flex flex-col items-center p-3 text-white rounded-md shadow-md shadow-primeColor bg-accColor"
+        className="flex flex-col gap-6 items-center p-3 text-white rounded-md"
       >
-        <h2 className="text-2xl font-bold">
+        <h2 className="text-6xl font-bold">
           {formsTranslations.signingOptions.passwordForgotten[selectedLanguage]}
         </h2>
         <p>
@@ -42,18 +42,18 @@ function ForgotPassword() {
           }
         </p>
 
-        <label className="flex flex-col my-2">
+        <label className="flex flex-col sm:w-full md:max-w-xl my-2">
           <span>Email:</span>
           <input
             type="email"
             required
-            className="p-2 rounded-md outline-none"
+            className="p-2 rounded-md w-full outline-none"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
           />
         </label>
 
-        <button className="btn btn-wide">
+        <button className="btn btn-wide bg-accColor text-white">
           {
             formsTranslations.signingOptions.passwordForgotten.sendEmail[
               selectedLanguage

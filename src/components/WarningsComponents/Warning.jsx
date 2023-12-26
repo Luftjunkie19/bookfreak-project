@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { BsFillPersonFill } from "react-icons/bs";
-import { FaX } from "react-icons/fa6";
-import { GiExitDoor } from "react-icons/gi";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
+import { increment } from 'firebase/database';
+import { BsFillPersonFill } from 'react-icons/bs';
+import { FaX } from 'react-icons/fa6';
+import { GiExitDoor } from 'react-icons/gi';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 
 import {
   Button,
@@ -16,16 +20,21 @@ import {
   DialogTitle,
   Slide,
   Snackbar,
-} from "@mui/material";
+} from '@mui/material';
 
-import alertTranslations from "../../assets/translations/AlertMessages.json";
-import { warningActions } from "../../context/WarningContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import alertTranslations from '../../assets/translations/AlertMessages.json';
+import { warningActions } from '../../context/WarningContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function Warning() {
   const [message, setMessage] = useState({ open: false, message: null });
+  const { user } = useAuthContext();
   const item = useSelector((state) => state.warning.referedTo);
-  const { removeFromDataBase } = useRealDatabase();
+  const { removeFromDataBase, updateDatabase } = useRealDatabase();
+  const { getDocument } = useRealtimeDocument();
   const collectionName = useSelector((state) => state.warning.collection);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
@@ -33,13 +42,71 @@ function Warning() {
   const communityName = useSelector((state) => state.warning.typeOf);
   const isVisible = useSelector((state) => state.warning.isWarningVisible);
 
-  const deleteCommunity = () => {
+  const deleteCommunity = async () => {
     console.log(item, collectionName);
+    const document = await getDocument(collectionName, item);
+    if (
+      !document.prizeHandedIn &&
+      document.prize.moneyPrize &&
+      !document.prize.itemPrize
+    ) {
+      const userDoc = await getDocument("users", document.createdBy.id);
 
-    removeFromDataBase(collectionName, item);
-    removeFromDataBase("communityChats", item);
-    removeFromDataBase("communityMembers", item);
+      const response = await fetch(
+        "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/sendRefund",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Connection: "keep-alive",
+            Accept: "*",
+          },
+          body: JSON.stringify({
+            chargeId: document.chargeId,
+          }),
+        }
+      );
 
+      const { error } = await response.json();
+
+      if (error) {
+        return;
+      }
+      console.log(error, userDoc);
+
+      updateDatabase(
+        {
+          ...userDoc,
+          creditsAvailable: {
+            ...userDoc.creditsAvailable,
+            valueInMoney: increment(document.prize.moneyPrize.amount),
+            balance: {
+              ...userDoc.creditsAvailable.balance,
+              0: {
+                ...userDoc.creditsAvailable.balance["0"],
+                amount: increment(document.prize.moneyPrize.amount),
+              },
+            },
+          },
+        },
+        "users",
+        userDoc.id
+      );
+      removeFromDataBase("competitions", document.id);
+      removeFromDataBase("communityChats", document.id);
+      removeFromDataBase("communityMembers", document.id);
+
+      navigate("/");
+    } else {
+      removeFromDataBase("competitions", document.id);
+      removeFromDataBase("communityChats", document.id);
+      removeFromDataBase("communityMembers", document.id);
+
+      navigate("/");
+    }
+    toast.success(
+      alertMessages.notifications.successfull.remove[selectedLanguage]
+    );
     navigate("/");
     setMessage({
       open: true,
@@ -57,12 +124,11 @@ function Warning() {
       {document && (
         <Dialog
           open={isVisible}
-          TransitionComponent={React.forwardRef(function Transition(
-            props,
-            ref
-          ) {
-            return <Slide direction="up" ref={ref} {...props} />;
-          })}
+          TransitionComponent={React.forwardRef(
+            function Transition(props, ref) {
+              return <Slide direction="up" ref={ref} {...props} />;
+            }
+          )}
           keepMounted
           onClose={() => {
             dispatch(warningActions.closeWarning());

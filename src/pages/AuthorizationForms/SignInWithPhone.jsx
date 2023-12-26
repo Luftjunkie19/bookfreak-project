@@ -1,25 +1,32 @@
-import "react-phone-input-2/lib/material.css";
+import 'react-phone-input-2/lib/material.css';
+import '../stylings/backgrounds.css';
 
-import { useState } from "react";
+import { useState } from 'react';
 
 import {
   getAuth,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   updateProfile,
-} from "firebase/auth";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import PhoneInput from "react-phone-input-2";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import VerificationInput from "react-verification-input";
+} from 'firebase/auth';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import PhoneInput from 'react-phone-input-2';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import VerificationInput from 'react-verification-input';
 
-import { Alert } from "@mui/material";
+import { Alert } from '@mui/material';
 
-import formsTranslations from "../../assets/translations/FormsTranslations.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import formsTranslations
+  from '../../assets/translations/FormsTranslations.json';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function SignInWithPhone() {
   const defaultAvatar =
@@ -92,15 +99,54 @@ function SignInWithPhone() {
           photoURL: photoURL,
         });
 
+        const fetchedObject = await fetch(
+          "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Connection: "keep-alive",
+              Accept: "*",
+            },
+            body: JSON.stringify({
+              accountData: {
+                id: result.user.uid,
+                nickname: result.user.displayName,
+                email: result.user.email,
+              },
+            }),
+          }
+        );
+
+        const stripeAccountData = await fetchedObject.json();
+
+        const accountLinkResponse = await fetch(
+          "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Connection: "keep-alive",
+              Accept: "*",
+            },
+            body: JSON.stringify({ accountId: stripeAccountData.id }),
+          }
+        );
+
+        const { accountLinkObject } = await accountLinkResponse.json();
+
         addToDataBase("users", result.user.uid, {
           nickname: result.user.displayName,
           email: result.user.email,
           description: "",
-          links: {},
-          notifications: {},
-          chats: {},
           id: result.user.uid,
           photoURL: defaultAvatar,
+          creditsAvailable: {
+            valueInMoney: 0,
+            currency: stripeAccountData.default_currency,
+          },
+          stripeAccountData,
+          accountLinkObject: { ...accountLinkObject },
         });
       }
       dispatch({ type: "LOGIN", payload: result.user });
@@ -115,13 +161,13 @@ function SignInWithPhone() {
   };
 
   return (
-    <div className="min-h-screen h-full flex justify-center items-center flex-col">
+    <div className="min-h-screen h-full flex justify-center items-center flex-col pattern-bg">
       {!showConfirmation && (
         <form
           onSubmit={handleSendVerificationCode}
-          className="flex flex-col gap-4 sm:w-full md:w-4/5 lg:w-3/5 xl:w-2/5 2xl:w-1/3 rounded-md sm:bg-transparent md:bg-accColor shadow-md shadow-primeColor p-4"
+          className="flex flex-col gap-4 sm:w-full max-w-lg rounded-md sm:bg-transparent lg:bg-accColor lg:shadow-md lg:shadow-primeColor p-4"
         >
-          <p className="text-2xl text-white my-3 text-center">
+          <p className="text-2xl text-white font-bold my-3 text-center">
             {
               formsTranslations.signingOptions.passwordForgotten.fillTheFields[
                 selectedLanguage
@@ -134,7 +180,7 @@ function SignInWithPhone() {
               {formsTranslations.userFields.nickname[selectedLanguage]}:
             </span>
             <input
-              className="outline-none p-2 rounded"
+              className="outline-none p-2 rounded input max-w-lg"
               type="text"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
@@ -146,7 +192,7 @@ function SignInWithPhone() {
             <PhoneInput
               inputProps={{ required: true, autoFocus: true }}
               prefix="+"
-              inputClass="sm:w-full lg:w-2/3"
+              inputClass="sm:w-full lg:w-2/3 text-white bg-primeColor"
               country={"pl"}
               value={phone}
               onChange={(phone) => setPhone(`+${phone}`)}
@@ -161,13 +207,15 @@ function SignInWithPhone() {
             </div>
           )}
 
-          <button className="btn sm:bg-accColor md:bg-primeColor text-white">
-            {
-              formsTranslations.signingOptions.passwordForgotten.verifyBtn[
-                selectedLanguage
-              ]
-            }
-          </button>
+          <div className="w-full flex justify-center items-center">
+            <button className="btn sm:bg-accColor md:bg-primeColor max-w-md text-white">
+              {
+                formsTranslations.signingOptions.passwordForgotten.verifyBtn[
+                  selectedLanguage
+                ]
+              }
+            </button>
+          </div>
         </form>
       )}
 
@@ -176,25 +224,28 @@ function SignInWithPhone() {
         <>
           <form
             onSubmit={handleVerifyCode}
-            className="flex flex-col sm:w-full md:w-4/5 xl:w-3/5 2xl:w-1/2 gap-2 rounded-md bg-accColor shadow-md shadow-primeColor p-4"
+            className="flex flex-col sm:w-full max-w-lg gap-6 rounded-md sm:bg-transparent lg:bg-accColor lg:shadow-md lg:shadow-primeColor p-4"
           >
             <label className="flex flex-col items-center justify-center w-full">
-              <span className="text-xl text-white font-semibold">
+              <span className="text-3xl text-white font-bold py-2">
                 {
                   formsTranslations.signingOptions.passwordForgotten
                     .verificationCode[selectedLanguage]
                 }
-                :
               </span>
 
               <VerificationInput
                 autoFocus
                 validChars="0-9"
+                classNames={{
+                  character: "rounded-md ",
+                  characterSelected: " border-accColor",
+                }}
                 inputProps={{ inputMode: "numeric" }}
                 onChange={(value) => setVerificationCode(value)}
               />
             </label>
-            <button className="btn sm:w-full md:w-2/3 self-center sm:bg-accColor text-white md:bg-primeColor">
+            <button className="btn sm:w-full md:w-2/3 self-center sm:bg-accColor text-white lg:bg-primeColor">
               {
                 formsTranslations.signingOptions.passwordForgotten.verifyBtn[
                   selectedLanguage

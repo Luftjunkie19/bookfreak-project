@@ -1,20 +1,15 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import "../stylings/backgrounds.css";
 
-import Lottie from 'lottie-react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router';
-import {
-  Link,
-  useSearchParams,
-} from 'react-router-dom';
+import { useEffect, useState } from "react";
 
-import lottieAnimation
-  from '../../assets/lottieAnimations/Animation - 1699294838586.json';
-import translations from '../../assets/translations/SearchTranslations.json';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import Lottie from "lottie-react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router";
+import { Link, useSearchParams } from "react-router-dom";
+
+import lottieAnimation from "../../assets/lottieAnimations/Animation - 1699294838586.json";
+import translations from "../../assets/translations/SearchTranslations.json";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function SearchFor() {
   const { id } = useParams();
@@ -43,16 +38,16 @@ function SearchFor() {
   });
 
   return (
-    <div className="min-h-screen h-full">
+    <div className="min-h-screen h-full pattern-bg">
       <label className="flex flex-col py-4 text-white w-full p-2">
         <span>
           {id === "users"
             ? `${translations.searchInput.label[selectedLanguage]}`
             : `${translations.searchInput.labelBooks[selectedLanguage]}`}
-          {query}:
+          : {query}
         </span>
         <input
-          className="outline-none border-none py-3 px-4 rounded md:w-1/2 sm:w-full"
+          className="outline-none input border-none py-3 px-4 rounded max-w-lg"
           type="text"
           id="q"
           value={query}
@@ -73,7 +68,7 @@ function SearchFor() {
         />
       </label>
 
-      <p className="text-center">
+      <p className="text-center text-white">
         {translations.searchedParam[selectedLanguage]} {query}
       </p>
 
@@ -107,8 +102,8 @@ function SearchFor() {
                 </>
               ))
             ) : (
-              <div className="flex flex-col justify-center items-center">
-                <h2 className="text-3xl py-2 font-extralight">
+              <div className="flex flex-col justify-center items-center gap-2">
+                <h2 className="text-3xl py-2 font-extralight text-white">
                   {query.trim() === ""
                     ? "Type anything to find who you want."
                     : `${translations.noResults[selectedLanguage]} ${query}`}
@@ -159,13 +154,14 @@ function SearchFor() {
                 </>
               ))
             ) : (
-              <>
-                <h2 className="text-3xl py-2 font-extralight">
+              <div className="flex flex-col justify-center items-center gap-2">
+                <h2 className="text-3xl py-2 font-extralight text-white">
                   {id === "books" && query.trim() === ""
                     ? "Type anything to find who you want."
                     : `${translations.noResults[selectedLanguage]}: ${query}`}
                 </h2>
-              </>
+                <Lottie animationData={lottieAnimation} />
+              </div>
             )}
           </>
         )}

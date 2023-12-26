@@ -1,32 +1,23 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import "../../components/stylings/mui-stylings.css";
 
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
-import { motion } from 'framer-motion';
-import { FaUsers } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
-import {
-  useNavigate,
-  useParams,
-} from 'react-router';
-import CreatableSelect from 'react-select';
-import { toast } from 'react-toastify';
+import { useEffect, useState } from "react";
 
-import { Alert } from '@mui/material';
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { motion } from "framer-motion";
+import { FaUsers } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import CreatableSelect from "react-select";
+import { toast } from "react-toastify";
 
-import alertMessages from '../../assets/translations/AlertMessages.json';
-import formsTranslation from '../../assets/translations/FormsTranslations.json';
-import Loader from '../../components/Loader';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useFormRealData } from '../../hooks/useFormRealData';
-import { useRealDatabase } from '../../hooks/useRealDatabase';
+import { Alert } from "@mui/material";
+
+import alertMessages from "../../assets/translations/AlertMessages.json";
+import formsTranslation from "../../assets/translations/FormsTranslations.json";
+import Loader from "../../components/Loader";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { useFormRealData } from "../../hooks/useFormRealData";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
 
 function EditClub() {
   const { id } = useParams();
@@ -176,87 +167,107 @@ function EditClub() {
   };
 
   return (
-    <div className="min-h-screen h-full flex flex-col justify-center items-center">
+    <div className="min-h-screen h-full flex flex-col">
       <motion.form
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onSubmit={handleSubmit}
-        className="flex sm:w-full md:w-4/5 xl:w-3/5 2xl:w-1/2 flex-col gap-2 justify-around items-center sm:bg-transparent md:bg-primeColor text-white p-4 rounded-md"
+        className="flex flex-col gap-2 text-white p-4"
       >
-        <FaUsers className="text-3xl" />
-        <h2 className="text-2xl text-center font-extrabold">
-          {formsTranslation.topText.editClub[selectedLanguage]}
-        </h2>
-        <p className="font-thin text-center text-lg">
-          {formsTranslation.topText.editCompetition.underText[selectedLanguage]}
-        </p>
+        <div className="w-full flex flex-col justify-center items-center">
+          <FaUsers className="text-3xl text-center" />
+          <h2 className="text-2xl text-center font-extrabold">
+            {formsTranslation.topText.editClub[selectedLanguage]}
+          </h2>
+          <p className="font-thin text-center text-lg">
+            {
+              formsTranslation.topText.editCompetition.underText[
+                selectedLanguage
+              ]
+            }
+          </p>
+        </div>
 
-        <div className="flex w-full justify-around items-center flex-wrap gap-3">
-          <label className="flex flex-col sm:w-full lg:w-2/5">
-            <span>
-              {formsTranslation.clubsNameInput.label[selectedLanguage]}:
-            </span>
-            <input
-              className="outline-none p-2 rounded-md"
-              type="text"
-              required
-              value={clubsName}
-              onChange={(e) => setClubsName(e.target.value)}
-            />
-          </label>
+        <div className="flex w-full flex-wrap gap-3">
+          <div className="w-full flex flex-col">
+            <p className=" text-3xl font-bold text-white">
+              General Information
+            </p>
+            <div className="flex w-full flex-wrap gap-4">
+              <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+                <span>
+                  {formsTranslation.clubsNameInput.label[selectedLanguage]}:
+                </span>
+                <input
+                  className="outline-none p-2 border-accColor rounded-md w-full"
+                  type="text"
+                  required
+                  value={clubsName}
+                  onChange={(e) => setClubsName(e.target.value)}
+                />
+              </label>
+              <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+                <span>
+                  {formsTranslation.membersInput.label[selectedLanguage]}:
+                </span>
+                <CreatableSelect
+                  className="select-input w-full"
+                  isClearable
+                  isSearchable
+                  isMulti
+                  options={usersAvailable}
+                  value={attachedUsers}
+                  onChange={(e) => {
+                    setAttachedUsers(e);
+                  }}
+                />
+              </label>
+            </div>
+          </div>
 
-          <label className="flex flex-col sm:w-full lg:w-2/5">
-            <span>
-              {formsTranslation.membersInput.label[selectedLanguage]}:
-            </span>
-            <CreatableSelect
-              className="select-input"
-              isClearable
-              isSearchable
-              isMulti
-              options={usersAvailable}
-              value={attachedUsers}
-              onChange={(e) => {
-                setAttachedUsers(e);
-              }}
-            />
-          </label>
+          <div className="flex w-full flex-col gap-3">
+            <p className=" text-3xl font-bold text-white">
+              Detailed information
+            </p>
 
-          <label className="flex flex-col sm:w-full lg:w-2/5">
-            <span>
-              {formsTranslation.selectImgBtn.label[selectedLanguage]}:{" "}
-            </span>
-            <input
-              className="file-input file-input-bordered w-full"
-              type="file"
-              onChange={handleSelect}
-            />
-          </label>
+            <div className="w-full flex flex-wrap items-center gap-5">
+              <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+                <span>
+                  {formsTranslation.selectImgBtn.label[selectedLanguage]}:{" "}
+                </span>
+                <input
+                  className="file-input file-input-bordered w-full"
+                  type="file"
+                  onChange={handleSelect}
+                />
+              </label>
 
-          <label className="flex flex-col sm:w-full lg:w-1/2 2xl:w-2/5">
-            <span className="label-text">
-              {formsTranslation.requiredPagesToJoin.label[selectedLanguage]}
-            </span>
-            <input
-              className="input border-none outline-none w-full"
-              placeholder={`${formsTranslation.requiredPagesToJoin.placeholder[selectedLanguage]}`}
-              type="number"
-              min={0}
-              value={requiredPagesRead}
-              step={10}
-              onChange={(e) => {
-                setRequiredPagesRead(+e.target.value);
-              }}
-            />
-          </label>
+              <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+                <span className="label-text">
+                  {formsTranslation.requiredPagesToJoin.label[selectedLanguage]}
+                </span>
+                <input
+                  className="input border-accColor outline-none w-full"
+                  placeholder={`${formsTranslation.requiredPagesToJoin.placeholder[selectedLanguage]}`}
+                  type="number"
+                  min={0}
+                  value={requiredPagesRead}
+                  step={10}
+                  onChange={(e) => {
+                    setRequiredPagesRead(+e.target.value);
+                  }}
+                />
+              </label>
+            </div>
+          </div>
 
           <label className="flex flex-col w-full">
-            <span>
+            <span className=" text-white font-semibold text-lg">
               {formsTranslation.descriptionTextarea.label[selectedLanguage]}:
             </span>
             <textarea
-              className="outline-none p-2 rounded-md resize-none"
+              className="outline-none p-2 rounded-md resize-none sm:w-full lg:max-w-2xl xl:max-w-4xl h-48"
               required
               placeholder="Tell the users, what are you in this club doing."
               value={description}
@@ -271,9 +282,11 @@ function EditClub() {
           </Alert>
         )}
 
-        <button className="btn bg-accColor text-white mt-2">
-          {formsTranslation.updateBtn[selectedLanguage]}
-        </button>
+        <div className="flex  w-full justify-center items-center">
+          <button className="btn bg-accColor sm:w-full md:w-3/4 lg:max-w-xl text-white mt-2">
+            {formsTranslation.updateBtn[selectedLanguage]}
+          </button>
+        </div>
       </motion.form>
       {isPending && <Loader />}
     </div>

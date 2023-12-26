@@ -4,13 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 import { formatDistanceToNow } from "date-fns";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { FaCamera, FaPaperPlane } from "react-icons/fa";
+import { FaArrowLeft, FaCamera, FaPaperPlane } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import uniqid from "uniqid";
 
 import alertsMessages from "../../assets/translations/AlertMessages.json";
-import profileTranslations from "../../assets/translations/ProfileTranslations.json";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { useRealDatabase } from "../../hooks/useRealDatabase";
 import useRealtimeDocument from "../../hooks/useRealtimeDocument";
@@ -270,7 +270,15 @@ function MessageArea({ chatId, messagedUser }) {
 
   return (
     <>
-      <div className="col-span-3 sm:col-span-4 xl:col-span-3 ">
+      <div className="col-span-3 sm:col-span-4 xl:col-span-3">
+        <div className="sm:flex xl:hidden w-full bg-primeColor">
+          <Link
+            to="/your-chats"
+            className="btn border-none outline-none bg-transparent text-white"
+          >
+            <FaArrowLeft /> Back
+          </Link>
+        </div>
         <div ref={messagesHolder} className="messages-holder">
           {messages.length > 0 &&
             messages
@@ -402,31 +410,30 @@ function MessageArea({ chatId, messagedUser }) {
                   )}
                 </>
               ))}
+          {imageMessages.length > 0 && (
+            <div className="p-3 sticky bottom-0 left-0 sm:grid sm:grid-flow-col snap-always snap-inline sm:auto-cols-[100%] md:auto-cols-[67%] lg:auto-cols-[41%] sm:overflow-x-auto xl:flex w-full gap-5">
+              {imageMessages.map((imageMessage, index) => (
+                <div
+                  key={index}
+                  className="bg-accColor border-2 border-accColor text-white max-w-[16rem] max-h-[16rem] relative top-0 left-0"
+                >
+                  <img
+                    className="w-full h-full object-cover"
+                    src={URL.createObjectURL(imageMessage.file)}
+                    alt=""
+                  />
+                  <textarea
+                    className="textarea resize-none outline-none w-full rounded-none rounded-t-lg max-h-16 absolute bottom-0 left-0"
+                    value={imageMessage.message}
+                    onChange={(e) => updateImageMessage(index, e.target.value)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {imageMessages.length > 0 && (
-          <div className=" p-3 sm:grid sm:grid-flow-col snap-always snap-inline sm:auto-cols-[100%] md:auto-cols-[67%] lg:auto-cols-[41%] sm:overflow-x-auto xl:flex w-full gap-5">
-            {imageMessages.map((imageMessage, index) => (
-              <div
-                key={index}
-                className="bg-accColor border-2 border-accColor text-white max-w-[16rem] max-h-[16rem] relative top-0 left-0"
-              >
-                <img
-                  className="w-full h-full object-cover"
-                  src={URL.createObjectURL(imageMessage.file)}
-                  alt=""
-                />
-                <textarea
-                  className="textarea resize-none outline-none w-full rounded-none rounded-t-lg max-h-16 absolute bottom-0 left-0"
-                  value={imageMessage.message}
-                  onChange={(e) => updateImageMessage(index, e.target.value)}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="flex w-full justify-between items-center gap-4 bg-accColor py-3 px-6 sticky bottom-0 left-0 rounded-t-lg">
+        <div className="flex w-full justify-around items-center gap-6 bg-accColor py-2 px-4 sticky h-[7.5rem] bottom-0 left-0 rounded-t-lg">
           <label>
             <input
               type="file"
@@ -438,9 +445,9 @@ function MessageArea({ chatId, messagedUser }) {
           </label>
 
           <label className="flex flex-col">
-            <span>{profileTranslations.messageBtn[selectedLanguage]}:</span>
             <textarea
-              className="resize-none textarea sm:w-[60vw] md:w-[50vw] outline-none"
+              className="resize-none textarea sm:w-[60vw] md:w-[50vw] outline-none h-12"
+              placeholder="Enter message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             ></textarea>

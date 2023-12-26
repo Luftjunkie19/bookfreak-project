@@ -3,8 +3,8 @@ import './index.css';
 import React from 'react';
 
 import AOS from 'aos';
+import { getAnalytics } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 
@@ -20,17 +20,19 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_STORAGEBUCKET,
   messagingSenderId: process.env.REACT_APP_MESSENDERID,
   appId: process.env.REACT_APP_APPID,
+  measurementId: process.env.REACT_APP_MEASUREMENTS,
 };
 // Initialize Firebase
 
 initializeApp(firebaseConfig);
 
 export const currentApp = initializeApp(firebaseConfig);
+getAnalytics(currentApp);
 
 AOS.init();
 
 
-export const database = getFirestore(currentApp);
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

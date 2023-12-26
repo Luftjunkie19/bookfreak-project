@@ -28,8 +28,8 @@ function LikersList({ likers, likesAmount, closeList }) {
         {reuseableTranslations.closeBtn[selectedLanguage]}
       </button>
 
-      <div className="absolute flex flex-col bg-accColor rounded-lg sm:w-full lg:w-2/3 xl:w-1/3 2xl:w-1/4 p-4 gap-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <p className=" text-xl font-medium text-white text-center">
+      <div className="absolute flex flex-col bg-accColor rounded-lg sm:w-full md:w-2/3 lg:w-1/3 2xl:w-1/4 p-4 gap-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <p className="text-xl font-medium text-white text-center">
           {likesAmount} {translations.andPersons.part2[selectedLanguage]}
         </p>
         {likers &&

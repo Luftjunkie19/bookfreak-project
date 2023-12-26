@@ -4,6 +4,8 @@ import React, {
 } from 'react';
 
 import { Alert } from 'flowbite-react';
+import { BsStars } from 'react-icons/bs';
+import { CgDetailsMore } from 'react-icons/cg';
 import { FaX } from 'react-icons/fa6';
 import { GiSwordsPower } from 'react-icons/gi';
 import { useSelector } from 'react-redux';
@@ -11,7 +13,12 @@ import { useNavigate } from 'react-router';
 import CreatableSelect from 'react-select/creatable';
 import uniqid from 'uniqid';
 
-import { Snackbar } from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  Snackbar,
+  TextField,
+} from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
 import {
@@ -20,6 +27,8 @@ import {
   prizeTypes,
 } from '../../assets/CreateVariables';
 import translations from '../../assets/translations/FormsTranslations.json';
+import FailLoader from '../../components/FailLoader';
+import Loader from '../../components/Loader';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
@@ -29,7 +38,7 @@ function CreateCompetition() {
   const { user } = useAuthContext();
   const { addToDataBase, updateDatabase } = useRealDatabase();
   const { getDocuments } = useRealtimeDocuments();
-  const { getDocument} = useRealtimeDocument();
+  const { getDocument } = useRealtimeDocument();
   const [documents, setDocuments] = useState([]);
   const [attachedUsers, setAttachedUsers] = useState([]);
   const selectedLanguage = useSelector(
@@ -38,8 +47,6 @@ function CreateCompetition() {
   const [document, setDocument] = useState(null);
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
-  const [currency, setCurrency] = useState(null);
-  const [selectedCountry, setSelectedCountry] = useState(null);
   const [openState, setOpenState] = useState({
     open: false,
     message: "",
@@ -56,17 +63,17 @@ function CreateCompetition() {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadUser= async ()=>{
-    const userObject= await getDocument('users', user.uid);
+  const loadUser = async () => {
+    const userObject = await getDocument("users", user.uid);
     if (userObject) {
       setDocument(userObject);
     }
-  }
+  };
 
   useEffect(() => {
     loadUser();
-  }, [loadUser])
-  
+  }, [loadUser]);
+
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
@@ -95,8 +102,13 @@ function CreateCompetition() {
     expiresAt: null,
     description: "",
     prizeType: null,
+    chargeId: null,
+    prizeHandedIn: false,
     prize: {
-      moneyPrize: { amount: 0, },
+      moneyPrize: {
+        amount: 0,
+        currency: null,
+      },
       itemPrize: { title: null, typeOfPrize: null },
     },
   });
@@ -108,6 +120,8 @@ function CreateCompetition() {
       competitionsName: competition.competitionsName,
       expiresAt: new Date(competition.expiresAt).getTime(),
       description: competition.description,
+      prizeHandedIn: false,
+      chargeId: competition.chargeId,
       prize: competition.prize,
       createdBy: {
         displayName: user.displayName,
@@ -166,143 +180,279 @@ function CreateCompetition() {
           state.open = true;
           return state;
         });
+        setIsPending(false);
         return;
       }
 
-      if (competition.prize.moneyPrize.amount === 0) {
-    setOpenState((state) => {
-          state.message = "You cannot create competition, where the prize is 0.";
+      if (
+        competition.prizeType === "Money" &&
+        competition.prize.moneyPrize.amount === 0
+      ) {
+        setOpenState((state) => {
+          state.message =
+            "You cannot create competition, where the prize is 0.";
           state.open = true;
           return state;
         });
+        setIsPending(false);
         return;
-}
+      }
 
       if (competition.prize.moneyPrize.amount > document.creditsAvailable) {
-  setOpenState((state) => {
+        setOpenState((state) => {
           state.message = "You do not have so many credits enough.";
           state.open = true;
           return state;
         });
+        setIsPending(false);
         return;
       }
-      
-      if (competition.prize.itemPrize === undefined || competition.prize.itemPrize === null ||  competition.prize.moneyPrize === null || competition.prize.moneyPrize === undefined) {
-          setOpenState((state) => {
+
+      if (
+        competition.prize.itemPrize === undefined ||
+        competition.prize.itemPrize === null ||
+        competition.prize.moneyPrize === null ||
+        competition.prize.moneyPrize === undefined
+      ) {
+        setOpenState((state) => {
           state.message = "Something went wrong.";
           state.open = true;
           return state;
         });
+        setIsPending(false);
         return;
       }
 
-      if (competition.prize.moneyPrize) {
-        updateDatabase({coins: document.creditsAvailable.coins - competition.prize.moneyPrize.amount}, "users", `${user.uid}/creditsAvailable`);
+      if (competition.prizeType === "Money" && competition.prize.moneyPrize) {
+        const payoutObject = await fetch(
+          "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/payCompetitionCharge",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Connection: "keep-alive",
+              Accept: "*",
+            },
+            body: JSON.stringify({
+              organizatorObject: document,
+              payerId: document.stripeAccountData.id,
+              amount: competition.prize.moneyPrize.amount,
+              currency:
+                document.stripeAccountData.default_currency.toUpperCase(),
+            }),
+          }
+        );
+        const { error, chargeObject } = await payoutObject.json();
+
+        console.log(chargeObject);
+
+        if (error) {
+          setError(error);
+          setIsPending(false);
+          return;
+        }
+
+        if (chargeObject) {
+          setCompetition((comp) => {
+            comp.chargeId = chargeObject.id;
+            comp.prize.moneyPrize.currency =
+              document.stripeAccountData.default_currency;
+          });
+          updateDatabase(
+            {
+              valueInMoney:
+                document.creditsAvailable.valueInMoney -
+                competition.prize.moneyPrize.amount,
+            },
+            "users",
+            `${user.uid}/creditsAvailable`
+          );
+        }
       }
-      
       finalizeAll();
+      setIsPending(false);
     } catch (err) {
       console.log(err);
+      setIsPending(false);
     }
   };
 
+  useEffect(() => {
+    if (isPending && error) {
+      const timeoutId = setTimeout(() => {
+        setIsPending(false);
+        setError(null);
+      }, 3000);
+
+      // Clear the timeout if the component is unmounted before the timeout is reached
+      return () => clearTimeout(timeoutId);
+    }
+  }, [error, isPending]);
   return (
-    <div className="min-h-screen h-full w-full flex flex-col justify-center items-center">
-      <form
-        onSubmit={submitForm}
-        className="lg:bg-accColor sm:w-full lg:w-2/3 xl:w-3/5 2xl:w-1/2 text-white p-6 rounded-lg"
-      >
-        <div className="flex flex-col justify-center items-center gap-2 py-4 mb-2">
+    <div className="min-h-screen h-full w-full flex flex-col">
+      {isPending && error && <FailLoader />}
+      {isPending && <Loader />}
+      <form onSubmit={submitForm} className="w-full text-white">
+        <div className="flex flex-wrap items-center justify-center gap-4 py-4 mb-2">
           <GiSwordsPower className="text-6xl font-semibold" />
           <p className="text-center">
             {translations.topText.competitions[selectedLanguage]}
           </p>
         </div>
 
-        <div className="flex mb-4 w-full justify-around items-center sm:flex-col lg:flex-row gap-2">
-          <label className="flex flex-col sm:w-full xl:w-2/5">
-            <span>{translations.bookTitleInput.label[selectedLanguage]}:</span>
-            <input
-              type="text"
-              required
-              className="input border-accColor rounded-md border-2 outline-none w-full py-4 px-1"
-              placeholder={`${translations.bookTitleInput.placeholder[selectedLanguage]}`}
-              onChange={(e) =>
-                setCompetition((competition) => {
-                  competition.competitionTitle = e.target.value;
-                  return competition;
-                })
-              }
-            />
-          </label>
-
-          <label className="flex flex-col gap-2 sm:w-full xl:w-2/5">
-            <span>
-              {translations.expirationDateInput.label[selectedLanguage]}:
-            </span>
-
-            <DateTimePicker
-              required
-              label={`${translations.expirationDateInput.label[selectedLanguage]}`}
-              className="myDatePicker w-full"
-              sx={{
-                svg: { color: "#fff" },
-                input: { color: "#fff" },
-              }}
-              onChange={(newValue) => {
-                console.log(new Date(newValue.$d));
-                if (new Date(newValue.$d).getTime() < new Date().getTime()) {
-                  setOpenState((state) => {
-                    state.message =
-                      "You cannot set the earlier date than today.";
-                    state.open = true;
-                    return state;
-                  });
-                  return;
-                } else {
+        <div className="flex w-full flex-col gap-2 p-4">
+          <p className="font-bold text-2xl flex gap-2 sm:text-center md:text-left">
+            {" "}
+            <BsStars /> Essential information <BsStars />{" "}
+          </p>
+          <div className="flex flex-wrap w-full gap-4">
+            <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+              <span>
+                {translations.bookTitleInput.label[selectedLanguage]}:
+              </span>
+              <input
+                type="text"
+                required
+                className="input border-accColor rounded-md border-2 outline-none w-full py-4 px-1"
+                placeholder={`${translations.bookTitleInput.placeholder[selectedLanguage]}`}
+                onChange={(e) =>
                   setCompetition((competition) => {
-                    competition.expiresAt = new Date(newValue.$d).getTime();
+                    competition.competitionTitle = e.target.value;
+                    return competition;
+                  })
+                }
+              />
+            </label>
+
+            <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+              <span>
+                {translations.expirationDateInput.label[selectedLanguage]}:
+              </span>
+
+              <DateTimePicker
+                required
+                label={`${translations.expirationDateInput.label[selectedLanguage]}`}
+                className="myDatePicker w-full bg-modalAccColor"
+                sx={{
+                  color: "#fff",
+                  svg: { color: "#fff" },
+                  input: { color: "#fff" },
+                }}
+                onChange={(newValue) => {
+                  console.log(new Date(newValue.$d));
+                  if (new Date(newValue.$d).getTime() < new Date().getTime()) {
+                    setOpenState((state) => {
+                      state.message =
+                        "You cannot set the earlier date than today.";
+                      state.open = true;
+                      return state;
+                    });
+                    return;
+                  } else {
+                    setCompetition((competition) => {
+                      competition.expiresAt = new Date(newValue.$d).getTime();
+                      return competition;
+                    });
+                  }
+                }}
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="flex w-full flex-col gap-2 p-4">
+          <p className="font-bold text-2xl flex gap-2 sm:text-center md:text-left">
+            <CgDetailsMore /> Detailed information <CgDetailsMore />
+          </p>
+          <div className="flex flex-wrap items-center w-full gap-4">
+            <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+              <Autocomplete
+                sx={{
+                  color: "#fff",
+                  ":-ms-input-placeholder": {
+                    color: "white",
+                  },
+                  listStyle: {
+                    backgroundColor: "red",
+                    color: "yellow",
+                  },
+                  "& + .MuiAutocomplete-popper .MuiAutocomplete-option": {
+                    backgroundColor: "#363636",
+                  },
+                  "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected='true']":
+                    {
+                      backgroundColor: "#4396e6",
+                    },
+                  "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected ='true'] .Mui-focused":
+                    {
+                      backgroundColor: "#3878b4",
+                    },
+                }}
+                multiple
+                id="tags-outlined"
+                options={notCurrentUsers}
+                getOptionLabel={(option) => option.label}
+                renderOption={(props, option) => {
+                  return (
+                    <Box
+                      sx={{
+                        "& > img": { mr: 2, flexShrink: 0 },
+                      }}
+                      component="li"
+                      key={option.value.id}
+                      {...props}
+                      className="bg-accColor cursor-pointer text-white flex gap-4 items-center p-1 cursor-pointer"
+                    >
+                      <img
+                        className="w-10 h-10 rounded-full"
+                        loading="lazy"
+                        src={option.value.photoURL}
+                        srcSet={`${option.value.photoURL} 2x`}
+                        alt={option.value.id}
+                      />
+                      <p>{option.value.nickname}</p>
+                    </Box>
+                  );
+                }}
+                filterSelectedOptions
+                isOptionEqualToValue={(option, value) =>
+                  option.value.id === value.value.id
+                }
+                onChange={(e, value) => {
+                  setAttachedUsers(value);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    className=" text-white"
+                    label={translations.membersInput.label[selectedLanguage]}
+                    placeholder="Invite some users"
+                  />
+                )}
+              />
+            </label>
+
+            <label className="sm:w-full md:max-w-xs xl:max-w-md">
+              <span>
+                {translations.competitionCategory.label[selectedLanguage]}:
+              </span>
+              <CreatableSelect
+                required
+                className="text-black w-full"
+                options={competitionTypes}
+                onChange={(e) => {
+                  setCompetition((competition) => {
+                    competition.competitionsName = e.value;
                     return competition;
                   });
-                }
-              }}
-            />
-          </label>
+                }}
+              />
+            </label>
+          </div>
         </div>
-        <div className="flex w-full justify-around items-center sm:flex-col lg:flex-row gap-2">
-          <label className="flex flex-col sm:w-full xl:w-2/5">
-            <span>{translations.membersInput.label[selectedLanguage]}:</span>
-            <CreatableSelect
-              className="text-black w-full"
-              isMulti
-              isClearable
-              isSearchable
-              options={notCurrentUsers}
-              onChange={(e) => {
-                setAttachedUsers(e);
-              }}
-            />
-          </label>
 
-          <label className="sm:w-full xl:w-2/5">
-            <span>
-              {translations.competitionCategory.label[selectedLanguage]}:
-            </span>
-            <CreatableSelect
-              required
-              className="text-black w-full"
-              options={competitionTypes}
-              onChange={(e) => {
-                setCompetition((competition) => {
-                  competition.competitionsName = e.value;
-                  return competition;
-                });
-              }}
-            />
-          </label>
-        </div>
-        <div className="flex flex-wrap w-full justify-around items-center sm:flex-col lg:flex-row gap-2">
-          <label className="sm:w-full xl:w-2/5">
+        <div className="flex flex-wrap w-full gap-4 p-4">
+          <label className="sm:w-full md:max-w-xs xl:max-w-md">
             <span>Competition's prize</span>
             <CreatableSelect
               required
@@ -317,19 +467,19 @@ function CreateCompetition() {
             />
           </label>
 
-               {competition.prizeType === "Money" && document &&  (
+          {competition.prizeType === "Money" && document && (
             <>
-              <label className="flex flex-col">
-                <span>Prize amount (in BookBucks):</span>
+              <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+                <span>Prize amount (in your currency):</span>
                 <input
-                 className="input"
-                 type='number'
-                  step={100}
+                  className="input w-full border-accColor outline-none"
+                  type="number"
+                  step={0.5}
                   min={0}
-                  max={document.creditsAvailable}
+                  max={document.creditsAvailable.valueInMoney / 100}
                   onChange={(e) => {
                     setCompetition((comp) => {
-                      comp.prize.moneyPrize.amount = +e.target.value;
+                      comp.prize.moneyPrize.amount = +e.target.value * 100;
                       return comp;
                     });
                     console.log(competition);
@@ -339,11 +489,11 @@ function CreateCompetition() {
             </>
           )}
 
-     
           {competition.prizeType === "item" && (
             <>
-              <label className="sm:w-full xl:w-2/5 ">
+              <label className="sm:w-full md:max-w-xs xl:max-w-md">
                 <span>Competition's prize </span>
+
                 <CreatableSelect
                   required
                   className="text-black w-full"
@@ -357,10 +507,10 @@ function CreateCompetition() {
                 />
               </label>
 
-              <label className="flex flex-col max-w-sm">
+              <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
                 <span>Prize Details:</span>
                 <input
-                  className="input border-accColor rounded-md border-2 outline-none w-full py-4 px-1"
+                  className="input border-accColor rounded-md border-2 outline-none w-full px-1"
                   required
                   type="text"
                   onChange={(e) => {
@@ -375,13 +525,13 @@ function CreateCompetition() {
           )}
         </div>
 
-        <label className="flex flex-col">
-          <span>
+        <label className="flex flex-col p-4">
+          <span className="font-bold text-lg">
             {translations.descriptionTextarea.label[selectedLanguage]}:
           </span>
           <textarea
             required
-            className="outline-none border-accColor border-2 h-48 resize-none py-1 rounded-lg"
+            className="outline-none border-accColor sm:w-full md:max-w-5xl border-2 h-48 resize-none py-1 rounded-lg"
             placeholder={`${translations.descriptionTextarea.placeholder[selectedLanguage]}`}
             onChange={(e) =>
               setCompetition((competition) => {
@@ -392,8 +542,8 @@ function CreateCompetition() {
           ></textarea>
         </label>
 
-        <div className="flex justify-center items-center my-2 p-2 w-full ">
-          <button className="btn sm:w-full md:w-1/2 text-white sm:bg-accColor lg:bg-primeColor">
+        <div className="flex justify-center items-center my-2 p-2 w-full">
+          <button className="btn sm:w-full md:max-w-lg text-white bg-accColor hover:bg-blue-400">
             {translations.submit[selectedLanguage]}
           </button>
         </div>
@@ -413,7 +563,6 @@ function CreateCompetition() {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             open={openState.open}
             autoHideDuration={3000}
-            severity="success"
             message={openState.message}
             action={
               <button

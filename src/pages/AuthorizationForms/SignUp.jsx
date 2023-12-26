@@ -1,5 +1,8 @@
+import "../stylings/backgrounds.css";
+
 import { useRef, useState } from "react";
 
+import Lottie from "lottie-react";
 import AvatarEditor from "react-avatar-editor";
 import { FaFacebook, FaGithub, FaGoogle, FaPhoneAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -7,6 +10,7 @@ import { Link } from "react-router-dom";
 
 import { Alert } from "@mui/material";
 
+import lottieAnimation from "../../assets/lottieAnimations/Animation - 1703334331539.json";
 import alertMessages from "../../assets/translations/AlertMessages.json";
 import formsTranslations from "../../assets/translations/FormsTranslations.json";
 import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
@@ -97,7 +101,7 @@ function SignUp() {
   };
 
   return (
-    <div className="min-h-screen h-full w-full flex flex-col justify-center items-center">
+    <div className="min-h-screen h-full w-full flex flex-wrap gap-6 justify-evenly items-center pattern-bg">
       {userEditImg && (
         <div className="fixed top-0 w-full h-full bg-imgCover p-4">
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-white flex flex-col items-center">
@@ -133,50 +137,54 @@ function SignUp() {
         </div>
       )}
 
-      <form
-        onSubmit={handleSubmit}
-        className="px-4 py-2 sm:w-full md:w-4/5 lg:w-3/5 xl:w-1/2 2xl:w-2/5 bg-primeColor shadow-lg rounded-lg text-white m-4"
-      >
-        <h2 className="text-center font-semibold text-3xl leading-10 p-2">
+      <div className="max-w-sm flex flex-col gap-2">
+        <h2 className="text-center font-semibold text-4xl text-white leading-10 p-2">
           {formsTranslations.signUpForm.topText[selectedLanguage]}
         </h2>
+        <Lottie animationData={lottieAnimation} />
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="sm:w-full md:max-w-md lg:max-w-lg 2xl:max-w-2xl text-white p-2 lg:bg-primeColor lg:border-2 lg:shadow-md lg:shadow-accColor lg:border-accColor lg:rounded-lg m-2"
+      >
         <div className="flex gap-4 w-full flex-wrap justify-center items-center sm:flex-col xl:flex-row">
           <label className="flex flex-col text-white sm:w-full lg:w-3/4 ">
-            <span>
+            <span className=" font-medium">
               {formsTranslations.userFields.nickname[selectedLanguage]}:
             </span>
             <input
               type="text"
               required
-              className="py-2 outline-none text-white rounded-md w-full"
+              className="py-2 border-accColor input outline-none text-white rounded-md w-full"
               onChange={(e) => setDisplayName(e.target.value)}
             />
           </label>
 
           <label className="flex flex-col text-white sm:w-full lg:w-3/4 ">
-            <span>Email:</span>
+            <span className=" font-medium">Email:</span>
             <input
               type="email"
               required
-              className="py-2 outline-none text-white rounded-md w-full"
+              className="py-2 input border-accColor outline-none text-white rounded-md w-full"
               onChange={(e) => setEmail(e.target.value)}
             />
           </label>
 
-          <label className="flex flex-col text-white sm:w-full lg:w-3/4 ">
-            <span>
+          <label className="flex flex-col  text-white sm:w-full lg:w-3/4 ">
+            <span className="font-medium">
               {formsTranslations.userFields.password[selectedLanguage]}:
             </span>
             <input
               type="password"
               required
-              className="py-2 outline-none text-white rounded-md w-full"
+              className="py-2 outline-none border-accColor input text-white rounded-md w-full"
               onChange={(e) => setPassword(e.target.value)}
             />
           </label>
 
           <label className="flex flex-col text-white sm:w-full lg:w-3/4">
-            <span>
+            <span className="font-medium">
               {formsTranslations.userFields.chooseAvatar[selectedLanguage]}:{" "}
             </span>
             <input
@@ -211,36 +219,30 @@ function SignUp() {
         <h3 className="text-center text-white font-semibold text-2xl leading-9 p-2">
           {formsTranslations.signUpForm.optionsText[selectedLanguage]}
         </h3>
-        <div className="flex w-full justify-center items-center flex-wrap gap-4">
+        <div className="flex w-full items-center justify-center flex-wrap gap-4">
           <Link
-            className="btn text-white sm:w-full md:w-3/4 xl:w-2/5"
+            className="btn text-white bg-green-400 w-24 h-24"
             to="/sign-in-with-phone"
           >
-            <FaPhoneAlt className="text-xl" />
-            <span>
-              {formsTranslations.signingOptions.phone[selectedLanguage]}
-            </span>
+            <FaPhoneAlt className="text-5xl" />
           </Link>
           <button
-            className="btn sm:w-full md:w-3/4 xl:w-2/5 text-white bg-blue-600 border-none hover:bg-blue-500"
+            className="btn text-white w-24 h-24 bg-blue-600 border-none hover:bg-blue-500"
             onClick={signInWithGoogle}
           >
-            <FaGoogle className="text-xl" />
-            <span>Google</span>
+            <FaGoogle className="text-5xl" />
           </button>
           <button
-            className="btn sm:w-full md:w-3/4 xl:w-2/5 bg-facebook text-white border-none hover:bg-blue-800"
+            className="btn bg-facebook h-24 w-24 text-white border-none hover:bg-blue-800"
             onClick={signInWithFacebook}
           >
-            <FaFacebook className="text-xl" />
-            <span>Facebook</span>
+            <FaFacebook className="text-5xl" />
           </button>
           <button
-            className="btn sm:w-full md:w-3/4 xl:w-2/5 bg-github hover:bg-gray-900 text-white"
+            className="btn w-24 h-24 bg-github hover:bg-gray-900 text-white"
             onClick={signInWithGithub}
           >
-            <FaGithub className="text-xl" />
-            <span>Github</span>
+            <FaGithub className="text-5xl" />
           </button>
         </div>
         {error && (

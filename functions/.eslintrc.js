@@ -4,20 +4,20 @@ module.exports = {
     node: true,
   },
   parserOptions: {
-    ecmaVersion: 2017,
+    "ecmaVersion": 2018,
   },
-  /* eslint-disable array-callback-return */
-  extends: ['eslint:recommended', 'google'],
+  extends: [
+    "eslint:recommended",
+    "google",
+  ],
   rules: {
-    'no-restricted-globals': ['error', 'name', 'length'],
-    'prefer-arrow-callback': 'error',
-    'object-curly-spacing': ['error', 'always'],
-    quotes: [2, 'single', { avoidEscape: true }],
-    'quote-props': ['error', 'as-needed'],
+    "no-restricted-globals": ["error", "name", "length"],
+    "prefer-arrow-callback": "error",
+    "quotes": ["error", "double", {"allowTemplateLiterals": true}],
   },
   overrides: [
     {
-      files: ['**/*.spec.*'],
+      files: ["**/*.spec.*"],
       env: {
         mocha: true,
       },
@@ -25,5 +25,4 @@ module.exports = {
     },
   ],
   globals: {},
-  /* eslint-enable array-callback-return */
 };

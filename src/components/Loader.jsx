@@ -12,6 +12,7 @@ function Loader() {
       className="loader-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      transition={{ bounce: 0.5, duration: 0.5 }}
       exit={{ opacity: 0 }}
     >
       <Lottie animationData={loadingAnimation} />

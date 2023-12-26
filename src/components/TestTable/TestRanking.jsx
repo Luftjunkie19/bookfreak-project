@@ -1,9 +1,17 @@
-import * as React from "react";
+import '../stylings/mui-stylings.css';
 
-import { Link } from "react-router-dom";
+import * as React from 'react';
 
-import { Avatar, Box } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { Link } from 'react-router-dom';
+
+import {
+  Avatar,
+  Box,
+} from '@mui/material';
+import {
+  DataGrid,
+  GridToolbar,
+} from '@mui/x-data-grid';
 
 function TestRanking({ rowData }) {
   const columns = [
@@ -40,7 +48,7 @@ function TestRanking({ rowData }) {
       headerAlign: "center",
       cellAlign: "center",
       cellClassName:
-        "bg-white text-accColor font-semibold italic border-accColor border-b-2 border-r-2",
+        "bg-white text-accColor text-xs font-semibold italic border-accColor border-b-2 border-r-2",
       headerName: "Nickname",
       renderCell: (params) => {
         return params.row.player.nickname;
@@ -83,18 +91,13 @@ function TestRanking({ rowData }) {
   return (
     <Box>
       <DataGrid
-        className="text-white bg-white max-w-xl m-4"
-        slots={{ toolbar: GridToolbar }}
+      sx={{fontFamily:"Montserrat"}}
+        className="text-white bg-primeColor max-w-xl m-4"
+        slots={{ toolbar: GridToolbar,  }}
         rows={rowData}
         columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 20,
-            },
-          },
-        }}
-        pageSizeOptions={[5]}
+        
+      
       />
     </Box>
   );
