@@ -1,24 +1,24 @@
-import 'react-phone-input-2/lib/material.css';
+import "react-phone-input-2/lib/material.css";
+import "../stylings/backgrounds.css";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
   getAuth,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-} from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { Alert } from 'flowbite-react';
-import PhoneInput from 'react-phone-input-2';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import VerificationInput from 'react-verification-input';
+} from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { Alert } from "flowbite-react";
+import PhoneInput from "react-phone-input-2";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import VerificationInput from "react-verification-input";
 
-import formsTranslations
-  from '../../assets/translations/FormsTranslations.json';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import formsTranslations from "../../assets/translations/FormsTranslations.json";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
 
 function LogInWithPhone() {
   const firestore = getFirestore();
@@ -89,11 +89,11 @@ function LogInWithPhone() {
   };
 
   return (
-    <div className="min-h-screen h-full flex justify-center items-center flex-col">
+    <div className="min-h-screen h-full flex justify-center items-center flex-col pattern-bg">
       {!showConfirmation && (
         <form
           onSubmit={handleSendVerificationCode}
-          className="p-4 shadow-md shadow-primeColor bg-accColor rounded-md gap-4 flex justify-around items-center flex-col sm:w-full md:w-4/5 lg:w-3/5 xl:w-2/5 2xl:w-1/3"
+          className="p-4 lg:shadow-md lg:shadow-primeColor sm:bg-transparent lg:bg-accColor rounded-md gap-4 flex justify-around items-center flex-col sm:w-full max-w-lg"
         >
           <p className="text-2xl text-white text-center ">
             {
@@ -103,10 +103,10 @@ function LogInWithPhone() {
             }
           </p>
 
-          <label className="text-black sm:w-full lg:w-1/2">
+          <label className="text-black sm:w-full lg:w-1/2 self-start">
             <PhoneInput
               prefix="+"
-              inputClass="w-full"
+              inputClass=" text-white bg-primeColor"
               country={"pl"}
               inputProps={{ required: true, autoFocus: true }}
               value={phone}
@@ -115,12 +115,12 @@ function LogInWithPhone() {
           </label>
 
           {error && (
-            <Alert className="bg-transparent" severity="error">
+            <Alert className="bg-transparent text-error" severity="error">
               {error}
             </Alert>
           )}
 
-          <button className="btn sm:w-full md:w-1/2 lg:w-1/3 m-2">
+          <button className="btn sm:bg-accColor md:bg-primeColor max-w-md text-white">
             {
               formsTranslations.signingOptions.passwordForgotten.verifyBtn[
                 selectedLanguage
@@ -134,7 +134,7 @@ function LogInWithPhone() {
         <>
           <form
             onSubmit={handleVerifyCode}
-            className="flex flex-col sm:w-full md:w-4/5 xl:w-3/5 2xl:w-1/2 justify-center items-center gap-3 sm:bg-transparent md:bg-accColor shadow-md shadow-primeColor p-4 rounded-md"
+            className="flex flex-col sm:w-full max-w-lg justify-center items-center gap-3 sm:bg-transparent md:bg-accColor shadow-md shadow-primeColor p-4 rounded-md"
           >
             <p className="text-3xl text-white">
               {
@@ -153,6 +153,10 @@ function LogInWithPhone() {
               </span>
 
               <VerificationInput
+                classNames={{
+                  character: "rounded-md",
+                  characterSelected: " border-accColor",
+                }}
                 autoFocus
                 validChars="0-9"
                 inputProps={{ inputMode: "numeric" }}

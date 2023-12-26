@@ -1,0 +1,171 @@
+.Mui-expanded {
+  background-color: rgba(66, 102, 181, 0.654);
+  transition: all 0.5s;
+}
+
+.Mui-focused {
+  background-color: rgba(66, 102, 181, 0.654);
+}
+.MuiAutocomplete-input {
+  color: white;
+}
+
+.MuiAutocomplete-inputFocused {
+  color: white;
+}
+
+.MuiAutocomplete-groupLabel {
+  color: white;
+}
+.MuiAutocomplete-groupUl {
+  background: red;
+}
+
+.MuiInputLabel-root {
+  background: none;
+  color: white;
+}
+
+.MuiAutocomplete-hasClearIcon {
+  color: white;
+}
+.MuiAutocomplete-hasPopupIcon {
+  color: white;
+}
+.MuiAutocomplete-input {
+  color: white;
+}
+.MuiAutocomplete-inputFocused {
+  color: white;
+}
+
+.MuiAutocomplete-noOptions {
+  color: white;
+}
+
+.css-p6l3lt-MuiAutocomplete-root .MuiAutocomplete-tag {
+  color: whitesmoke;
+}
+
+.MuiAutocomplete-paper {
+  background: rgb(66, 102, 181);
+}
+
+.Mui-focused {
+  border: none;
+  color: none;
+}
+
+.MuiAutocomplete-popupIndicatorOpen {
+  background-color: "#1a2339";
+  color: white;
+}
+.MuiAutocomplete-root {
+  background-color: rgba(66, 102, 181, 0.416);
+}
+
+.css-11ztvzh-MuiButtonBase-root-MuiMenuItem-root.Mui-selected {
+  background-color: #1a2339;
+}
+
+.css-2bjhza-MuiButtonBase-root-MuiMenuItem-root.Mui-selected:hover {
+  background-color: rgba(66, 102, 181, 0.8) !important;
+}
+
+.css-6hp17o-MuiList-root-MuiMenu-list {
+  background-color: #1a2339 !important;
+}
+
+.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root {
+  background: #4266b5 !important;
+  color: white !important;
+}
+.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root:hover {
+  background: rgba(26, 35, 57, 0.7);
+}
+
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
+  color: white !important;
+}
+.css-2gkruv-MuiAutocomplete-root .MuiAutocomplete-tag {
+  color: white;
+}
+
+.css-1y7coo4-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected {
+  background-color: rgba(0, 87, 158, 0.72) !important;
+  color: white !important;
+  border-color: white !important;
+}
+
+.css-1h51icj-MuiAutocomplete-root .MuiAutocomplete-tag {
+  color: white;
+}
+
+.css-1h51icj-MuiAutocomplete-root
+  .MuiOutlinedInput-root
+  .MuiAutocomplete-input {
+  color: white;
+}
+
+.css-2gkruv-MuiAutocomplete-root .MuiOutlinedInput-root .MuiAutocomplete-input {
+  color: white;
+}
+
+.css-ja8aal-MuiAutocomplete-root .MuiOutlinedInput-root .MuiAutocomplete-input {
+  color: white;
+}
+
+.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
+  background-color: rgba(0, 87, 158, 0.72) !important;
+  color: white !important;
+}
+
+.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-line {
+  stroke: white !important;
+}
+
+.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-label {
+  stroke: whitesmoke !important;
+}
+.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-tick {
+  stroke: rgba(66, 102, 181) !important;
+}
+
+.css-1mhcdve-MuiPieArc-root {
+  stroke: transparent !important;
+}
+
+.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-tickLabel {
+  stroke: white !important;
+}
+
+.css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar{
+  color: white;
+}
+
+.css-zylse7-MuiButtonBase-root-MuiIconButton-root.Mui-disabled{
+  background-color: rgba(128, 128, 128, 0.451) !important;
+  color:rgba(66, 102, 181) !important;
+  cursor: pointer !important;
+}
+
+.css-1knaqv7-MuiButtonBase-root-MuiButton-root{
+  color: white !important;
+  background-color: rgba(66, 102, 181, 0.701) !important;
+}
+
+.css-10by3a5-MuiButtonBase-root-MuiMenuItem-root-MuiTablePagination-menuItem{
+  color: white !important;
+}
+
+.css-1mf6u8l-MuiSvgIcon-root-MuiSelect-icon{
+  color: white !important;
+}
+
+.css-194a1fa-MuiSelect-select-MuiInputBase-input.css-194a1fa-MuiSelect-select-MuiInputBase-input.css-194a1fa-MuiSelect-select-MuiInputBase-input{
+  background-color: transparent !important;
+}
+
+.css-1vjjf3f-MuiAutocomplete-root{
+  background: transparent !important;
+}

@@ -25,3 +25,13 @@
 .snap-inline::-webkit-scrollbar {
   display: none;
 }
+
+.pattern-bg {
+  background: url("../../assets/istockphoto-1195780698-612x612_prev_ui.png")
+}
+
+.react-tel-input .special-label {
+  background: rgba(66, 102, 181, 0.624) !important;
+  border-radius: 5px;
+  color: white;
+}

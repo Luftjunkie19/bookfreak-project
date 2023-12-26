@@ -68,42 +68,21 @@ function Navbar({ user }) {
 
   const dispatch = useDispatch();
 
-  const [isSticky, setIsSticky] = useState(false);
-
-  useEffect(() => {
-    const checkIfScrolled = () => {
-      const scrolledLevel = document.body.scrollTop;
-
-      if (scrolledLevel <= 70) {
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
-      }
-    };
-
-    window.addEventListener("scroll", checkIfScrolled);
-
-    return () => {
-      window.removeEventListener("scroll", checkIfScrolled);
-    };
-  }, []);
-
   return (
     <>
       <div
-        className={`${
-          isSticky
-            ? "sticky top-0 left-0 scrolled transition-all duration-500"
-            : ""
-        } flex justify-between items-center px-3 py-2 bg-primeColor text-neutral-50 rounded-b-lg w-screen z-[99999] transition-all duration-500`}
+        className={`
+             sticky top-0 left-0 scrolled 
+           
+         flex justify-between items-center px-3 py-2 bg-accColor text-neutral-50 w-screen z-[99999] transition-all duration-500`}
       >
         <Link
           to="/"
           className="flex justify-around items-center group hover:tracking-widest"
         >
-          <GiBookmarklet className="text-3xl font-bold group-hover:text-accColor group-hover:-translate-y-1 transition-all duration-200 group-hover:text-4xl" />
+          <GiBookmarklet className="text-3xl font-bold group-hover:text-primeColor group-hover:-translate-y-1 transition-all duration-200 group-hover:text-4xl" />
           <h2 className="font-thin sm:text-lg md:text-2xl">
-            <span className="font-extrabold group-hover:text-accColor transition-all duration-300 delay-[150ms]">
+            <span className="font-extrabold group-hover:text-primeColor transition-all duration-300 delay-[150ms]">
               B
             </span>
             <span className="transition-all duration-300 delay-[250ms] group-hover:font-medium group-hover:text-yellow-400">
@@ -115,7 +94,7 @@ function Navbar({ user }) {
             <span className="transition-all duration-300 delay-500 group-hover:font-medium group-hover:text-yellow-400">
               k
             </span>
-            <span className="font-extrabold transition-all duration-300 delay-700 group-hover:text-accColor">
+            <span className="font-extrabold transition-all duration-300 delay-700 group-hover:text-primeColor">
               F
             </span>
             <span className="transition-all duration-300 delay-[800ms] group-hover:font-medium group-hover:text-yellow-400">
@@ -158,7 +137,7 @@ function Navbar({ user }) {
             </button>
 
             <button
-              className="btn bg-transparent text-xl shadow-none border-none hover:bg-accColor mx-2 text-neutral-50"
+              className="btn bg-transparent text-xl shadow-none border-none hover:bg-modalPrimeColor mx-2 text-neutral-50"
               onClick={() => {
                 dispatch(burgerActions.toggleBurger());
               }}
@@ -177,8 +156,8 @@ function Navbar({ user }) {
                 to="/"
                 className={
                   checkLocation("/")
-                    ? "btn text-2xl mx-1 text-neutral-50 bg-accColor border-none"
-                    : "btn bg-transparent border-none text-2xl mx-1 text-neutral-50 hover:bg-accColor"
+                    ? "btn text-2xl mx-1 text-neutral-50 bg-primeColor border-none"
+                    : "btn bg-transparent border-none text-2xl mx-1 text-neutral-50 hover:bg-primeColor"
                 }
               >
                 <FaHome />
@@ -188,8 +167,8 @@ function Navbar({ user }) {
                 to={`/profile/${user.uid}`}
                 className={
                   checkLocation(`/profile/${user.uid}`)
-                    ? "btn text-2xl mx-1 text-neutral-50 bg-accColor border-none"
-                    : "btn bg-transparent border-none text-2xl mx-1 text-neutral-50 hover:bg-accColor"
+                    ? "btn text-2xl mx-1 text-neutral-50 bg-primeColor border-none"
+                    : "btn bg-transparent border-none text-2xl mx-1 text-neutral-50 hover:bg-primeColor"
                 }
               >
                 <FaUserAlt />
@@ -197,23 +176,12 @@ function Navbar({ user }) {
 
               <CreateBtn />
 
-              {/**         <Link
-                to="/create"
-                className={
-                  checkLocation(`/create`)
-                    ? "btn text-2xl mx-1 text-neutral-50 bg-accColor border-none"
-                    : "btn bg-transparent border-none text-2xl mx-1 text-neutral-50 hover:bg-accColor"
-                }
-              >
-                <FaPlusCircle />
-              </Link>*/}
-
               <Link
                 to="/your-chats"
                 className={
                   checkLocation(`/your-chats`)
-                    ? "btn text-2xl mx-1 text-neutral-50 bg-accColor border-none"
-                    : "btn bg-transparent border-none text-2xl mx-1 text-neutral-50 hover:bg-accColor"
+                    ? "btn text-2xl mx-1 text-neutral-50 bg-primeColor border-none"
+                    : "btn bg-transparent border-none text-2xl mx-1 text-neutral-50 hover:bg-primeColor"
                 }
               >
                 <FaComments />
@@ -222,8 +190,8 @@ function Navbar({ user }) {
               <button
                 className={`btn ${
                   !isOpened && "bg-transparent"
-                } text-2xl mx-1 border-none hover:bg-accColor ${
-                  isOpened && "bg-accColor"
+                } text-2xl mx-1 border-none hover:bg-primeColor ${
+                  isOpened && "bg-primeColor"
                 }`}
                 onClick={() => {
                   dispatch(viewerActions.toggleState());
@@ -252,8 +220,8 @@ function Navbar({ user }) {
                 to="/search"
                 className={
                   checkLocation(`/search`)
-                    ? "btn text-2xl btn-active mx-1 text-neutral-50 bg-accColor border-none"
-                    : "btn bg-transparent border-none text-2xl mx-1 text-neutral-50 hover:bg-accColor"
+                    ? "btn text-2xl btn-active mx-1 text-neutral-50 bg-primeColor border-none"
+                    : "btn bg-transparent border-none text-2xl mx-1 text-neutral-50 hover:bg-primeColor"
                 }
               >
                 <FaSearch />

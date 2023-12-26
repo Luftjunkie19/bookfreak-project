@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from "react";
+import '../../components/stylings/mui-stylings.css';
 
-import { useNavigate, useParams } from "react-router";
-import { toast } from "react-toastify";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import {
+  useNavigate,
+  useParams,
+} from 'react-router';
+import { toast } from 'react-toastify';
+
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function TestStartedPage() {
   const { user } = useAuthContext();
@@ -71,24 +79,28 @@ function TestStartedPage() {
   };
 
   return (
-    <div className="min-h-screen relative top-0 left-0 h-full w-full flex flex-col">
+    <div className="min-h-screen relative top-0 left-0 h-full w-full flex flex-col pattern-bg">
       {test && (
         <>
-          <div className="flex w-full justify-between p-2">
-            <p className="text-white">
-              Question: {currentQuestion + 1}/{" "}
+          <div className="flex w-full justify-between flex-wrap p-2">
+            <p className="text-white text-lg font-semibold">
+              Question: {currentQuestion + 1}/
               {Object.values(test.queries).length}
             </p>
 
-            <p>
-              Correct answers: {accquiredPoints}/
+            <p className="text-white text-lg font-semibold">
+              Correct answers:{" "}
+              <span className='text-success'>
+              {accquiredPoints}/
               {Object.values(test.queries).length}
+
+              </span>
             </p>
           </div>
 
           <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 justify-center items-center w-full h-full flex-col gap-3">
             <p
-              className="text-white"
+              className="text-white font-bold text-2xl"
               onClick={() =>
                 console.log(Object.values(test.queries)[currentQuestion])
               }
@@ -107,7 +119,7 @@ function TestStartedPage() {
                 .map((answer) => (
                   <button
                     disabled={selectedAnswer !== null}
-                    className={`btn bg-accColor hover:bg-blue-800 active:scale-95 hover:scale-95 duration-500 transition-all btn-wide text-white ${
+                    className={`btn bg-accColor  active:scale-95 hover:scale-95 duration-500 transition-all btn-wide text-white ${
                       selectedAnswer !== null &&
                       answer.id ===
                         Object.values(test.queries)[currentQuestion]

@@ -124,11 +124,13 @@ function CompetitionChat({ collectionName, id }) {
                       </div>
                       <div className="chat-header">
                         {message.sentBy.displayName}
-                        <time className="text-xs opacity-50">
+                        <time className="text-xs opacity-50 text-white">
                           {formatDistanceToNow(message.sentAt)} ago
                         </time>
                       </div>
-                      <div className="chat-bubble">{message.content}</div>
+                      <div className="chat-bubble bg-accColor text-white break-all">
+                        {message.content}
+                      </div>
                     </div>
                   ) : (
                     <div className="chat chat-end">
@@ -143,11 +145,13 @@ function CompetitionChat({ collectionName, id }) {
                       </div>
                       <div className="chat-header">
                         {message.sentBy.displayName}
-                        <time className="text-xs opacity-50">
+                        <time className="text-xs opacity-50 text-white">
                           {formatDistanceToNow(message.sentAt)} ago
                         </time>
                       </div>
-                      <div className="chat-bubble">{message.content}</div>
+                      <div className="chat-bubble text-white bg-sky-600 break-all">
+                        {message.content}
+                      </div>
                     </div>
                   )
                 )}
@@ -161,7 +165,7 @@ function CompetitionChat({ collectionName, id }) {
             document?.expiresAt &&
             (document?.expiresAt - new Date().getTime()) / 86400000 <= 0
           }
-          className="resize-none outline-none sm:w-4/5 lg:w-2/3 xl:w-1/2 py-3 px-2 rounded-md"
+          className="resize-none outline-none textarea max-h-16 sm:w-4/5 lg:w-2/3 xl:w-1/2 py-3 px-2 rounded-md"
           placeholder={`${reuseableTranslations.messageAreaInput.placeholder[selectedLanguage]}`}
           value={message}
           onChange={(e) => setMessage(e.target.value)}

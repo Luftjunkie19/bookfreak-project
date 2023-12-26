@@ -94,68 +94,6 @@ function RecensionsForBook({
       },
     },
   ];
-  const filterOptions = [
-    {
-      label: "10.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 10);
-      },
-    },
-    {
-      label: "9.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 9);
-      },
-    },
-    {
-      label: "8.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 8);
-      },
-    },
-    {
-      label: "7.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 7);
-      },
-    },
-    {
-      label: "6.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 6);
-      },
-    },
-    {
-      label: "5.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 5);
-      },
-    },
-    {
-      label: "4.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 4);
-      },
-    },
-    {
-      label: "3.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 3);
-      },
-    },
-    {
-      label: "2.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 2);
-      },
-    },
-    {
-      label: "1.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 1);
-      },
-    },
-  ];
 
   const filteredItems = () => {
     if (selectedFilters.length > 0) {
@@ -269,7 +207,7 @@ function RecensionsForBook({
       </div>
 
       {sortedRecensions().length > 0 ? (
-        <div className="flex flex-col sm:justify-center lg:justify-start w-full sm:items-center lg:items-start gap-4 sm:p-3 xl:p-0">
+        <div className="flex flex-col sm:justify-center lg:justify-start w-full sm:items-center lg:items-start gap-4 sm:p-3 xl:p-1">
           {sortedRecensions().map((recensioner) => (
             <div
               key={recensioner.id}

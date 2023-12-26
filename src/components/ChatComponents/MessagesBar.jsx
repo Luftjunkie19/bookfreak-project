@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { formatDistanceToNow } from "date-fns";
+import { BiSolidMessageRoundedDetail } from "react-icons/bi";
 import { FaImage } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router";
@@ -84,11 +85,12 @@ function MessagesBar() {
 
   return (
     <div>
-      <h2 className="sm:text-center md:text-left p-2 leading-9 text-2xl font-semibold text-white">
+      <h2 className="p-1 flex gap-2 items-center leading-9 text-2xl font-semibold text-white">
+        <BiSolidMessageRoundedDetail />
         {translations.chatsTitle[selectedLanguage]}
       </h2>
 
-      <div className="grid gap-4 p-1 grid-cols-1 sm:justify-items-center md:justify-items-start">
+      <div className="grid gap-4 p-1 grid-cols-1 sm:justify-items-center md:justify-items-start ">
         {documents.filter(
           (chat) =>
             chat.chatId.split("-")[0] === user.uid ||
@@ -104,10 +106,10 @@ function MessagesBar() {
               <>
                 <Link
                   to={`/message-to/${doc.chatId}`}
-                  className={`sm:w-11/12 ${
+                  className={`sm:w-full ${
                     location.pathname.includes("/message-to") &&
                     "lg:w-full xl:w-full 2xl:w-full"
-                  } lg:w-1/3 2xl:w-1/4`}
+                  } max-w-lg`}
                 >
                   <div
                     className={`w-full p-3 rounded-lg text-white hover:bg-accColor duration-500 transition-all ${
@@ -146,7 +148,7 @@ function MessagesBar() {
                       </p>
                     </div>
 
-                    <div className="w-full flex justify-between p-1 gap-2">
+                    <div className="w-full flex justify-between flex-wrap p-1 gap-2">
                       <p className="flex items-center">
                         {chatMessages.filter(
                           (message) => message.chatId === doc.chatId

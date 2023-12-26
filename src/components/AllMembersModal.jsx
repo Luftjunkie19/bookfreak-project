@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { Button } from "flowbite-react";
+import { FaUsers } from "react-icons/fa6";
 
 import {
   Avatar,
@@ -26,7 +27,11 @@ function AllMembersModal({ users }) {
 
   return (
     <>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button
+        className="bg-accColor text-white my-2 border-none "
+        onClick={handleClickOpen}
+        endIcon={<FaUsers />}
+      >
         Show all members
       </Button>
       <Dialog onClick={handleClose} open={open}>

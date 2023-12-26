@@ -1,5 +1,4 @@
 import '../stylings/scrollbarStyling.css';
-import '../stylings/backgrounds.css';
 
 import {
   useEffect,
@@ -14,13 +13,18 @@ import {
 import {
   FaBook,
   FaCommentAlt,
-  FaPencilAlt,
   FaPlusCircle,
   FaStar,
   FaUserAltSlash,
 } from 'react-icons/fa';
-import { FaBookBookmark } from 'react-icons/fa6';
-import { IoShareSocialSharp } from 'react-icons/io5';
+import {
+  FaBookBookmark,
+  FaGear,
+} from 'react-icons/fa6';
+import {
+  IoPieChartSharp,
+  IoShareSocialSharp,
+} from 'react-icons/io5';
 import { useSelector } from 'react-redux';
 import {
   Route,
@@ -33,11 +37,13 @@ import {
 } from 'react-router-dom';
 
 import translations from '../../assets/translations/ProfileTranslations.json';
+import ChatsPage from '../../components/ProfileComonents/ChatsPage';
 import FavouriteBooks from '../../components/ProfileComonents/FavouriteBooks';
 import FullyReadBooks from '../../components/ProfileComonents/FullyReadBooks';
 import Links from '../../components/ProfileComonents/Links';
 import OwnedBooks from '../../components/ProfileComonents/OwnedBooks';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useLogout } from '../../hooks/useLogout';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
@@ -53,7 +59,6 @@ function Profile() {
   const [document, setDocument] = useState(null);
   const [books, setBooks] = useState([]);
   const [links, setLinks] = useState([]);
-  const [favBooks, setFavBooks] = useState([]);
   const [readerObjects, setReaderObjects] = useState([]);
   const { getDocument } = useRealtimeDocument();
   const { removeFromDataBase } = useRealDatabase();
@@ -96,25 +101,14 @@ function Profile() {
     setLinks(linksEl);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadFavouritedBooks = async () => {
-    const favBooksEl = await getDocuments("lovedBooks");
-    setFavBooks(favBooksEl);
-  };
+  const { documents: favBooks } = useGetDocuments("lovedBooks");
 
   useEffect(() => {
     documentObject();
     loadReaderObjects();
-    loadFavouritedBooks();
     loadBooks();
     loadLinks();
-  }, [
-    documentObject,
-    loadBooks,
-    loadFavouritedBooks,
-    loadLinks,
-    loadReaderObjects,
-  ]);
+  }, [documentObject, loadBooks, loadLinks, loadReaderObjects]);
 
   const navigate = useNavigate();
 
@@ -134,36 +128,21 @@ function Profile() {
     await logout();
     await deleteUser(user);
     removeFromDataBase("users", user.uid);
+    await fetch(
+      "http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/removeAccount",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Connection: "keep-alive",
+          Accept: "*",
+        },
+        body: JSON.stringify({ accountId: document.stripeAccountData.id }),
+      }
+    );
   };
 
-  const getBalance = async () => {
-    const response = await fetch(`http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/getBalance`, {
-      method: "POST",
-      headers: {
-      'Content-Type': 'application/json',
-      'Connection': 'keep-alive',
-      'Accept': '*',
-      }, 
-      body:JSON.stringify({accountId: document.stripeAccountData.id})
-    });
 
-    const data = await response.json();
-
-    return data.available;
-  }
-
-  const payoutAminimum = async () => {
-    const response= fetch(`http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createPayout`, {
-      method: "POST",
-      headers: {
-      'Content-Type': 'application/json',
-      'Connection': 'keep-alive',
-      'Accept': '*',
-      }, 
-      body:JSON.stringify({amount:500, userId: document.stripeAccountData.id ,currency: document.stripeAccountData.default_currency, destinationAccount:document.stripeAccountData.external_accounts.data["0"].id })
-    });
-    return response;
-  }
 
   return (
     <div className="min-h-screen h-full">
@@ -173,9 +152,7 @@ function Profile() {
             <div className="p-2 sm:border-b-4 sm:border-white xl:border-none bg-userColumnBgCol xl:rounded-b-lg">
               <div className="flex xl:justify-start sm:justify-center p-2">
                 <div className="avatar">
-                  <div className="w-48 rounded-full ring border-accColor ring-offset-base-100 ring-offset-2" onClick={async ()=>{
-                    console.log(await getBalance());
-                  }}>
+                  <div className="w-48 rounded-full ring border-accColor ring-offset-base-100 ring-offset-2">
                     <img
                       src={document.photoURL}
                       alt=""
@@ -190,9 +167,31 @@ function Profile() {
                 <p className="text-white font-bold text-3xl tracking-wide py-3">
                   {document.nickname}
                 </p>
-            <button  className='btn' onClick={payoutAminimum}>Payout</button>
-              
               </div>
+
+              {document.id === user.uid && (
+                <>
+                  {document.creditsAvailable.balance ? (
+                    Object.values(document.creditsAvailable.balance).map(
+                      (doc, i) => (
+                        <p key={i} className="text-white text-lg font-semibold">
+                          {doc.amount / 100}{" "}
+                          <span className="text-xl text-green-400">
+                            {doc.currency.toUpperCase()}
+                          </span>
+                        </p>
+                      )
+                    )
+                  ) : (
+                    <p className="text-xl font-medium text-green-400">
+                      {document.creditsAvailable.valueInMoney}{" "}
+                      <span className="text-xl font-medium text-green-400">
+                        {document.stripeAccountData.default_currency.toUpperCase()}
+                      </span>
+                    </p>
+                  )}
+                </>
+              )}
 
               {document &&
                 links.filter((link) => link.belongsTo === document.id).length >
@@ -261,7 +260,7 @@ function Profile() {
                     </div>
                     <div className="stat-value">
                       {
-                        favBooks.filter((book) => book?.lovedBy === document.id)
+                        favBooks.filter((book) => book.lovedBy === document.id)
                           .length
                       }
                     </div>
@@ -271,9 +270,9 @@ function Profile() {
 
               {document.id === user.uid && (
                 <>
-                  <div className="grid sm:grid-cols-1 sm:gap-3 md:grid-cols-2 lg:grid-cols-3 py-3">
+                  <div className="py-3 flex flex-wrap gap-3 items-center">
                     <Link
-                      className="btn text-white border-none bg-blue-500 hover:bg-blue-900 flex justify-around"
+                      className="btn text-white group border-none bg-blue-500 hover:bg-blue-900 flex gap-2"
                       to="/edit-profile"
                     >
                       {
@@ -281,11 +280,11 @@ function Profile() {
                           selectedLanguage
                         ]
                       }{" "}
-                      <FaPencilAlt className="text-xl" />
+                      <FaGear className="text-base group-hover:rotate-180 transition-all" />
                     </Link>
 
                     <Link
-                      className="btn text-white border-none bg-accColor hover:bg-green-950 flex justify-around"
+                      className="btn text-white border-none bg-accColor hover:bg-green-950 flex gap-2"
                       to="/add-link"
                     >
                       {
@@ -293,11 +292,11 @@ function Profile() {
                           selectedLanguage
                         ]
                       }
-                      <FaPlusCircle className="text-xl" />
+                      <FaPlusCircle className="text-base" />
                     </Link>
 
                     <button
-                      className="btn bg-red-600 text-white border-none hover:bg-darkRed flex justify-around"
+                      className="btn bg-red-600 text-white border-none hover:bg-darkRed flex gap-2"
                       onClick={removeAccount}
                     >
                       {
@@ -305,7 +304,7 @@ function Profile() {
                           selectedLanguage
                         ]
                       }
-                      <FaUserAltSlash className="text-xl" />
+                      <FaUserAltSlash className="text-base" />
                     </button>
                   </div>
                 </>
@@ -371,6 +370,15 @@ function Profile() {
                   }
                   <FaStar />
                 </Link>
+                {document.id === user.uid && (
+                  <Link
+                    to="your-stats"
+                    className="btn bg-accColor border-none snap-start text-white"
+                  >
+                    Statistics
+                    <IoPieChartSharp />
+                  </Link>
+                )}
               </div>
 
               <div className="flex justify-center items-center py-4">
@@ -401,22 +409,22 @@ function Profile() {
                     }
                   />
 
-                  <Route
-                    path="users-fav"
-                    element={
-                      <FavouriteBooks
-                        favBooks={books.filter((book, i) => {
-                          const arr = favBooks
-                            .filter((book) => book.lovedBy === id)
-                            .map((bookEl) => {
-                              return bookEl.lovedBookId;
-                            });
+<Route
+  path="users-fav"
+  element={<FavouriteBooks favBooks={[]} />}
+/>
 
-                          return book.id === arr[i];
-                        })}
-                      />
-                    }
-                  />
+                  {document.id === user.uid && (
+                    <Route
+                      path="your-stats"
+                      element={
+                        <ChatsPage
+                          readerObjects={readersFiltered}
+                          bookObjects={books}
+                        />
+                      }
+                    />
+                  )}
                 </Routes>
               </div>
             </div>

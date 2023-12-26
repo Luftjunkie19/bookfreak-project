@@ -1,3 +1,5 @@
+import '../stylings/scrollbarStyling.css';
+
 import React, {
   useEffect,
   useState,
@@ -25,13 +27,6 @@ import {
   Button,
   Menu,
   MenuItem,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
 } from '@mui/material';
 
 import {
@@ -43,6 +38,7 @@ import formsTranslations
   from '../../assets/translations/FormsTranslations.json';
 import reusableTranslations
   from '../../assets/translations/ReusableTranslations.json';
+import Ranking from '../../components/Ranking';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
@@ -185,19 +181,13 @@ function OverallClub() {
     );
   };
 
-  const sortedArray = firstComeServedRule(
-    members.filter((member) => member.belongsTo === id),
-    getReadBooks,
-    getlastBookRead
-  );
-
   return (
     <div className="min-h-screen h-full">
       {document &&
         members.find((member) => {
           return member.value.id === user.uid && member.belongsTo === id;
         }) && (
-          <div className="w-full flex justify-between items-center p-3">
+          <div className="w-full flex justify-between items-center bg-primeColor z-[9999] p-3 sticky sm:top-16 xl:top-20 left-0">
             <div className="flex justify-between text-white items-center">
               <img
                 className="w-16 h-16 rounded-full object-cover"
@@ -207,13 +197,19 @@ function OverallClub() {
               <p className="ml-2">{document.clubsName}</p>
             </div>
 
-            <div className="sm:hidden xl:flex justify-around items-center">
-              <Link to={`/readers-clubs/${id}`} className="btn mx-2">
+            <div className="sm:hidden xl:flex justify-around items-center gap-2">
+              <Link
+                to={`/readers-clubs/${id}`}
+                className="btn bg-transparent text-white border-none"
+              >
                 <FaFacebookMessenger />{" "}
                 {reusableTranslations.communitiesBar.chatBtn[selectedLanguage]}
               </Link>
 
-              <Link className="btn mr-2" to={`/readers-clubs/${id}/overall`}>
+              <Link
+                className="btn bg-transparent text-white border-none"
+                to={`/readers-clubs/${id}/overall`}
+              >
                 <FaInfo />{" "}
                 {
                   reusableTranslations.communitiesBar.overallBtn[
@@ -222,14 +218,14 @@ function OverallClub() {
                 }
               </Link>
 
-              <button className="btn" onClick={leaveClub}>
+              <button className="btn bg-error text-white" onClick={leaveClub}>
                 {reusableTranslations.communitiesBar.leaveBtn[selectedLanguage]}
                 <BsFillDoorOpenFill />{" "}
               </button>
               {document && document.createdBy.id === user.uid && (
-                <div className="mx-2 flex justify-around items-center">
+                <div className="mx-2 flex justify-around items-center gap-2">
                   <button
-                    className="btn"
+                    className="btn btn-info text-white border-none"
                     onClick={() => navigate(`/edit-club/${document.id}`)}
                   >
                     {
@@ -241,7 +237,7 @@ function OverallClub() {
                   </button>
 
                   <button
-                    className="btn ml-2"
+                    className="btn bg-error text-white border-none"
                     onClick={async () => await deleteClub(document.id)}
                   >
                     {
@@ -255,7 +251,7 @@ function OverallClub() {
               )}
             </div>
 
-            <div className="sm:flex xl:hidden justify-around items-center sm:flex-col lg:flex-row">
+            <div className="sm:flex xl:hidden justify-around items-center sm:flex-col md:flex-row">
               <Button
                 className="text-white"
                 id="basic-button"
@@ -373,7 +369,7 @@ function OverallClub() {
       {document && (
         <>
           <div className="flex sm:flex-col xl:flex-row w-full h-full justify-between items-center px-4 gap-5 flex-wrap">
-            <div className="xl:h-1/2 sm:h-full xl:w-1/4 sm:w-4/5 py-6 flex justify-around items-center flex-col md:flex-row xl:flex-col gap-4">
+            <div className="xl:h-1/2 sm:h-full xl:w-1/4 sm:w-4/5 py-6 flex  flex-col lg:flex-row xl:flex-col gap-4">
               <div className="sm:w-36 sm:h-36 lg:w-64 lg:h-64">
                 <img
                   className="w-full h-full rounded-full"
@@ -429,122 +425,14 @@ function OverallClub() {
                 )}
               </div>
             </div>
-
-            <TableContainer
-              component={Paper}
-              className="sm:w-full xl:w-3/5 bg-accColor"
-            >
-              <Table aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      className="bg-primeColor font-bold text-lg text-center"
-                      sx={{ color: "#fff" }}
-                    >
-                      Avatar
-                    </TableCell>
-                    <TableCell
-                      className="bg-primeColor text-center font-bold text-lg"
-                      sx={{ color: "#fff" }}
-                    >
-                      Nickname
-                    </TableCell>
-                    <TableCell
-                      className="bg-primeColor text-center font-bold text-lg"
-                      sx={{ color: "#fff" }}
-                    >
-                      Books Read
-                    </TableCell>
-                    <TableCell
-                      className="bg-primeColor font-bold text-lg text-center"
-                      sx={{ color: "#fff" }}
-                    >
-                      Current book
-                    </TableCell>
-                    <TableCell
-                      className="bg-primeColor font-bold text-lg text-center"
-                      sx={{ color: "#fff" }}
-                    >
-                      Pages read
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {document &&
-                    sortedArray.map((member) => (
-                      <TableRow
-                        key={member.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          className="border-r-white border-r-2"
-                          sx={{ color: "#fff" }}
-                        >
-                          <Link to={`/user/profile/${member.id}`}>
-                            <div className="w-16 h-16">
-                              <img
-                                className="w-full h-full rounded-full"
-                                src={member.photoURL}
-                                alt=""
-                              />
-                            </div>
-                          </Link>
-                        </TableCell>
-
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          className="border-r-white border-r-2"
-                          sx={{ color: "#fff" }}
-                        >
-                          <p>{member.nickname}</p>
-                        </TableCell>
-                        <TableCell
-                          sx={{ color: "#fff" }}
-                          component="th"
-                          scope="row"
-                          className="border-r-white border-r-2"
-                        >
-                          <p className="text-center">
-                            {member.readBooks}{" "}
-                            {member.readBooks > 1 ? "books" : "book"}
-                          </p>
-                        </TableCell>
-                        <TableCell
-                          sx={{ color: "#fff" }}
-                          component="th"
-                          scope="row"
-                          className="border-r-white border-r-2"
-                        >
-                          <p className="text-center">{member.lastReadBook}</p>
-                        </TableCell>
-                        <TableCell
-                          sx={{ color: "#fff" }}
-                          component="th"
-                          scope="row"
-                        >
-                          <p>
-                            {readerObjects.length > 0 &&
-                              readerObjects
-                                .filter(
-                                  (reader, i) => reader.id === member.id
-                                )
-                                .reduce(
-                                  (prev, cur) => prev + cur.pagesRead,
-                                  0
-                                )}{" "}
-                            Pages
-                          </p>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <div className="sm:w-full xl:max-w-5xl">
+              <Ranking
+                communityObject={document}
+                communityMembers={members.filter(
+                  (member) => member.belongsTo === id
+                )}
+              />
+            </div>
           </div>
         </>
       )}

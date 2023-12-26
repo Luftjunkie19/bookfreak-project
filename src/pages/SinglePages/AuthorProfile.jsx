@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { Link } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router';
+import { Link } from 'react-router-dom';
 
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function AuthorProfile() {
   const { authorName } = useParams();
@@ -31,16 +35,6 @@ function AuthorProfile() {
       console.log(error);
       //=> Typeof wikiError
     }
-  };
-
-  const getImage = async () => {
-    try {
-      const data = await fetch(
-        `https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${authorName}&limit=20&callback=?`
-      );
-      const dataElements = await data.json();
-      console.log(dataElements);
-    } catch (error) {}
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

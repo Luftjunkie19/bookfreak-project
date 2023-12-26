@@ -1,16 +1,19 @@
+import "../../components/stylings/mui-stylings.css";
+
 import React, { useEffect, useRef, useState } from "react";
 
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import AvatarEditor from "react-avatar-editor";
+import { BsStars } from "react-icons/bs";
+import { CgDetailsMore } from "react-icons/cg";
 import { FaImage, FaWindowClose } from "react-icons/fa";
 import { FaX } from "react-icons/fa6";
 import { RiTeamFill } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import CreatableSelect from "react-select/creatable";
 import uniqid from "uniqid";
 
-import { Alert, Snackbar } from "@mui/material";
+import { Alert, Autocomplete, Box, Snackbar, TextField } from "@mui/material";
 
 import alertMessages from "../../assets/translations/AlertMessages.json";
 import translations from "../../assets/translations/FormsTranslations.json";
@@ -236,7 +239,7 @@ function CreateClub() {
   };
 
   return (
-    <div className="min-h-screen h-full w-full flex flex-col justify-center items-center">
+    <div className="min-h-screen h-full w-full flex flex-col">
       {editCover && (
         <div className="h-screen bg-imgCover w-screen fixed top-0 left-0 z-[9999]">
           <button
@@ -311,90 +314,139 @@ function CreateClub() {
         </div>
       )}
 
-      <form
-        onSubmit={submitForm}
-        className="lg:bg-accColor sm:w-full lg:w-2/3 xl:w-3/5 2xl:w-1/2 text-white p-6 rounded-lg"
-      >
-        <div className="flex flex-col justify-center items-center p-4">
-          <RiTeamFill className="text-4xl" />
-          <h2 className="text-2xl text-center py-2">
-            {translations.topText.clubs[selectedLanguage]}
-          </h2>
-          <p className="text-center">
+      <form onSubmit={submitForm} className="w-full text-white">
+        <div className="flex flex-wrap items-center justify-center gap-4 p-4">
+          <RiTeamFill className="text-6xl" />
+          <p className="font-bold">
             {translations.topText.clubs.underText[selectedLanguage]}
           </p>
         </div>
 
-        <div className="flex w-full flex-wrap justify-around items-center gap-2">
-          <label className="flex flex-col sm:w-full lg:w-2/5">
-            <span>{translations.clubsNameInput.label[selectedLanguage]}:</span>
-            <input
-              required
-              type="text"
-              className="input border-accColor rounded-md border-2 outline-none w-full py-4 px-1"
-              placeholder={`${translations.clubsNameInput.placeholder[selectedLanguage]}`}
-              onChange={(e) =>
-                setReadersClub((club) => {
-                  club.clubsName = e.target.value;
-                  return club;
-                })
-              }
-            />
-          </label>
-          <label className="flex flex-col sm:w-full lg:w-2/5">
-            <span> {translations.membersInput.label[selectedLanguage]}:</span>
-            <CreatableSelect
-              className="text-black w-full"
-              options={notCurrentUsers}
-              isMulti
-              isClearable
-              isSearchable
-              onChange={(e) => {
-                setAttachedUsers(e);
-              }}
-            />
-          </label>
-          <label className="flex flex-col items-center sm:w-full lg:w-1/2 2xl:w-2/5">
-            <span>{translations.clubsLogoInput.label[selectedLanguage]}:</span>
-            <div className="flex items-center justify-center w-full p-2">
+        <div className="flex w-full flex-col gap-4 p-4">
+          <p className="font-bold text-2xl flex gap-2">
+            {" "}
+            <BsStars /> Essential information <BsStars />{" "}
+          </p>
+          <div className="flex flex-wrap w-full gap-4 items-center">
+            <label className="flex flex-col sm:w-full md:max-w-md">
+              <span>
+                {translations.clubsNameInput.label[selectedLanguage]}:
+              </span>
               <input
-                type="file"
                 required
-                onChange={handleSelect}
-                className="hidden"
+                type="text"
+                className="input border-accColor rounded-md border-2 outline-none w-full py-4 px-1"
+                placeholder={`${translations.clubsNameInput.placeholder[selectedLanguage]}`}
+                onChange={(e) =>
+                  setReadersClub((club) => {
+                    club.clubsName = e.target.value;
+                    return club;
+                  })
+                }
               />
-              <p className="btn sm:w-full sm:bg-accColor lg:bg-primeColor text-white border-none hover:bg-lime-700">
-                {translations.selectImgBtn.text[selectedLanguage]} <FaImage />
-              </p>
-            </div>
-          </label>
-
-          <label className="flex flex-col sm:w-full lg:w-1/2 2xl:w-2/5">
-            <span className="label-text">
-              {translations.requiredPagesToJoin.label[selectedLanguage]}
-            </span>
-            <input
-              className="input border-accColor rounded-md border-2 outline-none w-full"
-              placeholder={`${translations.requiredPagesToJoin.placeholder[selectedLanguage]}`}
-              type="number"
-              min={0}
-              step={10}
-              onChange={(e) => {
-                setReadersClub((club) => {
-                  club.requiredPagesRead = +e.target.value;
-                  return club;
-                });
-              }}
-            />
-          </label>
+            </label>
+            <label className="flex flex-col sm:w-full md:max-w-lg">
+              <Autocomplete
+                multiple
+                autoHighlight
+                id="tags-outlined"
+                options={notCurrentUsers}
+                getOptionLabel={(option) => option.label}
+                renderOption={(props, option) => {
+                  return (
+                    <Box
+                      sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                      component="li"
+                      key={option.value.id}
+                      {...props}
+                      className="bg-accColor text-white flex gap-4 items-center p-1"
+                    >
+                      <img
+                        className="w-10 h-10 rounded-full"
+                        loading="lazy"
+                        src={option.value.photoURL}
+                        srcSet={`${option.value.photoURL} 2x`}
+                        alt={option.value.id}
+                      />
+                      <p>{option.value.nickname}</p>
+                    </Box>
+                  );
+                }}
+                filterSelectedOptions
+                isOptionEqualToValue={(option, value) =>
+                  option.value.id === value.value.id
+                }
+                onChange={(e, value) => {
+                  setAttachedUsers(value);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    inputProps={{
+                      ...params.inputProps,
+                      autoComplete: "new-password",
+                    }}
+                    label={translations.membersInput.label[selectedLanguage]}
+                    placeholder={
+                      translations.membersInput.label[selectedLanguage]
+                    }
+                  />
+                )}
+              />
+            </label>
+          </div>
         </div>
-        <label className="flex flex-col">
+
+        <div className="flex flex-wrap p-4 gap-4 items-center">
+          <p className="font-bold text-2xl flex gap-2">
+            <CgDetailsMore /> Detailed information <CgDetailsMore />
+          </p>
+          <div className="flex flex-wrap w-full gap-4 items-center">
+            <label className="flex flex-col sm:w-full md:max-w-sm">
+              <span>
+                {translations.clubsLogoInput.label[selectedLanguage]}:
+              </span>
+              <div className="flex items-center justify-center w-full">
+                <input
+                  type="file"
+                  required
+                  onChange={handleSelect}
+                  className="hidden"
+                />
+                <p className="btn w-full bg-accColor text-white border-none hover:bg-blue-400">
+                  {translations.selectImgBtn.text[selectedLanguage]} <FaImage />
+                </p>
+              </div>
+            </label>
+
+            <label className="flex flex-col ssm:w-full md:max-w-xl">
+              <span className="label-text text-white py-1">
+                {translations.requiredPagesToJoin.label[selectedLanguage]}
+              </span>
+              <input
+                className="input border-accColor rounded-md border-2 outline-none w-full"
+                placeholder={`${translations.requiredPagesToJoin.placeholder[selectedLanguage]}`}
+                type="number"
+                min={0}
+                step={10}
+                onChange={(e) => {
+                  setReadersClub((club) => {
+                    club.requiredPagesRead = +e.target.value;
+                    return club;
+                  });
+                }}
+              />
+            </label>
+          </div>
+        </div>
+
+        <label className="flex flex-col p-4">
           <span>
             {translations.descriptionTextarea.label[selectedLanguage]}:
           </span>
           <textarea
             required
-            className="outline-none h-48 border-accColor border-2 resize-none py-1 rounded-lg"
+            className="outline-none h-48 max-w-5xl border-accColor border-2 resize-none py-1 rounded-lg"
             placeholder={`${translations.descriptionTextarea.placeholder[selectedLanguage]}`}
             onChange={(e) =>
               setReadersClub((club) => {
@@ -406,7 +458,7 @@ function CreateClub() {
         </label>
 
         <div className="flex w-full justify-center items-center p-2 my-2">
-          <button className="btn sm:w-full md:w-1/2 text-white sm:bg-accColor lg:bg-primeColor">
+          <button className="btn sm:w-full md:max-w-xl text-white bg-accColor hover:bg-blue-400">
             {translations.submit[selectedLanguage]}
           </button>
         </div>

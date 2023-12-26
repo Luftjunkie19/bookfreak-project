@@ -1,10 +1,8 @@
 import {
-  useCallback,
   useEffect,
   useState,
 } from 'react';
 
-import { increment } from 'firebase/database';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -18,13 +16,18 @@ import {
   TableRow,
 } from '@mui/material';
 
-import { CompetitionRules } from '../assets/CompetitionsRules/CompetitionRules';
 import reuseableTranslations
   from '../assets/translations/ReusableTranslations.json';
 import { useAuthContext } from '../hooks/useAuthContext';
+import { useRanking } from '../hooks/useRanking';
 import { useRealDatabase } from '../hooks/useRealDatabase';
 import useRealtimeDocument from '../hooks/useRealtimeDocument';
 import useRealtimeDocuments from '../hooks/useRealtimeDocuments';
+import Loader from './Loader';
+import {
+  BookCategoryChart,
+  UserComparisonChart,
+} from './ProfileComonents/charts/LineChart';
 import Top3Winners from './Top3Winners';
 
 function Ranking({
@@ -37,11 +40,11 @@ function Ranking({
     (state) => state.languageSelection.selectedLangugage
   );
   const { getDocuments } = useRealtimeDocuments();
-  const {getDocument}= useRealtimeDocument();
-  const {updateDatabase}= useRealDatabase();
-  const { teachToFishRule, liftOthersRiseJointlyRule, firstComeServedRule } =
-    CompetitionRules();
+  const { getDocument } = useRealtimeDocument();
+  const { updateDatabase } = useRealDatabase();
   const { user } = useAuthContext();
+  const [isPending, setIsPending] = useState(false);
+
   const [books, setBooks] = useState([]);
   const [readerObjects, setReaderObjects] = useState([]);
 
@@ -72,7 +75,6 @@ function Ranking({
     loadReaderObjects();
   }, [loadBooks, loadReaderObjects]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getReadBooks = (id) => {
     return !communityObject?.expiresAt
       ? readerObjects.filter(
@@ -87,7 +89,6 @@ function Ranking({
         ).length;
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getlastBookRead = (id) => {
     const BookTitles = !communityObject?.expiresAt
       ? readerObjects.filter(
@@ -112,92 +113,78 @@ function Ranking({
     return lastBookTitle ? lastBookTitle : "No book yet";
   };
 
-  const [suitableMembers, setSuitMembers] = useState([]);
+  const { orderedMembers } = useRanking({
+    readerObjects,
+    communityMembers,
+    communityObject,
+    getReadBooks,
+    getlastBookRead,
+    expirationTimeNumber,
+  });
 
+  const payoutTheWinningUser = async () => {
+    setIsPending(true);
+    try {
+      const winnerDoc = await getDocument("users", orderedMembers[0].id);
+      const hostId = await getDocument("users", communityObject.createdBy.id);
 
-
-    const accurateMembers = useCallback(async () => {
-    if (
-      readerObjects.length > 0 &&
-      communityMembers &&
-      communityObject &&
-      communityObject.competitionsName
-    ) {
-      if (communityObject.competitionsName === "Lift others, rise") {
-        const arr = await liftOthersRiseJointlyRule(
-          communityMembers,
-          getReadBooks,
-          expirationTimeNumber,
-          communityObject.createdBy.createdAt,
-          getlastBookRead
+      if (
+        winnerDoc &&
+        hostId &&
+        communityObject.prize.moneyPrize &&
+        !communityObject.prize.itemPrize
+      ) {
+        const payoutObject = await fetch(
+          "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createTransferToWinner",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Connection: "keep-alive",
+              Accept: "*",
+            },
+            body: JSON.stringify({
+              winnerObject: winnerDoc,
+              destinationId: winnerDoc.stripeAccountData.id,
+              chargeId: communityObject.chargeId,
+              amount: communityObject.prize.moneyPrize.amount,
+              currency: hostId.stripeAccountData.default_currency.toUpperCase(),
+              winnerCurrency:
+                winnerDoc.stripeAccountData.default_currency.toUpperCase(),
+              communityObject: communityObject,
+            }),
+          }
         );
-        setSuitMembers(arr);
-      }
-      if (communityObject.competitionsName === "First read, first served") {
-        const arr = firstComeServedRule(
-          communityMembers,
-          getReadBooks,
-          getlastBookRead
-        );
-        setSuitMembers(arr);
-      }
-
-      if (communityObject.competitionsName === "Teach to fish") {
-        const arr = await teachToFishRule(
-          readerObjects,
-          communityMembers,
-          getReadBooks,
-          getlastBookRead
-        );
-        setSuitMembers(arr);
-      }
-    } else {
-      const arr = firstComeServedRule(
-        communityMembers,
-        getReadBooks,
-        getlastBookRead
-      );
-      setSuitMembers(arr);
-    }
-  }, [readerObjects, communityMembers, communityObject, liftOthersRiseJointlyRule, getReadBooks, expirationTimeNumber, getlastBookRead, firstComeServedRule, teachToFishRule]);
-
-  useEffect(() => {
-    accurateMembers();
-  }, [accurateMembers]);
-
-    const payoutTheWinningUser = async () => {
-      const winnerDoc = await getDocument('users', suitableMembers[0].id);
-      const hostId = await getDocument('users', communityObject.createdBy.id);
-
-      if (winnerDoc && hostId && communityObject.prize.moneyPrize) {
-        updateDatabase({ creditsAvailable: increment(communityObject.prize.moneyPrize.amount) }, "users", winnerDoc.id);
-
-      const payoutObject =  await fetch('http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createTransferToWinner', {
-           method: "POST",
-        headers: {
-      "Content-Type": "application/json",
-        'Connection': 'keep-alive',
-            'Accept': '*',
-          },
-          body: JSON.stringify({
-            destinationId: winnerDoc.stripeAccountData.id,
-            organizatorId: hostId.stripeAccountData.id,
-            amount: communityObject.prize.moneyPrize.amount,
-            currency: winnerDoc.stripeAccountData.default_currency,
-        })
-        })
         const payoutFullfilled = await payoutObject.json();
         console.log(payoutFullfilled);
+        setIsPending(false);
       }
+    } catch (err) {
+      setIsPending(false);
+      console.log(err);
+    }
+  };
 
-}
+  const confirmClaimingPrize = () => {
+    setIsPending(true);
+    if (communityObject.prize.itemPrize) {
+      updateDatabase(
+        { ...communityObject, prizeHandedIn: true },
+        "competitions",
+        communityObject.id
+      );
+    }
+    setIsPending(false);
+  };
 
   return (
-    <>
+    <div className="w-full flex-col flex">
+      {isPending && <Loader />}
+
       {(expirationTime > 0 || !expirationTime) && (
         <TableContainer
           component={Paper}
-          className="sm:w-full xl:w-1/2 bg-accColor"
+          className="sm:w-full lg:max-w-lg xl:max-w-2xl 2xl:max-w-4xl bg-accColor  self-center"
         >
           <Table aria-label="simple table">
             <TableHead>
@@ -234,8 +221,8 @@ function Ranking({
               </TableRow>
             </TableHead>
             <TableBody>
-              {suitableMembers.length > 0 &&
-                suitableMembers.map((user) => (
+              {orderedMembers.length > 0 &&
+                orderedMembers.map((user) => (
                   <TableRow
                     key={user.id}
                     sx={{
@@ -290,10 +277,48 @@ function Ranking({
         </TableContainer>
       )}
 
-      {expirationTime <= 0 && <><Top3Winners topWinners={suitableMembers} />
-</>}
-      {communityObject.createdBy.id === user.uid && expirationTime <= 0 && <button onClick={payoutTheWinningUser}>Send user money</button>}
-    </>
+      {!communityObject?.id.includes("readersClub") && expirationTime <= 0 && (
+        <div className="flex flex-col w-full justify-center items-center">
+          <Top3Winners topWinners={orderedMembers} />
+          {user.uid === orderedMembers[0]?.id &&
+            expirationTime <= 0 &&
+            !communityObject?.prizeHandedIn &&
+            communityObject?.prize?.moneyPrize?.amount > 0 && (
+              <button
+                className="btn text-yellow-400 bg-accColor hover:bg-yellow-400 hover:text-accColor max-w-xs"
+                onClick={payoutTheWinningUser}
+              >
+                Claim your prize
+              </button>
+            )}
+          {!communityObject?.id?.includes("readersClub") &&
+            !communityObject?.prizeHandedIn &&
+            communityObject?.prize?.itemPrize &&
+            user.uid === orderedMembers[0]?.id &&
+            expirationTime <= 0 && (
+              <button
+                className="btn text-yellow-400 bg-accColor hover:bg-yellow-400 hover:text-accColor max-w-xs"
+                onClick={confirmClaimingPrize}
+              >
+                Claim your prize
+              </button>
+            )}
+        </div>
+      )}
+
+      {readerObjects.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          <UserComparisonChart
+            readerObjects={readerObjects}
+            bookObjects={books}
+          />
+          <BookCategoryChart
+            readerObjects={readerObjects}
+            bookObjects={books}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -153,6 +153,14 @@ function Book() {
   };
 
   const publishRecension = (recension, bookRate) => {
+    if (recension.trim("").length < 10) {
+      setOpenState({
+        open: true,
+        message: "Recension has to be at least 10 characters long.",
+      });
+      return;
+    }
+
     addToDataBase("bookRecensions", `${id}/recensions/${user.uid}`, {
       recensionedBook: id,
       bookRate: bookRate,
@@ -585,18 +593,24 @@ function Book() {
               </div>
             </div>
 
-            <div className="flex sm:flex-col md:flex-row lg:flex-col xl:flex-row gap-2 w-full  items-center my-3">
+            <div className="flex flex-wrap gap-2 w-full items-center my-3">
               {document &&
               !readers.find(
                 (reader) =>
                   reader.id === user.uid && reader.bookReadingId === id
               ) ? (
-                <button className="btn lg:btn" onClick={openBookReaderForm}>
+                <button
+                  className="btn text-white bg-accColor"
+                  onClick={openBookReaderForm}
+                >
                   {translations.buttonsTexts.addToShelf[selectedLanguage]}{" "}
                   <GiBookshelf />
                 </button>
               ) : (
-                <button className="btn " onClick={removeFromShelf}>
+                <button
+                  className="btn text-white bg-error"
+                  onClick={removeFromShelf}
+                >
                   {translations.buttonsTexts.removeShelf[selectedLanguage]}{" "}
                   <MdPlaylistRemove />
                 </button>
@@ -606,7 +620,10 @@ function Book() {
                   (reader) =>
                     reader.id === user.uid && reader.bookReadingId === id
                 ) && (
-                  <button onClick={openUpdateReaderForm} className="btn ">
+                  <button
+                    onClick={openUpdateReaderForm}
+                    className="btn text-white bg-accColor"
+                  >
                     {translations.buttonsTexts.updateStatus[selectedLanguage]}
                     <MdUpdate />
                   </button>

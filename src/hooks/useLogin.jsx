@@ -57,7 +57,7 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccount", {
+        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount", {
           method:"POST",
              headers: {
               'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export function useLogin() {
 
         const stripeAccountData = await fetchedObject.json();
    
-          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink", {
+          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
@@ -96,11 +96,8 @@ export function useLogin() {
           email: res.user.email,
           photoURL: res.user.photoURL,
           description: "",
-          links: {},
-          notifications: {},
-          chats: {},
           id: res.user.uid,
-          creditsAvailable:{coins:0, valueInMoney:0, currency:stripeAccountData.default_currency },
+          creditsAvailable:{ valueInMoney:0, currency:stripeAccountData.default_currency },
           stripeAccountData,
           accountLinkObject:{...accountLinkObject}
         });
@@ -114,7 +111,7 @@ export function useLogin() {
       setIsPending(false);
     } catch (error) {
       setIsPending(false);
-
+console.log(error);
       setError(error.message);
     }
   };
@@ -144,7 +141,7 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccount", {
+        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount", {
           method:"POST",
              headers: {
               'Content-Type': 'application/json',
@@ -161,7 +158,7 @@ export function useLogin() {
 
         const stripeAccountData = await fetchedObject.json();
    
-          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink", {
+          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
@@ -183,13 +180,10 @@ export function useLogin() {
           email: res.user.email,
           photoURL: res.user.photoURL,
           description: "",
-          links: {},
-          notifications: {},
-          chats: {},
           id: res.user.uid,
           stripeAccountData,
           accountLinkObject:{...accountLinkObject},
-           creditsAvailable:{coins:0, valueInMoney:0, currency:stripeAccountData.default_currency },
+           creditsAvailable:{ valueInMoney:0, currency:stripeAccountData.default_currency },
         });
       }
 
@@ -231,7 +225,7 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccount", {
+        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount", {
           method:"POST",
              headers: {
               'Content-Type': 'application/json',
@@ -248,7 +242,7 @@ export function useLogin() {
 
         const stripeAccountData = await fetchedObject.json();
    
-          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink", {
+          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
@@ -270,10 +264,7 @@ export function useLogin() {
           email: res.user.email,
           photoURL: res.user.photoURL,
           description: "",
-          links: {},
-          notifications: {},
-          chats: {},
-           creditsAvailable:{coins:0, valueInMoney:0, currency:stripeAccountData.default_currency },
+           creditsAvailable:{ valueInMoney:0, currency:stripeAccountData.default_currency },
           id: res.user.uid,
           stripeAccountData,
            accountLinkObject:{...accountLinkObject},
@@ -336,7 +327,7 @@ export function useLogin() {
 
       await updateProfile(res.user, { displayName, photoURL });
 
-   const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccount", {
+   const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount", {
           method:"POST",
              headers: {
               'Content-Type': 'application/json',
@@ -353,7 +344,7 @@ export function useLogin() {
 
         const stripeAccountData = await fetchedObject.json();
    
-        const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink", {
+        const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
@@ -375,10 +366,7 @@ export function useLogin() {
         email: res.user.email,
         photoURL: res.user.photoURL,
         description: "",
-         creditsAvailable:{coins:0, valueInMoney:0, currency:stripeAccountData.default_currency },
-        links: {},
-        notifications: {},
-        chats: {},
+         creditsAvailable:{ valueInMoney:0, currency:stripeAccountData.default_curren},
         id: res.user.uid,
         accountLinkObject: { ...accountLinkObject },
         stripeAccountData,

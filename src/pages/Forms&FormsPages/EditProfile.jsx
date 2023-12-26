@@ -4,17 +4,22 @@ import { updateEmail, updateProfile } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { motion } from "framer-motion";
 import AvatarEditor from "react-avatar-editor";
-import { FaUserAlt, FaWindowClose } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import ReactFlagsSelect from "react-flags-select";
+import { FaWindowClose } from "react-icons/fa";
+import { FaX } from "react-icons/fa6";
+import { IoSettings } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { Alert } from "@mui/material";
+import { Snackbar } from "@mui/material";
 
 import alertMessages from "../../assets/translations/AlertMessages.json";
 import formsTranslation from "../../assets/translations/FormsTranslations.json";
 import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
+import BookBucksComponent from "../../components/HomeComponents/BookBucksComponent";
 import Loader from "../../components/Loader";
+import { modeActions } from "../../context/ModeContext";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { useFormRealData } from "../../hooks/useFormRealData";
 import { useRealDatabase } from "../../hooks/useRealDatabase";
@@ -22,7 +27,7 @@ import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function EditProfile() {
   const { user } = useAuthContext();
-
+  const dispatch = useDispatch();
   const { document } = useFormRealData("users", user.uid);
   const { getDocuments } = useRealtimeDocuments();
   const { updateDatabase } = useRealDatabase();
@@ -39,10 +44,12 @@ function EditProfile() {
   const [isPending, setIsPending] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [bookReaders, setBookReaders] = useState([]);
+  const [selected, setSelected] = useState(null);
   const editorRef = useRef();
-
+  const [amountToPayout, setAmountToPayout] = useState(0);
+  const [balance, setBalance] = useState(null);
   const storage = getStorage();
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const navigate = useNavigate();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -68,6 +75,7 @@ function EditProfile() {
   useEffect(() => {
     if (document) {
       setDescription(document.description);
+      setBalance(document.creditsAvailable.valueInMoney);
     }
   }, [document]);
 
@@ -154,6 +162,14 @@ function EditProfile() {
           photoURL: profileImg,
           description: description,
           email: email,
+          nationality: {
+            nationality: selected
+              ? selected.toLowerCase()
+              : document.nationality.nationality,
+            nationalityFlag: selected
+              ? `https://flagcdn.com/h40/${selected.toLowerCase()}.png`
+              : document.nationality.nationalityFlag,
+          },
         },
         "users",
         user.uid
@@ -185,12 +201,76 @@ function EditProfile() {
       );
     } catch (error) {
       console.log(error);
+      setIsPending(false);
+    }
+    setIsPending(false);
+  };
+
+  const payoutAmount = async (e) => {
+    e.preventDefault();
+    try {
+      setIsPending(true);
+      await fetch(
+        `http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createPayout`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Connection: "keep-alive",
+            Accept: "*",
+          },
+          body: JSON.stringify({
+            amount: amountToPayout,
+            currentUserId: user.uid,
+            userId: document.stripeAccountData.id,
+            currency: document.stripeAccountData.default_currency,
+            destinationAccount:
+              document.stripeAccountData.external_accounts.data["0"].id,
+          }),
+        }
+      );
+      setAmountToPayout(0);
+      setBalance((prev) => {
+        return prev - amountToPayout;
+      });
+      setIsPending(false);
+    } catch (err) {
+      setImgError(err.message);
+      setIsPending(false);
     }
   };
 
+  const moveToProvideFinanceData = async (e) => {
+    e.preventDefault();
+    try {
+      const accountLinkResponse = await fetch(
+        "http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Connection: "keep-alive",
+            Accept: "*",
+          },
+          body: JSON.stringify({ accountId: document.stripeAccountData.id }),
+        }
+      );
+
+      const { accountLinkObject } = await accountLinkResponse.json();
+
+      window.location.href = accountLinkObject.url;
+      window.location.assign(accountLinkObject.url);
+      window.location.replace(accountLinkObject.url);
+
+      toast.success("New link created");
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error.message);
+    }
+  };
   return (
     <motion.div
-      className="min-h-screen h-full flex justify-center items-center flex-col"
+      className="min-h-screen h-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -247,89 +327,246 @@ function EditProfile() {
           </div>
         </div>
       )}
+      {document && (
+        <form
+          onSubmit={handleSubmit}
+          className="flex w-full flex-col text-white  rounded-lg"
+        >
+          <div className="w-full flex flex-wrap items-center  p-4 gap-4">
+            <IoSettings className="text-3xl hover:animate-spin" />
+            <h2 className="text-xl text-center font-bold">User Settings</h2>
+          </div>
+          {/**Choose image start */}
+          <div className="flex w-full items-center sm:justify-center lg:justify-start flex-wrap gap-8 pl-3">
+            <img className="w-48 h-48 rounded-full" src={profileImg} alt="" />
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex sm:w-full md:w-3/4 xl:w-2/3 2xl:w-1/2 p-3 flex-col justify-center items-center text-white sm:bg-transparent md:bg-accColor rounded-lg"
-      >
-        <FaUserAlt className="text-3xl" />
-        <h2 className="text-3xl text-center">
-          {formsTranslation.topText.editProfile[selectedLanguage]}
-        </h2>
-        <p className="my-2 text-sm text-center">
-          {formsTranslation.topText.editCompetition.underText[selectedLanguage]}
-        </p>
-        <div className="flex flex-wrap w-full justify-around items-center gap-4 p-6 rounded-lg">
-          <label className="flex flex-col sm:w-full lg:w-2/5">
-            <span>
-              {formsTranslation.userFields.nickname[selectedLanguage]}:
-            </span>
+            <label className="flex flex-col sm:w-full max-w-md">
+              <span>
+                {formsTranslation.userFields.chooseAvatar[selectedLanguage]}:{" "}
+              </span>
+              <input
+                type="file"
+                onChange={handleImg}
+                className="file-input file-input-bordered bg-accColor w-full"
+              />
+            </label>
+          </div>
+          {/**Choose image end */}
+
+          {/**Details start */}
+          <div className="w-full p-6">
+            <p className=" text-2xl font-semibold text-white">
+              General information
+            </p>
+            <div className="flex flex-wrap w-full gap-4 py-2">
+              <label className="flex flex-col sm:w-full md:max-w-lg">
+                <span>
+                  {formsTranslation.userFields.nickname[selectedLanguage]}:
+                </span>
+                <input
+                  className="p-4 rounded-lg"
+                  type="text"
+                  required
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                />
+              </label>
+
+              <label className="flex flex-col sm:w-full md:max-w-lg">
+                <span>Email:</span>
+                <input
+                  className="p-4 rounded-lg"
+                  type="email"
+                  required
+                  value={email}
+                  disabled={true}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </label>
+              <label className="flex flex-col sm:w-full md:max-w-lg">
+                <span>Nationality:</span>
+                <ReactFlagsSelect
+                  searchPlaceholder="Search countries"
+                  className="text-black sm:w-full md:max-w-lg"
+                  selectButtonClassName="bg-accColor text-white rounded-md p-2 border-white text-white"
+                  selected={
+                    selected
+                      ? selected
+                      : document.nationality.nationality.toUpperCase()
+                  }
+                  onSelect={(code) => {
+                    setSelected(code);
+                    console.log(code);
+                  }}
+                />
+                <small>
+                  Note ! Changing the nationality won't change the currency and
+                  country in your financial account.
+                </small>
+              </label>
+            </div>
+          </div>
+
+          {/**Details end */}
+
+          <div className="flex flex-col w-full gap-3 p-6">
+            {document.stripeAccountData && (
+              <p className="text-white font-semibold text-2xl">
+                Available credits:{" "}
+                <span className="font-bold text-green-500">
+                  {" "}
+                  {(balance / 100 - amountToPayout / 100).toFixed(2)}{" "}
+                  {document.stripeAccountData.default_currency.toUpperCase()}
+                </span>
+              </p>
+            )}
             <input
-              className="p-4 rounded-lg"
-              type="text"
-              required
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+              type="number"
+              step={0.5}
+              min={0}
+              max={balance / 100}
+              className="p-4 rounded-lg max-w-lg"
+              value={amountToPayout / 100}
+              onChange={(e) => {
+                setAmountToPayout(Math.round(+e.target.value * 100));
+              }}
             />
-          </label>
+            <button
+              className="btn max-w-sm bg-accColor text-white"
+              onClick={payoutAmount}
+            >
+              Payout
+            </button>
+          </div>
 
-          <label className="flex flex-col sm:w-full lg:w-2/5">
-            <span>Email:</span>
-            <input
-              className="p-4 rounded-lg"
-              type="email"
-              required
-              value={email}
-              disabled={true}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </label>
+          <div className="flex flex-col w-full gap-3 p-6">
+            <p className=" text-2xl font-semibold text-white">
+              Financial Management
+            </p>
+            <Link
+              to={document.linkToExpress}
+              target="_blank"
+              className="btn max-w-xs bg-accColor text-white"
+            >
+              Move to dashboard
+            </Link>
+          </div>
 
-          <label className="flex flex-col sm:w-full lg:w-2/5">
-            <span>
-              {formsTranslation.userFields.chooseAvatar[selectedLanguage]}:{" "}
-            </span>
-            <input
-              type="file"
-              onChange={handleImg}
-              className="file-input file-input-bordered w-full"
-            />
-          </label>
+          <div className="p-6 flex gap-3 flex-col">
+            <p className="text-2xl font-semibold text-white">Visibility mode</p>
+            <label className="flex cursor-pointer gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`${
+                  isDarkModed ? " text-white" : " text-base-content"
+                }`}
+              >
+                <circle cx="12" cy="12" r="5" />
+                <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+              </svg>
+              <input
+                type="checkbox"
+                checked={isDarkModed}
+                className="toggle theme-controller"
+                onChange={() => {
+                  dispatch(modeActions.toggleDarkMode());
+                }}
+              />
+              <svg
+                className={`${
+                  isDarkModed ? " text-white" : " text-base-content"
+                }`}
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </label>
+          </div>
 
-          <label className="flex flex-col w-full">
+          {!document.stripeAccountData.details_submitted &&
+            !document.stripeAccountData.charges_enabled && (
+              <div className="flex flex-col gap-3 px-4">
+                <p>Provide essential financial data</p>
+                <button
+                  className="btn btn-info max-w-sm text-white"
+                  onClick={moveToProvideFinanceData}
+                >
+                  Finish
+                </button>
+              </div>
+            )}
+
+          <div className="flex flex-col gap-3 px-4">
+            <p className="text-2xl font-semibold text-white">
+              Replenish your account
+            </p>
+            <BookBucksComponent />
+          </div>
+
+          <label className="flex flex-col gap-2 pl-6 pr-2">
             <span>
               {formsTranslation.descriptionTextarea.label[selectedLanguage]}:
             </span>
             <textarea
-              className="p-4 rounded-lg resize-none outline-none"
+              className="rounded-lg resize-none outline-none max-w-4xl h-52 p-2"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
           </label>
 
-          <small className="w-full">
-            While logging with any auth-provider you cannot change your email or
-            we're too dumb for it 😅 yet. Expect an development of the site sir.
-          </small>
-        </div>
-        {!isPending && (
-          <button className="btn sm:w-full md:w-1/2 my-4 sm:bg-accColor md:bg-primeColor text-white">
-            {formsTranslation.updateBtn[selectedLanguage]}
-          </button>
-        )}
+          {!isPending && (
+            <button className="btn self-center my-4 bg-accColor text-white sm:w-9/12 md:max-w-md">
+              {formsTranslation.updateBtn[selectedLanguage]}
+            </button>
+          )}
 
-        {isPending && (
-          <button disabled className="btn bg-primeColor">
-            Loading...
-          </button>
-        )}
+          {isPending && (
+            <button disabled className="btn bg-accColor self-center">
+              Loading...
+            </button>
+          )}
+        </form>
+      )}
+      {imgError && (
+        <Snackbar
+          onClose={(e) => {
+            e.preventDefault();
+            setImgError(null);
+          }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={imgError}
+          autoHideDuration={3000}
+          message={imgError}
+          action={
+            <button
+              className="flex items-center gap-2"
+              onClick={(e) => {
+                e.preventDefault();
+                setImgError(null);
+              }}
+            >
+              <FaX className=" text-red-500" /> Close
+            </button>
+          }
+        />
+      )}
 
-        {imgError && (
-          <Alert className="bg-transparent" severity="error">
-            {imgError}
-          </Alert>
-        )}
-      </form>
       {isPending && <Loader />}
     </motion.div>
   );

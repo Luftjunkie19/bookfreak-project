@@ -1,62 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from 'react';
 
-import { FaPlus, FaTrashAlt } from "react-icons/fa";
-import { FaPencil, FaTrashCan } from "react-icons/fa6";
-import { PiExamFill } from "react-icons/pi";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
-import uniqid from "uniqid";
+import {
+  FaPlus,
+  FaTrashAlt,
+} from 'react-icons/fa';
+import {
+  FaPencil,
+  FaTrashCan,
+} from 'react-icons/fa6';
+import { PiExamFill } from 'react-icons/pi';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
+import uniqid from 'uniqid';
 
-import { Button, Input } from "@mui/joy";
-import { Autocomplete, TextField } from "@mui/material";
+import {
+  Button,
+  Input,
+} from '@mui/joy';
+import {
+  Autocomplete,
+  TextField,
+} from '@mui/material';
 
-import translations from "../../assets/translations/BookPageTranslations.json";
-import formTranslations from "../../assets/translations/FormsTranslations.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import translations from '../../assets/translations/BookPageTranslations.json';
+import formTranslations from '../../assets/translations/FormsTranslations.json';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocuments from '../../hooks/useGetDocuments';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
 
-const alphabet = require("alphabet");
+const alphabet = require('alphabet');
 
 function CreateTests() {
   const { user } = useAuthContext();
-  const [testName, setTestName] = useState("");
-  const [books, setBooks] = useState([]);
+  const [testName, setTestName] = useState('');
   const [refersToBook, setRefersToBook] = useState(null);
-  const { getDocuments } = useRealtimeDocuments();
   const { addToDataBase } = useRealDatabase();
   const navigate = useNavigate();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadBooks = async () => {
-    const booksEls = await getDocuments("books");
-
-    if (booksEls) {
-      setBooks(booksEls);
-    }
-  };
+  const { documents: books } = useGetDocuments('books');
 
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
 
-  const setSelectedBook = (e, value) => {
+  const setSelectedBook = (_, value) => {
     setRefersToBook(value);
   };
 
-  useEffect(() => {
-    loadBooks();
-  }, [loadBooks]);
-
   const [queries, setQueries] = useState([]);
   const [newQuery, setNewQuery] = useState({
-    question: "",
+    question: '',
     correctAnswer: null,
     possibleAnswers: [
-      { label: 1, answer: "", id: uniqid("question1") },
-      { label: 2, answer: "", id: uniqid("question2") },
+      { label: 1, answer: '', id: uniqid('question1') },
+      { label: 2, answer: '', id: uniqid('question2') },
     ],
-    queryId: uniqid(`${uniqid(`query${queries.length}`)}`),
+    queryId: uniqid(`query${queries.length}`),
   });
   const [createNewQuery, setCreateNewQuery] = useState(false);
 
@@ -64,11 +63,33 @@ function CreateTests() {
     setCreateNewQuery(!createNewQuery);
   };
 
-  const createNewTest = () => {
-    const testId = uniqid("Test");
-    console.log(queries);
+  const handleQueryChange = (field, value) => {
+    setNewQuery((prevQuery) => ({
+      ...prevQuery,
+      [field]: value,
+    }));
+  };
 
-    addToDataBase("tests", testId, {
+  const handleAnswerChange = (label, value) => {
+    setNewQuery((prevQuery) => ({
+      ...prevQuery,
+      possibleAnswers: prevQuery.possibleAnswers.map((answer) =>
+        answer.label === label ? { ...answer, answer: value } : answer
+      ),
+    }));
+  };
+
+  const handleAnswerClick = (label) => {
+    setNewQuery((prevQuery) => ({
+      ...prevQuery,
+      correctAnswer: prevQuery.correctAnswer === label ? null : label,
+    }));
+  };
+
+  const createNewTest = () => {
+    const testId = uniqid('Test');
+
+    addToDataBase('tests', testId, {
       testName: testName,
       refersToBook: refersToBook
         ? {
@@ -77,7 +98,7 @@ function CreateTests() {
             author: refersToBook.author,
             photoURL: refersToBook.photoURL,
           }
-        : "No book selected",
+        : 'No book selected',
       testId: testId,
       createdBy: {
         nickname: user.displayName,
@@ -88,7 +109,7 @@ function CreateTests() {
     });
 
     queries.map((query) =>
-      addToDataBase("tests", `${testId}/queries/${query.queryId}`, {
+      addToDataBase('tests', `${testId}/queries/${query.queryId}`, {
         ...query,
       })
     );
@@ -96,7 +117,7 @@ function CreateTests() {
     queries.map((query, i) =>
       query.possibleAnswers.map((answer) =>
         addToDataBase(
-          "tests",
+          'tests',
           `${testId}/answers/${query.queryId}/${answer.label}`,
           {
             ...answer,
@@ -106,8 +127,8 @@ function CreateTests() {
       )
     );
 
-    toast.success("Successfully added");
-    navigate("/");
+    toast.success('Successfully added');
+    navigate('/');
   };
 
   return (
@@ -117,69 +138,64 @@ function CreateTests() {
           {formTranslations.topText.tests[selectedLanguage]}
         </h1>
 
-        <div className="flex justify-between w-full">
-          <div className="flex flex-col gap-2">
-            <label className="flex flex-col">
-              <span>
-                {formTranslations.testFields.testName.label[selectedLanguage]}
-              </span>
-              <Input
-                className="bg-transparent max-w-md border-accColor text-white"
-                color="primary"
-                size="md"
-                variant="outlined"
-                placeholder={
-                  formTranslations.testFields.testName.placeholder[
-                    selectedLanguage
-                  ]
-                }
-                onChange={(e) => setTestName(e.target.value)}
-              />
-            </label>
-            {books.length > 0 && (
+        <div className="flex flex-col gap-2 w-full">
+          {books.length > 0 && (
+            <div className="sm:w-full md:max-w-lg my-2">
+              <label className="flex flex-col sm:w-full md:max-w-lg">
+                <span>
+                  {formTranslations.testFields.testName.label[selectedLanguage]}
+                </span>
+                <Input
+                  className="bg-transparent w-full border-accColor text-white"
+                  color="primary"
+                  variant="outlined"
+                  placeholder={
+                    formTranslations.testFields.testName.placeholder[
+                      selectedLanguage
+                    ]
+                  }
+                  onChange={(e) => setTestName(e.target.value)}
+                />
+              </label>
+
               <Autocomplete
-                className="max-w-sm text-white"
+                className="w-full text-white my-4"
                 options={books}
-                isOptionEqualToValue={(option, value) => {
-                  option = {};
-                  value = {};
-                }}
                 getOptionLabel={(option) => option.title}
                 onChange={setSelectedBook}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                   <TextField
-                    className="max-w-sm text-white"
+                    className="w-full text-white"
                     {...params}
                     label={
-                      formTranslations.testFields.bookSelection[
-                        selectedLanguage
-                      ]
+                      formTranslations.testFields.bookSelection[selectedLanguage]
                     }
                     variant="outlined"
                   />
                 )}
                 placeholder="Select a book..."
               />
-            )}
+            </div>
+          )}
 
-            <div className="flex gap-2">
-              <Button onClick={enableCreating} startDecorator={<FaPlus />}>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={enableCreating} startDecorator={<FaPlus />}>
+              {
+                formTranslations.testFields.buttonText.addNewQuery[
+                  selectedLanguage
+                ]
+              }
+            </Button>
+            {queries.length > 1 && (
+              <Button onClick={createNewTest} endDecorator={<PiExamFill />}>
                 {
-                  formTranslations.testFields.buttonText.addNewQuery[
+                  formTranslations.testFields.buttonText.createTestBtn[
                     selectedLanguage
                   ]
                 }
               </Button>
-              {queries.length > 1 && (
-                <Button onClick={createNewTest} endDecorator={<PiExamFill />}>
-                  {
-                    formTranslations.testFields.buttonText.createTestBtn[
-                      selectedLanguage
-                    ]
-                  }
-                </Button>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -197,12 +213,7 @@ function CreateTests() {
                 size="md"
                 variant="outlined"
                 value={newQuery.question}
-                onChange={(e) => {
-                  setNewQuery((query) => {
-                    query.question = e.target.value;
-                    return query;
-                  });
-                }}
+                onChange={(e) => handleQueryChange('question', e.target.value)}
               />
             </label>
 
@@ -213,71 +224,33 @@ function CreateTests() {
               <div className="flex gap-4 max-w-6xl flex-wrap">
                 {newQuery.possibleAnswers.map((posAnswer) => (
                   <div
+                    key={posAnswer.id}
                     className={`sm:w-80 cursor-pointer py-2 px-4 rounded-lg flex gap-2 items-center ${
                       newQuery.correctAnswer === posAnswer.id
-                        ? "bg-green-500"
-                        : "bg-accColor"
+                        ? 'bg-green-500'
+                        : 'bg-accColor'
                     }`}
-                    onClick={() => {
-                      if (!newQuery.correctAnswer) {
-                        setNewQuery((query) => {
-                          query.correctAnswer = posAnswer.id;
-                          return query;
-                        });
-                        return;
-                      }
-                      if (newQuery.correctAnswer === posAnswer.id) {
-                        setNewQuery((query) => {
-                          query.correctAnswer = null;
-                          return query;
-                        });
-                        return;
-                      }
-
-                      if (newQuery.correctAnswer) {
-                        setNewQuery((query) => {
-                          query.correctAnswer = posAnswer.id;
-                          return query;
-                        });
-                      }
-                    }}
+                    onClick={() => handleAnswerClick(posAnswer.id)}
                   >
                     <p className="text-white">
                       {alphabet.lower[posAnswer.label - 1]}
                     </p>
                     <Input
                       className="w-full"
-                      key={posAnswer.id}
                       value={posAnswer.answer}
-                      onChange={(e) => {
-                        setNewQuery((query) => {
-                          query.possibleAnswers.find(
-                            (answer) => answer.label === posAnswer.label
-                          ).answer = e.target.value;
-                          return query;
-                        });
-                      }}
+                      onChange={(e) =>
+                        handleAnswerChange(posAnswer.label, e.target.value)
+                      }
                     />
                     <button
                       onClick={(e) => {
                         e.preventDefault();
-
-                        setNewQuery((query) => {
-                          // Filter out the selected possible answer
-                          query.possibleAnswers = query.possibleAnswers.filter(
+                        setNewQuery((query) => ({
+                          ...query,
+                          possibleAnswers: query.possibleAnswers.filter(
                             (q) => q.label !== posAnswer.label
-                          );
-
-                          // Recompute label numbers
-                          query.possibleAnswers = query.possibleAnswers.map(
-                            (q, index) => ({
-                              ...q,
-                              label: index + 1,
-                            })
-                          );
-
-                          return query;
-                        });
+                          ),
+                        }));
                       }}
                     >
                       <FaTrashAlt className="text-red-500 text-lg" />
@@ -286,19 +259,17 @@ function CreateTests() {
                 ))}
                 <Button
                   onClick={() => {
-                    setNewQuery((query) => {
-                      const newPossibleAnswers = [
+                    setNewQuery((query) => ({
+                      ...query,
+                      possibleAnswers: [
                         ...query.possibleAnswers,
                         {
                           label: query.possibleAnswers.length + 1,
-                          answer: "",
-                          id: uniqid(
-                            `answer${query.possibleAnswers.length + 1}`
-                          ),
+                          answer: '',
+                          id: uniqid(`answer${query.possibleAnswers.length + 1}`),
                         },
-                      ];
-                      return { ...query, possibleAnswers: newPossibleAnswers };
-                    });
+                      ],
+                    }));
                   }}
                 >
                   {
@@ -312,12 +283,12 @@ function CreateTests() {
             <button
               className="btn btn-wide text-white bg-accColor mt-6 mx-2"
               onClick={(e) => {
-                e.preventDefault(); // Prevent the default form submission behavior
+                e.preventDefault();
 
                 if (
-                  newQuery.possibleAnswers.filter(
-                    (answer) => answer.answer.trim() === ""
-                  ).length > 0
+                  newQuery.possibleAnswers.some(
+                    (answer) => answer.answer.trim() === ''
+                  )
                 ) {
                   return;
                 }
@@ -326,47 +297,21 @@ function CreateTests() {
                   return;
                 }
 
-                if (newQuery.question.trim() === "") {
+                if (newQuery.question.trim() === '') {
                   return;
                 }
-                setQueries((queries) => {
-                  return [...queries, newQuery];
+
+                setQueries((prevQueries) => [...prevQueries, { ...newQuery }]);
+                setCreateNewQuery(false);
+                setNewQuery({
+                  question: '',
+                  correctAnswer: null,
+                  possibleAnswers: [
+                    { label: 1, answer: '', id: uniqid('answer1') },
+                    { label: 2, answer: '', id: uniqid('answer2') },
+                  ],
+                  queryId: uniqid(`query${queries.length}`),
                 });
-                if (queries.find((q) => q.queryId === newQuery.queryId)) {
-                  let queryExisted = queries.find(
-                    (q) => q.queryId === newQuery.queryId
-                  );
-
-                  queryExisted = newQuery;
-
-                  setQueries((queries) => {
-                    const newArr = queries.filter(
-                      (q) => q.queryId !== newQuery.queryId
-                    );
-                    return [...newArr, queryExisted];
-                  });
-                  setCreateNewQuery(false);
-                  setNewQuery({
-                    question: "",
-                    correctAnswer: null,
-                    possibleAnswers: [
-                      { label: 1, answer: "", id: uniqid("answer1") },
-                      { label: 2, answer: "", id: uniqid("answer2") },
-                    ],
-                    queryId: uniqid(`${uniqid(`query${queries.length}`)}`),
-                  });
-                } else {
-                  setCreateNewQuery(false);
-                  setNewQuery({
-                    question: "",
-                    correctAnswer: null,
-                    possibleAnswers: [
-                      { label: 1, answer: "", id: uniqid("answer1") },
-                      { label: 2, answer: "", id: uniqid("answer2") },
-                    ],
-                    queryId: uniqid(`${uniqid(`query${queries.length}`)}`),
-                  });
-                }
               }}
             >
               {
@@ -383,7 +328,7 @@ function CreateTests() {
         <div className="flex gap-2 flex-col p-2 overflow-y-scroll max-h-[37rem] max-w-3xl">
           <p>Queries:</p>
           {queries.map((query) => (
-            <div className="max-w-2xl bg-accColor text-white py-2 px-4">
+            <div className="max-w-2xl bg-accColor text-white py-2 px-4" key={query.queryId}>
               <div className="flex w-full justify-between">
                 <button
                   className="flex gap-1 items-center"
@@ -392,28 +337,25 @@ function CreateTests() {
                     enableCreating();
                   }}
                 >
-                  {translations.buttonsTexts.edit[selectedLanguage]}{" "}
-                  <FaPencil />
+                  {translations.buttonsTexts.edit[selectedLanguage]} <FaPencil />
                 </button>
                 <button
                   className="flex gap-1 items-center"
                   onClick={() => {
                     console.log(queries);
-                    setQueries((quers) => {
-                      return quers.filter(
-                        (quer) => quer.queryId !== query.queryId
-                      );
-                    });
+                    setQueries((quers) =>
+                      quers.filter((quer) => quer.queryId !== query.queryId)
+                    );
                   }}
                 >
-                  {translations.buttonsTexts.delete[selectedLanguage]}{" "}
+                  {translations.buttonsTexts.delete[selectedLanguage]}{' '}
                   <FaTrashCan className="text-red-500" />
                 </button>
               </div>
               <p className="py-2">{query.question}</p>
               <ul className="flex flex-wrap sm:flex-col md:flex-row justify-around items-center w-full gap-4">
                 {query.possibleAnswers.map((answer) => (
-                  <li className="w-2/5">
+                  <li className="w-2/5" key={answer.label}>
                     <div className="w-full flex gap-2">
                       <p>{alphabet.lower[answer.label - 1]}.</p>
                       <p>{answer.answer}</p>

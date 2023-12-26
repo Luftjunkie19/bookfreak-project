@@ -1,26 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
-import generateUniqueId from 'react-id-generator';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import Select from 'react-select';
-import { toast } from 'react-toastify';
+import generateUniqueId from "react-id-generator";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Select from "react-select";
+import { toast } from "react-toastify";
 
-import { Alert } from '@mui/material';
+import { Alert } from "@mui/material";
 
-import alertMessages from '../../assets/translations/AlertMessages.json';
-import formTranslations from '../../assets/translations/FormsTranslations.json';
-import profileTranslations
-  from '../../assets/translations/ProfileTranslations.json';
-import Loader from '../../components/Loader';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import alertMessages from "../../assets/translations/AlertMessages.json";
+import formTranslations from "../../assets/translations/FormsTranslations.json";
+import profileTranslations from "../../assets/translations/ProfileTranslations.json";
+import Loader from "../../components/Loader";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { useRealDatabase } from "../../hooks/useRealDatabase";
+import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
 
 function AddLink() {
   const selectedLanguage = useSelector(
@@ -144,27 +140,28 @@ function AddLink() {
   return (
     <div className="min-h-full h-screen flex flex-col justify-center items-center">
       <form
-        className="h-1/2 justify-around flex flex-col bg-accColor py-6 px-12 rounded-xl"
+        className="h-1/2 justify-around flex flex-col py-6 px-12"
         onSubmit={handleSubmit}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <h2 className="text-xl font-bold text-white">
+        <h2 className="text-5xl font-bold text-white">
           {profileTranslations.addLinkForm.topText[selectedLanguage]}
         </h2>
 
-        <label>
+        <label className="sm:w-full md:max-w-3xl">
           <span className="text-white">
             {profileTranslations.addLinkForm.query[selectedLanguage]}
           </span>
           <Select
+            className="w-full"
             options={availableMedia}
             onChange={(e) => setOption(e.value)}
           />
         </label>
         {option === "discord" && (
-          <label className="flex flex-col">
+          <label className="flex flex-col sm:w-full md:max-w-xl">
             <span className="text-white">
               {formTranslations.userFields.nickname[selectedLanguage]}:
             </span>
@@ -182,7 +179,7 @@ function AddLink() {
 
         {option === "spotify" && (
           <>
-            <label className="flex flex-col">
+            <label className="flex flex-col  sm:w-full md:max-w-xl">
               <span className="text-white">Link:</span>
               <input
                 className="input input-info w-full py-1"
@@ -197,7 +194,7 @@ function AddLink() {
 
         {option === "youtube" && (
           <>
-            <label className="flex flex-col">
+            <label className="flex flex-col  sm:w-full md:max-w-xl">
               <span className="text-white">Link:</span>
               <input
                 className="input input-info w-full py-1"
@@ -212,7 +209,7 @@ function AddLink() {
 
         {option === "github" && (
           <>
-            <label className="flex flex-col">
+            <label className="flex flex-col  sm:w-full md:max-w-xl">
               <span className="text-white">Link:</span>
               <input
                 className="input input-info w-full py-1"
@@ -236,10 +233,11 @@ function AddLink() {
             {error}
           </Alert>
         )}
-
-        <button className="btn text-white">
-          {profileTranslations.addLinkForm.btnText[selectedLanguage]}
-        </button>
+        <div className="w-full justify-center flex items-center">
+          <button className="btn sm:w-full md:max-w-xl bg-accColor text-white">
+            {profileTranslations.addLinkForm.btnText[selectedLanguage]}
+          </button>
+        </div>
       </form>
 
       {isPending && <Loader />}

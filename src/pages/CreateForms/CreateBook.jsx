@@ -1,4 +1,7 @@
+import '../../components/stylings/mui-stylings.css';
+
 import {
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -17,6 +20,7 @@ import {
 } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import uniqid from 'uniqid';
 
@@ -32,9 +36,12 @@ import translations from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function CreateBook() {
+  const { user } = useAuthContext();
   const [error, setError] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -44,6 +51,21 @@ function CreateBook() {
   const [hasStarted, setHasStarted] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [radius, setRadius] = useState(0);
+  const [link, setLink] = useState(null);
+  const [availableBooks, setAvailableBooks] = useState([]);
+  const { getDocuments } = useRealtimeDocuments();
+  const { documents } = useGetDocuments("bookReaders");
+  const bookReaders = documents
+    .map((bookReader) => {
+      return bookReader.readers;
+    })
+    .map((obj) => {
+      const nestedObject = Object.values(obj);
+      return nestedObject;
+    })
+    .flat()
+    .filter((reader) => reader.id === user.uid);
+
   const [book, setBook] = useState({
     author: "",
     title: "",
@@ -52,11 +74,23 @@ function CreateBook() {
     bookCover: null,
   });
   const editorRef = useRef();
-  const { user } = useAuthContext();
+
   const [usersReadPages, setUsersReadPages] = useState(0);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+
+  const loadAvailableBooks = async () => {
+    const booksDocs = await getDocuments("books");
+
+    if (booksDocs) {
+      setAvailableBooks(booksDocs);
+    }
+  };
+
+  useEffect(() => {
+    loadAvailableBooks();
+  }, []);
 
   const handleSelect = (e) => {
     setError(null);
@@ -66,14 +100,14 @@ function CreateBook() {
     let selected = e.target.files[0];
 
     if (selected?.size > 200000) {
-      setError(alertMessages.notficactions.wrong.tooBigFile[selectedLanguage]);
+      setError(alertMessages.notifications.wrong.tooBigFile[selectedLanguage]);
       setEditCover(null);
       return;
     }
 
     if (!selected?.type.includes("image")) {
       setError(
-        alertMessages.notficactions.wrong.inAppropriateFile[selectedLanguage]
+        alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]
       );
       setEditCover(null);
       return;
@@ -120,6 +154,33 @@ function CreateBook() {
       if (book.pagesNumber < usersReadPages) {
         setError(
           alertMessages.notifications.wrong.outOfSpaceReading[selectedLanguage]
+        );
+        return;
+      }
+
+      if (
+        availableBooks.find(
+          (doc) =>
+            doc.title.toLowerCase() === book.title.toLowerCase() &&
+            doc.author.toLowerCase() === book.author.toLowerCase()
+        )
+      ) {
+        setError("There is already such an book, did you mean that one?");
+        setLink(
+          availableBooks.find(
+            (doc) =>
+              doc.title.toLowerCase().includes(book.title.toLowerCase()) &&
+              doc.author.toLowerCase().includes(book.author.toLowerCase())
+          ).id
+        );
+        return;
+      }
+
+      console.log(bookReaders);
+
+      if (bookReaders.find((reader) => !reader.hasFinished)) {
+        setError(
+          "You have to firstly finish a book, that you started to read."
         );
         return;
       }
@@ -217,11 +278,11 @@ function CreateBook() {
   };
 
   return (
-    <div className="min-h-screen h-full w-full flex flex-col justify-center items-center">
+    <div className="min-h-screen h-full w-full">
       {editCover && (
-        <div class="h-screen bg-imgCover w-screen fixed top-0 left-0 z-[9999]">
+        <div class="h-screen bg-imgCover w-screen fixed top-0 left-0 z-[9999999]">
           <button
-            className="btn absolute top-0 right-0 m-2"
+            className="btn absolute top-0 right-0 m-2 bg-error z-[999] text-white"
             onClick={() => {
               setEditCover(null);
             }}
@@ -291,119 +352,112 @@ function CreateBook() {
           </div>
         </div>
       )}{" "}
-      <form
-        onSubmit={handleSubmit}
-        className="lg:bg-accColor sm:w-full lg:w-2/3 xl:w-3/5 2xl:w-1/2 text-white p-6 rounded-lg"
-      >
-        <div className="flex flex-col justify-center items-center w-full gap-2 p-2">
-          <FaBook className="text-6xl font-bold" />
-          <p className="text-center">
+      <form onSubmit={handleSubmit} className="w-full flex flex-col text-white">
+        <div className="flex flex-wrap items-center justify-center  w-full gap-4 p-4">
+          <FaBook className="text-6xl font-bold text-white" />
+          <p className=" text-white font-semibold">
             {translations.topText.books[selectedLanguage]}
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-1 xl:grid-cols-2 gap-2">
-          <label className="flex flex-col">
-            <span>{translations.bookTitleInput.label[selectedLanguage]}:</span>
-            <input
-              required
-              type="text"
-              className="input border-none outline-none w-full py-4 px-1"
-              onChange={(e) =>
-                setBook((book) => {
-                  book.title = e.target.value;
-                  return book;
-                })
-              }
-              placeholder={`${translations.bookTitleInput.placeholder[selectedLanguage]}`}
-            />
-          </label>
-          <label className="flex flex-col">
-            <span>{translations.bookAuthorInput.label[selectedLanguage]}:</span>
-            <input
-              required
-              type="text"
-              onChange={(e) =>
-                setBook((book) => {
-                  book.author = e.target.value;
-                  return book;
-                })
-              }
-              className="input border-none outline-none w-full py-4 px-1"
-              placeholder={`${translations.bookAuthorInput.placeholder[selectedLanguage]}`}
-            />
-          </label>
-
-          <label className="flex flex-col">
-            <span>
-              {translations.bookCategoryInput.label[selectedLanguage]}:
-            </span>
-
-            <Autocomplete
-              className="text-white"
-              sx={{
-                color: "white",
-                borderColor: "white",
-                colorAdjust: "white",
-              }}
-              options={bookCategories}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={`${translations.bookCategoryInput.label[selectedLanguage]}`}
-                />
-              )}
-              onChange={(e, value) => {
-                setBook((book) => {
-                  book.category = value;
-                  return book;
-                });
-              }}
-              onInputChange={(e, value) => {
-                setBook((book) => {
-                  book.category = value;
-                  return book;
-                });
-              }}
-            />
-          </label>
-          <label className="flex flex-col">
-            <span>{translations.selectImgBtn.label[selectedLanguage]}:</span>
-            <div className="flex items-center justify-center">
+        <div className="w-full flex-col flex gap-2 p-4">
+          <p className="font-bold text-xl">General Info</p>
+          <div className="flex flex-wrap w-full gap-4">
+            <label className="flex flex-col sm:w-full md:max-w-lg">
+              <span>
+                {translations.bookTitleInput.label[selectedLanguage]}:
+              </span>
               <input
                 required
-                type="file"
-                onChange={handleSelect}
-                className="hidden"
+                type="text"
+                className="input w-full border-accColor outline-none py-4 px-1"
+                onChange={(e) =>
+                  setBook((book) => {
+                    book.title = e.target.value;
+                    return book;
+                  })
+                }
+                placeholder={`${translations.bookTitleInput.placeholder[selectedLanguage]}`}
               />
-              <p className="btn btn-wide sm:bg-accColor lg:bg-primeColor text-white border-none hover:bg-primeColor">
-                {translations.selectImgBtn.text[selectedLanguage]}
-                <FaImage />
-              </p>
-            </div>
-          </label>
+            </label>
 
-          <label className="flex flex-col">
-            <span>
-              {translations.pagesAmountInput.label[selectedLanguage]}:
-            </span>
+            <label className="flex flex-col sm:w-full md:max-w-lg">
+              <span>
+                {translations.bookAuthorInput.label[selectedLanguage]}:
+              </span>
+              <input
+                required
+                type="text"
+                onChange={(e) =>
+                  setBook((book) => {
+                    book.author = e.target.value;
+                    return book;
+                  })
+                }
+                className="input border-accColor outline-none w-full py-4 px-1"
+                placeholder={`${translations.bookAuthorInput.placeholder[selectedLanguage]}`}
+              />
+            </label>
+          </div>
+        </div>
 
-            <input
-              min={0}
-              required
-              type="number"
-              onChange={(e) =>
-                setBook((book) => {
-                  book.pagesNumber = +e.target.value;
-                  return book;
-                })
-              }
-              placeholder={`${translations.pagesAmountInput.placeholder[selectedLanguage]}`}
-              className="input border-none outline-none w-full py-4 px-1"
-            />
-          </label>
+        <div className="flex flex-col p-4 w-full gap-2">
+          <p className="font-bold text-xl">Detailed Information</p>
+          <div className="flex items-center flex-wrap w-full gap-4">
+            <label className="flex flex-col sm:w-full md:max-w-xl">
+              <Autocomplete
+                className="text-white"
+                sx={{
+                  color: "white",
+                }}
+                options={bookCategories}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={`${translations.bookCategoryInput.label[selectedLanguage]}`}
+                  />
+                )}
+                onChange={(e, value) => {
+                  setBook((book) => {
+                    book.category = value;
+                    return book;
+                  });
+                }}
+                onInputChange={(e, value) => {
+                  setBook((book) => {
+                    book.category = value;
+                    return book;
+                  });
+                }}
+              />
+            </label>
 
-          <div className="form-control justify-center">
+            <label className="flex flex-col sm:w-full md:max-w-md">
+              <span>
+                {translations.pagesAmountInput.label[selectedLanguage]}:
+              </span>
+
+              <input
+                min={0}
+                required
+                type="number"
+                onChange={(e) =>
+                  setBook((book) => {
+                    book.pagesNumber = +e.target.value;
+                    return book;
+                  })
+                }
+                placeholder={`${translations.pagesAmountInput.placeholder[selectedLanguage]}`}
+                className="input border-accColor outline-none w-full py-4 px-1 text-lg"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="flex flex-col w-full p-4 gap-2">
+          <p className="font-bold text-xl">User Information</p>
+
+          <div className="form-control justify-center sm:w-full md:max-w-lg">
             <label className="label cursor-pointer">
               <span className="label-text">
                 {translations.hasStarted.query[selectedLanguage]}?
@@ -411,22 +465,23 @@ function CreateBook() {
 
               <input
                 type="checkbox"
-                className="checkbox"
+                className="checkbox checkbox-info"
                 onChange={(e) => {
                   setHasStarted(e.target.checked);
                 }}
               />
             </label>
           </div>
+
           {hasStarted && (
             <>
-              <div className="form-control justify-center">
+              <div className="form-control justify-center sm:w-full md:max-w-md">
                 <label className="flex flex-col">
                   <span className="label-text">
                     {translations.readPagesInput.label[selectedLanguage]}?
                   </span>
                   <input
-                    className="input border-none outline-none w-full py-4 px-1"
+                    className="input border-accColor outline-none w-full py-4 px-1"
                     type="number"
                     value={usersReadPages}
                     min={0}
@@ -449,14 +504,14 @@ function CreateBook() {
                 </label>
               </div>
 
-              <div className="form-control justify-center">
+              <div className="form-control justify-center sm:w-full md:max-w-lg">
                 <label className="label cursor-pointer">
                   <span className="label-text">
                     {translations.hasFinished.query[selectedLanguage]}?
                   </span>
                   <input
                     type="checkbox"
-                    className="checkbox"
+                    className="checkbox checkbox-info"
                     onChange={(e) => {
                       setIsCompleted(e.target.checked);
                       if (e.target.checked) {
@@ -472,8 +527,22 @@ function CreateBook() {
           )}
         </div>
 
-        <div className="flex w-full justify-center items-center my-4">
-          <button className="btn sm:w-full md:w-1/2 text-white sm:bg-accColor lg:bg-primeColor">
+        <label className="flex flex-col gap-3 sm:w-full md:max-w-sm p-4">
+          <span>{translations.selectImgBtn.label[selectedLanguage]}:</span>
+          <input
+            required
+            type="file"
+            onChange={handleSelect}
+            className="hidden w-full"
+          />
+          <p className="btn w-full bg-accColor text-white border-none hover:bg-primeColor">
+            {translations.selectImgBtn.text[selectedLanguage]}
+            <FaImage />
+          </p>
+        </label>
+
+        <div className="flex justify-center items-center w-full w-full my-4">
+          <button className="btn sm:w-full md:max-w-lg text-white bg-accColor">
             {translations.submit[selectedLanguage]}
           </button>
         </div>
@@ -483,6 +552,8 @@ function CreateBook() {
             {error}
           </Alert>
         )}
+
+        {link && <Link to={`/book/${link}`}>Move to the book</Link>}
       </form>
     </div>
   );
