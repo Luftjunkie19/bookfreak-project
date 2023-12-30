@@ -72,10 +72,69 @@
       "eng": "Something is wrong !",
       "pl": "Coś poszło nie tak !",
 
+      "recensionLonger":{
+        "eng":"Recension has to be at least 10 characters long.",
+        "ger":"Die Recension muss mindestens 10 Zeichen lang sein.",
+        "pl":"Ocena musi mieć co najmniej 10 znaków."
+      },
+
+      "winnerClaimError":{
+        "eng":"The winner has to claim the reward !",
+        "ger":"Der Gewinner muss die Belohnung abholen !",
+        "pl":"Nagroda musi zostać odebrana przez zwycięzcę!"
+      },
+
       "emptyMessage": {
         "ger": "Sie können keine Nachricht, die leer ist senden!",
         "eng": "You cannot send a message, which is empty!",
         "pl": "Nie możesz wysłać pustej wiadomości !"
+      },
+
+      "existsBook":{
+        "eng":"There is already such an book, did you mean that one",
+        "ger":"Es gibt bereits solchen Buch. Haben Sie es gemeint?",
+        "pl":"Ist już takie książka. Czy masz na myśli tą?"
+      },
+      "writeLonger":{
+"eng":"Try to right anything about this book, ok 😉?",
+"ger":"Versuchen Sie, etwas mehr über dieses Buch zu schreiben. O.K. 😉 ?",
+"pl":"Podaj coś o tej książce, np. jej treść lub autorów."
+      },
+
+      "someFieldsEmpty":{
+        "ger": "Bitte füllen Sie alle Felder aus.",
+        "eng": "Please fill in all fields.",
+        "pl": "Proszę uzupełnić wszystkie pola."
+      },
+      "timeTraveler":{
+        "ger": "Dieses Datum liegt in der Zukunft.",
+        "eng": "This date is from the future.",
+        "pl": "To data jest z przyszłości."
+      },
+      "recentlyStartedReading":{
+        "eng":"You have to firstly finish a book, that you started to read.",
+        "ger":"Zuerst müssen Sie ein Buch beenden, das Sie gelesen haben.",
+        "pl":"Musisz najpierw skończyć książkę, którą zacząłeś."
+      },
+      "bookCoverReq":{
+        "eng":"No bookcover visible",
+        "ger":"Kein Buchumschlag sichtbar",
+        "pl":"Brak obrazu okładki książki"
+      },
+      "earlyDate":{
+        "eng":"You cannot set the later date than today",
+        "ger":"Du kannst nicht ein Datum festlegen das später als heute ist",
+        "pl":"Nie można ustawić daty późniejszej niż dzisiejsza"
+      },
+      "notEnoughCredits":{
+        "eng":"You do not have so many credits enough.",
+        "ger":"Du hast nicht genug Credits.",
+        "pl":"Nie masz tyle creditów."
+      },
+      "zeroAmount":{
+        "eng":"You cannot create competition, where the prize is 0.",
+        "ger":"Es ist nicht möglich einen Wettbewerb zu erstellen bei dem der Preis 0 ist.",
+        "pl":"Nie można stworzyć konkursu z nagrodą równą zero."
       },
 
       "urlError": {

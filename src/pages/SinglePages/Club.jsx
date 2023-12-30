@@ -1,4 +1,6 @@
 import '../stylings/scrollbarStyling.css';
+import '../stylings/backgrounds.css';
+import '../../components/stylings/mui-stylings.css';
 
 import {
   useEffect,
@@ -23,7 +25,6 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 import {
   Button,
@@ -40,6 +41,7 @@ import reusableTranslations
   from '../../assets/translations/ReusableTranslations.json';
 import CompetitionChat from '../../components/ChatComponents/CommunityChat';
 import Ranking from '../../components/Ranking';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
@@ -100,25 +102,19 @@ function Club() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const open = Boolean(anchorEl);
   const openMangement = Boolean(managmentEl);
 
-  {
-    /*  const joinedClub = documents.map((doc) => {
-    return doc.users.filter((member) => member.value.id === user.uid);
-  });
-*/
-  }
+
   const deleteClub = async (id) => {
     removeFromDataBase("readersClubs", id);
     removeFromDataBase("communityChats", id);
     removeFromDataBase("communityMembers", id);
 
     navigate("/");
-    toast.success(
-      alertTranslations.notifications.successfull.remove[selectedLanguage]
-    );
+    dispatch(snackbarActions.showMessage({message:`${ alertTranslations.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
+
   };
 
   const leaveClub = async () => {
@@ -207,7 +203,7 @@ function Club() {
 
   return (
     <div
-      className={`min-h-screen h-full ${
+      className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"} ${
         document &&
         !members.find(
           (member) => member.value.id === user.uid && member.belongsTo === id
@@ -220,7 +216,7 @@ function Club() {
           return member.value.id === user.uid && member.belongsTo === id;
         }) && (
           <div className="w-full flex justify-between items-center p-3 bg-primeColor z-[9999] sticky sm:top-16 xl:top-20 left-0">
-            <div className="flex justify-between text-white items-center">
+            <div className={`flex justify-between  text-white items-center`}>
               <img
                 className="w-16 h-16 rounded-full object-cover"
                 src={document.clubLogo}
@@ -408,8 +404,8 @@ function Club() {
         !members.find(
           (member) => member.value.id === user.uid && member.belongsTo === id
         ) && (
-          <div className="flex justify-between items-center w-full h-full sm:flex-col xl:flex-row px-4 py-4 gap-6">
-            <div className="sm:w-full xl:w-1/3 h-full text-white flex flex-col items-center justify-between rounded-md py-4">
+          <div className={`flex justify-between items-center w-full h-full sm:flex-col xl:flex-row px-4 py-4 gap-6 ${isDarkModed ? "text-white" : 'text-black'}`}>
+            <div className="sm:w-full xl:w-1/3 h-full  flex flex-col items-center justify-between rounded-md py-4">
               <div className="sm:w-36 sm:h-36 md:w-48 md:h-48 lg:h-64 lg:w-64">
                 <img
                   className="w-full h-full rounded-full object-cover border-accColor border-2"

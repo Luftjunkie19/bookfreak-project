@@ -1,10 +1,14 @@
-import { getDatabase, ref, remove, set, update } from "firebase/database";
-
-import { currentApp } from "../index";
+import {
+  getDatabase,
+  ref,
+  remove,
+  set,
+  update,
+} from 'firebase/database';
 
 export const useRealDatabase = () => {
   const addToDataBase = (col, id, object) => {
-    set(ref(getDatabase(currentApp), `${col}/${id}`), object)
+    set(ref(getDatabase(), `${col}/${id}`), object)
       .then(() => {
         console.log("Added doc");
       })

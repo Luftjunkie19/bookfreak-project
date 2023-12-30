@@ -1,41 +1,41 @@
-import { useEffect, useState } from "react";
+import '../../pages/stylings/backgrounds.css';
 
-import { formatDistanceToNow } from "date-fns";
-import { FaPaperPlane } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import alertTranslations from "../../assets/translations/AlertMessages.json";
-import chatsTranslations from "../../assets/translations/ChatsTranslation.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
-import Loader from "../Loader";
+import { formatDistanceToNow } from 'date-fns';
+import { FaPaperPlane } from 'react-icons/fa';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+
+import alertTranslations from '../../assets/translations/AlertMessages.json';
+import chatsTranslations from '../../assets/translations/ChatsTranslation.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import { snackbarActions } from '../../context/SnackBarContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocuments from '../../hooks/useGetDocuments';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import Loader from '../Loader';
 
 function CompetitionChat({ collectionName, id }) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [document, setDocument] = useState();
-  const [messages, setMessages] = useState([]);
   const { getDocument } = useRealtimeDocument();
-  const { getDocuments } = useRealtimeDocuments();
+const dispatch=useDispatch();
   const { addToDataBase } = useRealDatabase();
   const { user } = useAuthContext();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadMessages = async () => {
-    const documentEl = await getDocuments(`communityChats/${id}/messages`);
-    if (documentEl) {
-      setMessages(documentEl);
-    } else {
-      setMessages([]);
-    }
-  };
+const {documents:messages}=useGetDocuments(`communityChats/${id}/messages`);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadDocument = async () => {
@@ -48,15 +48,12 @@ function CompetitionChat({ collectionName, id }) {
 
   useEffect(() => {
     loadDocument();
-    loadMessages();
-  }, [loadDocument, loadMessages]);
+  }, [loadDocument]);
 
   const sendMessage = async () => {
     console.log(messages);
     if (message.trim() === "") {
-      toast.error(
-        alertTranslations.notifications.wrong.emptyMessage[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.wrong.emptyMessage[selectedLanguage]}`, alertType:"error"}));
 
       return;
     }
@@ -95,6 +92,8 @@ function CompetitionChat({ collectionName, id }) {
     setMessage("");
   };
 
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+
   const competitionExpirationDate =
     document && document.expiresAt
       ? (document.expiresAt - new Date().getTime()) / 86400000
@@ -102,7 +101,7 @@ function CompetitionChat({ collectionName, id }) {
 
   return (
     <>
-      <div className="min-h-screen">
+      <div className={`min-h-screen ${!isDarkModed && "pattern-bg"}`}>
         {document && (
           <>
             {messages.filter((message) => message.communityChatId === id)
@@ -123,8 +122,10 @@ function CompetitionChat({ collectionName, id }) {
                         </div>
                       </div>
                       <div className="chat-header">
-                        {message.sentBy.displayName}
-                        <time className="text-xs opacity-50 text-white">
+                        <span className={`${isDarkModed ? "text-white" : "text-black"}`}>
+                          {message.sentBy.displayName}
+                          </span>
+                        <time className={`${isDarkModed ? "text-white" : "text-black"} text-xs opacity-50`}>
                           {formatDistanceToNow(message.sentAt)} ago
                         </time>
                       </div>
@@ -144,8 +145,10 @@ function CompetitionChat({ collectionName, id }) {
                         </div>
                       </div>
                       <div className="chat-header">
-                        {message.sentBy.displayName}
-                        <time className="text-xs opacity-50 text-white">
+                      <span className={`${isDarkModed ? "text-white" : "text-black"}`}>
+                          {message.sentBy.displayName}
+                          </span>
+                        <time className={`${isDarkModed ? "text-white" : "text-black"} text-xs opacity-50`}>
                           {formatDistanceToNow(message.sentAt)} ago
                         </time>
                       </div>
@@ -165,7 +168,7 @@ function CompetitionChat({ collectionName, id }) {
             document?.expiresAt &&
             (document?.expiresAt - new Date().getTime()) / 86400000 <= 0
           }
-          className="resize-none outline-none textarea max-h-16 sm:w-4/5 lg:w-2/3 xl:w-1/2 py-3 px-2 rounded-md"
+          className={`resize-none outline-none textarea max-h-16 sm:w-4/5 lg:w-2/3 xl:w-1/2 py-3 px-2 rounded-md ${isDarkModed ? "text-white" : "text-black"}`}
           placeholder={`${reuseableTranslations.messageAreaInput.placeholder[selectedLanguage]}`}
           value={message}
           onChange={(e) => setMessage(e.target.value)}

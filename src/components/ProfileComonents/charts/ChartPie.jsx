@@ -1,10 +1,15 @@
-import "../../stylings/mui-stylings.css";
+import '../../stylings/mui-stylings.css';
 
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { PieChart } from "@mui/x-charts";
+import { useSelector } from 'react-redux';
 
-import useRealtimeDocuments from "../../../hooks/useRealtimeDocuments";
+import { PieChart } from '@mui/x-charts';
+
+import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
 
 function ChartPie({ yourReadersBooks }) {
   const [books, setBooks] = useState([]);
@@ -53,10 +58,10 @@ function ChartPie({ yourReadersBooks }) {
 
   // Usage
   const transformedBooksArray = transformBooks(books);
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   return (
     <>
-      <PieChart
+      <PieChart 
         colors={[
           "#4267B5",
           "#800000",
@@ -104,8 +109,8 @@ function ChartPie({ yourReadersBooks }) {
             direction: "row",
             position: { vertical: "bottom", horizontal: "middle" },
             labelStyle: {
-              color: "white",
-              fill: "white",
+              color:`${isDarkModed ? "white" : "black"}`,
+              fill:`${isDarkModed ? "white" : "black"}`,
             },
             padding: 0,
           },

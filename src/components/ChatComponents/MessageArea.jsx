@@ -1,27 +1,46 @@
-import "../stylings/sizes.css";
+import '../stylings/sizes.css';
+import '../../pages/stylings/backgrounds.css';
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
-import { formatDistanceToNow } from "date-fns";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { FaArrowLeft, FaCamera, FaPaperPlane } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import uniqid from "uniqid";
+import { formatDistanceToNow } from 'date-fns';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import {
+  FaArrowLeft,
+  FaCamera,
+  FaPaperPlane,
+} from 'react-icons/fa';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { Link } from 'react-router-dom';
+import uniqid from 'uniqid';
 
-import alertsMessages from "../../assets/translations/AlertMessages.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import alertsMessages from '../../assets/translations/AlertMessages.json';
+import { snackbarActions } from '../../context/SnackBarContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function MessageArea({ chatId, messagedUser }) {
   const { user } = useAuthContext();
+  const dispatch=useDispatch();
   const [message, setMessage] = useState("");
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const { getDocument } = useRealtimeDocument();
   const { addToDataBase } = useRealDatabase();
   const { getDocuments } = useRealtimeDocuments();
@@ -113,9 +132,7 @@ function MessageArea({ chatId, messagedUser }) {
     }
 
     if (message.trim() === "") {
-      toast.error(
-        alertsMessages.notifications.wrong.emptyField[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${alertsMessages.notifications.wrong.emptyField[selectedLanguage]}`, alertType:"error"}));
       return;
     }
 
@@ -154,30 +171,25 @@ function MessageArea({ chatId, messagedUser }) {
     });
 
     if (acceptableFiles.length > 5) {
-      toast.error(
-        alertsMessages.notifications.wrong.imagesRange[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${alertsMessages.notifications.wrong.imagesRange[selectedLanguage]}`, alertType:"error"}));
       return;
     }
 
     if (inacceptableFiles.length > 0) {
-      toast.error(
-        alertsMessages.notifications.wrong.noFilesAccepted[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${alertsMessages.notifications.wrong.noFilesAccepted[selectedLanguage]}`, alertType:"error"}));
+     
       return;
     }
 
     if (inacceptableFiles.length === 0 && acceptableFiles.length === 0) {
-      toast.error(
-        alertsMessages.notifications.wrong.filesToSend[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${alertsMessages.notifications.wrong.filesToSend[selectedLanguage]}`, alertType:"error"}));
       return;
     }
 
-    // Initialize imageMessages with empty messages for each image
+
     const messagesForImages = acceptableFiles.map((file) => ({
       file,
-      message: "", // Default to empty string
+      message: "", 
     }));
 
     setImageMessages(messagesForImages);
@@ -220,7 +232,7 @@ function MessageArea({ chatId, messagedUser }) {
             }
           );
 
-          // ... (similar logic as before)
+       
 
           await addToDataBase(
             "usersChatMessages",
@@ -264,13 +276,14 @@ function MessageArea({ chatId, messagedUser }) {
       setImageMessages([]);
     } catch (error) {
       console.error("Error sending messages:", error);
-      toast.error("Error sending messages. Please try again.");
+      dispatch(snackbarActions.showMessage({message:"Error sending messages. Please try again.", alertType:"error"}));
+
     }
   };
 
   return (
     <>
-      <div className="col-span-3 sm:col-span-4 xl:col-span-3">
+      <div className={`col-span-3 sm:col-span-4 xl:col-span-3 ${isDarkModed && "pattern-bg"}`}>
         <div className="sm:flex xl:hidden w-full bg-primeColor">
           <Link
             to="/your-chats"
@@ -415,7 +428,7 @@ function MessageArea({ chatId, messagedUser }) {
               {imageMessages.map((imageMessage, index) => (
                 <div
                   key={index}
-                  className="bg-accColor border-2 border-accColor text-white max-w-[16rem] max-h-[16rem] relative top-0 left-0"
+                  className="bg-accColor border-2 border-accColor max-w-[16rem] max-h-[16rem] relative top-0 left-0"
                 >
                   <img
                     className="w-full h-full object-cover"
@@ -423,7 +436,7 @@ function MessageArea({ chatId, messagedUser }) {
                     alt=""
                   />
                   <textarea
-                    className="textarea resize-none outline-none w-full rounded-none rounded-t-lg max-h-16 absolute bottom-0 left-0"
+                    className={`textarea resize-none outline-none w-full rounded-none rounded-t-lg max-h-16 absolute bottom-0 left-0 ${isDarkModed ? "text-white" :"text-black"}`}
                     value={imageMessage.message}
                     onChange={(e) => updateImageMessage(index, e.target.value)}
                   />
@@ -446,7 +459,7 @@ function MessageArea({ chatId, messagedUser }) {
 
           <label className="flex flex-col">
             <textarea
-              className="resize-none textarea sm:w-[60vw] md:w-[50vw] outline-none h-12"
+              className={`resize-none textarea sm:w-[60vw] md:w-[50vw] outline-none h-12 ${isDarkModed ? "text-white" : "text-black"}`}
               placeholder="Enter message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}

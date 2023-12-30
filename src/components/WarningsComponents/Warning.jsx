@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { increment } from 'firebase/database';
 import { BsFillPersonFill } from 'react-icons/bs';
-import { FaX } from 'react-icons/fa6';
 import { GiExitDoor } from 'react-icons/gi';
 import {
   useDispatch,
   useSelector,
 } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { toast } from 'react-toastify';
 
 import {
   Button,
@@ -19,19 +17,19 @@ import {
   DialogContentText,
   DialogTitle,
   Slide,
-  Snackbar,
 } from '@mui/material';
 
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import alertTranslations from '../../assets/translations/AlertMessages.json';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function Warning() {
-  const [message, setMessage] = useState({ open: false, message: null });
   const { user } = useAuthContext();
+  const dispatch = useDispatch();
   const item = useSelector((state) => state.warning.referedTo);
   const { removeFromDataBase, updateDatabase } = useRealDatabase();
   const { getDocument } = useRealtimeDocument();
@@ -104,20 +102,13 @@ function Warning() {
 
       navigate("/");
     }
-    toast.success(
-      alertMessages.notifications.successfull.remove[selectedLanguage]
-    );
+    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}))
     navigate("/");
-    setMessage({
-      open: true,
-      message:
-        alertTranslations.notifications.successfull.remove[selectedLanguage],
-    });
   };
 
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
+
 
   return (
     <>
@@ -170,11 +161,10 @@ function Warning() {
                 dispatch(warningActions.closeWarning());
                 deleteCommunity();
                 navigate("/");
-                toast.success(
-                  alertTranslations.notifications.successfull.leave[
-                    selectedLanguage
-                  ]
-                );
+                dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.leave[
+                  selectedLanguage
+                ]}`, alertType:"success"}));
+             
               }}
             >
               Leave <GiExitDoor />
@@ -183,27 +173,7 @@ function Warning() {
         </Dialog>
       )}
 
-      {message.open && (
-        <Snackbar
-          onClose={() => {
-            setMessage({ message: "", open: false });
-          }}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={message.open}
-          autoHideDuration={3000}
-          message={message.message}
-          action={
-            <button
-              className="flex items-center gap-2"
-              onClick={() => {
-                setMessage({ message: "", open: false });
-              }}
-            >
-              <FaX className=" text-red-500" /> Close
-            </button>
-          }
-        />
-      )}
+      
     </>
   );
 }

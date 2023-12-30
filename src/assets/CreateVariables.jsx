@@ -1,8 +1,8 @@
-import firstImage from "../assets/moneyOption1.webp";
-import secondImage from "../assets/moneyOption2.webp";
-import thirdImage from "../assets/moneyOption3.webp";
-import fourthImage from "../assets/moneyOption4.png";
-import fifthImage from "../assets/moneyOption5.webp";
+import firstImage from '../assets/moneyOption1.webp';
+import secondImage from '../assets/moneyOption2.webp';
+import thirdImage from '../assets/moneyOption3.webp';
+import fourthImage from '../assets/moneyOption4.png';
+import fifthImage from '../assets/moneyOption5.webp';
 
 export const addOptions = ["Books", "Competitions", "Clubs"];
 
@@ -23,31 +23,7 @@ export const bookCategories = [
   "Erotic literature",
 ];
 
-export const competitionTypes = [
-  { value: "First read, first served", label: "First read, first served" },
-  {
-    value: "Lift others, rise",
-    label: "Lift others, rise",
-  },
-  { value: "Teach to fish", label: "Teach to fish" },
-];
 
-export const prizeTypes = [
-  { value: "item", label: "Item eg. Book" },
-  {
-    value: "Money",
-    label: "Money",
-  },
-];
-
-export const differentPrize = [
-  { value: "book", label: "Book" },
-  {
-    value: "Voucher",
-    label: "Voucher",
-  },
-  { value: "ticket", label: "Ticket" },
-];
 
 export const allOffers = [
   {

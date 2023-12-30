@@ -4,18 +4,22 @@ import React, {
 } from 'react';
 
 import ReactFlagsSelect from 'react-flags-select';
-import { useSelector } from 'react-redux';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 import formsTranslations
   from '../../assets/translations/FormsTranslations.json';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function LanguageSelection() {
   const { user } = useAuthContext();
+  const dispatch=useDispatch();
   const [selected, setSelected] = useState("");
   const [hasNoNationality, setHasNoNationalitySet] = useState(false);
   const [hasNotRegistered, setHasNotRegistered] = useState(false);
@@ -91,9 +95,10 @@ function LanguageSelection() {
       );
 
       setLink(accountLinkObject.url);
-      toast.success("New link created");
+      dispatch(snackbarActions.showMessage({message:"", alertType:"success"}));
+    
     } catch (error) {
-      toast.error(error.message);
+      dispatch(snackbarActions.showMessage({message:"", alertType:"error"}));
       console.log(error.message);
     }
   };
@@ -104,18 +109,18 @@ function LanguageSelection() {
         hasNoNationality || hasNotRegistered ? `flex` : "hidden"
       } flex-col justify-center items-center group`}
     >
-      <div className="flex flex-col gap-2 justify-center items-center border-2 border-primeColor shadow-md shadow-primeColor bg-accColor rounded-xl py-8 px-4 mx-3 sm:w-full max-w-xs transition-all duration-500">
+      <div className="flex flex-col gap-2 justify-center items-center border-2 border-primeColor shadow-md shadow-primeColor bg-accColor rounded-xl py-8 px-4 mx-3 sm:w-full max-w-md transition-all duration-500">
         <ul className="steps">
-          <li className="step step-success">Register</li>
+          <li className="step step-success">{formsTranslations.fullfillData.first[selectedLanguage]}</li>
           <li className={`step ${!hasNoNationality && "step-success"}`}>
-            Set nationality
+          {formsTranslations.fullfillData.second[selectedLanguage]}
           </li>
           <li
             className={`step ${
               !hasNotRegistered && !hasNoNationality && "step-success"
             }`}
           >
-            Enjoy using
+          {formsTranslations.fullfillData.third[selectedLanguage]}
           </li>
         </ul>
         {hasNoNationality && (
@@ -146,23 +151,22 @@ function LanguageSelection() {
 
         {!hasNoNationality && hasNotRegistered && (
           <>
-            <p className="text-white font-medium">Provide financial data</p>
+            <p className="text-white font-medium">{formsTranslations.provideFinancialData[selectedLanguage]}</p>
             <Link
               to={`${link}`}
               className="btn bg-primeColor border-none text-white"
             >
-              Provide
+              {formsTranslations.provide[selectedLanguage]}
             </Link>
 
             <small className="text-white">
-              If you get redirected, try to create a new link, clicking button
-              below.
+             {formsTranslations.info[selectedLanguage]}
             </small>
             <button
               onClick={updateAccountLink}
               className="btn text-white bg-primeColor"
             >
-              Create new link
+              {formsTranslations.testFields.buttonText.createBtn[selectedLanguage]}
             </button>
           </>
         )}

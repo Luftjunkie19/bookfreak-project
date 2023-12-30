@@ -1,3 +1,5 @@
+import '../stylings/backgrounds.css';
+
 import {
   useEffect,
   useState,
@@ -9,7 +11,6 @@ import {
   FaShare,
   FaTrash,
 } from 'react-icons/fa';
-import { FaX } from 'react-icons/fa6';
 import { GiBookshelf } from 'react-icons/gi';
 import {
   MdPlaylistRemove,
@@ -28,7 +29,12 @@ import { Link } from 'react-router-dom';
 import uniqid from 'uniqid';
 import { useClipboard } from 'use-clipboard-copy';
 
-import { Snackbar } from '@mui/material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Typography,
+} from '@mui/material';
 
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/BookPageTranslations.json';
@@ -42,7 +48,9 @@ import CompetitionMembers
   from '../../components/CommunityComponents/CompetitionMembers';
 import Loader from '../../components/Loader';
 import { modalActions } from '../../context/ModalContext';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
@@ -50,26 +58,26 @@ import EditBook from '../Forms&FormsPages/EditBook';
 
 function Book() {
   const { id } = useParams();
+  const dispatch=useDispatch();
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const [isPending, setIsPending] = useState(false);
   const [document, setDocument] = useState(null);
   const { getDocument } = useRealtimeDocument();
   const { getDocuments } = useRealtimeDocuments();
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const { removeFromDataBase, addToDataBase, updateDatabase } =
     useRealDatabase();
   const [isLiked, setIsLiked] = useState(false);
   const [bookReaderForm, setBookReaderForm] = useState(false);
   const [updateReaderStatus, setUpdateReaderStatus] = useState(false);
-  const [likers, setLikers] = useState([]);
-  const [readers, setReaders] = useState([]);
   const [showLikers, setShowLikers] = useState(false);
-  const [openState, setOpenState] = useState({
-    open: false,
-    message: "",
-  });
   const [recensions, setRecensions] = useState([]);
+  const [expanded, setExpanded] = useState(false);
 
+  const handleOpenAccord = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
   const showAllLikers = () => {
     setShowLikers(true);
   };
@@ -78,14 +86,9 @@ function Book() {
     setShowLikers(false);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadLikers = async () => {
-    const likersEls = await getDocuments("lovedBooks");
 
-    if (likersEls) {
-      setLikers(likersEls);
-    }
-  };
+
+const {documents:likers}=useGetDocuments("lovedBooks");
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadRecensions = async () => {
@@ -134,30 +137,19 @@ function Book() {
     }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadReaders = async () => {
-    const likersEls = await getDocuments("bookReaders");
+  const {documents:readersObjects}=useGetDocuments("bookReaders");
 
-    const realObjects = likersEls.map((bookReader) => {
-      return bookReader.readers;
-    });
+  const readers=readersObjects.map((bookReader) => {
+    return bookReader.readers;
+  }).map((obj) => {
+    const nestedObject = Object.values(obj);
+    return nestedObject;
+  }).flat();
 
-    const newArray = realObjects.map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    });
-
-    if (newArray) {
-      setReaders(newArray.flat());
-    }
-  };
-
+ 
   const publishRecension = (recension, bookRate) => {
     if (recension.trim("").length < 10) {
-      setOpenState({
-        open: true,
-        message: "Recension has to be at least 10 characters long.",
-      });
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.recensionLonger[selectedLanguage]}`, alertType:"error"}));
       return;
     }
 
@@ -201,6 +193,8 @@ function Book() {
     setCompetitionsMembers(alreadyObjects.flat());
   };
 
+
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadCompetitions = async () => {
     const communityMembers = await getDocuments("competitions");
@@ -211,17 +205,13 @@ function Book() {
   useEffect(() => {
     loadObject();
     showIfLiked();
-    loadLikers();
-    loadReaders();
     loadRecensions();
     loadCompetitionsMembers();
     loadCompetitions();
   }, [
     loadCompetitions,
     loadCompetitionsMembers,
-    loadLikers,
     loadObject,
-    loadReaders,
     loadRecensions,
     showIfLiked,
   ]);
@@ -303,29 +293,17 @@ function Book() {
     setIsPending(true);
 
     removeFromDataBase("books", id);
-
-    setOpenState((state) => {
-      state.message =
-        alertMessages.notifications.successfull.remove[selectedLanguage];
-      state.open = true;
-      return state;
-    });
+dispatch(snackbarActions.showMessage({message:`${  alertMessages.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
     setIsPending(false);
     navigate("/");
   };
 
   const isOpened = useSelector((state) => state.modal.isOpened);
-  const dispatch = useDispatch();
   const clipboard = useClipboard();
 
   const copyPathName = () => {
     clipboard.copy(window.location.href);
-    setOpenState((state) => {
-      state.message =
-        alertMessages.notifications.successfull.copied[selectedLanguage];
-      state.open = true;
-      return state;
-    });
+    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.copied[selectedLanguage]}`, alertType:"success"}));
   };
 
   const openBookReaderForm = () => {
@@ -345,8 +323,14 @@ function Book() {
   };
 
   const removeFromShelf = () => {
-    removeFromDataBase(`bookReaders`, `${id}/readers/${user.uid}`);
-    removeFromDataBase(`bookRecensions`, `${id}/recensions/${user.uid}`);
+if(readers.filter((doc)=>doc.bookReadingId===id).length === 1){
+  removeFromDataBase(`bookReaders`, `${id}`);
+}else{
+  removeFromDataBase(`bookReaders`, `${id}/readers/${user.uid}`);
+  removeFromDataBase(`bookRecensions`, `${id}/recensions/${user.uid}`);
+
+}
+
   };
 
   const addToShelf = (hasStarted, hasFinished, readPages) => {
@@ -452,12 +436,11 @@ function Book() {
       },
       sentAt: new Date().getTime(),
     });
-
-    setOpenState({ open: true, message: "Recommendation sent successfully!" });
+dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.sent[selectedLanguage]}`, alertType:"success"}));
   };
 
   return (
-    <div className="min-h-screen h-full overflow-x-hidden">
+    <div className={`min-h-screen h-full overflow-x-hidden ${!isDarkModed && "pattern-bg"}`}>
       {isOpened && <EditBook id={id} />}
 
       {document && (
@@ -491,29 +474,29 @@ function Book() {
               </div>
             )}
           </div>
-          <div className="w-full text-white mt-5 md:ml-8 md:mt-0 max-w-2xl">
-            <h3 className="text-white uppercase text-2xl">{document.title}</h3>
+          <div className="w-full mt-5 md:ml-8 md:mt-0 max-w-2xl">
+            <h3 className={` ${isDarkModed ? "text-white" : "text-black"} uppercase text-2xl`}>{document.title}</h3>
             <Link
               to={`/author/${document.author}`}
-              className="text-gray-500 mt-3"
+              className={`${isDarkModed ? "text-white" : "text-black"} mt-3`}
             >
-              {translations.authorText[selectedLanguage]}: {document.author}
+              {translations.authorText[selectedLanguage]}: {document.author}.
             </Link>
             <div className="mt-2">
               <div className="flex gap-4 justify-between items-center my-2 p-2 sm:w-full md:w-3/4 lg:w-4/5">
                 {document && (
                   <div>
                     <button
-                      className={`flex justify-around items-center`}
+                      className={`flex justify-around items-center `}
                       onClick={changeLoveState}
                     >
                       <FaHeart
-                        className={`text-3xl ${isLiked && "text-red-500"}`}
+                        className={`text-3xl ${!isDarkModed ? `text-black  ${isLiked && "text-red-500"}` : `text-white  ${isLiked && "text-red-500"}`}`}
                       />
                     </button>
                     {likers.filter((liker) => liker.lovedBookId === id).length >
                       0 && (
-                      <p className="sm:text-sm lg:text-base">
+                      <p className={`sm:text-sm lg:text-base ${isDarkModed ? "text-white" :"text-black"}`}>
                         <Link
                           to={`/profile/${
                             likers.filter(
@@ -529,7 +512,7 @@ function Book() {
                         </Link>
                         <span
                           onClick={showAllLikers}
-                          className="hover:underline"
+                          className={`hover:underline ${isDarkModed ? "text-white" :"text-black"}`}
                         >
                           {likers.filter((liker) => liker.lovedBookId === id)
                             .length === 1
@@ -562,7 +545,7 @@ function Book() {
                 }}
                 className="btn bg-accColor text-white"
               >
-                Recommend <MdRecommend className=" text-lg" />{" "}
+                {reuseableTranslations.recommendText[selectedLanguage]} <MdRecommend className=" text-lg" />{" "}
               </button>
               {showList && (
                 <CompetitionMembers
@@ -574,22 +557,45 @@ function Book() {
               )}
             </div>
             <div className="mt-3">
-              <p className="text-3xl font-light">
+              <p className={`text-3xl font-bold ${isDarkModed ? "text-white" :"text-black"}`}>
                 {reuseableTranslations.detailsText[selectedLanguage]}:
               </p>
-              <div className="flex flex-col mt-1">
-                <p>
+              <div className={`flex flex-col mt-1 ${isDarkModed ? "text-white" :"text-black"}`}>
+                <p className=" font-semibold">
                   {reuseableTranslations.pagesText[selectedLanguage]}:{" "}
+                  <span className=" font-normal">
+
                   {document.pagesNumber}
+                  </span>
                 </p>
-                <p>
+                <p className="font-semibold">
                   {reuseableTranslations.categoryText[selectedLanguage]}:{" "}
-                  {document.category}
+                  <span className=" font-normal">{document.category} </span>
                 </p>
                 <Link to={`/profile/${document.createdBy.id}`}>
                   {translations.addedBy[selectedLanguage]}:{" "}
-                  {document.createdBy.displayName}
+                  <span className=" font-normal">{document.createdBy.displayName}</span>
                 </Link>
+                <p  className="font-semibold">{reuseableTranslations.publishingHouseCountry[selectedLanguage]}: <span className=" font-normal">{new Intl.DisplayNames([selectedLanguage], {type:"region"}).of(document.countryOfRelease)}</span></p>
+                <p className="font-semibold">{reuseableTranslations.releasedBy.part1[selectedLanguage]} <span className="font-semibold text-yellow-500">{document.publishingHouse}</span> {reuseableTranslations.releasedBy.part2[selectedLanguage]} <span className=" font-normal">{document.dateOfPublishing}</span></p>
+                <Accordion className="max-w-lg" expanded={expanded === 'panel1'} onChange={handleOpenAccord('panel1')} sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', marginBottom: '8px' }}>
+  <AccordionSummary
+    aria-controls="panel1bh-content"
+    id="panel1bh-header"
+    sx={{ backgroundColor: '#4267b5'  }}
+   
+  >
+    <Typography sx={{ flexShrink: 0, fontWeight: 'bold', color:"white", fontFamily:"Montserrat" }}>
+      {reuseableTranslations.bookDescription[selectedLanguage]}
+    </Typography>
+    <Typography sx={{ color:"white", fontFamily:"Montserrat", paddingLeft:6 }}>{document.title}</Typography>
+  </AccordionSummary>
+  <AccordionDetails sx={{ padding: '16px', backgroundColor:"#4267b5",color:"white",  }}>
+    <Typography sx={{fontFamily:"Montserrat"}}>
+      {document.description}
+    </Typography>
+  </AccordionDetails>
+</Accordion>
               </div>
             </div>
 
@@ -701,30 +707,6 @@ function Book() {
       )}
       {isPending && <Loader />}
 
-      {openState.open === true && (
-        <>
-          <Snackbar
-            onClose={() => {
-              setOpenState({ message: "", open: false });
-            }}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            open={openState.open}
-            autoHideDuration={3000}
-            severity="success"
-            message={openState.message}
-            action={
-              <button
-                className="flex items-center gap-2"
-                onClick={() => {
-                  setOpenState({ message: "", open: false });
-                }}
-              >
-                <FaX className=" text-red-500" /> Close
-              </button>
-            }
-          />
-        </>
-      )}
     </div>
   );
 }

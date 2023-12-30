@@ -6,6 +6,7 @@ import React, {
 
 import { formatDistanceToNow } from 'date-fns';
 import Lottie from 'lottie-react';
+import { useSelector } from 'react-redux';
 import {
   Link,
   useSearchParams,
@@ -21,6 +22,9 @@ import itemReward from '../../assets/ItemReward.webp';
 import lottieAnimation
   from '../../assets/lottieAnimations/Animation - 1700320134586.json';
 import moneyPrize from '../../assets/MoneyPrize.webp';
+import competitionsTranslations
+  from '../../assets/translations/CompetitionsTranslations.json';
+import formTranslations from '../../assets/translations/FormsTranslations.json';
 import CompetitionManagmentBar
   from '../../components/RecensionsComponents/CompetitionManagmentBar';
 import useGetDocuments from '../../hooks/useGetDocuments';
@@ -54,9 +58,16 @@ function Competitions() {
 {
     label:"Type (First Come, First Booked)",
     filter: (array) =>{
-        return array.filter((doc)=>doc.competitionsName ==="First Come, First Served");
+        return array.filter((doc)=>doc.competitionsName ==="First read, first served");
     },
-}  
+},
+{label:"Expired",filter:(array)=>{
+  return array.filter((doc)=>doc.expiresAt < new Date().getTime());
+}},{
+  label:"Not Expired",filter:(array)=>{
+    return array.filter((doc)=> doc.expiresAt >= new Date().getTime())
+  }
+}
   ];
 
   const sortOptions = [
@@ -78,7 +89,7 @@ function Competitions() {
 
   const objectsOnPage = () => {
     if (document.body.clientWidth > 0 && document.body.clientWidth < 1024) {
-      return 10;
+      return 15;
     } else {
       return 45;
     }
@@ -110,7 +121,7 @@ function Competitions() {
     setCurrentPage(value);
   };
 
-  const pagesAmount = Math.ceil(documents.length / objectsOnPage());
+ 
 
   useEffect(() => {
     if (documents.length > 0) {
@@ -155,17 +166,20 @@ function Competitions() {
     if (selectedSort.trim("") !== "") {
       return sortOptions
         .find((option) => option.label === selectedSort)
-        .sort(elements)
+        .sort(filteredItems())
     } else {
       return filteredItems();
     }
   };
 
-
-
+  const selectedLanguage = useSelector(
+    (state) => state.languageSelection.selectedLangugage
+  );
+  const pagesAmount = Math.ceil(sortedClubs().length / objectsOnPage());
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   return (
-    <div className="min-h-screen h-full">
-     <div className="flex gap-2 flex-wrap items-center py-4">
+    <div className={`min-h-screen h-full overflow-x-hidden w-full ${!isDarkModed && "pattern-bg"}`}>
+     <div className="flex gap-2 flex-wrap items-center justify-center py-4">
 <CompetitionManagmentBar applyFilters={applyFilters} applySort={applySort}/>
 <Autocomplete
           className="sm:w-3/4 md:max-w-lg"
@@ -206,7 +220,7 @@ function Competitions() {
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Competition's name"
+              label={formTranslations.placeHoldersCollections.competitionsName[selectedLanguage]}
               onChange={(e, value) => {
                 setFilterQuery(
                   (prev) => {
@@ -221,7 +235,7 @@ function Competitions() {
         />
      </div>
 
-      <div className="flex justify-center w-full flex-wrap gap-4 m-2">
+      <div className="flex w-full flex-wrap justify-center gap-4 m-2">
         {sortedClubs() && sortedClubs().length > 0 ? (
           sortedClubs().filter((doc) =>
           doc.competitionTitle
@@ -232,15 +246,15 @@ function Competitions() {
               to={`/competition/${doc.id}`}
               key={doc.id}
               className={`flex ${
-                (doc.expiresAt - new Date().getTime()) / 86400000 <= 0 &&
-                "bg-gray-500 text-black"
-              } md:w-[45%] max-w-sm border-2 border-white justify-between items-center flex-row py-4 rounded-lg text-white bg-accColor hover:bg-lightModeCol hover:text-primeColor shadow-md hover:shadow-lg  hover:shadow-black transition-all duration-300 hover:-translate-y-1`}
+                (doc.expiresAt - new Date().getTime()) / 86400000 <= 0 ?
+                "bg-gray-500 text-black hover:bg-gray-800" : `${isDarkModed ? "bg-accColor" : "bg-primeColor"} ${isDarkModed ? "hover:bg-lightModeCol hover:text-primeColor" : "hover:bg-accColor hover:text-white"}`
+              } sm:w-4/5 md:w-[45%] max-w-xs  border-2 border-white justify-between items-center flex-row py-4 rounded-lg text-white   shadow-md hover:shadow-lg  hover:shadow-black transition-all duration-300 hover:-translate-y-1`}
             >
               <div className="flex flex-col justify-around px-2">
                 <h3 className=" font-semibold">{doc.competitionTitle}</h3>
                 <p>{doc.competitionsName}</p>
                 <p>
-                  Prize:{" "}
+                  {competitionsTranslations.competitionObject.prize[selectedLanguage]}:{" "}
                   {doc.prize.moneyPrize.amount > 0
                     ? doc.prize.moneyPrize.amount
                     : doc.prize.itemPrize.typeOfPrize}
@@ -259,7 +273,7 @@ function Competitions() {
         ) : (
           <div>
             <Lottie animationData={lottieAnimation} />
-            <p className="text-2xl font-bold text-white text-center">
+            <p className={`text-4xl font-bold ${isDarkModed ? "text-white" : "text-black"} text-center`}>
               No competitions added yet
             </p>
           </div>

@@ -21,7 +21,6 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 import {
   Button,
@@ -29,9 +28,6 @@ import {
   MenuItem,
 } from '@mui/material';
 
-import {
-  CompetitionRules,
-} from '../../assets/CompetitionsRules/CompetitionRules';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/ClubsTranslations.json';
 import formsTranslations
@@ -39,6 +35,7 @@ import formsTranslations
 import reusableTranslations
   from '../../assets/translations/ReusableTranslations.json';
 import Ranking from '../../components/Ranking';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
@@ -52,7 +49,7 @@ function OverallClub() {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
-  const { firstComeServedRule } = CompetitionRules();
+  
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
   };
@@ -68,7 +65,6 @@ function OverallClub() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const [books, setBooks] = useState([]);
   const open = Boolean(anchorEl);
   const openMangement = Boolean(managmentEl);
   const { id } = useParams();
@@ -80,6 +76,7 @@ function OverallClub() {
   const [members, setMembers] = useState([]);
   const [document, setDocument] = useState();
   const { removeFromDataBase } = useRealDatabase();
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadDocument = async () => {
     const loadDocumentEl = await getDocument("readersClubs", id);
@@ -89,11 +86,7 @@ function OverallClub() {
     }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadBooks = async () => {
-    const booksEl = await getDocuments("books");
-    setBooks(booksEl);
-  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadMembers = async () => {
     const memberElements = await getDocuments(`communityMembers/${id}/users`);
@@ -103,52 +96,16 @@ function OverallClub() {
     }
   };
 
-  const [readerObjects, setReaderObjects] = useState([]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadReaderObjects = async () => {
-    const readerObjects = await getDocuments("bookReaders");
-
-    const realObjects = readerObjects.map((bookReader) => {
-      return bookReader.readers;
-    });
-
-    const newArray = realObjects.map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    });
-
-    setReaderObjects(newArray.flat());
-  };
+  
 
   useEffect(() => {
     loadMembers();
     loadDocument();
-    loadBooks();
-    loadReaderObjects();
-  }, [loadBooks, loadDocument, loadMembers, loadReaderObjects]);
 
-  const getReadBooks = (id) => {
-    return readerObjects.filter(
-      (reader, i) => reader.id === id && reader.hasFinished
-    ).length;
-  };
 
-  const getlastBookRead = (id) => {
-    const BookTitles = readerObjects.filter(
-      (reader, i) => reader.id === id && reader.hasFinished
-    );
+  }, [loadDocument, loadMembers,]);
 
-    const lastBookTitle = books.filter(
-      (book, index) => book.id === BookTitles[index]?.bookReadingId
-    )[
-      books.filter(
-        (book, index) => book.id === BookTitles[index]?.bookReadingId
-      ).length - 1
-    ]?.title;
 
-    return lastBookTitle ? lastBookTitle : "No book yet";
-  };
 
   const leaveClub = async () => {
     const arrayWithoutYou = members.filter((doc) => doc.value.id !== user.uid);
@@ -165,9 +122,7 @@ function OverallClub() {
     }
 
     navigate("/");
-    toast.success(
-      alertMessages.notifications.successfull.leave[selectedLanguage]
-    );
+    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.leave[selectedLanguage]}`, alertType:"success"}));
   };
 
   const deleteClub = async (id) => {
@@ -176,19 +131,17 @@ function OverallClub() {
     removeFromDataBase("communityMembers", id);
 
     navigate("/");
-    toast.success(
-      alertMessages.notifications.successfull.update[selectedLanguage]
-    );
+    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.update[selectedLanguage]}`, alertType:"success"}));
   };
 
   return (
-    <div className="min-h-screen h-full">
+    <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
       {document &&
         members.find((member) => {
           return member.value.id === user.uid && member.belongsTo === id;
         }) && (
           <div className="w-full flex justify-between items-center bg-primeColor z-[9999] p-3 sticky sm:top-16 xl:top-20 left-0">
-            <div className="flex justify-between text-white items-center">
+            <div className={`flex justify-between text-white items-center`}>
               <img
                 className="w-16 h-16 rounded-full object-cover"
                 src={document.clubLogo}
@@ -377,7 +330,7 @@ function OverallClub() {
                   alt=""
                 />
               </div>
-              <div className="text-white">
+              <div className={`${isDarkModed ? "text-white" : "text-black"}`}>
                 <p className="font-bold text-3xl">
                   {reusableTranslations.detailsText[selectedLanguage]}:{" "}
                 </p>
@@ -409,7 +362,7 @@ function OverallClub() {
                   </p>
                 </div>
                 {document.description && document.description.trim() !== "" && (
-                  <div class="flex flex-col text-white p-3 w-full">
+                  <div class={`flex flex-col  p-3 w-full ${isDarkModed ? "text-white" : "text-black"}`}>
                     <h2 class="text-3xl font-extralight pb-2">
                       {
                         formsTranslations.descriptionTextarea.label[
@@ -418,7 +371,7 @@ function OverallClub() {
                       }
                       :
                     </h2>
-                    <p class="overflow-y-scroll overflow-x-hidden h-40 py-2 pr-4">
+                    <p class={`overflow-y-scroll overflow-x-hidden h-40 py-2 pr-4 ${isDarkModed ? "text-white" : "text-black"} `}>
                       {document.description}
                     </p>
                   </div>

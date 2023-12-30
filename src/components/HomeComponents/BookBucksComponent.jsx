@@ -1,25 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import { FaX } from 'react-icons/fa6';
-import { useSelector } from 'react-redux';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
 import { useNavigate } from 'react-router';
-
-import { Snackbar } from '@mui/material';
 
 import {
   allOffers,
   offerImages,
 } from '../../assets/CreateVariables';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function BookBucksComponent() {
+  const dispatch= useDispatch();
   const { user } = useAuthContext();
   const { getDocument } = useRealtimeDocument();
-  const [openState, setStateOpen] = useState({ open: false, message: "" });
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  
   const navigate = useNavigate();
   const purchaseItem = async (offer) => {
     try {
@@ -55,7 +57,8 @@ function BookBucksComponent() {
       const data = await response.json();
 
       if (data.error) {
-        setStateOpen({ open: true, message: data.error.raw.message });
+        dispatch(snackbarActions.showMessage({message:data.error.raw.message, alertType:"error"}))
+       
       }
 
       console.log(data);
@@ -100,27 +103,7 @@ function BookBucksComponent() {
         ))}
       </div>
 
-      {openState.open && (
-        <Snackbar
-          onClose={() => {
-            setStateOpen({ open: false, message: "" });
-          }}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={openState.open}
-          autoHideDuration={3000}
-          message={openState.message}
-          action={
-            <button
-              className="flex items-center gap-2"
-              onClick={() => {
-                setStateOpen({ open: false, message: "" });
-              }}
-            >
-              <FaX className=" text-red-500" /> Close
-            </button>
-          }
-        />
-      )}
+    
     </>
   );
 }

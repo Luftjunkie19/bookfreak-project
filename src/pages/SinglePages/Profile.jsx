@@ -1,4 +1,5 @@
 import '../stylings/scrollbarStyling.css';
+import '../stylings/backgrounds.css';
 
 import {
   useEffect,
@@ -51,14 +52,13 @@ import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Profile() {
   const { id } = useParams();
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
   const { logout } = useLogout();
   const [document, setDocument] = useState(null);
   const [books, setBooks] = useState([]);
-  const [links, setLinks] = useState([]);
   const [readerObjects, setReaderObjects] = useState([]);
   const { getDocument } = useRealtimeDocument();
   const { removeFromDataBase } = useRealDatabase();
@@ -95,20 +95,15 @@ function Profile() {
     setBooks(booksEl);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadLinks = async () => {
-    const linksEl = await getDocuments("links");
-    setLinks(linksEl);
-  };
-
+  const {documents: links}= useGetDocuments("links");
   const { documents: favBooks } = useGetDocuments("lovedBooks");
 
   useEffect(() => {
     documentObject();
     loadReaderObjects();
     loadBooks();
-    loadLinks();
-  }, [documentObject, loadBooks, loadLinks, loadReaderObjects]);
+
+  }, [documentObject, loadBooks, loadReaderObjects]);
 
   const navigate = useNavigate();
 
@@ -120,8 +115,23 @@ function Profile() {
 
   const readersFiltered = readerObjects.filter((reader) => reader.id === id);
 
-  const redirectToExistedChat = (providedId) => {
-    navigate(`/message-to/${providedId}`);
+  const redirectToExistedChat = async (providedId) => {
+const providedIdPartOne=providedId.split("-")[0];
+const providedIdPartTwo=providedId.split("-")[1];
+
+    const optionOne = await getDocument("usersChats",providedId);
+    const secondOption= await getDocument("usersChats", `${providedIdPartTwo}-${providedIdPartOne}`);
+
+    if(optionOne){
+      navigate(`/message-to/${providedId}`);
+    }
+    if(secondOption){
+      navigate(`/message-to/${providedIdPartTwo}-${providedIdPartOne}`);
+    }else{
+      navigate(`/message-to/${providedId}`);
+    }
+
+
   };
 
   const removeAccount = async () => {
@@ -145,7 +155,7 @@ function Profile() {
 
 
   return (
-    <div className="min-h-screen h-full">
+    <div className={`min-h-screen h-full ${!isDarkModed && 'pattern-bg'}`}>
       {document && (
         <>
           <div className="grid xl:grid-cols-2 sm:grid-cols-1 gap-2">
@@ -164,7 +174,7 @@ function Profile() {
               </div>
 
               <div className="flex justify-between items-center lg:flex-row sm:flex-col">
-                <p className="text-white font-bold text-3xl tracking-wide py-3">
+                <p className={`${isDarkModed ? "text-white" : "text-black"} font-bold text-3xl tracking-wide py-3`}>
                   {document.nickname}
                 </p>
               </div>
@@ -311,8 +321,8 @@ function Profile() {
               )}
 
               {document.description && document.description.trim() !== "" ? (
-                <div class="flex flex-col text-white p-3 w-full">
-                  <h2 class="text-3xl font-extralight pb-2">
+                <div class={`flex flex-col ${isDarkModed ? "text-white" : "text-black"}  p-3 w-full`}>
+                  <h2 class="text-3xl font-bold pb-2">
                     {translations.description.title[selectedLanguage]}:
                   </h2>
                   <p className="overflow-y-scroll overflow-x-hidden h-40 py-2 pr-4">

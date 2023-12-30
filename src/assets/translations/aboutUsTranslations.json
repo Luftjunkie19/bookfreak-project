@@ -1,0 +1,122 @@
+{
+    "aboutSection": {
+        "TopText": {
+            "eng": "Hello And Welcome",
+            "ger": "Hallo und Herzlich Willkommen",
+            "pl": "Witam Serdecznie"
+        },
+        "description": {
+            "eng": "My name is Łukasz, I'm 19 years old and I created BookFreak, because something was missing for me in the books industry. There were some book's forums etc. However it was not that, what I was looking for. I initialized this project in February 2023, however the work on it not always was possible. Because of complications, I had at school, because I wanted to develop this project and also because of my mental collapse at some point.",
+            "ger": "Mein Name ist Łukasz, ich bin 19 Jahre alt und ich habe BookFreak erstellt, weil mir etwas in der Buchbranche fehlte. Es gab einige Buchforen usw. Allerdings war es nicht das, wonach ich gesucht habe. Ich habe dieses Projekt im Februar 2023 initiiert, aber die Arbeit daran war nicht immer möglich. Aufgrund von Komplikationen in der Schule, weil ich dieses Projekt entwickeln wollte, und auch wegen meines mentalen Zusammenbruchs an einigen Stellen.",
+            "pl": "Nazywam się Łukasz, mam 19 lat i stworzyłem BookFreak, ponieważ czegoś mi brakowało w branży książek. Istniały pewne fora książkowe itp., jednak to nie było to, czego szukałem. Zainicjowałem ten projekt w lutym 2023 roku, ale praca nad nim nie zawsze była możliwa. Z powodu komplikacji w szkole, bo chciałem rozwijać ten projekt, a także z powodu mojego załamania psychicznego w pewnym momencie."
+        }
+    },
+    "ThreeBoxes":{
+        "first":{
+            "eng":"Months of struggling",
+            "pl":"Miesięcy Walki",
+            "ger":"Monate des Kampfes"
+        },
+        "second":{
+            "eng":"Of hours of acquiring knowledge from tutorials",
+            "pl":"Godzin zdobywania wiedzy z tutoriali",
+            "ger":"Stunden des Erwerbs von Wissen aus Tutorials"
+        },
+        "third":{
+"eng":"Books, I have read since I stopped being stupid (23.06.2022)",
+"pl":"Książek, jakie przeczytałem od momentu, gdy przestałem być głupi (23.06.2022)",
+"ger":"Bücher, die ich gelesen habe, seitdem ich aufgehört habe, dumm zu sein (23.06.2022)"
+        }
+    }, 
+    
+    "steps": {
+        "first": {
+            "header": {
+                "eng": "The Very Beginnings",
+                "pl": "Same Początki",
+                "ger": "Die ganz Anfänge"
+            },
+            "sideHeader": {
+                "eng": "When it all started?",
+                "pl": "Kiedy to wszystko się zaczęło?",
+                "ger": "Wann hat alles angefangen?"
+            },
+            "sideDescription": {
+                "eng": "The project was initialized on 15.02.2023, and I typed every line of CSS code on my own. Here are the results. It wouldn't be a lie to say that you wouldn't use BookFreak if it stayed like that, would you?",
+                "ger": "Das Projekt wurde am 15.02.2023 initialisiert, und ich habe jede Zeile CSS-Code selbst geschrieben. Hier sind die Ergebnisse. Es wäre nicht gelogen zu sagen, dass du BookFreak nicht verwenden würdest, wenn es so geblieben wäre, oder?",
+                "pl": "Projekt został zainicjowany 15.02.2023, a ja sam pisałem każdą linię kodu CSS. Oto rezultaty. Nie byłoby kłamstwem powiedzieć, że nie używałbyś BookFreak, gdyby pozostał taki, prawda?"
+            }
+        },
+        "second": {
+            "header": {
+                "eng": "The Difficulties",
+                "pl": "Trudności",
+                "ger": "Die Schwierigkeiten"
+            },
+            "sideHeader": {
+                "eng": "What was wrong?",
+                "pl": "Co było nie tak?",
+                "ger": "Was war falsch?"
+            },
+            "sideDescription": {
+                "eng": "Unfortunately, every bigger project has its own struggles that it has to face. The same was in my case. I struggled at school and had a classification test after vacation to pass the class. I did pass, but it had an enormous impact on the state of my app. Even I contemplated whether I shouldn't just shut it down and give up on coding. But after all, there was a kind of breakthrough.",
+                "ger": "Leider hat jedes größere Projekt seine eigenen Herausforderungen, mit denen es konfrontiert werden muss. Das Gleiche galt für meinen Fall. Ich hatte Probleme in der Schule und musste nach den Ferien einen Klassifizierungstest bestehen, um in die nächste Klasse zu kommen. Ich habe bestanden, aber es hatte einen enormen Einfluss auf den Zustand meiner App. Sogar ich habe darüber nachgedacht, ob ich sie nicht einfach schließen und mit dem Programmieren aufhören sollte. Aber schließlich gab es so etwas wie einen Durchbruch.",
+                "pl": "Niestety, każdy większy projekt ma swoje własne trudności, z którymi musi się zmierzyć. To samo dotyczyło mojego przypadku. Miałem problemy w szkole i po wakacjach musiałem zdać test klasyfikacyjny, aby przejść do następnej klasy. Udało mi się, ale miało to ogromny wpływ na stan mojej aplikacji. Nawet zastanawiałem się, czy nie powinienem jej po prostu zamknąć i zrezygnować z programowania. Ale mimo wszystko doszło do pewnego przełomu."
+            }
+        },
+        "third": {
+            "header": {
+                "eng": "Breakthrough",
+                "pl": "Przełom",
+                "ger": "Durchbruch"
+            },
+            "sideHeader": {
+                "eng": "What happened?",
+                "pl": "Co się stało?",
+                "ger": "Was ist passiert?"
+            },
+            "sideDescription": {
+                "eng": "Finally, after a 3-month break, I got the spirit to work and continue this project. You have to admit that the interface looks much better here, doesn't it?",
+                "ger": "Endlich, nach einer 3-monatigen Pause, habe ich den Geist gefunden, an diesem Projekt zu arbeiten und es fortzusetzen. Du musst zugeben, dass die Benutzeroberfläche hier viel besser aussieht, oder?",
+                "pl": "Wreszcie, po 3-miesięcznej przerwie, znalazłem chęć do pracy i kontynuowania tego projektu. Musisz przyznać, że interfejs wygląda teraz o wiele lepiej, prawda?"
+            }
+        }
+    },
+    "reasonForProject": {
+        "header": {
+            "eng": "Why have I decided to create this project?",
+            "pl": "Dlaczego zdecydowałem się stworzyć ten projekt?",
+            "ger": "Warum habe ich mich entschieden, dieses Projekt zu erstellen?"
+        },
+        "description": {
+            "eng": "I decided to create this project, not only because I thought about my future portfolio as a developer, but I also wanted to revolutionize an outdated industry. This project contains tests, books, competitions, chats, clubs, money. Everything in one place.",
+            "pl": "Zdecydowałem się stworzyć ten projekt nie tylko ze względu na myślenie o moim przyszłym portfolio jako programisty, ale także chciałem zrewolucjonizować przestarzałą branżę. Ten projekt obejmuje testy, książki, konkursy, czaty, kluby, pieniądze. Wszystko w jednym miejscu.",
+            "ger": "Ich habe mich entschieden, dieses Projekt zu erstellen, nicht nur, weil ich an mein zukünftiges Portfolio als Entwickler gedacht habe, sondern auch, um eine veraltete Branche zu revolutionieren. Dieses Projekt enthält Tests, Bücher, Wettbewerbe, Chats, Clubs, Geld. Alles an einem Ort."
+        }
+    },
+    "firstLogoSection": {
+        "header": {
+            "eng": "First Logo",
+            "pl": "Pierwsze Logo",
+            "ger": "Erstes Logo"
+        },
+        "description": {
+            "eng": "It is worth to emphasize that I'm not great at graphics and so forth. That's why I had to create our first logo by means of the Internet. That one appealed to me, thus it's like that for now. How do you rate it?",
+            "pl": "Warto podkreślić, że nie jestem specjalistą od grafiki itp. Dlatego musiałem stworzyć nasze pierwsze logo za pomocą Internetu. To jedno przypadło mi do gustu, więc na razie jest takie. Jak je oceniasz?",
+            "ger": "Es ist zu betonen, dass ich nicht besonders gut in Grafik und dergleichen bin. Deshalb musste ich unser erstes Logo über das Internet erstellen. Dieses hier hat mir gefallen, daher ist es vorerst so. Wie bewertest du es?"
+        }
+    },
+    "contactPage":{
+        "contact":{
+            "eng":"contact",
+            "pl":"kontakt",
+            "ger":"Kontakt"
+        },
+        "description":{
+            "eng":"If you want to take a contact with us you can do it via",
+            "pl":"Jeśli chcesz skontaktować się z nami możesz to zrobić poprzez",
+            "ger":"Kontakt mit uns erfolgen Sie über:"
+        }
+    }
+
+}

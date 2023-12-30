@@ -1,10 +1,17 @@
-import { FaComments, FaUser } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import {
+  FaComments,
+  FaUser,
+} from 'react-icons/fa';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import languageTranslation from "../../assets/translations/navbarTranslations.json";
-import { burgerActions } from "../../context/BurgerContext";
-import LanguageSelect from "./LanguageSelect";
+import languageTranslation
+  from '../../assets/translations/navbarTranslations.json';
+import { burgerActions } from '../../context/BurgerContext';
+import LanguageSelect from './LanguageSelect';
 
 function HamburgerMenuUnlogged() {
   const dispatch = useDispatch();
@@ -12,7 +19,7 @@ function HamburgerMenuUnlogged() {
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-
+ 
   const isBurgerOpened = useSelector(
     (state) => state.hamburger.isUnloggedOpened
   );

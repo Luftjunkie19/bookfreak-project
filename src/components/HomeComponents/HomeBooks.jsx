@@ -15,7 +15,7 @@ import SkeletonBook from '../SkeletonsObjects/SkeletonBook';
 function HomeBooks() {
   const { getDocuments, loadingDocs } = useRealtimeDocuments();
   const [documents, setElements] = useState([]);
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadElements = async () => {
     const booksEl = await getDocuments("books");
@@ -40,7 +40,7 @@ function HomeBooks() {
   return (
     <>
       {documents && (
-        <h2 className="text-4xl text-white font-bold p-2">
+        <h2 className={`text-4xl ${isDarkModed ? "text-white" :"text-black"} font-bold p-2`}>
           {documents.length > 0
             ? `${translations.homePage.recentTexts.books[selectedLangugage]}`
             : "No books yet added"}
@@ -53,9 +53,9 @@ function HomeBooks() {
             <Link
               to={`/book/${doc.id}`}
               key={i}
-              className="flex justify-between items-center group xl:w-2/5 2xl:w-1/4 h-60 bg-accColor rounded-md hover:-translate-y-1 duration-500 transition-all shadow-md shadow-slate-50 hover:bg-white hover:text-accColor hover:shadow-black hover:shadow-md sm:snap-start"
+              className={`flex justify-between items-center group xl:w-2/5 2xl:w-1/4 h-60 bg-accColor rounded-md hover:-translate-y-1 duration-500 transition-all ${isDarkModed ? "hover:bg-white hover:text-accColor shadow-slate-50 " :"hover:bg-primeColor hover:text-white shadow-slate-950"} shadow-md   hover:shadow-black hover:shadow-md sm:snap-start`}
             >
-              <div className="w-2/5 sm:h-full 2xl:h-[115%] relative top-0 left-0 book-shadow rounded-md">
+              <div className={`w-2/5 sm:h-full 2xl:h-[115%] relative top-0 left-0 shadow-md ${isDarkModed ? "shadow-white" :"shadow-slate-950"} rounded-md`}>
                 <img
                   className="absolute -top-2 left-0 w-full h-full object-cover rounded-sm "
                   src={`${doc.photoURL}`}
@@ -65,18 +65,18 @@ function HomeBooks() {
               </div>
               <div className="flex flex-col justify-around pr-2 w-1/2 h-full">
                 <div className="">
-                  <p className="font-bold text-xl text-white group-hover:text-accColor">
+                  <p className={`font-bold text-xl ${isDarkModed ? "group-hover:text-accColor" :"text-white"} text-white`}>
                     {doc.title.trim("").length > 10
                       ? `${doc.title.slice(0, 10)}...`
                       : doc.title}
                   </p>
-                  <p className="font-extralight text-white group-hover:text-accColor">
+                  <p className={`font-extralight ${isDarkModed ? "group-hover:text-accColor" :"text-white"} text-white`}>
                     {translations.homePage.bookObject.by[selectedLangugage]}:{" "}
                     {doc.author}
                   </p>
                 </div>
 
-                <div className="">
+                <div className={`${isDarkModed ? "group-hover:text-accColor" :"text-white"} text-white`}>
                   <p>
                     {doc.pagesNumber}{" "}
                     {translations.homePage.bookObject.pages[selectedLangugage]}

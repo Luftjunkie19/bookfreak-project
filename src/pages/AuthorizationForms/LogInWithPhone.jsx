@@ -1,27 +1,26 @@
-import "react-phone-input-2/lib/material.css";
-import "../stylings/backgrounds.css";
+import 'react-phone-input-2/lib/material.css';
+import '../stylings/backgrounds.css';
 
-import { useState } from "react";
+import { useState } from 'react';
 
 import {
   getAuth,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-} from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { Alert } from "flowbite-react";
-import PhoneInput from "react-phone-input-2";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import VerificationInput from "react-verification-input";
+} from 'firebase/auth';
+import { Alert } from 'flowbite-react';
+import PhoneInput from 'react-phone-input-2';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import VerificationInput from 'react-verification-input';
 
-import formsTranslations from "../../assets/translations/FormsTranslations.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
+import formsTranslations
+  from '../../assets/translations/FormsTranslations.json';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
 function LogInWithPhone() {
-  const firestore = getFirestore();
   const [phone, setPhone] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [verificationCode, setVerificationCode] = useState("");
@@ -34,7 +33,7 @@ function LogInWithPhone() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const handleSendVerificationCode = async (e) => {
     e.preventDefault();
     setError(null);
@@ -90,95 +89,96 @@ function LogInWithPhone() {
 
   return (
     <div className="min-h-screen h-full flex justify-center items-center flex-col pattern-bg">
-      {!showConfirmation && (
-        <form
-          onSubmit={handleSendVerificationCode}
-          className="p-4 lg:shadow-md lg:shadow-primeColor sm:bg-transparent lg:bg-accColor rounded-md gap-4 flex justify-around items-center flex-col sm:w-full max-w-lg"
-        >
-          <p className="text-2xl text-white text-center ">
-            {
-              formsTranslations.signingOptions.passwordForgotten.provideNumber[
-                selectedLanguage
-              ]
-            }
-          </p>
+  {!showConfirmation && (
+    <form
+      onSubmit={handleSendVerificationCode}
+      className="p-4 lg:shadow-md lg:shadow-primeColor sm:bg-transparent lg:bg-accColor rounded-md gap-4 flex justify-around items-center flex-col sm:w-full max-w-lg"
+    >
+      <p className={`text-2xl ${isDarkModed ? "text-white" : "text-black"} text-center`}>
+        {
+          formsTranslations.signingOptions.passwordForgotten.provideNumber[
+            selectedLanguage
+          ]
+        }
+      </p>
 
-          <label className="text-black sm:w-full lg:w-1/2 self-start">
-            <PhoneInput
-              prefix="+"
-              inputClass=" text-white bg-primeColor"
-              country={"pl"}
-              inputProps={{ required: true, autoFocus: true }}
-              value={phone}
-              onChange={(phone) => setPhone(`+${phone}`)}
-            />
-          </label>
+      <label className={`${isDarkModed ? "text-white" : "text-black"} sm:w-full lg:w-1/2 self-start`}>
+        <PhoneInput
+          prefix="+"
+          inputClass={`text-white bg-primeColor ${isDarkModed ? "text-white" : "text-black"}`}
+          country={"pl"}
+          inputProps={{ required: true, autoFocus: true }}
+          value={phone}
+          onChange={(phone) => setPhone(`+${phone}`)}
+        />
+      </label>
 
-          {error && (
-            <Alert className="bg-transparent text-error" severity="error">
-              {error}
-            </Alert>
-          )}
-
-          <button className="btn sm:bg-accColor md:bg-primeColor max-w-md text-white">
-            {
-              formsTranslations.signingOptions.passwordForgotten.verifyBtn[
-                selectedLanguage
-              ]
-            }
-          </button>
-        </form>
+      {error && (
+        <Alert className="bg-transparent text-error" severity="error">
+          {error}
+        </Alert>
       )}
-      <div id="recaptcha-container"></div>
-      {showConfirmation && (
-        <>
-          <form
-            onSubmit={handleVerifyCode}
-            className="flex flex-col sm:w-full max-w-lg justify-center items-center gap-3 sm:bg-transparent md:bg-accColor shadow-md shadow-primeColor p-4 rounded-md"
-          >
-            <p className="text-3xl text-white">
-              {
-                formsTranslations.signingOptions.passwordForgotten
-                  .verificationText[selectedLanguage]
-              }
-            </p>
 
-            <label>
-              <span>
-                {
-                  formsTranslations.signingOptions.passwordForgotten
-                    .verificationCode[selectedLanguage]
-                }
-                :
-              </span>
+      <button className={`btn ${isDarkModed ? "bg-accColor" : "bg-primeColor"} md:bg-primeColor max-w-md text-white`}>
+        {
+          formsTranslations.signingOptions.passwordForgotten.verifyBtn[
+            selectedLanguage
+          ]
+        }
+      </button>
+    </form>
+  )}
+  <div id="recaptcha-container"></div>
+  {showConfirmation && (
+    <>
+      <form
+        onSubmit={handleVerifyCode}
+        className="flex flex-col sm:w-full max-w-lg justify-center items-center gap-3 sm:bg-transparent md:bg-accColor shadow-md shadow-primeColor p-4 rounded-md"
+      >
+        <p className={`text-3xl md:text-white ${isDarkModed ? "text-white" : "text-black"}`}>
+          {
+            formsTranslations.signingOptions.passwordForgotten
+              .verificationText[selectedLanguage]
+          }
+        </p>
 
-              <VerificationInput
-                classNames={{
-                  character: "rounded-md",
-                  characterSelected: " border-accColor",
-                }}
-                autoFocus
-                validChars="0-9"
-                inputProps={{ inputMode: "numeric" }}
-                onChange={(value) => setVerificationCode(value)}
-              />
-            </label>
-            <button className="btn sm:bg-accColor md:bg-primeColor">
-              {
-                formsTranslations.signingOptions.passwordForgotten.verifyBtn[
-                  selectedLanguage
-                ]
-              }
-            </button>
-            {error && (
-              <Alert className="bg-transparent" severity="error">
-                {error}
-              </Alert>
-            )}
-          </form>
-        </>
-      )}
-    </div>
+        <label>
+          <span className={`md:text-white ${isDarkModed ? "text-white" : "text-black"}`}>
+            {
+              formsTranslations.signingOptions.passwordForgotten
+                .verificationCode[selectedLanguage]
+            }
+            :
+          </span>
+
+          <VerificationInput
+            classNames={{
+              character: "rounded-md",
+              characterSelected: " border-accColor",
+            }}
+            autoFocus
+            validChars="0-9"
+            inputProps={{ inputMode: "numeric" }}
+            onChange={(value) => setVerificationCode(value)}
+          />
+        </label>
+        <button className={`btn text-white ${isDarkModed ? "bg-accColor" : "bg-primeColor"} md:bg-primeColor`}>
+          {
+            formsTranslations.signingOptions.passwordForgotten.verifyBtn[
+              selectedLanguage
+            ]
+          }
+        </button>
+        {error && (
+          <Alert className="bg-transparent text-error" severity="error">
+            {error}
+          </Alert>
+        )}
+      </form>
+    </>
+  )}
+</div>
+
   );
 }
 

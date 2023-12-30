@@ -8,6 +8,7 @@ import {
 
 export default function useRealtimeDocuments() {
   const [loadingDocs, setIsLoading] = useState(false);
+
   const getDocuments = (col) => {
     setIsLoading(true);
     const documentsAvailable = ref(getDatabase(), `${col}`);
@@ -19,11 +20,11 @@ export default function useRealtimeDocuments() {
           snapshot.forEach((child) => {
             array.push(child.val());
           });
-          unsubscribe(); 
+          unsubscribe();
           resolve(array);
+          setIsLoading(false); // Move this line inside the if block
         }
       });
-      setIsLoading(false);
     });
   };
 

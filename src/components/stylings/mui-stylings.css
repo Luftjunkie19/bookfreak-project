@@ -1,4 +1,4 @@
-.Mui-expanded {
+ .Mui-expanded  {
   background-color: rgba(66, 102, 181, 0.654);
   transition: all 0.5s;
 }
@@ -168,4 +168,16 @@
 
 .css-1vjjf3f-MuiAutocomplete-root{
   background: transparent !important;
+}
+
+[data-theme=acid] .css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-line{
+  stroke: black !important;
+}
+
+[data-theme=acid] .css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-label {
+  stroke: black !important;
+}
+
+[data-theme=acid] .css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-tickLabel{
+  stroke: black !important;
 }

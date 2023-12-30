@@ -1,0 +1,4 @@
+.fullscreen .image-gallery-slide .image-gallery-image .imageSlider img{
+    width: 100vw;
+    max-height: 1024px;
+  }

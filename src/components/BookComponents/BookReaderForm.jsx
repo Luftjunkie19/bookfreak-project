@@ -1,13 +1,15 @@
-import "../Loader.css";
+import '../Loader.css';
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { FaBookOpen } from "react-icons/fa";
-import { GrClose } from "react-icons/gr";
-import { useSelector } from "react-redux";
+import { FaBookOpen } from 'react-icons/fa';
+import { GrClose } from 'react-icons/gr';
+import { useSelector } from 'react-redux';
 
-import formsTranslations from "../../assets/translations/FormsTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
+import formsTranslations
+  from '../../assets/translations/FormsTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
 
 function BookReaderForm({ closeForm, handleConfirm, pagesAmount, readerData }) {
   const selectedLanguage = useSelector(
@@ -43,8 +45,8 @@ function BookReaderForm({ closeForm, handleConfirm, pagesAmount, readerData }) {
         className="flex flex-col items-center justify-center gap-5"
       >
         <FaBookOpen className="text-4xl" />
-        <h2 className="text-3xl font-semibold text-white">Update your book</h2>
-        <p>Wanna add some changes? Here you are !</p>
+        <h2 className="text-3xl font-semibold text-white">{formsTranslations.updateReaderState.topText[selectedLanguage]}</h2>
+        <p>{formsTranslations.updateReaderState.bottomText[selectedLanguage]}</p>
 
         <div className="form-control">
           <label className="label cursor-pointer gap-2">

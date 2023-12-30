@@ -7,7 +7,7 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-} from "@mui/material";
+} from '@mui/material';
 
 function CompetitionMembers({
   open,
@@ -17,10 +17,10 @@ function CompetitionMembers({
 }) {
   return (
     <Dialog onClick={handleClose} open={open} className="z-[99999999]">
-      <DialogTitle>
+      <DialogTitle sx={{textAlign:"center"}}>
         {users.length > 0
           ? `${users.length} Members`
-          : "No members besides you sadly."}
+          : "No members besides you or you do not belong to any competition."}
       </DialogTitle>
       <List sx={{ pt: 0 }}>
         {users.length > 0 &&

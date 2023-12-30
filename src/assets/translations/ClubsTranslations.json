@@ -5,6 +5,16 @@
       "ger": "Mitglieder",
       "pl": "Członków"
     },
+    "required":{
+      "eng":"Required: ",
+      "ger":"Erfordert: ",
+      "pl":"Wymagane:"
+    },
+    "pages":{
+      "eng":"Pages",
+      "ger":"Seiten",
+      "pl":"Strony"
+    },
 
     "quantity": {
       "one": { "eng": "club", "ger": "Lesegruppe", "pl": "klub" },

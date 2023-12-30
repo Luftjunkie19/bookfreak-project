@@ -1,35 +1,45 @@
+import '../stylings/backgrounds.css';
+
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 
 import Lottie from 'lottie-react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import CreatableSelect from 'react-select/creatable';
+import {
+  Link,
+  useSearchParams,
+} from 'react-router-dom';
 
-import { Pagination } from '@mui/material';
+import {
+  Autocomplete,
+  Pagination,
+  TextField,
+} from '@mui/material';
 
 import lottieAnimation
   from '../../assets/lottieAnimations/Animation - 1700320134586.json';
+import formTranslations from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
 import translations from '../../assets/translations/SearchTranslations.json';
 import typesTranslation from '../../assets/translations/TypesTranslations.json';
+import BooksManagmentBar
+  from '../../components/RecensionsComponents/BooksManagmentBar';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Books() {
   const { getDocuments } = useRealtimeDocuments();
   const [orderedDocuments, setElements] = useState([]);
-
+  const [filterQuery, setFilterQuery] = useSearchParams({ filters: "" });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadElements = async () => {
     const booksEl = await getDocuments("books");
     setElements(booksEl);
   };
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   useEffect(() => {
     loadElements();
   }, [loadElements]);
@@ -42,107 +52,109 @@ function Books() {
   }, []);
 
   const categoryTypes = [
-    { value: "All", label: typesTranslation.bookFilter.all[selectedLanguage] },
     {
-      value: "Fiction",
+      filter:(array)=>{
+        return array.filter((book) => book.category ===  "Fiction");
+      },
       label: typesTranslation.bookFilter.fiction[selectedLanguage],
     },
     {
-      value: "Non-fiction",
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Non-fiction");
+      },
       label: typesTranslation.bookFilter["non-fiction"][selectedLanguage],
     },
     {
-      value: "Crime",
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Crime");
+      },
       label: typesTranslation.bookFilter.crime[selectedLanguage],
     },
     {
-      value: "Science fiction and fantasy",
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Science fiction and fantasy");
+      },
       label: typesTranslation.bookFilter.scienceFF[selectedLanguage],
     },
     {
-      value: "Children's and young adult literature",
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Children's and young adult literature");
+      },
       label: typesTranslation.bookFilter.cayal[selectedLanguage],
     },
     {
-      value: "Travel and adventure literature",
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Travel and adventure literature");
+      },
       label: typesTranslation.bookFilter.travelaal[selectedLanguage],
     },
     {
-      value: "Popular science and popular history",
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Popular science and popular history");
+      },
       label: typesTranslation.bookFilter.popularScience[selectedLanguage],
     },
     {
-      value: "Self-help and personal development",
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Self-help and personal development");
+      },
       label: typesTranslation.bookFilter.selfHelp[selectedLanguage],
     },
     {
-      value: "History and culture",
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "History and culture");
+      },
       label: typesTranslation.bookFilter.history[selectedLanguage],
     },
     {
-      value: "Art and design",
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Art and design");
+      },
       label: typesTranslation.bookFilter.artDesign[selectedLanguage],
     },
     {
-      value: "Business and economics",
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Business and economics");
+      },
       label: typesTranslation.bookFilter.Business[selectedLanguage],
     },
     {
-      value: "Psychology and philosophy",
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Psychology and philosophy");
+      },
       label: typesTranslation.bookFilter.Psychology[selectedLanguage],
     },
     {
-      value: "Health and medicine",
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Health and medicine");
+      },
       label: typesTranslation.bookFilter.Health[selectedLanguage],
     },
     {
-      value: "Erotic literature",
+      filter:   (array)=>{
+        return array.filter((book) => book.category === "Erotic literature");
+      },
       label: typesTranslation.bookFilter.Erotic[selectedLanguage],
     },
   ];
 
   const sortTypes = [
-    { label: typesTranslation.bookSort.Default[selectedLanguage], value: "" },
+    {
+      label: typesTranslation.bookSort.Default[selectedLanguage],
+      sort: (array) => array.slice().sort((a, b) => a.title - b.title),
+    },
     {
       label: typesTranslation.bookSort.pagesDescending[selectedLanguage],
-      value: "pages-desc",
+      sort: (array) => array.slice().sort((a, b) => b.pagesNumber - a.pagesNumber),
     },
     {
       label: typesTranslation.bookSort.pagesAscending[selectedLanguage],
-      value: "pages-asc",
+      sort: (array) => array.slice().sort((a, b) => a.pagesNumber - b.pagesNumber),
     },
-    {
-      label: typesTranslation.bookSort.timeDesc[selectedLanguage],
-      value: "time-desc",
-    },
-    {
-      label: typesTranslation.bookSort.timeAsc[selectedLanguage],
-      value: "time-asc",
-    },
+   
   ];
 
-  const timeAsc = (a, b) => {
-    return a.createdBy.createdAt - b.createdBy.createdAt;
-  };
-
-  const timeDesc = (a, b) => {
-    return b.createdBy.createdAt - a.createdBy.createdAt;
-  };
-
-  const pagesDesc = (a, b) => {
-    return b.pagesNumber - a.pagesNumber;
-  };
-
-  const pagesAsc = (a, b) => {
-    return a.pagesNumber - b.pagesNumber;
-  };
-
-  const undefinedCase = (a, b) => {
-    return a - b;
-  };
-
-  const [sortParam, setSortParam] = useState("All");
-  const [sortType, setSortType] = useState("");
+  
   const [currentPage, setCurrentPage] = useState(1);
   const objectsOnPage = () => {
     if (document.body.clientWidth > 0 && document.body.clientWidth < 1024) {
@@ -152,61 +164,16 @@ function Books() {
     }
   };
 
-  const filterBooks = useCallback(
-    (param) => {
-      if (param === "All" || param === "") {
-        return orderedDocuments;
-      }
-
-      const sortedBy = orderedDocuments.filter(
-        (book) => book.category === param
-      );
-      return sortedBy;
-    },
-    [orderedDocuments]
-  );
-
-  let sortedArray = filterBooks(sortParam);
-
-  const sortBooksBy = useCallback(
-    (type) => {
-      let sortType;
-      switch (type) {
-        case "time-asc":
-          sortType = timeAsc;
-          break;
-        case "time-desc":
-          sortType = timeDesc;
-          break;
-        case "pages-desc":
-          sortType = pagesDesc;
-          break;
-        case "pages-asc":
-          sortType = pagesAsc;
-          break;
-        default:
-          sortType = undefinedCase;
-      }
-
-      return sortType !== "" ? sortedArray.sort(sortType) : sortedArray;
-    },
-    [sortedArray]
-  );
-
-  const memoizedBooks = useMemo(() => {
-    return sortBooksBy(sortType);
-  }, [sortBooksBy, sortType]);
-
-  const pagesAmount = Math.ceil(sortedArray.length / objectsOnPage());
+  const pagesAmount = Math.ceil(orderedDocuments.length / objectsOnPage());
 
   const fetchObjects = useCallback(
     (page) => {
       const start = (page - 1) * objectsOnPage();
       const end = start + objectsOnPage();
-      const pageObjects = memoizedBooks.slice(start, end);
+      const pageObjects = orderedDocuments.slice(start, end);
       return pageObjects;
     },
-    [memoizedBooks]
+    [orderedDocuments]
   );
 
   const handlePagesChange = (e, value) => {
@@ -230,53 +197,123 @@ function Books() {
   useEffect(() => {
     const pageObjects = fetchObjects(currentPage);
     setBooks(pageObjects);
-    sortBooksBy(sortType);
-  }, [currentPage, fetchObjects, sortBooksBy, sortType, setBooks]);
+  }, [currentPage, fetchObjects, setBooks]);
 
   let books = setBooks(fetchObjects(currentPage));
 
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [selectedSort, setSelectedSort] = useState("");
+  
+  const applyFilters = (filters) => {
+    setSelectedFilters(filters);
+    console.log(filters);
+  };
+
+  const applySort = (sort) => {
+    setSelectedSort(sort);
+  };
+  
+  const filteredArray=() => {
+    if (selectedFilters.length > 0) {
+      const filteredDocuments = selectedFilters.reduce((result, selectedFilter) => {
+        const filterOption = categoryTypes.find(option => option.label === selectedFilter);
+  
+        if (filterOption) {
+          const temp = filterOption.filter(result);
+          return temp;
+        }
+  
+        return result;
+      }, books);
+  
+      return filteredDocuments;
+    } else {
+      return books;
+    }
+  };
+
+const sortedArray=() => {
+  if (selectedSort.trim("") !== "") {
+    return sortTypes
+      .find((option) => option.label === selectedSort)
+      .sort(filteredArray())
+  } else {
+    return filteredArray();
+  }
+};
   return (
-    <div className="min-h-screen h-full">
-      <div className="flex sm:flex-col lg:flex-row justify-around items-center p-3 w-full">
-        <label className="flex flex-col sm:w-full  lg:w-1/3">
-          <span>{reuseableTranslations.categoryText[selectedLanguage]}:</span>
-          <CreatableSelect
-            className="w-full"
-         
-            isClearable
-            isSearchable
-            options={categoryTypes}
-            onChange={(e) => {
-              const selectedOption =
-                e && e.value ? e : { value: "", label: "" };
-              setSortParam(selectedOption.value);
-            }}
-          />
-        </label>
-        <label className="flex flex-col sm:w-full lg:w-1/3">
-          <span>
-            {reuseableTranslations.sortTexts[selectedLanguage]}:{" "}
-            {sortType === "" ? "everything" : sortType}
-          </span>
-          <CreatableSelect
-            className="w-full"
+    <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
+      <div className="flex flex-wrap gap-6 items-center p-3 w-full">
+        <BooksManagmentBar applyFilters={applyFilters} applySort={applySort} filterText={reuseableTranslations.categoryText[selectedLanguage]} sortText={reuseableTranslations.sortTexts[selectedLanguage]}/>
+        <Autocomplete
+          className="sm:w-3/4 md:max-w-lg"
+          onChange={(e, value) => {
+            if (value === null) {
+              setFilterQuery(
+                (prev) => {
+                  prev.set("filters", "");
+                  return prev;
+                },
+                { replace: true }
+              );
+              return;
+            }
+            setFilterQuery(
+              (prev) => {
+                prev.set("filters", value);
+                return prev;
+              },
+              { replace: true }
+            );
+          }}
+          sx={{
+            ".MuiAutocomplete-input": {
+              color: "white",
+            },
+            ".MuiAutocomplete-inputRoot": {
+              background: "#4267B5",
+            },
 
-            isClearable
-            isSearchable
-            options={sortTypes}
-            onChange={(e) => {
-              const selectedOption =
-                e && e.value ? e : { value: "", label: "" };
-
-              setSortType(selectedOption.value);
-            }}
-          />
-        </label>
+            "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+              border: "0",
+            },
+          }}
+          id="free-solo-demo"
+          freeSolo
+          options={books.map((option) => option.title)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+         label={formTranslations.placeHoldersCollections.booksTitle[selectedLanguage]}
+              onChange={(e, value) => {
+                setFilterQuery(
+                  (prev) => {
+                    prev.set("filters", e.target.value);
+                    return prev;
+                  },
+                  { replace: true }
+                );
+              }}
+            />
+          )}
+        />
       </div>
 
       <div className="flex flex-wrap w-screen lg:flex-row gap-4 justify-center items-center p-4">
-        {books && books.length > 0 ? (
-          books.map((doc, i) => (
+        {sortedArray().filter((doc) =>
+          doc.title
+            .toLowerCase()
+            .includes(filterQuery.get("filters").toLowerCase())
+        ) && sortedArray().filter((doc) =>
+          doc.title
+            .toLowerCase()
+            .includes(filterQuery.get("filters").toLowerCase())
+        ).length > 0 ? (
+          sortedArray().filter((doc) =>
+          doc.title
+            .toLowerCase()
+            .includes(filterQuery.get("filters").toLowerCase())
+        ).map((doc, i) => (
             <Link
               to={`/book/${doc.id}`}
               key={i}
@@ -316,10 +353,14 @@ function Books() {
           ))
         ) : (
           <>
-            {sortedArray.length === 0 && (
+            {sortedArray().filter((doc) =>
+          doc.title
+            .toLowerCase()
+            .includes(filterQuery.get("filters").toLowerCase())
+        ).length === 0 && (
               <div className="w-full flex flex-col justify-center items-center">
-                <h2>
-                  {translations.noResults[selectedLanguage]} {sortParam}
+                <h2 className="text-xl font-bold">
+                  {translations.noResults[selectedLanguage]} {selectedFilters.length > 0 && <span className="font-semibold text-sm">{selectedFilters.join().split(", ").join()}</span>}
                 </h2>
                 <Lottie animationData={lottieAnimation} />
               </div>

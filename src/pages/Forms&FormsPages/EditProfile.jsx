@@ -1,29 +1,48 @@
-import { useEffect, useRef, useState } from "react";
+import '../stylings/backgrounds.css';
 
-import { updateEmail, updateProfile } from "firebase/auth";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { motion } from "framer-motion";
-import AvatarEditor from "react-avatar-editor";
-import ReactFlagsSelect from "react-flags-select";
-import { FaWindowClose } from "react-icons/fa";
-import { FaX } from "react-icons/fa6";
-import { IoSettings } from "react-icons/io5";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
-import { Snackbar } from "@mui/material";
+import {
+  updateEmail,
+  updateProfile,
+} from 'firebase/auth';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import { motion } from 'framer-motion';
+import AvatarEditor from 'react-avatar-editor';
+import ReactFlagsSelect from 'react-flags-select';
+import { FaWindowClose } from 'react-icons/fa';
+import { IoSettings } from 'react-icons/io5';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  Link,
+  useNavigate,
+} from 'react-router-dom';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import formsTranslation from "../../assets/translations/FormsTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import BookBucksComponent from "../../components/HomeComponents/BookBucksComponent";
-import Loader from "../../components/Loader";
-import { modeActions } from "../../context/ModeContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useFormRealData } from "../../hooks/useFormRealData";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import formsTranslation from '../../assets/translations/FormsTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import BookBucksComponent
+  from '../../components/HomeComponents/BookBucksComponent';
+import Loader from '../../components/Loader';
+import { modeActions } from '../../context/ModeContext';
+import { snackbarActions } from '../../context/SnackBarContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useFormRealData } from '../../hooks/useFormRealData';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function EditProfile() {
   const { user } = useAuthContext();
@@ -38,7 +57,6 @@ function EditProfile() {
   const [nickname, setNickname] = useState(user.displayName);
   const [email, setEmail] = useState(user.email);
   const [profileImg, setProfileImg] = useState(defaultImg);
-  const [imgError, setImgError] = useState(null);
   const [description, setDescription] = useState("");
   const [editProfileImg, setEditProfileImg] = useState(null);
   const [isPending, setIsPending] = useState(false);
@@ -80,20 +98,19 @@ function EditProfile() {
   }, [document]);
 
   const handleImg = (e) => {
-    setImgError(null);
     setEditProfileImg(null);
     setIsPending(false);
 
     let selected = e.target.files[0];
 
     if (selected?.size > 100000) {
-      setImgError(`The ${selected.name} is to big file`);
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.tooBigFile[selectedLanguage]}`, alertType:"error"}));
       setEditProfileImg(null);
       return;
     }
 
     if (!selected?.type.includes("image")) {
-      setImgError("Selected file is not an Img");
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]}`, alertType:"error"}));
       setEditProfileImg(null);
       return;
     }
@@ -113,7 +130,6 @@ function EditProfile() {
       return;
     }
 
-    setImgError(null);
   };
 
   const handleSaveAvatar = async () => {
@@ -196,9 +212,7 @@ function EditProfile() {
 
       setIsPending(false);
       navigate(`/profile/${user.uid}`);
-      toast.info(
-        alertMessages.notifications.successfull.update[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.update[selectedLanguage]}`, alertType:"success"}));
     } catch (error) {
       console.log(error);
       setIsPending(false);
@@ -235,7 +249,7 @@ function EditProfile() {
       });
       setIsPending(false);
     } catch (err) {
-      setImgError(err.message);
+      dispatch(snackbarActions.showMessage({message:err.message, alertType:"error"}));
       setIsPending(false);
     }
   };
@@ -262,15 +276,15 @@ function EditProfile() {
       window.location.assign(accountLinkObject.url);
       window.location.replace(accountLinkObject.url);
 
-      toast.success("New link created");
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
     } catch (error) {
-      toast.error(error.message);
-      console.log(error.message);
+      dispatch(snackbarActions.showMessage({message:error.message, alertType:"error"}));
+
     }
   };
   return (
     <motion.div
-      className="min-h-screen h-full"
+      className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -330,7 +344,7 @@ function EditProfile() {
       {document && (
         <form
           onSubmit={handleSubmit}
-          className="flex w-full flex-col text-white  rounded-lg"
+          className={`flex w-full flex-col rounded-lg ${!isDarkModed ? "text-black": "text-white"}`}
         >
           <div className="w-full flex flex-wrap items-center  p-4 gap-4">
             <IoSettings className="text-3xl hover:animate-spin" />
@@ -355,8 +369,8 @@ function EditProfile() {
 
           {/**Details start */}
           <div className="w-full p-6">
-            <p className=" text-2xl font-semibold text-white">
-              General information
+            <p className={`text-2xl font-semibold ${isDarkModed ? "text-white" : "text-black"}`}>
+              {formsTranslation.generalInfo[selectedLanguage]}
             </p>
             <div className="flex flex-wrap w-full gap-4 py-2">
               <label className="flex flex-col sm:w-full md:max-w-lg">
@@ -364,7 +378,7 @@ function EditProfile() {
                   {formsTranslation.userFields.nickname[selectedLanguage]}:
                 </span>
                 <input
-                  className="p-4 rounded-lg"
+                  className="p-4 rounded-lg input outline-none border-accColor border-2"
                   type="text"
                   required
                   value={nickname}
@@ -375,7 +389,7 @@ function EditProfile() {
               <label className="flex flex-col sm:w-full md:max-w-lg">
                 <span>Email:</span>
                 <input
-                  className="p-4 rounded-lg"
+                  className="p-4 rounded-lg input outline-none border-accColor border-2"
                   type="email"
                   required
                   value={email}
@@ -384,7 +398,7 @@ function EditProfile() {
                 />
               </label>
               <label className="flex flex-col sm:w-full md:max-w-lg">
-                <span>Nationality:</span>
+                <span>{formsTranslation.nationality[selectedLanguage]}</span>
                 <ReactFlagsSelect
                   searchPlaceholder="Search countries"
                   className="text-black sm:w-full md:max-w-lg"
@@ -400,8 +414,7 @@ function EditProfile() {
                   }}
                 />
                 <small>
-                  Note ! Changing the nationality won't change the currency and
-                  country in your financial account.
+                {formsTranslation.smallNote[selectedLanguage]}
                 </small>
               </label>
             </div>
@@ -411,8 +424,8 @@ function EditProfile() {
 
           <div className="flex flex-col w-full gap-3 p-6">
             {document.stripeAccountData && (
-              <p className="text-white font-semibold text-2xl">
-                Available credits:{" "}
+              <p className={`${!isDarkModed ? "text-black": "text-white"} font-semibold text-2xl`}>
+                {formsTranslation.currentCreditsState[selectedLanguage]}:{" "}
                 <span className="font-bold text-green-500">
                   {" "}
                   {(balance / 100 - amountToPayout / 100).toFixed(2)}{" "}
@@ -425,7 +438,7 @@ function EditProfile() {
               step={0.5}
               min={0}
               max={balance / 100}
-              className="p-4 rounded-lg max-w-lg"
+              className="p-4 rounded-lg max-w-lg input border-accColor border-2"
               value={amountToPayout / 100}
               onChange={(e) => {
                 setAmountToPayout(Math.round(+e.target.value * 100));
@@ -435,25 +448,25 @@ function EditProfile() {
               className="btn max-w-sm bg-accColor text-white"
               onClick={payoutAmount}
             >
-              Payout
+              {formsTranslation.payoutText[selectedLanguage]}
             </button>
           </div>
 
           <div className="flex flex-col w-full gap-3 p-6">
-            <p className=" text-2xl font-semibold text-white">
-              Financial Management
+            <p className={`text-2xl font-semibold ${!isDarkModed ? "text-black": "text-white"}`}>
+            {formsTranslation.financialManagment[selectedLanguage]}
             </p>
             <Link
               to={document.linkToExpress}
               target="_blank"
               className="btn max-w-xs bg-accColor text-white"
             >
-              Move to dashboard
+              {formsTranslation.moveToDashboardText[selectedLanguage]}
             </Link>
           </div>
 
           <div className="p-6 flex gap-3 flex-col">
-            <p className="text-2xl font-semibold text-white">Visibility mode</p>
+            <p className={`text-2xl font-semibold ${!isDarkModed ? "text-black": "text-white"}`}> {formsTranslation.visibilityMode[selectedLanguage]}</p>
             <label className="flex cursor-pointer gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -502,19 +515,19 @@ function EditProfile() {
           {!document.stripeAccountData.details_submitted &&
             !document.stripeAccountData.charges_enabled && (
               <div className="flex flex-col gap-3 px-4">
-                <p>Provide essential financial data</p>
+                <p className={`${!isDarkModed ? "text-black": "text-white"}`}>{formsTranslation.provideFinancialData[selectedLanguage]}</p>
                 <button
-                  className="btn btn-info max-w-sm text-white"
+                  className={`btn btn-info max-w-sm ${!isDarkModed ? "text-black": "text-white"}`}
                   onClick={moveToProvideFinanceData}
                 >
-                  Finish
+                  {formsTranslation.finishText[selectedLanguage]}
                 </button>
               </div>
             )}
 
           <div className="flex flex-col gap-3 px-4">
-            <p className="text-2xl font-semibold text-white">
-              Replenish your account
+            <p className={`text-2xl font-semibold ${!isDarkModed ? "text-black": "text-white"}`}>
+            {formsTranslation.replenishYourAccount[selectedLanguage]}
             </p>
             <BookBucksComponent />
           </div>
@@ -524,7 +537,7 @@ function EditProfile() {
               {formsTranslation.descriptionTextarea.label[selectedLanguage]}:
             </span>
             <textarea
-              className="rounded-lg resize-none outline-none max-w-4xl h-52 p-2"
+              className="rounded-lg border-2 border-accColor resize-none outline-none max-w-4xl h-52 p-2"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
@@ -543,29 +556,7 @@ function EditProfile() {
           )}
         </form>
       )}
-      {imgError && (
-        <Snackbar
-          onClose={(e) => {
-            e.preventDefault();
-            setImgError(null);
-          }}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={imgError}
-          autoHideDuration={3000}
-          message={imgError}
-          action={
-            <button
-              className="flex items-center gap-2"
-              onClick={(e) => {
-                e.preventDefault();
-                setImgError(null);
-              }}
-            >
-              <FaX className=" text-red-500" /> Close
-            </button>
-          }
-        />
-      )}
+   
 
       {isPending && <Loader />}
     </motion.div>

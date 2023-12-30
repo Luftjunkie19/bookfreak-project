@@ -1,4 +1,5 @@
 import '../stylings/scrollbarStyling.css';
+import '../stylings/backgrounds.css';
 
 import React, { useState } from 'react';
 
@@ -20,7 +21,6 @@ import {
   useParams,
 } from 'react-router';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 import {
   Button,
@@ -42,20 +42,19 @@ import AllMembersModal from '../../components/AllMembersModal';
 import Loader from '../../components/Loader';
 import Ranking from '../../components/Ranking';
 import Warning from '../../components/WarningsComponents/Warning';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import useGetDocument from '../../hooks/useGetDocument';
 import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function GeneralInfo() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const { getDocument } = useRealtimeDocument();
-  const { getDocuments } = useRealtimeDocuments();
   const { removeFromDataBase, updateDatabase } = useRealDatabase();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
@@ -172,9 +171,7 @@ function GeneralInfo() {
       setIsPending(false);
       navigate("/");
     }
-    toast.success(
-      alertMessages.notifications.successfull.remove[selectedLanguage]
-    );
+    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}))
   };
 
   const dispatch = useDispatch();
@@ -193,16 +190,14 @@ function GeneralInfo() {
     } else {
       removeFromDataBase("communityMembers", `${id}/users/${user.uid}`);
       navigate("/");
-      toast.success(
-        alertMessages.notifications.successfull.leave[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${ alertMessages.notifications.successfull.leave[selectedLanguage]}`, alertType:"success"}));
     }
   };
 
   const isWarningVisible = useSelector((state) => state.isWarningVisible);
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   return (
-    <div className="min-h-screen h-full">
+    <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
       {isPending && <Loader />}
       {openState.open === true && (
         <>
@@ -429,15 +424,15 @@ function GeneralInfo() {
 
       {document && (
         <div className="flex sm:flex-col xl:flex-row justify-between w-full items-center gap-4 py-4">
-          <div className="h-full sm:w-full xl:w-2/5 gap-6 text-white flex flex-col items-center justify-between rounded-md py-4">
+          <div className={`h-full ${isDarkModed ? "text-white" : "text-black"} sm:w-full xl:w-2/5 gap-6 flex flex-col items-center justify-between rounded-md py-4`}>
             <p className="sm:text-2xl lg:text-4xl font-bold">
               {document.competitionTitle}
             </p>
-            <div className="flex sm:flex-col gap-4 2xl:flex-row w-full justify-around items-center border-t-2 border-accColor p-4">
+            <div className="flex sm:flex-col gap-4 lg:flex-row xl:flex-col 2xl:flex-row w-full justify-around xl:items-center border-t-2 border-accColor p-4">
               <p className=" text-2xl font-thin">
                 {reuseableTranslations.detailsText[selectedLanguage]}:
               </p>
-              <div>
+              <div >
                 <h3 className=" text-lg font-semibold">
                   {document.competitionsName}
                 </h3>
@@ -468,7 +463,7 @@ function GeneralInfo() {
               {document.prize.moneyPrize &&
                 document.prize.moneyPrize.amount > 0 && (
                   <div className="p-2">
-                    <p className="font-bold text-4xl">Prize for the winner</p>
+                    <p className="font-bold text-4xl">{translations.competitionObject.prizeFor[selectedLanguage]}</p>
                     <span className="text-2xl text-yellow-500 font-semibold">
                       {(document.prize.moneyPrize.amount / 100).toFixed(2)}{" "}
                       {document.prize.moneyPrize.currency.toUpperCase()}
@@ -477,7 +472,7 @@ function GeneralInfo() {
                 )}
               {document.prize.itemPrize !== undefined && (
                 <>
-                  <p className="text-3xl font-bold">Details about the prize:</p>
+                  <p className="text-3xl font-bold">{translations.competitionObject.prizeDetails[selectedLanguage]}:</p>
                   <p className="text-lg font-semibold">
                     {document.prize.itemPrize.title}
                   </p>
@@ -486,7 +481,7 @@ function GeneralInfo() {
             </div>
 
             {document && document.description.trim() !== "" && (
-              <div class="flex flex-col text-white p-3 w-full">
+              <div class={`flex flex-col ${isDarkModed ? "text-white" : "text-black"} p-3 w-full`}>
                 {competitionExpirationDate > 0 && (
                   <p>
                     {

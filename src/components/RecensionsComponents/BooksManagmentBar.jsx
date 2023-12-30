@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import { useSelector } from 'react-redux';
+
 import {
   Box,
   Chip,
@@ -10,13 +12,114 @@ import {
   Select,
 } from '@mui/material';
 
-function BooksManagmentBar({applyFilters, applySort}) {
+import typesTranslation from '../../assets/translations/TypesTranslations.json';
 
-  const sortOptions=[{
-    
-  }];
+function BooksManagmentBar({applyFilters, applySort, sortText, filterText}) {
+  const selectedLanguage = useSelector(
+    (state) => state.languageSelection.selectedLangugage
+  );
 
-  const filterOptions=[];
+  const filterOptions=[
+    {
+      filter:(array)=>{
+        return array.filter((book) => book.category ===  "Fiction");
+      },
+      label: typesTranslation.bookFilter.fiction[selectedLanguage],
+    },
+    {
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Non-fiction");
+      },
+      label: typesTranslation.bookFilter["non-fiction"][selectedLanguage],
+    },
+    {
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Crime");
+      },
+      label: typesTranslation.bookFilter.crime[selectedLanguage],
+    },
+    {
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Science fiction and fantasy");
+      },
+      label: typesTranslation.bookFilter.scienceFF[selectedLanguage],
+    },
+    {
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Children's and young adult literature");
+      },
+      label: typesTranslation.bookFilter.cayal[selectedLanguage],
+    },
+    {
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Travel and adventure literature");
+      },
+      label: typesTranslation.bookFilter.travelaal[selectedLanguage],
+    },
+    {
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Popular science and popular history");
+      },
+      label: typesTranslation.bookFilter.popularScience[selectedLanguage],
+    },
+    {
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Self-help and personal development");
+      },
+      label: typesTranslation.bookFilter.selfHelp[selectedLanguage],
+    },
+    {
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "History and culture");
+      },
+      label: typesTranslation.bookFilter.history[selectedLanguage],
+    },
+    {
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Art and design");
+      },
+      label: typesTranslation.bookFilter.artDesign[selectedLanguage],
+    },
+    {
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Business and economics");
+      },
+      label: typesTranslation.bookFilter.Business[selectedLanguage],
+    },
+    {
+      filter: (array)=>{
+        return array.filter((book) => book.category === "Psychology and philosophy");
+      },
+      label: typesTranslation.bookFilter.Psychology[selectedLanguage],
+    },
+    {
+      filter:  (array)=>{
+        return array.filter((book) => book.category === "Health and medicine");
+      },
+      label: typesTranslation.bookFilter.Health[selectedLanguage],
+    },
+    {
+      filter:   (array)=>{
+        return array.filter((book) => book.category === "Erotic literature");
+      },
+      label: typesTranslation.bookFilter.Erotic[selectedLanguage],
+    },
+  ];
+
+  const sortOptions=[
+     {
+    label: typesTranslation.bookSort.Default[selectedLanguage],
+    sort: (array) => array.slice().sort((a, b) => a.title - b.title),
+  },
+  {
+    label: typesTranslation.bookSort.pagesDescending[selectedLanguage],
+    sort: (array) => array.slice().sort((a, b) => b.pagesNumber - a.pagesNumber),
+  },
+  {
+    label: typesTranslation.bookSort.pagesAscending[selectedLanguage],
+    sort: (array) => array.slice().sort((a, b) => a.pagesNumber - b.pagesNumber),
+  },
+  ];
 
   const [sortSelected, setSort] = useState("");
 
@@ -48,7 +151,7 @@ function BooksManagmentBar({applyFilters, applySort}) {
   id="demo-multiple-name-label"
   sx={{ ":placeholder-shown": { color: "white" } }}
 >
-  Filters
+  {filterText}
 </InputLabel>
 <Select
   labelId="demo-multiple-chip-label"
@@ -93,7 +196,7 @@ function BooksManagmentBar({applyFilters, applySort}) {
 
 <FormControl sx={{ m: 1, width: 300 }}>
 <InputLabel className="text-white" id="demo-simple-select-label">
-  Sort by
+  {sortText}
 </InputLabel>
 <Select
   sx={{

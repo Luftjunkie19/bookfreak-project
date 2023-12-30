@@ -13,7 +13,7 @@ import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 function HomeClubs() {
   const { getDocuments } = useRealtimeDocuments();
   const [documents, setElements] = useState([]);
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadElements = async () => {
     const booksEl = await getDocuments("readersClubs");
@@ -41,7 +41,7 @@ function HomeClubs() {
           <Link
             to={`/readers-clubs/${doc.id}`}
             key={doc.id}
-            className="snap-start flex xl:w-1/5 flex-col group p-2 bg-accColor rounded-lg overflow-hidden hover:shadow-md hover:shadow-black hover:bg-lightModeCol hover:scale-95 duration-200 transition-all"
+            className={`snap-start flex xl:w-1/5 flex-col group p-2 ${isDarkModed ? "bg-accColor" : "bg-primeColor"} rounded-lg overflow-hidden hover:shadow-md hover:shadow-black ${isDarkModed ? "hover:bg-lightModeCol" : "hover:bg-accColor"} hover:scale-95 duration-200 transition-all`}
           >
             <img
               src={doc.clubLogo}
@@ -50,12 +50,9 @@ function HomeClubs() {
               className="w-16 h-16 object-cover rounded-full group-hover:scale-95 duration-200 transition-all"
             />
 
-            <div className="flex justify-between items-center sm:flex-col xl:flex-row text-white group-hover:text-accColor p-4">
+            <div className={`flex justify-between items-center sm:flex-col xl:flex-row text-white ${isDarkModed && "group-hover:text-accColor"} p-4`}>
               <p className="text-lg font-semibold">{doc.clubsName}</p>
-              {/* <p>
-                {doc.users.length}{" "}
-                {translations.clubObject.members[selectedLanguage]}
-        </p>*/}
+            
             </div>
           </Link>
         ))

@@ -1,27 +1,41 @@
+import '../../components/stylings/mui-stylings.css';
+import '../stylings/backgrounds.css';
+
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import generateUniqueId from "react-id-generator";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import Select from "react-select";
-import { toast } from "react-toastify";
+import generateUniqueId from 'react-id-generator';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-import { Alert } from "@mui/material";
+import {
+  Alert,
+  Autocomplete,
+  TextField,
+} from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import formTranslations from "../../assets/translations/FormsTranslations.json";
-import profileTranslations from "../../assets/translations/ProfileTranslations.json";
-import Loader from "../../components/Loader";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocument from "../../hooks/useRealtimeDocument";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import formTranslations from '../../assets/translations/FormsTranslations.json';
+import profileTranslations
+  from '../../assets/translations/ProfileTranslations.json';
+import Loader from '../../components/Loader';
+import { snackbarActions } from '../../context/SnackBarContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function AddLink() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const dispatch=useDispatch();
   const [option, setOption] = useState("");
   const [link, setLink] = useState("");
   const [error, setError] = useState(null);
@@ -32,7 +46,7 @@ function AddLink() {
   const { user } = useAuthContext();
   const [document, setDocument] = useState(null);
   const [links, setLinks] = useState([]);
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const documentObject = async () => {
     const doc = await getDocument("users", user.uid);
@@ -122,51 +136,55 @@ function AddLink() {
       setError(null);
       setIsPending(false);
       navigate(`/profile/${user.uid}`);
-      toast.info(
-        `${alertMessages.notifications.successfull.create[selectedLanguage]}`
-      );
+      dispatch(snackbarActions.showMessage({message: `${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
     } catch (error) {
       setError(error.message);
     }
   };
 
   const availableMedia = [
-    { value: "discord", label: "discord" },
-    { value: "spotify", label: "spotify" },
-    { value: "youtube", label: "youtube" },
-    { value: "github", label: "github" },
+     "discord",
+     "spotify",
+    "youtube",
+    "github" 
   ];
 
   return (
-    <div className="min-h-full h-screen flex flex-col justify-center items-center">
+    <div className={`min-h-full h-screen flex flex-col justify-center items-center ${!isDarkModed && "pattern-bg"}`}>
       <form
-        className="h-1/2 justify-around flex flex-col py-6 px-12"
+        className="h-1/2 justify-around flex flex-col py-6 px-12 gap-4"
         onSubmit={handleSubmit}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <h2 className="text-5xl font-bold text-white">
+        <h2 className={`text-5xl font-bold ${isDarkModed ? "text-white" : "text-black"}`}>
           {profileTranslations.addLinkForm.topText[selectedLanguage]}
         </h2>
 
         <label className="sm:w-full md:max-w-3xl">
-          <span className="text-white">
-            {profileTranslations.addLinkForm.query[selectedLanguage]}
-          </span>
-          <Select
-            className="w-full"
-            options={availableMedia}
-            onChange={(e) => setOption(e.value)}
-          />
+          <Autocomplete
+     
+        onChange={(event, newValue) => {
+          setOption(newValue);
+          console.log(newValue)
+        }}
+        id="controllable-states-demo"
+        options={availableMedia}
+className="w-full"
+        renderInput={(params) => <TextField {...params} label={profileTranslations.addLinkForm.query[selectedLanguage]} />}
+      />
+
+
+       
         </label>
         {option === "discord" && (
           <label className="flex flex-col sm:w-full md:max-w-xl">
-            <span className="text-white">
+            <span className={`${isDarkModed ? "text-white" : "text-black"}`}>
               {formTranslations.userFields.nickname[selectedLanguage]}:
             </span>
             <input
-              className="input input-info w-full py-1"
+              className="input input-info outline-none w-full py-1"
               type="text"
               required
               placeholder={
@@ -180,9 +198,9 @@ function AddLink() {
         {option === "spotify" && (
           <>
             <label className="flex flex-col  sm:w-full md:max-w-xl">
-              <span className="text-white">Link:</span>
+              <span className={`${isDarkModed ? "text-white" : "text-black"}`}>Link:</span>
               <input
-                className="input input-info w-full py-1"
+                className="input input-info outline-none w-full py-1"
                 type="text"
                 placeholder={`${profileTranslations.addLinkForm.placeHolder[selectedLanguage]}`}
                 required
@@ -195,9 +213,9 @@ function AddLink() {
         {option === "youtube" && (
           <>
             <label className="flex flex-col  sm:w-full md:max-w-xl">
-              <span className="text-white">Link:</span>
+              <span className={`${isDarkModed ? "text-white" : "text-black"}`}>Link:</span>
               <input
-                className="input input-info w-full py-1"
+                className="input input-info outline-none w-full py-1"
                 type="text"
                 required
                 placeholder={`${profileTranslations.addLinkForm.placeHolder[selectedLanguage]}`}
@@ -210,9 +228,9 @@ function AddLink() {
         {option === "github" && (
           <>
             <label className="flex flex-col  sm:w-full md:max-w-xl">
-              <span className="text-white">Link:</span>
+              <span className={`${isDarkModed ? "text-white" : "text-black"}`}>Link:</span>
               <input
-                className="input input-info w-full py-1"
+                className="input input-info outline-none w-full py-1"
                 type="text"
                 required
                 placeholder={`${profileTranslations.addLinkForm.placeHolder[selectedLanguage]}`}
@@ -223,7 +241,7 @@ function AddLink() {
         )}
 
         {option === "" && (
-          <p className="text-white">
+          <p className={`${isDarkModed ? "text-white" : "text-black"}`}>
             {profileTranslations.addLinkForm.selectType[selectedLanguage]}
           </p>
         )}

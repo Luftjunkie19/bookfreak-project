@@ -26,8 +26,7 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
-export const currentApp = initializeApp(firebaseConfig);
-getAnalytics(currentApp);
+getAnalytics(initializeApp(firebaseConfig));
 
 AOS.init();
 

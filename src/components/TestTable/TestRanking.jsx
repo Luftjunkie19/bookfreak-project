@@ -19,14 +19,14 @@ function TestRanking({ rowData }) {
       field: "id",
       headerName: "Attempt Id",
       headerAlign: "center",
-      flex: 1,
+
       headerClassName: "bg-accColor w-full",
       cellClassName: "bg-white text-accColor border-accColor border-2",
     },
     {
       field: "player.photoURL",
       headerName: "Image",
-      flex: 1,
+   
       headerClassName: "bg-accColor",
       headerAlign: "center",
       cellClassName:
@@ -44,7 +44,7 @@ function TestRanking({ rowData }) {
     {
       field: "player.nickname",
       headerClassName: "bg-accColor",
-      flex: 1,
+    
       headerAlign: "center",
       cellAlign: "center",
       cellClassName:
@@ -58,7 +58,7 @@ function TestRanking({ rowData }) {
     {
       field: "finalResult",
       headerClassName: "bg-accColor",
-      flex: 1,
+     
       cellClassName:
         "bg-white text-accColor font-bold border-b-2 border-accColor",
       type: "number",
@@ -72,7 +72,7 @@ function TestRanking({ rowData }) {
     {
       field: "timeOfGame",
       headerClassName: "bg-accColor",
-      flex: 1,
+
       cellClassName:
         "bg-white text-accColor border-accColor border-l-2 border-r-2",
       headerName: "Solved in",
@@ -91,7 +91,7 @@ function TestRanking({ rowData }) {
   return (
     <Box>
       <DataGrid
-      sx={{fontFamily:"Montserrat"}}
+      sx={{fontFamily:"Montserrat", maxWidth:650, maxHeight:440}}
         className="text-white bg-primeColor max-w-xl m-4"
         slots={{ toolbar: GridToolbar,  }}
         rows={rowData}

@@ -20,22 +20,7 @@ function AuthorProfile() {
     (state) => state.languageSelection.selectedLangugage
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const dataAboutAuthor = async () => {
-    try {
-      const showItem = `https://en.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=20&srsearch=${authorName}`;
-      const data = await fetch(showItem);
 
-      const finalData = await data.json();
-
-      if (finalData.query.search[0]) {
-        setData(finalData.query.search[0]);
-      }
-    } catch (error) {
-      console.log(error);
-      //=> Typeof wikiError
-    }
-  };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadBooks = async () => {
@@ -49,9 +34,6 @@ function AuthorProfile() {
     loadBooks();
   }, [loadBooks]);
 
-  useEffect(() => {
-    dataAboutAuthor();
-  }, [dataAboutAuthor]);
 
   return (
     <div className="min-h-screen h-full w-full realtive top-0 left-0">
@@ -66,15 +48,7 @@ function AuthorProfile() {
         <div className="flex flex-col gap-2 justify-center xl:w-1/2">
           <p className=" text-white text-3xl">{authorName}</p>
 
-          {data && (
-            <>
-              <p className="text-white text-lg">Biography:</p>
-              <div
-                className="p-1 sm:w-full lg:w-3/5 italic font-medium text-white"
-                dangerouslySetInnerHTML={{ __html: data.snippet }}
-              />
-            </>
-          )}
+<div className="">{reuseableTranslations.authorDescription[selectedLanguage]} {authorName}</div>
         </div>
       </div>
 

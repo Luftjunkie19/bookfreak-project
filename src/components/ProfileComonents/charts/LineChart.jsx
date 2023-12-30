@@ -2,6 +2,8 @@ import '../../stylings/mui-stylings.css';
 
 import React from 'react';
 
+import { useSelector } from 'react-redux';
+
 import { Tooltip } from '@mui/material';
 import { LineChart } from '@mui/x-charts';
 
@@ -27,7 +29,7 @@ export default function UserReadingProgressChart({
     .filter((data) => data !== null);
 
   const xLabels = userReadingProgressData.map((data) => data.x);
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const userReadingProgress = userReadingProgressData.map((data) => data.y);
 
   return (
@@ -56,8 +58,8 @@ export default function UserReadingProgressChart({
           position: { vertical: "bottom", horizontal: "left" },
           padding: 0,
           labelStyle: {
-            color: "white",
-            fill: "white",
+            color:`${isDarkModed ? "white" : "black"}`,
+            fill:`${isDarkModed ? "white" : "black"}`,
           },
         },
       }}
@@ -66,10 +68,13 @@ export default function UserReadingProgressChart({
 }
 
 export function UserComparisonChart({ readerObjects, bookObjects }) {
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+
   const userComparisonData = readerObjects
     .map((reader) => {
       const book = bookObjects.find((b) => b.id === reader.bookReadingId);
       if (!book) {
+        console.log(`No book found for reader: ${reader.displayName}`);
         return null;
       }
       return {
@@ -108,8 +113,8 @@ export function UserComparisonChart({ readerObjects, bookObjects }) {
           position: { vertical: "bottom", horizontal: "left" },
           padding: 0,
           labelStyle: {
-            color: "white",
-            fill: "white",
+            color: isDarkModed ? "white" : "black",
+            fill: isDarkModed ? "white" : "black",
           },
         },
       }}
@@ -117,11 +122,16 @@ export function UserComparisonChart({ readerObjects, bookObjects }) {
   );
 }
 
+
 export function BookCategoryChart({ readerObjects, bookObjects }) {
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+
   const bookCategoryData = bookObjects.map((book) => {
     const totalPagesReadInCategory = readerObjects
       .filter((reader) => reader.bookReadingId === book.id)
       .reduce((total, reader) => total + reader.pagesRead, 0);
+
+    console.log(`Category: ${book.category}, Total Pages Read: ${totalPagesReadInCategory}`);
 
     return {
       x: book.category,
@@ -160,8 +170,8 @@ export function BookCategoryChart({ readerObjects, bookObjects }) {
           position: { vertical: "bottom", horizontal: "left" },
           padding: 0,
           labelStyle: {
-            color: "white",
-            fill: "white",
+            color: isDarkModed ? "white" : "black",
+            fill: isDarkModed ? "white" : "black",
           },
         },
       }}

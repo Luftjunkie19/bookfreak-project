@@ -25,12 +25,12 @@ function Home() {
     (state) => state.languageSelection.selectedLangugage
   );
   const { logout } = useLogout();
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const { user } = useAuthContext();
 
   return (
     <>
-      <div className="min-h-screen h-full">
+      <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
         <div className="flex justify-around items-center w-screen min-h-screen hero-section sm:flex-col-reverse md:flex-row">
           <div className="flex flex-col flex-1 justify-center pt-8 px-3 z-10">
             <h2 className="text-4xl font-extrabold my-4 text-white">
@@ -63,16 +63,16 @@ function Home() {
         </div>
 
         <div className="w-full p-3">
-          <p className="text-3xl text-center text-white font-bold p-2">
+          <p className={`text-3xl text-center ${isDarkModed ? "text-white" : "text-black"} font-bold p-2`}>
             {translations.homePage.explorationOptions.title[selectedLangugage]}
           </p>
           <div className="flex justify-around items-center w-full flex-wrap gap-4 p-2">
             <Link
               to="/books"
-              className="bg-accColor h-48 text-white sm:w-full md:w-2/5 xl:w-1/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor"
+              className={`bg-accColor h-48 text-white sm:w-full md:w-2/5 xl:w-1/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 ${isDarkModed ? "hover:bg-lightModeCol hover:text-primeColor" : "hover:bg-primeColor hover:text-white"} `}
             >
               <FaBook className="text-5xl" />
-              <p className="text-white group-hover:text-primeColor">
+              <p className={`text-white ${isDarkModed ? "group-hover:text-primeColor" : "group-hover:text-white"}`}>
                 {
                   translations.homePage.explorationOptions.option1[
                     selectedLangugage
@@ -83,10 +83,10 @@ function Home() {
 
             <Link
               to="/tests"
-              className="bg-accColor h-48 xl:w-1/5 text-white sm:w-full md:w-2/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor"
+              className={`bg-accColor h-48 text-white sm:w-full md:w-2/5 xl:w-1/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 ${isDarkModed ? "hover:bg-lightModeCol hover:text-primeColor" : "hover:bg-primeColor hover:text-white"} `}
             >
               <PiExamFill className="text-5xl" />
-              <p className="text-white group-hover:text-primeColor">
+              <p className={`text-white ${isDarkModed ? "group-hover:text-primeColor" : "group-hover:text-white"}`}>
                 {
                   translations.homePage.explorationOptions.option2[
                     selectedLangugage
@@ -97,10 +97,10 @@ function Home() {
 
             <Link
               to="/competitions"
-              className="bg-accColor xl:w-1/5 sm:w-full md:w-2/5 2xl:w-1/6 h-48 text-white p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor"
+              className={`bg-accColor h-48 text-white sm:w-full md:w-2/5 xl:w-1/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 ${isDarkModed ? "hover:bg-lightModeCol hover:text-primeColor" : "hover:bg-primeColor hover:text-white"} `}
             >
               <GiPodiumWinner className="text-5xl" />
-              <p className="text-white group-hover:text-primeColor">
+              <p className={`text-white ${isDarkModed ? "group-hover:text-primeColor" : "group-hover:text-white"}`}>
                 {
                   translations.homePage.explorationOptions.option3[
                     selectedLangugage
@@ -111,10 +111,10 @@ function Home() {
 
             <Link
               to="/readers-clubs"
-              className="bg-accColor xl:w-1/5 sm:w-full md:w-2/5 2xl:w-1/6 h-48 text-white p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor"
+              className={`bg-accColor h-48 text-white sm:w-full md:w-2/5 xl:w-1/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 ${isDarkModed ? "hover:bg-lightModeCol hover:text-primeColor" : "hover:bg-primeColor hover:text-white"} `}
             >
               <FaUserFriends className="text-5xl" />
-              <p className="text-white group-hover:text-primeColor">
+              <p className={`text-white ${isDarkModed ? "group-hover:text-primeColor" : "group-hover:text-white"}`}>
                 {
                   translations.homePage.explorationOptions.option4[
                     selectedLangugage
@@ -127,12 +127,12 @@ function Home() {
 
         <HomeBooks />
 
-        <h2 className="text-4xl font-bold p-2 text-white">
+        <h2 className={`text-4xl ${isDarkModed ? "text-white" : "text-black"} font-bold p-2`}>
           {translations.homePage.recentTexts.competitions[selectedLangugage]}
         </h2>
         <HomeCompetitions />
 
-        <h2 className="text-4xl font-bold p-2 text-white">
+        <h2 className={`text-4xl ${isDarkModed ? "text-white" : "text-black"} font-bold p-2`}>
           {translations.homePage.recentTexts.clubs[selectedLangugage]}
         </h2>
         <HomeClubs />

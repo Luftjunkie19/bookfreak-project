@@ -1,26 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { FaPlus, FaTrashAlt } from "react-icons/fa";
-import { FaPencil, FaTrashCan } from "react-icons/fa6";
-import { PiExamFill } from "react-icons/pi";
-import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import uniqid from "uniqid";
+import {
+  FaPlus,
+  FaTrashAlt,
+} from 'react-icons/fa';
+import {
+  FaPencil,
+  FaTrashCan,
+} from 'react-icons/fa6';
+import { PiExamFill } from 'react-icons/pi';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  useNavigate,
+  useParams,
+} from 'react-router';
+import uniqid from 'uniqid';
 
-import { Button, Input } from "@mui/joy";
-import { Autocomplete, TextField } from "@mui/material";
+import {
+  Button,
+  Input,
+} from '@mui/joy';
+import {
+  Autocomplete,
+  TextField,
+} from '@mui/material';
 
-import translations from "../../assets/translations/BookPageTranslations.json";
-import formTranslations from "../../assets/translations/FormsTranslations.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useFormRealData } from "../../hooks/useFormRealData";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import translations from '../../assets/translations/BookPageTranslations.json';
+import formTranslations from '../../assets/translations/FormsTranslations.json';
+import { snackbarActions } from '../../context/SnackBarContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useFormRealData } from '../../hooks/useFormRealData';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 const alphabet = require("alphabet");
 
 function EditTest() {
   const { testId } = useParams();
+  const dispatch=useDispatch();
   const { user } = useAuthContext();
   const { getDocuments } = useRealtimeDocuments();
   const { updateDatabase, addToDataBase } = useRealDatabase();
@@ -59,7 +83,7 @@ function EditTest() {
   });
 
   const [createNewQuery, setCreateNewQuery] = useState(false);
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
@@ -98,13 +122,14 @@ function EditTest() {
     );
 
     navigate(`/test/${testId}`);
+    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.update[selectedLanguage]}`, alertType:"success"}));
   };
 
   return (
-    <div className="min-h-screen h-full">
+    <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
       {data && (
         <div className="w-full border-b-2 border-accColor p-2">
-          <h1 className="text-2xl text-center text-white font-bold p-2">
+          <h1 className={`text-2xl text-center ${isDarkModed ? "text-white" : "text-black"} font-bold p-2`}>
             {formTranslations.topText.tests[selectedLanguage]}
           </h1>
 
@@ -115,11 +140,17 @@ function EditTest() {
                   {formTranslations.testFields.testName.label[selectedLanguage]}
                 </span>
                 <Input
-                  className="bg-transparent max-w-md border-accColor text-white"
+                  className={`bg-transparent max-w-md border-accColor ${isDarkModed ? "text-white" : "text-black"}`}
                   color="primary"
                   size="md"
                   variant="outlined"
                   value={data.testName}
+                  onChange={(e)=>{
+                    setData((prevData)=>{
+                      prevData.testName=e.target.value;
+                      return prevData;
+                    })
+                  }}
                   placeholder={
                     formTranslations.testFields.testName.placeholder[
                       selectedLanguage
@@ -182,7 +213,7 @@ function EditTest() {
                   {formTranslations.testFields.questionLabel[selectedLanguage]}
                 </span>
                 <Input
-                  className="bg-transparent max-w-xs border-accColor text-white"
+                  className={`bg-transparent max-w-xs border-accColor ${isDarkModed ? "text-white" : "text-black"}`}
                   color="primary"
                   size="md"
                   variant="outlined"
@@ -395,7 +426,7 @@ function EditTest() {
 
       {data && Object.values(data.queries).length > 0 && (
         <div className="flex gap-2 flex-col p-2 overflow-y-scroll max-h-[37rem] max-w-3xl">
-          <p>Queries:</p>
+          <p>{formTranslations.queries[selectedLanguage]}</p>
           {Object.values(data.queries).map((query) => (
             <div className="max-w-2xl bg-accColor text-white py-2 px-4">
               <div className="flex w-full justify-between">

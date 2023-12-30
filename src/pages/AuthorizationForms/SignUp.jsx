@@ -1,20 +1,31 @@
-import "../stylings/backgrounds.css";
+import '../stylings/backgrounds.css';
 
-import { useRef, useState } from "react";
+import {
+  useRef,
+  useState,
+} from 'react';
 
-import Lottie from "lottie-react";
-import AvatarEditor from "react-avatar-editor";
-import { FaFacebook, FaGithub, FaGoogle, FaPhoneAlt } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import Lottie from 'lottie-react';
+import AvatarEditor from 'react-avatar-editor';
+import {
+  FaFacebook,
+  FaGithub,
+  FaGoogle,
+  FaPhoneAlt,
+} from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import { Alert } from "@mui/material";
+import { Alert } from '@mui/material';
 
-import lottieAnimation from "../../assets/lottieAnimations/Animation - 1703334331539.json";
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import formsTranslations from "../../assets/translations/FormsTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import { useLogin } from "../../hooks/useLogin";
+import lottieAnimation
+  from '../../assets/lottieAnimations/Animation - 1703334331539.json';
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import formsTranslations
+  from '../../assets/translations/FormsTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import { useLogin } from '../../hooks/useLogin';
 
 function SignUp() {
   const {
@@ -100,6 +111,8 @@ function SignUp() {
     setUserEditImg(null);
   };
 
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+
   return (
     <div className="min-h-screen h-full w-full flex flex-wrap gap-6 justify-evenly items-center pattern-bg">
       {userEditImg && (
@@ -138,9 +151,9 @@ function SignUp() {
       )}
 
       <div className="max-w-sm flex flex-col gap-2">
-        <h2 className="text-center font-semibold text-4xl text-white leading-10 p-2">
-          {formsTranslations.signUpForm.topText[selectedLanguage]}
-        </h2>
+      <h2 className={`text-center font-semibold text-4xl ${isDarkModed ? "text-white" : "text-black"} leading-10 p-2`}>
+  {formsTranslations.signUpForm.topText[selectedLanguage]}
+</h2>
         <Lottie animationData={lottieAnimation} />
       </div>
 
@@ -149,51 +162,51 @@ function SignUp() {
         className="sm:w-full md:max-w-md lg:max-w-lg 2xl:max-w-2xl text-white p-2 lg:bg-primeColor lg:border-2 lg:shadow-md lg:shadow-accColor lg:border-accColor lg:rounded-lg m-2"
       >
         <div className="flex gap-4 w-full flex-wrap justify-center items-center sm:flex-col xl:flex-row">
-          <label className="flex flex-col text-white sm:w-full lg:w-3/4 ">
-            <span className=" font-medium">
-              {formsTranslations.userFields.nickname[selectedLanguage]}:
-            </span>
-            <input
-              type="text"
-              required
-              className="py-2 border-accColor input outline-none text-white rounded-md w-full"
-              onChange={(e) => setDisplayName(e.target.value)}
-            />
-          </label>
+        <label className={`flex flex-col ${isDarkModed ? "text-white" : "text-black"} sm:w-full lg:w-3/4 lg:text-white`}>
+      <span className=" font-medium">
+        {formsTranslations.userFields.nickname[selectedLanguage]}:
+      </span>
+      <input
+        type="text"
+        required
+        className={`py-2 border-accColor input outline-none ${isDarkModed ? "text-white" : "text-black"} rounded-md w-full`}
+        onChange={(e) => setDisplayName(e.target.value)}
+      />
+    </label>
 
-          <label className="flex flex-col text-white sm:w-full lg:w-3/4 ">
-            <span className=" font-medium">Email:</span>
-            <input
-              type="email"
-              required
-              className="py-2 input border-accColor outline-none text-white rounded-md w-full"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </label>
+    <label className={`flex flex-col ${isDarkModed ? "text-white" : "text-black"} sm:w-full lg:w-3/4 lg:text-white`}>
+      <span className=" font-medium">Email:</span>
+      <input
+        type="email"
+        required
+        className={`py-2 input border-accColor outline-none ${isDarkModed ? "text-white" : "text-black"} rounded-md w-full`}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+    </label>
 
-          <label className="flex flex-col  text-white sm:w-full lg:w-3/4 ">
-            <span className="font-medium">
-              {formsTranslations.userFields.password[selectedLanguage]}:
-            </span>
-            <input
-              type="password"
-              required
-              className="py-2 outline-none border-accColor input text-white rounded-md w-full"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
+    <label className={`flex flex-col ${isDarkModed ? "text-white" : "text-black"} sm:w-full lg:w-3/4 lg:text-white`}>
+      <span className="font-medium">
+        {formsTranslations.userFields.password[selectedLanguage]}:
+      </span>
+      <input
+        type="password"
+        required
+        className={`py-2 outline-none border-accColor input ${isDarkModed ? "text-white" : "text-black"} rounded-md w-full`}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+    </label>
 
-          <label className="flex flex-col text-white sm:w-full lg:w-3/4">
-            <span className="font-medium">
-              {formsTranslations.userFields.chooseAvatar[selectedLanguage]}:{" "}
-            </span>
-            <input
-              className="file-input file-input-bordered bg-accColor text-white cursor-pointer w-full"
-              type="file"
-              required
-              onChange={handleSelect}
-            />
-          </label>
+    <label className={`flex flex-col ${isDarkModed ? "text-white" : "text-black"} sm:w-full lg:w-3/4 lg:text-white`}>
+      <span className={`font-medium ${isDarkModed ? "text-white" : "text-black"} lg:text-white`}>
+        {formsTranslations.userFields.chooseAvatar[selectedLanguage]}:{" "}
+      </span>
+      <input
+        className={`file-input file-input-bordered bg-accColor text-white cursor-pointer w-full ${isDarkModed ? "text-white" : "text-black"}`}
+        type="file"
+        required
+        onChange={handleSelect}
+      />
+    </label>
         </div>
 
         <div className="flex justify-center items-center w-full">

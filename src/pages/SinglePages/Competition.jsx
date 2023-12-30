@@ -1,4 +1,5 @@
 import '../stylings/scrollbarStyling.css';
+import '../stylings/backgrounds.css';
 
 import {
   useEffect,
@@ -14,7 +15,6 @@ import {
   FaTrashAlt,
   FaUserPlus,
 } from 'react-icons/fa';
-import { FaX } from 'react-icons/fa6';
 import {
   useDispatch,
   useSelector,
@@ -24,16 +24,16 @@ import {
   Link,
   useNavigate,
 } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 import {
   Button,
   Menu,
   MenuItem,
-  Snackbar,
 } from '@mui/material';
 
 import alertTranslations from '../../assets/translations/AlertMessages.json';
+import competitionsTranslations
+  from '../../assets/translations/CompetitionsTranslations.json';
 import competitionTranslations
   from '../../assets/translations/CompetitionsTranslations.json';
 import translations from '../../assets/translations/FormsTranslations.json';
@@ -44,6 +44,7 @@ import CompetitionChat from '../../components/ChatComponents/CommunityChat';
 import Loader from '../../components/Loader';
 import Ranking from '../../components/Ranking';
 import Warning from '../../components/WarningsComponents/Warning';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
@@ -51,11 +52,6 @@ import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Competition() {
-  {
-    /*{Math.round(timesDifference / (1000 * 60 * 60 * 24)) > 0
-                    ? "The competition expires in"
-                    : "has expired"}{" "} */
-  }
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
   const [isPending, setIsPending] = useState(false);
@@ -82,10 +78,7 @@ function Competition() {
   );
   const { id } = useParams();
   const { user } = useAuthContext();
-  const [openState, setOpenState] = useState({
-    open: false,
-    message: "",
-  });
+
   const [document, setDocument] = useState();
   const [members, setMembers] = useState([]);
   const { getDocument } = useRealtimeDocument();
@@ -104,7 +97,7 @@ function Competition() {
       setDocument(documentEl);
     }
   };
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadDocuments = async () => {
     const documentsEl = await getDocuments(`communityMembers/${id}/users`);
@@ -154,7 +147,7 @@ function Competition() {
 
       if (error) {
         setIsPending(false);
-        setOpenState({ open: true, message: error });
+        dispatch(snackbarActions.showMessage({message:error, alertType:"error"}));
         return;
       }
 
@@ -190,10 +183,7 @@ function Competition() {
       !document.prize.itemPrize
     ) {
       setIsPending(false);
-      setOpenState({
-        open: true,
-        message: "The winner has to claim the reward !",
-      });
+      dispatch(snackbarActions.showMessage({message:alertTranslations.notifications.wrong.winnerClaimError, alertType:"error"}));
       return;
     } else {
       removeFromDataBase("competitions", id);
@@ -203,9 +193,9 @@ function Competition() {
       navigate("/");
     }
 
-    toast.success(
-      alertTranslations.notifications.successfull.remove[selectedLanguage]
-    );
+    dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
+
+   
   };
 
   const dispatch = useDispatch();
@@ -224,9 +214,7 @@ function Competition() {
     } else {
       removeFromDataBase("communityMembers", `${id}/users/${user.uid}`);
       navigate("/");
-      toast.success(
-        alertTranslations.notifications.successfull.leave[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.leave[selectedLanguage]}`, alertType:"success"}));
     }
   };
 
@@ -251,10 +239,8 @@ function Competition() {
       });
 
       console.log(members);
-
-      toast.success(
-        alertTranslations.notifications.successfull.send[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.send[selectedLanguage]}`, alertType:"success"}));
+   
     } catch (err) {
       console.log(err);
     }
@@ -265,35 +251,10 @@ function Competition() {
       className={`min-h-screen h-full ${
         document &&
         !members.find((member) => member.value.id === user.uid) &&
-        "flex flex-col justify-center items-center"
-      }`}
+        "flex flex-col justify-center items-center" 
+      } ${!isDarkModed && "pattern-bg"}`}
     >
       {isPending && <Loader />}
-
-      {openState.open === true && (
-        <>
-          <Snackbar
-            onClose={() => {
-              setOpenState({ message: "", open: false });
-            }}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            open={openState.open}
-            autoHideDuration={3000}
-            severity="success"
-            message={openState.message}
-            action={
-              <button
-                className="flex items-center gap-2"
-                onClick={() => {
-                  setOpenState({ message: "", open: false });
-                }}
-              >
-                <FaX className=" text-red-500" /> Close
-              </button>
-            }
-          />
-        </>
-      )}
 
       {document &&
         members.find(
@@ -504,26 +465,17 @@ function Competition() {
             member.value.id === user.uid && member.belongsTo === document.id
         ) && (
           <div className="flex sm:flex-col xl:flex-row justify-between w-full items-center gap-4 p-4">
-            <div className="h-full sm:w-full xl:w-2/5 gap-6 text-white flex flex-col items-center justify-between rounded-md py-4">
+            <div className={`h-full sm:w-full xl:w-2/5 gap-6 flex flex-col items-center justify-between rounded-md py-4 ${isDarkModed ? "text-white" : 'text-black'}`}>
               <p className="sm:text-2xl lg:text-4xl font-bold">
                 {document.competitionTitle}
               </p>
-              <div className="flex sm:flex-col gap-4 xl:flex-row w-full justify-around items-center border-t-2 border-accColor p-4">
-                <div>
+              <div className="flex sm:flex-col gap-4 lg:flex-row xl:flex-col 2xl:flex-row w-full justify-around border-t-2 border-accColor p-4">
+                <div className='self-start'>
                   <h3 className=" text-lg font-semibold">
                     {document.competitionsName}
                   </h3>
                   <AllMembersModal users={members} />
-                  {/** 
-                <p className=" font-medium">
-                    {document.users.length}{" "}
-                    {
-                      competitionTranslation.competitionObject.membersAttending[
-                        selectedLanguage
-                      ]
-                    }
-                </p>
-                */}
+             
 
                   <p>
                     {reuseableTranslations.createdBy[selectedLanguage]}:{" "}
@@ -535,6 +487,8 @@ function Competition() {
                     </Link>
                   </p>
                 </div>
+            
+
                 {competitionExpirationDate > 0 && (
                   <button
                     className="btn bg-accColor hover:bg-info text-white border-none"
@@ -545,8 +499,29 @@ function Competition() {
                   </button>
                 )}
               </div>
+
+              <div className="self-start gap-3">
+              {document.prize.moneyPrize &&
+                document.prize.moneyPrize.amount > 0 && (
+                  <div className="p-2">
+                    <p className="font-bold text-4xl">{competitionsTranslations.competitionObject.prizeFor[selectedLanguage]}</p>
+                    <span className="text-2xl text-yellow-500 font-semibold">
+                      {(document.prize.moneyPrize.amount / 100).toFixed(2)}{" "}
+                      {document.prize.moneyPrize.currency.toUpperCase()}
+                    </span>
+                  </div>
+                )}
+              {document.prize.itemPrize !== undefined && (
+                <>
+                  <p className="text-3xl font-bold">{competitionsTranslations.competitionObject.prizeDetails[selectedLanguage]}:</p>
+                  <p className="text-lg font-semibold">
+                    {document.prize.itemPrize.title}
+                  </p>
+                </>
+              )}
+            </div>
               {document && document.description.trim() !== "" && (
-                <div class="flex flex-col text-white p-3 w-full">
+                <div className={`flex flex-col ${isDarkModed ? "text-white" : 'text-black'} p-3 w-full`}>
                   {competitionExpirationDate > 0 && (
                     <p>
                       {
