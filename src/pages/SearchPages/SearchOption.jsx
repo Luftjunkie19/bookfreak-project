@@ -1,21 +1,24 @@
-import "../stylings/backgrounds.css";
+import '../stylings/backgrounds.css';
 
-import React from "react";
+import React from 'react';
 
-import { FaBookOpen, FaUserAlt } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import {
+  FaBookOpen,
+  FaUserAlt,
+} from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import translations from "../../assets/translations/SearchTranslations.json";
+import translations from '../../assets/translations/SearchTranslations.json';
 
 function SearchOption() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode)
   return (
     <div className="min-h-screen h-full flex flex-col justify-center items-center pattern-bg">
-      <h2 className="text-4xl font-extrabold text-center text-white mb-6">
+      <h2 className={`text-4xl font-extrabold text-center mb-6 ${isDarkModed ? "text-white" : "text-black"}`}>
         {translations.title[selectedLanguage]}
       </h2>
 

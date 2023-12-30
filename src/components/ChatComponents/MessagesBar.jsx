@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { formatDistanceToNow } from "date-fns";
-import { BiSolidMessageRoundedDetail } from "react-icons/bi";
-import { FaImage } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { useLocation } from "react-router";
-import { Link } from "react-router-dom";
+import { formatDistanceToNow } from 'date-fns';
+import { BiSolidMessageRoundedDetail } from 'react-icons/bi';
+import { FaImage } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router';
+import { Link } from 'react-router-dom';
 
-import translations from "../../assets/translations/ChatsTranslation.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import translations from '../../assets/translations/ChatsTranslation.json';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function MessagesBar() {
   const { user } = useAuthContext();
@@ -19,7 +22,7 @@ function MessagesBar() {
   const [entitledToChat, setEntitledToChat] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [users, setUsers] = useState([]);
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
@@ -85,7 +88,7 @@ function MessagesBar() {
 
   return (
     <div>
-      <h2 className="p-1 flex gap-2 items-center leading-9 text-2xl font-semibold text-white">
+      <h2 className={`p-1 flex gap-2 items-center leading-9 text-2xl font-semibold ${isDarkModed ? "text-white" : "text-black"}`}>
         <BiSolidMessageRoundedDetail />
         {translations.chatsTitle[selectedLanguage]}
       </h2>
@@ -216,7 +219,7 @@ function MessagesBar() {
             ))
         ) : (
           <div>
-            <h1 className="text-center">
+            <h1 className={`text-center ${isDarkModed ? "text-white" : "text-black"}`}>
               {translations.chatsEmpty[selectedLanguage]}.
             </h1>
           </div>

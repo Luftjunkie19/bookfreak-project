@@ -19,7 +19,7 @@ import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function NotificationViewer() {
   const { user } = useAuthContext();
-  const openedModal = useSelector((state) => state.modal.isOpened);
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
@@ -73,7 +73,7 @@ function NotificationViewer() {
   return (
     <>
       <div
-        className={`fixed right-0 -z-50 sm:w-screen transition-all duration-500 p-4 bg-modalAccColor text-white  ${
+        className={`fixed right-0 -z-50 sm:w-screen transition-all duration-500 p-4 ${isDarkModed ? "bg-modalAccColor" : "bg-primeColor"} text-white  ${
           openedState
             ? "translate-y-0 opacity-100 z-50"
             : "-translate-y-full opacity-0 -z-50"

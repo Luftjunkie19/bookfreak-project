@@ -1,4 +1,21 @@
 {
+  "competitionTypes":{
+    "first":{
+      "eng":"First read, first served",
+      "pl":"Kto Pierwszy, Ten Lepszy",
+      "ger":"Wer erster wird, wird erst bedient"
+    },
+    "second":{
+      "eng":"Lift others, rise jointly",
+      "pl":"Podnoś innych, rośnij razem",
+      "ger":"Hilf anderen auf, steigst du hoch zusammen"
+    },
+    "third":{
+      "eng":"Teach to fish",
+      "pl":"Ucz aby łowić",
+      "ger":"Lehrt den Fisch fischen"
+    }
+   },
   "nothingSelected": {
     "eng": "Nothing selected yet.",
     "pl": "Nie wybrano formularza.",
@@ -374,6 +391,12 @@
       "pl": "Pytanie:",
       "ger": "Frage:"
     },
+    "queries":{
+      "eng":"Queries",
+      "pl":"Pytania",
+      "ger":"Fragen"
+    },
+
     "possibleAnswers": {
       "eng": "Possible answers:",
       "pl": "Możliwe odpowiedzi:",
@@ -399,5 +422,195 @@
     "eng": "Your Queries",
     "pl": "Twoje Próby",
     "ger": "Deine Versuche"
+  },
+ "updateReaderState":{
+  "topText":{
+    "eng":"Update reading state",
+    "pl":"Zaktualizuj stan czytania",
+    "ger":"Lese-Status aktualisieren"
+  },
+  "bottomText":{
+    "eng":"Wanna add some changes? Here you are !",
+    "pl":"Chcesz dodać jakieś zmiany? Proszę bardzo!",
+    "ger":"Willst du einige Änderungen hinzufügen? Bitte sehr!"
   }
+ },"generalInfo":{
+  "eng":"General Information",
+  "ger":"Allgemeine Informationen",
+  "pl":"Ogólne Informacje"
+ },
+ "nationality":{
+  "eng":"nationality",
+  "pl":"narodowość",
+  "ger":"Nationalität"
+ },
+ "currentCreditsState":{
+  "eng":"Available credits",
+  "pl":"Dostępne środki",
+  "ger":"Verfügbares Guthaben"
+ },
+ "financialManagment":{
+  "eng":"Financial Managment",
+  "pl":"Zarządzanie Finansami",
+  "ger":"Finanzmanagement"
+ },
+ "visibilityMode":{
+  "eng":"Visibility Mode",
+  "pl":"Tryb widoczności",
+  "ger":"Sichtbarkeitsmodus"
+ },
+ "replenishYourAccount":{
+  "eng":"Replenish your account",
+  "pl":"Uzupełnij swoje środki",
+  "ger":"Fülle dein Konto auf"
+ },
+ "provideFinancialData":{
+  "eng":"Provide essential financial data",
+  "pl":"Podaj podstawowe dane finansowe",
+  "ger":"Gib wichtige finanziellen Daten an"
+ },
+ "finishText":{
+  "eng":"Finish",
+  "pl":"Zakończ",
+  "ger":"Abschließen"
+ },
+ "moveToDashboardText":{
+  "eng":"Move to Dashboard",
+  "pl":"Przejdź do pulpitu nawigacyjnego",
+  "ger":"Gehe zum Dashboard"
+ },
+ "payoutText":{
+  "eng":"Payout",
+  "pl":"Wypłata",
+  "ger":"Auszahlung"
+ },
+ "smallNote":{
+  "eng":"Note ! Changing the nationality won't change the currency and country in your financial account.",
+  "pl":"Uwaga! Zmiana narodowości nie zmieni waluty i kraju w Twoim koncie finansowym",
+  "ger":"Hinweis: Ändern Sie die Nationalität nicht, wird die Währung und das Land in Ihrem Finanziellem Konto."
+ },
+ "countryOfBookRelease":{
+  "eng":"Country of book release",
+  "pl":"Kraj wydania książki",
+  "ger":"Land der Buchveröffentlichung"
+ },
+ "publisher":{
+  "eng":"Publisher",
+  "pl":"Wydawnictwo",
+  "ger":"Verlag"
+ },
+ "yearOfRelease":{
+  "eng":"Year of release",
+  "pl":"Rok wydania",
+  "ger":"Jahr der Veröffentlichung"
+ },
+ "detailedInfo":{
+  "eng":"Detailed information",
+  "pl":"Szczegółowe informacje",
+  "ger":"Details"
+ },
+ "userInfo":{
+  "eng":"User Information",
+  "pl":"Informacja użytkownika",
+  "ger":"Benutzerdaten"
+ },
+ "moveToBook":{
+  "eng":"move to book",
+  "pl":"przenieś do książki",
+  "ger":"wechseln zur Buchseite"
+ },
+ "placeHoldersCollections":{
+  "testName":{
+    "eng":"Test Name",
+    "pl":"Nazwa testu",
+    "ger":"Testname"
+  },
+  "competitionsName":{
+    "eng":"Competition name",
+    "pl":"Nazwa turnieju",
+    "ger":"Wettbewerbname"
+  },
+  "clubsName":{
+    "eng":"Club name",
+    "pl":"Nazwa klubu",
+    "ger":"Vereiname"
+  },
+  "booksTitle":{
+    "eng":"Book title",
+    "pl":"Tytuł książki",
+    "ger":"Buchtitel"
+  }
+ },
+ "competitionsPrize":{
+  "eng":"Prize",
+  "pl":"Nagroda",
+  "ger":"Preis"
+ },
+ "item":{
+  "eng":"Item",
+  "pl":"Przedmiot",
+  "ger":"Gegenstand"
+ },
+ "money":{
+  "eng":"Money",
+  "pl":"Pieniądze",
+  "ger":"Geld"
+ },
+ "essentialInfo":{
+  "eng":"Essential information",
+  "pl":"Podstawowe informacje",
+  "ger":"Notwendige Angaben"
+ },
+ "prizeMoneyAmountInYourCurrency":{
+  "eng":"The amount of the prize money in your currency: ",
+  "pl":"Kwota nagradzająca w Twojej walucie: ",
+  "ger":"Die Preisgeldmenge in Ihrer Währung: "
+ },
+ "prizeDetails":{
+  "eng":"Prize Details",
+  "pl":"Szczegóły o nagrodzie",
+  "ger":"Preisdetails"
+ },
+ "book":{
+  "eng":"Book",
+  "pl":"Książka",
+  "ger":"Buch"
+ },
+ "ticket":{
+  "eng":"Ticket",
+  "pl":"Bilet",
+  "ger":"Ticket/Eintrittskarte"
+ },
+ "inviteSomeUsers":{
+  "eng":"Invite some users",
+  "pl":"Zaproś kilku użytkowników",
+  "ger":"Lade einige Benutzer ein"
+ },
+ "fullfillData":{
+  "first":{
+    "eng":"Register",
+    "pl":"Zarejestruj się",
+    "ger":"Registrieren"
+  }, 
+  "second":{
+    "eng":"Set nationality",
+    "pl":"Ustaw narodowość",
+    "ger":"Nationalität festlegen"
+  },
+  "third":{
+    "eng":"Set Financial data",
+    "pl":"Ustaw dane finansowe",
+    "ger":"Finanzielle Daten angeben"
+  }
+},
+"provide":{
+  "eng":"Provide ",
+  "pl":"Podaj ",
+  "ger":"Angeben"
+},
+"info":{
+  "eng":" If you get redirected, try to create a new link, clicking button below.",
+  "pl":" Jeśli zostaniesz przekierowany z powrotem tutaj, spróbuj stworzyć nowy link klikając przycisk",
+  "ger":"Wenn Sie hier weitergeleitet werden, versuchen Sie, einen neuen Link zu erstellen."
+}
 }

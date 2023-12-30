@@ -1,29 +1,46 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { motion } from "framer-motion";
-import AvatarEditor from "react-avatar-editor";
-import { FaBookOpen, FaWindowClose } from "react-icons/fa";
-import { GrClose } from "react-icons/gr";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import { motion } from 'framer-motion';
+import AvatarEditor from 'react-avatar-editor';
+import {
+  FaBookOpen,
+  FaWindowClose,
+} from 'react-icons/fa';
+import { GrClose } from 'react-icons/gr';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-import { Alert } from "@mui/material";
+import { Alert } from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import translations from "../../assets/translations/FormsTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import Loader from "../../components/Loader";
-import { modalActions } from "../../context/ModalContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useFormRealData } from "../../hooks/useFormRealData";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import translations from '../../assets/translations/FormsTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import Loader from '../../components/Loader';
+import { modalActions } from '../../context/ModalContext';
+import { snackbarActions } from '../../context/SnackBarContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useFormRealData } from '../../hooks/useFormRealData';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
 
 function EditBook({ id }) {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  
   const { document } = useFormRealData("books", id);
   const { updateDatabase } = useRealDatabase();
   const [title, setTitle] = useState("");
@@ -38,7 +55,7 @@ function EditBook({ id }) {
   const { user } = useAuthContext();
   const editorRef = useRef();
   const navigate = useNavigate();
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   useEffect(() => {
     if (document) {
       setTitle(document.title);
@@ -120,9 +137,8 @@ function EditBook({ id }) {
     try {
       setError(null);
       setIsPending(false);
-      toast.success(
-        alertMessages.notifications.successfull.update[selectedLanguage]
-      );
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.update[selectedLanguage]}`, alertType:"success"}))
+      
 
       updateDatabase(
         {
@@ -173,7 +189,7 @@ function EditBook({ id }) {
           <label className="flex flex-col w-full">
             <span>{translations.bookTitleInput.label[selectedLanguage]}: </span>
             <input
-              className="outline-none rounded-md p-2 w-full"
+              className={`outline-none input border-2 border-accColor rounded-md p-2 w-full  ${isDarkModed ? "text-white" : "text-black"} `}
               type="text"
               name="title"
               required
@@ -186,7 +202,7 @@ function EditBook({ id }) {
               {translations.bookAuthorInput.label[selectedLanguage]}:{" "}
             </span>
             <input
-              className="outline-none rounded-md p-2 w-full"
+              className={`outline-none input border-2 border-accColor rounded-md p-2 w-full  ${isDarkModed ? "text-white" : "text-black"}`}
               type="text"
               name="author"
               required
@@ -202,7 +218,7 @@ function EditBook({ id }) {
             <input
               type="number"
               name="pagesNumber"
-              className="outline-none rounded-md p-2 w-full"
+              className={`outline-none input border-2 border-accColor rounded-md p-2 w-full  ${isDarkModed ? "text-white" : "text-black"}`}
               min={1}
               required
               value={pagesNumber}
@@ -214,7 +230,7 @@ function EditBook({ id }) {
             <span>{translations.selectImgBtn.label[selectedLanguage]}:</span>
 
             <input
-              className="file-input file-input-bordered w-full max-w-xsoutline-none"
+              className={`file-input file-input-bordered w-full max-w-xsoutline-none ${isDarkModed ? "text-white" : "text-black"}`}
               type="file"
               onChange={changeLogo}
             />

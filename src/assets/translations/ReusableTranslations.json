@@ -4,6 +4,11 @@
     "eng": "Details",
     "pl": "Szczegóły"
   },
+  "claimPrize":{
+    "eng":"Claim your Prize",
+    "ger":"Preis abholen",
+    "pl":"Przyjmij swoją nagrodę"
+  },
   "categoryText": {
     "ger": "Kategorie",
     "eng": "Category",
@@ -21,6 +26,33 @@
       "pl": "Dołącz do klubu"
     }
   },
+  "releasedBy":{
+"part1":{
+  "ger":"Veröffentlicht von ",
+  "eng":"Released by ",
+  "pl": "Wydane przez"
+},
+"part2":{
+  "ger":"im Jahr",
+  "eng":"in",
+  "pl": "w roku"
+}    
+  },
+  "publishingHouseCountry":{
+    "ger": "Publiziert in ",
+    "eng": "Published in ",
+    "pl": "Opublikowane w "
+  },
+  "bookDescription":{
+    "ger":"Beschreibung von",
+    "eng":"Description about",
+    "pl": "Opis"
+  },
+"recommendText":{
+  "ger":"Empfehle",
+  "eng":"Reccommend",
+  "pl": "Poleć"
+},
 
   "pagesText": {
     "ger": "Seiten",
@@ -141,5 +173,10 @@
       "eng": "Book",
       "pl": "Książka"
     }
+  },
+  "authorDescription":{
+    "eng":"Here are all books, written by",
+    "ger":"Hier sind alle Bücher von",
+    "pl":"Oto wszystkie książki autorstwa"
   }
 }

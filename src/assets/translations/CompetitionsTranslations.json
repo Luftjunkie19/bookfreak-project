@@ -5,10 +5,25 @@
       "ger": "Mitglieder",
       "pl": "Członków"
     },
+    "prizeFor":{
+      "eng":"Prize for the winner",
+      "ger":"Preis für den Gewinner",
+      "pl":"Nagroda dla zwycięzcy"
+    },
+    "prizeDetails":{
+      "eng":"Details about the prize",
+      "ger":"Details zum Preis",
+      "pl":"Szczegóły o nagrodzie"
+    },
     "membersAttending": {
       "eng": "Members attending",
       "ger": "teilnehmende Mitglieder",
       "pl": "uczestniczących członków"
+    },
+    "prize":{
+      "eng":"Prize",
+      "ger":"Preis",
+      "pl":"Nagroda"
     },
     "expiration": {
       "notExpired": {
@@ -30,6 +45,23 @@
             "pl": "dni"
           },
           "today": { "eng": "Today", "ger": "Heute ab", "pl": "Dzisiaj" }
+        }
+      },
+      "rankingWinner":{
+        "winnerMsg":{
+            "eng": "The competition is over. The winner is",
+            "ger": "Der Wettbewerb ist beendet. Der Sieger ist",
+            "pl": "Konkurs zakończył się. Zwycięzcą jest"
+        },
+        "secondPlace":{
+          "eng":"Second Place",
+          "ger":"Zweiter Platz",
+          "pl":"Drugie miejsce"
+        },
+        "thirtPlace":{
+          "eng":"Third Place",
+          "ger":"Dritter Platz",
+          "pl":"Trzecie miejsce"
         }
       },
       "Expired": {

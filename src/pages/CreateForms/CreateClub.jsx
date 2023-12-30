@@ -1,31 +1,52 @@
-import "../../components/stylings/mui-stylings.css";
+import '../../components/stylings/mui-stylings.css';
 
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import AvatarEditor from "react-avatar-editor";
-import { BsStars } from "react-icons/bs";
-import { CgDetailsMore } from "react-icons/cg";
-import { FaImage, FaWindowClose } from "react-icons/fa";
-import { FaX } from "react-icons/fa6";
-import { RiTeamFill } from "react-icons/ri";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import uniqid from "uniqid";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import AvatarEditor from 'react-avatar-editor';
+import { BsStars } from 'react-icons/bs';
+import { CgDetailsMore } from 'react-icons/cg';
+import {
+  FaImage,
+  FaWindowClose,
+} from 'react-icons/fa';
+import { RiTeamFill } from 'react-icons/ri';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { useNavigate } from 'react-router';
+import uniqid from 'uniqid';
 
-import { Alert, Autocomplete, Box, Snackbar, TextField } from "@mui/material";
+import {
+  Alert,
+  Autocomplete,
+  Box,
+  TextField,
+} from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import translations from "../../assets/translations/FormsTranslations.json";
-import reuseableTranslations from "../../assets/translations/ReusableTranslations.json";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import translations from '../../assets/translations/FormsTranslations.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import { snackbarActions } from '../../context/SnackBarContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function CreateClub() {
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
-  const [message, setMessage] = useState({ open: false, message: null });
+  const dispatch=useDispatch();
   const { getDocuments } = useRealtimeDocuments();
   const [attachedUsers, setAttachedUsers] = useState([]);
   const [allMembers, setAllMembers] = useState([]);
@@ -53,7 +74,7 @@ function CreateClub() {
       setDocuments(usersElements);
     }
   };
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadAllMembers = async () => {
     const ClubswithMembers = await getDocuments("communityMembers");
@@ -107,10 +128,14 @@ function CreateClub() {
           member.belongsTo.includes("readersClub")
       )
     ) {
-      setMessage({
-        open: true,
-        message: alertMessages.notifications.wrong.loyality[selectedLanguage],
-      });
+     dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.loyality[selectedLanguage]}`}));
+
+      return;
+    }
+
+
+    if(!readersClub.clubLogo || readersClub.description.trim().length === 0 || readersClub.clubsName.trim().length === 0 || readersClub.requiredPagesRead === 0){
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.someFieldsEmpty[selectedLanguage]}`}));
 
       return;
     }
@@ -163,6 +188,7 @@ function CreateClub() {
       })
     );
     setIsPending(false);
+    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.create[selectedLanguage]}`}));
     setError(null);
     navigate("/");
   };
@@ -239,7 +265,7 @@ function CreateClub() {
   };
 
   return (
-    <div className="min-h-screen h-full w-full flex flex-col">
+    <div className={`min-h-screen h-full w-full flex flex-col ${!isDarkModed && "pattern-bg"}`}>
       {editCover && (
         <div className="h-screen bg-imgCover w-screen fixed top-0 left-0 z-[9999]">
           <button
@@ -314,7 +340,7 @@ function CreateClub() {
         </div>
       )}
 
-      <form onSubmit={submitForm} className="w-full text-white">
+      <form onSubmit={submitForm} className={`w-full  ${isDarkModed ? "text-white" : "text-black"}`}>
         <div className="flex flex-wrap items-center justify-center gap-4 p-4">
           <RiTeamFill className="text-6xl" />
           <p className="font-bold">
@@ -323,13 +349,13 @@ function CreateClub() {
         </div>
 
         <div className="flex w-full flex-col gap-4 p-4">
-          <p className="font-bold text-2xl flex gap-2">
+          <p className={`font-bold text-2xl flex gap-2  ${isDarkModed ? "text-white" : "text-black"}`}>
             {" "}
             <BsStars /> Essential information <BsStars />{" "}
           </p>
           <div className="flex flex-wrap w-full gap-4 items-center">
             <label className="flex flex-col sm:w-full md:max-w-md">
-              <span>
+              <span className={` ${isDarkModed ? "text-white" : "text-black"}`}>
                 {translations.clubsNameInput.label[selectedLanguage]}:
               </span>
               <input
@@ -420,7 +446,7 @@ function CreateClub() {
             </label>
 
             <label className="flex flex-col ssm:w-full md:max-w-xl">
-              <span className="label-text text-white py-1">
+              <span className={`label-text ${isDarkModed ? "text-white" : "text-black"} py-1`}>
                 {translations.requiredPagesToJoin.label[selectedLanguage]}
               </span>
               <input
@@ -469,28 +495,7 @@ function CreateClub() {
           </Alert>
         )}
       </form>
-      {message.open && (
-        <Snackbar
-          onClose={() => {
-            setMessage({ message: "", open: false });
-          }}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={message.open}
-          autoHideDuration={3000}
-          severity="success"
-          message={message.message}
-          action={
-            <button
-              className="flex items-center gap-2"
-              onClick={() => {
-                setMessage({ message: "", open: false });
-              }}
-            >
-              <FaX className=" text-red-500" /> Close
-            </button>
-          }
-        />
-      )}
+     
     </div>
   );
 }

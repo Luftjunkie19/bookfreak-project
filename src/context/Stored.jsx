@@ -5,6 +5,7 @@ import { languageContext } from './LanguageContext';
 import { messagesContext } from './MessContext';
 import { modalReducer } from './ModalContext';
 import { modeReducer } from './ModeContext';
+import { snackBarReducer } from './SnackBarContext';
 import { viewerContext } from './ViewerContext';
 import { warningContext } from './WarningContext';
 
@@ -17,6 +18,7 @@ const stored = configureStore({
     warning: warningContext.reducer,
     mode: modeReducer.reducer,
     languageSelection: languageContext.reducer,
+    snackbarAlert:snackBarReducer.reducer,
   },
 });
 

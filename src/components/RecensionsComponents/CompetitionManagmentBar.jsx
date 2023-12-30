@@ -36,9 +36,16 @@ function CompetitionManagmentBar({applyFilters, applySort}) {
     {
         label:"Type (First Come, First Booked)",
         filter: (array) =>{
-            return array.filter((doc)=>doc.competitionsName ==="First Come, First Served");
+            return array.filter((doc)=>doc.competitionsName ==="First read, first served");
         },
-    }  
+    },
+    {label:"Expired",filter:(array)=>{
+      return array.filter((doc)=>doc.expiresAt < new Date().getTime());
+    }},{
+      label:"Not Expired",filter:(array)=>{
+        return array.filter((doc)=> doc.expiresAt >= new Date().getTime())
+      }
+    }
       ];
     
       const sortOptions = [
@@ -79,7 +86,7 @@ function CompetitionManagmentBar({applyFilters, applySort}) {
 
 
   return (
-    <div>
+    <div className="flex flex-wrap justify-center items-center">
     <FormControl sx={{ m: 1, width: 300 }} className="text-white">
    <InputLabel
      className="text-white"

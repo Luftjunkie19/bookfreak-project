@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import ChartPie from "./charts/ChartPie";
-import SimpleLineChart from "./charts/LineChart";
+import ChartPie from './charts/ChartPie';
+import SimpleLineChart from './charts/LineChart';
 
 function ChatsPage({ readerObjects, bookObjects }) {
   return (

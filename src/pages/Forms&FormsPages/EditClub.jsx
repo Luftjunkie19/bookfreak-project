@@ -1,29 +1,44 @@
-import "../../components/stylings/mui-stylings.css";
+import '../../components/stylings/mui-stylings.css';
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { motion } from "framer-motion";
-import { FaUsers } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import CreatableSelect from "react-select";
-import { toast } from "react-toastify";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import { motion } from 'framer-motion';
+import { FaUsers } from 'react-icons/fa';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  useNavigate,
+  useParams,
+} from 'react-router';
+import CreatableSelect from 'react-select';
 
-import { Alert } from "@mui/material";
+import { Alert } from '@mui/material';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import formsTranslation from "../../assets/translations/FormsTranslations.json";
-import Loader from "../../components/Loader";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useFormRealData } from "../../hooks/useFormRealData";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import formsTranslation from '../../assets/translations/FormsTranslations.json';
+import Loader from '../../components/Loader';
+import { snackbarActions } from '../../context/SnackBarContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useFormRealData } from '../../hooks/useFormRealData';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
 
 function EditClub() {
   const { id } = useParams();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const dispatch=useDispatch();
   const { updateDatabase } = useRealDatabase();
   const { document } = useFormRealData("readersClubs", id);
   const { user } = useAuthContext();
@@ -35,7 +50,7 @@ function EditClub() {
   const [isPending, setIsPending] = useState(false);
   const [requiredPagesRead, setRequiredPagesRead] = useState(0);
   const navigate = useNavigate();
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   useEffect(() => {
     if (document) {
       setClubsName(document.clubsName);
@@ -128,9 +143,7 @@ function EditClub() {
         });
 
         navigate(`/readers-clubs/${id}`);
-        toast.success(
-          alertMessages.notifications.successfull.update[selectedLanguage]
-        );
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.update[selectedLanguage]}`, alertType:"success"}));
       } else {
         updateDatabase(
           {
@@ -157,9 +170,8 @@ function EditClub() {
         setError(null);
         setIsPending(false);
         navigate(`/readers-clubs/${id}`);
-        toast.success(
-          alertMessages.notifications.successfull.update[selectedLanguage]
-        );
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.update[selectedLanguage]}`, alertType:'success'}))
+      
       }
     } catch (error) {
       setError(error.message);
@@ -167,13 +179,13 @@ function EditClub() {
   };
 
   return (
-    <div className="min-h-screen h-full flex flex-col">
+    <div className={`min-h-screen h-full flex flex-col ${!isDarkModed && "pattern-bg"}`}>
       <motion.form
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onSubmit={handleSubmit}
-        className="flex flex-col gap-2 text-white p-4"
+        className={`flex flex-col gap-2 ${isDarkModed ? "text-white" : 'text-black'} p-4`}
       >
         <div className="w-full flex flex-col justify-center items-center">
           <FaUsers className="text-3xl text-center" />
@@ -191,7 +203,7 @@ function EditClub() {
 
         <div className="flex w-full flex-wrap gap-3">
           <div className="w-full flex flex-col">
-            <p className=" text-3xl font-bold text-white">
+            <p className={` text-3xl font-bold ${isDarkModed ? "text-white" : "text-black"}`}>
               General Information
             </p>
             <div className="flex w-full flex-wrap gap-4">
@@ -227,7 +239,7 @@ function EditClub() {
           </div>
 
           <div className="flex w-full flex-col gap-3">
-            <p className=" text-3xl font-bold text-white">
+            <p className={`text-3xl font-bold  ${isDarkModed ? "text-white" : "text-black"}`}>
               Detailed information
             </p>
 
@@ -263,11 +275,11 @@ function EditClub() {
           </div>
 
           <label className="flex flex-col w-full">
-            <span className=" text-white font-semibold text-lg">
+            <span className={`${isDarkModed ? "text-white" : "text-black"} font-semibold text-lg`}>
               {formsTranslation.descriptionTextarea.label[selectedLanguage]}:
             </span>
             <textarea
-              className="outline-none p-2 rounded-md resize-none sm:w-full lg:max-w-2xl xl:max-w-4xl h-48"
+              className="outline-none border-2 border-accColor p-2 rounded-md resize-none sm:w-full lg:max-w-2xl xl:max-w-4xl h-48"
               required
               placeholder="Tell the users, what are you in this club doing."
               value={description}

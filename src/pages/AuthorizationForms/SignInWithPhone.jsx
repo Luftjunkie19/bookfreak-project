@@ -159,110 +159,98 @@ function SignInWithPhone() {
       console.log(error);
     }
   };
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   return (
     <div className="min-h-screen h-full flex justify-center items-center flex-col pattern-bg">
-      {!showConfirmation && (
-        <form
-          onSubmit={handleSendVerificationCode}
-          className="flex flex-col gap-4 sm:w-full max-w-lg rounded-md sm:bg-transparent lg:bg-accColor lg:shadow-md lg:shadow-primeColor p-4"
-        >
-          <p className="text-2xl text-white font-bold my-3 text-center">
-            {
-              formsTranslations.signingOptions.passwordForgotten.fillTheFields[
-                selectedLanguage
-              ]
-            }
-          </p>
+  {!showConfirmation && (
+    <form
+      onSubmit={handleSendVerificationCode}
+      className="flex flex-col gap-4 sm:w-full max-w-lg rounded-md sm:bg-transparent lg:bg-accColor lg:shadow-md lg:shadow-primeColor p-4"
+    >
+      <p className={`text-2xl ${isDarkModed ? "text-white" : "text-black"} font-bold my-3 text-center`}>
+        {formsTranslations.signingOptions.passwordForgotten.fillTheFields[selectedLanguage]}
+      </p>
 
-          <label className="flex flex-col text-white">
-            <span>
-              {formsTranslations.userFields.nickname[selectedLanguage]}:
-            </span>
-            <input
-              className="outline-none p-2 rounded input max-w-lg"
-              type="text"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder="Type your nickname"
-            />
-          </label>
+      <label className={`flex flex-col ${isDarkModed ? "text-white" : "text-black"}`}>
+        <span>
+          {formsTranslations.userFields.nickname[selectedLanguage]}:
+        </span>
+        <input
+          className={`outline-none p-2 rounded input max-w-lg ${isDarkModed ? "text-white" : "text-black"}`}
+          type="text"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          placeholder="Type your nickname"
+        />
+      </label>
 
-          <label className="text-black w-full">
-            <PhoneInput
-              inputProps={{ required: true, autoFocus: true }}
-              prefix="+"
-              inputClass="sm:w-full lg:w-2/3 text-white bg-primeColor"
-              country={"pl"}
-              value={phone}
-              onChange={(phone) => setPhone(`+${phone}`)}
-            />
-          </label>
+      <label className={`text-black w-full ${isDarkModed ? "" : "lg:text-white"}`}>
+        <PhoneInput
+          inputProps={{ required: true, autoFocus: true }}
+          prefix="+"
+          inputClass={`sm:w-full lg:w-2/3 text-white bg-primeColor`}
+          country={"pl"}
+          value={phone}
+          onChange={(phone) => 
+  
+            setPhone(`+${phone}`)}
+        />
+      </label>
 
-          {error && (
-            <div className="flex justify-center items-center">
-              <Alert className="bg-transparent" severity="error">
-                {error}
-              </Alert>
-            </div>
-          )}
+      {error && (
+        <div className="flex justify-center items-center">
+          <Alert className="bg-transparent" severity="error">
+            {error}
+          </Alert>
+        </div>
+      )}
 
-          <div className="w-full flex justify-center items-center">
-            <button className="btn sm:bg-accColor md:bg-primeColor max-w-md text-white">
-              {
-                formsTranslations.signingOptions.passwordForgotten.verifyBtn[
-                  selectedLanguage
-                ]
-              }
-            </button>
+      <div className="w-full flex justify-center items-center">
+        <button className={`btn sm:bg-accColor md:bg-primeColor max-w-md text-white`}>
+          {formsTranslations.signingOptions.passwordForgotten.verifyBtn[selectedLanguage]}
+        </button>
+      </div>
+    </form>
+  )}
+
+  <div id="recaptcha-container"></div>
+  {showConfirmation && (
+    <>
+      <form
+        onSubmit={handleVerifyCode}
+        className="flex flex-col sm:w-full max-w-lg gap-6 rounded-md sm:bg-transparent lg:bg-accColor lg:shadow-md lg:shadow-primeColor p-4"
+      >
+        <label className={`flex flex-col items-center justify-center w-full ${isDarkModed ? "text-white" : "text-black"}`}>
+          <span className={`text-3xl font-bold py-2 ${isDarkModed ? "text-white" : "text-black"}`}>
+            {formsTranslations.signingOptions.passwordForgotten.verificationCode[selectedLanguage]}
+          </span>
+
+          <VerificationInput
+            autoFocus
+            validChars="0-9"
+            classNames={{
+              character: "rounded-md ",
+              characterSelected: `border-accColor ${isDarkModed ? "text-white" : "text-black"}`,
+            }}
+            inputProps={{ inputMode: "numeric" }}
+            onChange={(value) => setVerificationCode(value)}
+          />
+        </label>
+        <button className={`btn sm:w-full md:w-2/3 self-center ${isDarkModed ? "text-white" : "text-black"} lg:bg-primeColor`}>
+          {formsTranslations.signingOptions.passwordForgotten.verifyBtn[selectedLanguage]}
+        </button>
+        {error && (
+          <div className="flex justify-center items-center">
+            <Alert className="bg-transparent" severity="error">
+              {error}
+            </Alert>
           </div>
-        </form>
-      )}
+        )}
+      </form>
+    </>
+  )}
+</div>
 
-      <div id="recaptcha-container"></div>
-      {showConfirmation && (
-        <>
-          <form
-            onSubmit={handleVerifyCode}
-            className="flex flex-col sm:w-full max-w-lg gap-6 rounded-md sm:bg-transparent lg:bg-accColor lg:shadow-md lg:shadow-primeColor p-4"
-          >
-            <label className="flex flex-col items-center justify-center w-full">
-              <span className="text-3xl text-white font-bold py-2">
-                {
-                  formsTranslations.signingOptions.passwordForgotten
-                    .verificationCode[selectedLanguage]
-                }
-              </span>
-
-              <VerificationInput
-                autoFocus
-                validChars="0-9"
-                classNames={{
-                  character: "rounded-md ",
-                  characterSelected: " border-accColor",
-                }}
-                inputProps={{ inputMode: "numeric" }}
-                onChange={(value) => setVerificationCode(value)}
-              />
-            </label>
-            <button className="btn sm:w-full md:w-2/3 self-center sm:bg-accColor text-white lg:bg-primeColor">
-              {
-                formsTranslations.signingOptions.passwordForgotten.verifyBtn[
-                  selectedLanguage
-                ]
-              }
-            </button>
-            {error && (
-              <div className="flex justify-center items-center">
-                <Alert className="bg-transparent" severity="error">
-                  {error}
-                </Alert>
-              </div>
-            )}
-          </form>
-        </>
-      )}
-    </div>
   );
 }
 

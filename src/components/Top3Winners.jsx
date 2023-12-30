@@ -1,8 +1,12 @@
-import React from "react";
+import React from 'react';
 
-import { FaCrown } from "react-icons/fa6";
+import { FaCrown } from 'react-icons/fa6';
+import { useSelector } from 'react-redux';
 
-import defaultImg from "../assets/default-avatar-profile-trendy-style-social-media-user-icon-187599373.jpg";
+import defaultImg
+  from '../assets/default-avatar-profile-trendy-style-social-media-user-icon-187599373.jpg';
+import competitionTranslations
+  from '../assets/translations/CompetitionsTranslations.json';
 
 function Top3Winners({ topWinners }) {
   // Create an artificial second place if there is only one person
@@ -13,7 +17,10 @@ function Top3Winners({ topWinners }) {
   const thirdPlace = hasThirdPlace
     ? topWinners[1]
     : { photoURL: defaultImg, nickname: "Third Place" };
-
+    const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+    const selectedLanguage = useSelector(
+      (state) => state.languageSelection.selectedLangugage
+    );
   return (
     <div className="sm:w-full md:w-1/2 xl:w-1/2">
       <div className="flex flex-col justify-center items-center w-full">
@@ -42,9 +49,9 @@ function Top3Winners({ topWinners }) {
                 />
               </div>
               <p
-                className={`text-center text-white text-lg ${
+                className={`text-center text-white text-lg font-semibold ${
                   i === 0
-                    ? "text-yellow-500 font-semibold"
+                    ? "text-yellow-500"
                     : i === 1
                       ? "text-gray-400"
                       : " text-amber-800"
@@ -62,8 +69,8 @@ function Top3Winners({ topWinners }) {
                 alt=""
                 className="w-auto h-auto max-w-16 max-h-16 md:max-w-20 md:max-h-20 rounded-full object-cover"
               />
-              <p className="text-center text-gray-400 text-lg">
-                {secondPlace.nickname}
+              <p className="text-center font-semibold text-gray-400 text-lg">
+              {competitionTranslations.competitionObject.expiration.rankingWinner.secondPlace[selectedLanguage]}
               </p>
             </div>
           )}
@@ -75,14 +82,14 @@ function Top3Winners({ topWinners }) {
                 alt=""
                 className="w-auto h-auto max-w-16 max-h-16 md:max-w-20 md:max-h-20 rounded-full object-cover"
               />
-              <p className="text-center text-amber-800 text-lg">
-                {thirdPlace.nickname}
+              <p className="text-center text-amber-800 font-semibold text-lg">
+                {competitionTranslations.competitionObject.expiration.rankingWinner.thirtPlace[selectedLanguage]}
               </p>
             </div>
           )}
         </div>
         <p className="text-center text-xl text-orange-400 font-semibold py-2">
-          {topWinners[0]?.nickname} wins the competition
+       {competitionTranslations.competitionObject.expiration.rankingWinner.winnerMsg[selectedLanguage]}    {topWinners[0]?.nickname}
         </p>
       </div>
     </div>

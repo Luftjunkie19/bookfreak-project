@@ -9,9 +9,11 @@ import {
   FaTrashCan,
 } from 'react-icons/fa6';
 import { PiExamFill } from 'react-icons/pi';
-import { useSelector } from 'react-redux';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
 import { useNavigate } from 'react-router';
-import { toast } from 'react-toastify';
 import uniqid from 'uniqid';
 
 import {
@@ -23,8 +25,10 @@ import {
   TextField,
 } from '@mui/material';
 
+import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/BookPageTranslations.json';
 import formTranslations from '../../assets/translations/FormsTranslations.json';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
@@ -38,11 +42,11 @@ function CreateTests() {
   const { addToDataBase } = useRealDatabase();
   const navigate = useNavigate();
   const { documents: books } = useGetDocuments('books');
-
+const dispatch=useDispatch();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const setSelectedBook = (_, value) => {
     setRefersToBook(value);
   };
@@ -127,14 +131,14 @@ function CreateTests() {
       )
     );
 
-    toast.success('Successfully added');
+    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
     navigate('/');
   };
 
   return (
-    <div className="min-h-screen h-full">
+    <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
       <div className="w-full border-b-2 border-accColor p-2">
-        <h1 className="text-2xl text-center text-white font-bold p-2">
+        <h1 className={`text-2xl text-center ${isDarkModed ? "text-white" : "text-black"} font-bold p-2`}>
           {formTranslations.topText.tests[selectedLanguage]}
         </h1>
 
@@ -146,7 +150,7 @@ function CreateTests() {
                   {formTranslations.testFields.testName.label[selectedLanguage]}
                 </span>
                 <Input
-                  className="bg-transparent w-full border-accColor text-white"
+                  className={`bg-transparent w-full border-accColor ${isDarkModed ? "text-white" : "text-black"}`}
                   color="primary"
                   variant="outlined"
                   placeholder={
@@ -208,7 +212,7 @@ function CreateTests() {
                 {formTranslations.testFields.questionLabel[selectedLanguage]}
               </span>
               <Input
-                className="bg-transparent max-w-xs border-accColor text-white"
+                className={`bg-transparent max-w-xs border-accColor ${isDarkModed ? "text-white" : "text-black"}`}
                 color="primary"
                 size="md"
                 variant="outlined"

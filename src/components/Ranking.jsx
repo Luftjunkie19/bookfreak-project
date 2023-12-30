@@ -39,6 +39,7 @@ function Ranking({
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const { getDocuments } = useRealtimeDocuments();
   const { getDocument } = useRealtimeDocument();
   const { updateDatabase } = useRealDatabase();
@@ -177,6 +178,38 @@ function Ranking({
     setIsPending(false);
   };
 
+  const filteredReaders=()=>{
+let array=[];
+    readerObjects.map((reader)=>{
+      const isMember= communityMembers.find((member)=>member.value.id === reader.id);
+  
+      if(isMember){
+        array.push(readerObjects.find((reader)=>reader.id === isMember.value.id));
+      }else{
+        return;
+      }
+      
+    });
+    return array;
+  }
+  
+  const filteredBooks = () => {
+    const filteredReadersArray = filteredReaders(); // Get the filtered readers first
+    let array = [];
+  
+    books.forEach((book) => {
+      const isBook = filteredReadersArray.find((reader) => reader.bookReadingId === book.id);
+  
+      if (isBook) {
+        array.push(book);
+      }
+    });
+  
+    return array;
+  };
+  
+
+
   return (
     <div className="w-full flex-col flex">
       {isPending && <Loader />}
@@ -288,7 +321,7 @@ function Ranking({
                 className="btn text-yellow-400 bg-accColor hover:bg-yellow-400 hover:text-accColor max-w-xs"
                 onClick={payoutTheWinningUser}
               >
-                Claim your prize
+                {reuseableTranslations.claimPrize[selectedLanguage]}
               </button>
             )}
           {!communityObject?.id?.includes("readersClub") &&
@@ -300,21 +333,23 @@ function Ranking({
                 className="btn text-yellow-400 bg-accColor hover:bg-yellow-400 hover:text-accColor max-w-xs"
                 onClick={confirmClaimingPrize}
               >
-                Claim your prize
+           {reuseableTranslations.claimPrize[selectedLanguage]}
               </button>
             )}
         </div>
       )}
 
-      {readerObjects.length > 0 && (
+
+
+      {filteredReaders().length > 0 && (
         <div className="flex flex-wrap gap-1">
           <UserComparisonChart
-            readerObjects={readerObjects}
-            bookObjects={books}
+            readerObjects={filteredReaders()}
+            bookObjects={filteredBooks()}
           />
           <BookCategoryChart
-            readerObjects={readerObjects}
-            bookObjects={books}
+            readerObjects={filteredReaders()}
+            bookObjects={filteredBooks()}
           />
         </div>
       )}

@@ -23,6 +23,7 @@ import lottieAnimation
   from '../../assets/lottieAnimations/Animation - 1700320134586.json';
 import clubsTranslations
   from '../../assets/translations/ClubsTranslations.json';
+import formTranslations from '../../assets/translations/FormsTranslations.json';
 import ClubsManagmentBar
   from '../../components/RecensionsComponents/ClubsManagmentBar';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
@@ -78,6 +79,10 @@ function Clubs() {
   ];
 
 
+  useEffect(() => {
+    loadElements();
+  }, [loadElements]);
+
   const objectsOnPage = () => {
     if (document.body.clientWidth > 0 && document.body.clientWidth < 1024) {
       return 10;
@@ -112,11 +117,8 @@ function Clubs() {
     setCurrentPage(value);
   };
 
-  const pagesAmount = Math.ceil(documents.length / objectsOnPage());
+  
 
-  useEffect(() => {
-    loadElements();
-  }, [loadElements]);
 
   useEffect(() => {
     if (documents.length > 0) {
@@ -168,17 +170,18 @@ function Clubs() {
     if (selectedSort.trim("") !== "") {
       return sortOptions
         .find((option) => option.label === selectedSort)
-        .sort(documents)
+        .sort(filteredItems())
     } else {
       return filteredItems();
     }
   };
 
-
-
+  const pagesAmount = Math.ceil(sortedClubs().length / objectsOnPage());
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+  
   return (
-    <div className="min-h-screen h-full">
-      <h2 className="text-2xl text-center font-semibold py-2 text-white">
+    <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
+      <h2 className={`text-3xl text-center font-bold py-2 ${isDarkModed ? "text-white" : "text-black"}`}>
         {sortedClubs() && sortedClubs().length && sortedClubs().length}{" "}
         {sortedClubs() && sortedClubs().length > 1
           ? `${clubsTranslations.clubObject.quantity.more[selectedLanguage]}`
@@ -230,7 +233,7 @@ function Clubs() {
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Club's name"
+              label={formTranslations.placeHoldersCollections.clubsName[selectedLanguage]}
               onChange={(e, value) => {
                 setFilterQuery(
                   (prev) => {
@@ -257,7 +260,7 @@ function Clubs() {
               <Link
                 to={`/readers-clubs/${doc.id}`}
                 key={doc.id}
-                className="flex sm:flex-col 2xl:flex-row  sm:w-4/5 md:w-[47%] max-w-xs border-2 border-white items-center gap-2 group p-2 rounded-lg overflow-hidden hover:shadow-md hover:shadow-black hover:bg-lightModeCol bg-accColor hover:scale-[1.01] duration-200 transition-all"
+                className={`flex sm:flex-col 2xl:flex-row  sm:w-4/5 md:w-[47%] max-w-xs border-2 ${isDarkModed ? "border-white hover:bg-lightModeCol bg-accColor" : "border-black text-white hover:bg-accColor bg-primeColor"} items-center gap-2 group p-2 rounded-lg overflow-hidden hover:shadow-md hover:shadow-black  hover:scale-[1.01] duration-200 transition-all`}
               >
                 <img
                   src={doc.clubLogo}
@@ -266,9 +269,9 @@ function Clubs() {
                   className="w-16 h-16 object-cover rounded-full group-hover:scale-95 duration-200 transition-all"
                 />
 
-                <div className="flex gap-2 flex-col text-white group-hover:text-primeColor p-4">
+                <div className={`flex gap-2 flex-col ${isDarkModed ? "group-hover:text-primeColor" : "group-hover:text-white"} text-white  p-4`}>
                   <p className="text-lg font-semibold">{doc.clubsName}</p>
-                  <p>Required to join: {doc.requiredPagesRead} pages</p>
+                  <p>{clubsTranslations.clubObject.required[selectedLanguage]} {doc.requiredPagesRead} {clubsTranslations.clubObject.pages[selectedLanguage]}</p>
                 </div>
               </Link>
             ))}
@@ -280,7 +283,7 @@ function Clubs() {
         ).length === 0 && (
           <div className="flex w-full flex-col justify-center items-center gap-3">
             <Lottie animationData={lottieAnimation} />
-            <p className="text-2xl font-bold text-white text-center">
+            <p className={`text-2xl font-bold ${isDarkModed ? "text-white" : "text-black"} text-center`}>
               No data available
             </p>
           </div>

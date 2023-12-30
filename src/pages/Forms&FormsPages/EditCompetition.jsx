@@ -1,25 +1,40 @@
-import "../../components/stylings/mui-stylings.css";
+import '../../components/stylings/mui-stylings.css';
 
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 
-import { motion } from "framer-motion";
-import { FaX } from "react-icons/fa6";
-import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import CreatableSelect from "react-select";
-import { toast } from "react-toastify";
+import dayjs from 'dayjs';
+import { motion } from 'framer-motion';
+import { FaX } from 'react-icons/fa6';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  useNavigate,
+  useParams,
+} from 'react-router';
 
-import { Alert, Snackbar } from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers";
+import {
+  Alert,
+  Autocomplete,
+  Snackbar,
+  TextField,
+} from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers';
 
-import alertMessages from "../../assets/translations/AlertMessages.json";
-import formsTranslation from "../../assets/translations/FormsTranslations.json";
-import Loader from "../../components/Loader";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import { useFormRealData } from "../../hooks/useFormRealData";
-import { useRealDatabase } from "../../hooks/useRealDatabase";
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import formsTranslation from '../../assets/translations/FormsTranslations.json';
+import Loader from '../../components/Loader';
+import { snackbarActions } from '../../context/SnackBarContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useFormRealData } from '../../hooks/useFormRealData';
+import { useRealDatabase } from '../../hooks/useRealDatabase';
 
 function EditCompetition() {
+  const dispatch=useDispatch();
   const { id } = useParams();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
@@ -49,12 +64,10 @@ function EditCompetition() {
   }, [document]);
 
   const competitionTypes = [
-    { value: "First read, first served", label: "First read, first served" },
-    {
-      value: "Lift others, rise",
-      label: "Lift others, rise",
-    },
-    { value: "Teach to fish", label: "Teach to fish" },
+     "First read, first served",
+    "Lift others, rise",
+    
+    "Teach to fish"
   ];
 
   const editCompetition = async (e) => {
@@ -85,22 +98,21 @@ function EditCompetition() {
     setError(null);
     setIsPending(false);
     navigate(`/competition/${id}`);
-    toast.success(
-      alertMessages.notifications.successfull.update[selectedLanguage]
-    );
+   dispatch(snackbarActions.showMessage({message:alertMessages.notifications.successfull.update[selectedLanguage], alertType:"success"}))
+ 
   };
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   return (
     <>
       <motion.div
-        className="min-h-screen h-full flex w-full flex-col"
+        className={`min-h-screen h-full flex w-full flex-col ${!isDarkModed && "pattern-bg"}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
         <form
           onSubmit={editCompetition}
-          className="flex sm:w-full  flex-col p-6 m-2  text-white"
+          className={`flex sm:w-full  flex-col p-6 m-2 ${isDarkModed ? "text-white" : "text-black"}`}
         >
           <h2 className="text-3xl text-center font-semibold">
             {formsTranslation.topText.editCompetition[selectedLanguage]}
@@ -129,22 +141,13 @@ function EditCompetition() {
               </label>
 
               <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
-                <span>
-                  {formsTranslation.competitionCategory.label[selectedLanguage]}
-                  :
-                </span>
-                <CreatableSelect
-                  required
-                  className="select-input text-black w-full"
-                  isClearable
-                  isSearchable
-                  options={competitionTypes}
-                  onChange={(e) => setCompetitionsName(e.value)}
-                />
-                <small>
-                  {formsTranslation.competitionCategory.label[selectedLanguage]}
-                  : {competitionsName}
-                </small>
+               
+<Autocomplete onChange={(e,value)=>{
+  setCompetitionsName(value); 
+}} required options={competitionTypes} renderInput={(params) => <TextField {...params} label= {formsTranslation.competitionCategory.label[selectedLanguage]} />} />
+
+              
+           
               </label>
             </div>
             <div className="flex w-full flex-col gap-1 py-2">
@@ -163,6 +166,7 @@ function EditCompetition() {
                   <DateTimePicker
                     label={`${formsTranslation.expirationDateInput.label[selectedLanguage]}`}
                     className="myDatePicker w-full"
+        defaultValue={expirationDate && dayjs(new Date(expirationDate).toTimeString())}
                     sx={{
                       svg: { color: "#fff" },
                       input: { color: "#fff" },
@@ -185,11 +189,11 @@ function EditCompetition() {
               </div>
             </div>
             <label className="flex py-2 flex-col sm:w-full lg:max-w-xl xl:max-w-4xl 2xl:max-w-5xl">
-              <span className="font-medium text-white text-lg">
+              <span className={`font-medium ${isDarkModed ? "text-white" : "text-black"} text-lg`}>
                 {formsTranslation.descriptionTextarea.label[selectedLanguage]}:
               </span>
               <textarea
-                className="resize-none w-full h-48 outline-none rounded-lg p-1"
+                className="resize-none w-full h-48 outline-none rounded-lg p-1 border-2 border-accColor"
                 required
                 placeholder="What's this competition about, what's to win?"
                 onChange={(e) => setDescription(e.target.value)}

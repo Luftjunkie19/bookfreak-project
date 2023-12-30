@@ -1,15 +1,22 @@
-import "../stylings/backgrounds.css";
+import '../stylings/backgrounds.css';
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import Lottie from "lottie-react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { Link, useSearchParams } from "react-router-dom";
+import Lottie from 'lottie-react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router';
+import {
+  Link,
+  useSearchParams,
+} from 'react-router-dom';
 
-import lottieAnimation from "../../assets/lottieAnimations/Animation - 1699294838586.json";
-import translations from "../../assets/translations/SearchTranslations.json";
-import useRealtimeDocuments from "../../hooks/useRealtimeDocuments";
+import lottieAnimation
+  from '../../assets/lottieAnimations/Animation - 1699294838586.json';
+import translations from '../../assets/translations/SearchTranslations.json';
+import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function SearchFor() {
   const { id } = useParams();
@@ -20,7 +27,7 @@ function SearchFor() {
   const query = queries.get("q");
   const { getDocuments } = useRealtimeDocuments();
   const [elements, setElements] = useState([]);
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadElements = async () => {
     const booksEl = await getDocuments(id);
@@ -40,14 +47,14 @@ function SearchFor() {
   return (
     <div className="min-h-screen h-full pattern-bg">
       <label className="flex flex-col py-4 text-white w-full p-2">
-        <span>
+        <span className={`${isDarkModed ? "text-white" :"text-black"}`}>
           {id === "users"
             ? `${translations.searchInput.label[selectedLanguage]}`
             : `${translations.searchInput.labelBooks[selectedLanguage]}`}
           : {query}
         </span>
         <input
-          className="outline-none input border-none py-3 px-4 rounded max-w-lg"
+          className={`outline-none input py-3 px-4 rounded max-w-lg border-accColor border-2 ${isDarkModed ? "text-white" :"text-black"}`}
           type="text"
           id="q"
           value={query}
@@ -68,7 +75,7 @@ function SearchFor() {
         />
       </label>
 
-      <p className="text-center text-white">
+      <p className={`text-center  ${isDarkModed ? "text-white" : "text-black"}`}>
         {translations.searchedParam[selectedLanguage]} {query}
       </p>
 
@@ -103,7 +110,7 @@ function SearchFor() {
               ))
             ) : (
               <div className="flex flex-col justify-center items-center gap-2">
-                <h2 className="text-3xl py-2 font-extralight text-white">
+                <h2 className={`text-3xl py-2 font-bold text-white ${isDarkModed ? "text-white" : "text-black"}`}>
                   {query.trim() === ""
                     ? "Type anything to find who you want."
                     : `${translations.noResults[selectedLanguage]} ${query}`}
@@ -132,13 +139,13 @@ function SearchFor() {
                       />
                     </div>
 
-                    <div className="px-1 justify-self-center self-center">
-                      <h5 className="lg:text-base sm:text-sm text-white font-semibold">
+                    <div className="px-1 text-white">
+                      <h5 className="lg:text-base sm:text-sm font-semibold">
                         {res.title.trim("").length > 15
                           ? `${res.title.slice(0, 15)}...`
                           : res.title}
                       </h5>
-                      <p className=" font-medium">
+                      <p className="font-medium">
                         {res.author.trim("").length > 10
                           ? `${res.author.slice(0, 10)}...`
                           : res.author}
@@ -155,10 +162,10 @@ function SearchFor() {
               ))
             ) : (
               <div className="flex flex-col justify-center items-center gap-2">
-                <h2 className="text-3xl py-2 font-extralight text-white">
+                <h2 className={`text-3xl py-2 font-bold ${isDarkModed ? "text-white" : "text-black"}`}>
                   {id === "books" && query.trim() === ""
                     ? "Type anything to find who you want."
-                    : `${translations.noResults[selectedLanguage]}: ${query}`}
+                    : `${translations.noResults[selectedLanguage]} ${query}`}
                 </h2>
                 <Lottie animationData={lottieAnimation} />
               </div>

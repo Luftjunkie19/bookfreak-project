@@ -1,17 +1,24 @@
-import React from "react";
+import React from 'react';
 
-import { FaDiscord, FaTiktok, FaXTwitter } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import {
+  FaDiscord,
+  FaTiktok,
+  FaXTwitter,
+} from 'react-icons/fa6';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 function Footer() {
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+
   return (
-    <footer className="footer p-10 bg-accColor text-white">
+    <footer className={`footer p-10 ${isDarkModed ? "bg-accColor" : "bg-primeColor"} text-white`}>
       <nav>
-        <header className="footer-title text-primeColor">Services</header>
+        <header className={`footer-title ${isDarkModed ? "text-primeColor" : "text-accColor"}`}>Services</header>
         <Link className="link link-hover">Advertisement</Link>
       </nav>
       <nav>
-        <header className="footer-title text-primeColor">Company</header>
+        <header className={`footer-title ${isDarkModed ? "text-primeColor" : "text-accColor"}`}>Company</header>
         <Link className="link link-hover" to="/about-us">
           About us
         </Link>
@@ -21,7 +28,7 @@ function Footer() {
         <Link className="link link-hover">Jobs</Link>
       </nav>
       <nav>
-        <header className="footer-title text-primeColor">Social</header>
+        <header className={`footer-title ${isDarkModed ? "text-primeColor" : "text-accColor"}`}>Social</header>
         <div className="grid grid-flow-col gap-4">
           <Link
             to="https://twitter.com/BookFreak_ofc"

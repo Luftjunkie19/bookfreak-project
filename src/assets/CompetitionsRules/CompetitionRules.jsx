@@ -1,4 +1,4 @@
-import useGetDocuments from "../../hooks/useGetDocuments";
+import useGetDocuments from '../../hooks/useGetDocuments';
 
 export function CompetitionRules() {
   const { documents: recommendations } = useGetDocuments("recommendations");
@@ -65,36 +65,36 @@ export function CompetitionRules() {
     getReadBooks,
     getlastBookRead
   ) => {
+    // Ensure 'tests' is defined
     const allAttempts = tests.map((test) => {
-      const attemptsObjects = Object.values(test.attempts);
-
+      // Check if test.attempts is an object, otherwise return an empty array
+      const attemptsObjects = test.attempts ? Object.values(test.attempts) : [];
+  
       return attemptsObjects.map((attempt) => {
         return { ...attempt, refersToBook: test.refersToBook };
       });
     });
-
+  
     const getUsersAttempts = (userId) => {
-      const userAttemptsResults = Math.round(
-        allAttempts
-          .flat()
-          .filter((attempt) => attempt.player.uid === userId)
-          .reduce((prev, cur) => prev + cur.finalResult, 0) /
-          allAttempts.flat().filter((attempt) => attempt.player.uid === userId)
-            .length
-      );
-
+      const userAttempts = allAttempts.flat().filter((attempt) => attempt.player?.uid === userId);
+  
+      // Check if there are attempts before calculating average
+      const userAttemptsResults = userAttempts.length > 0
+        ? Math.round(userAttempts.reduce((prev, cur) => prev + cur.finalResult, 0) / userAttempts.length)
+        : 0;
+  
       return isNaN(userAttemptsResults) ? 0 : userAttemptsResults;
     };
-
+  
     const getReadPagesPoints = (id) => {
-      const points = Math.round(
-        readerObjects
-          .filter((reader) => reader.id === id)
-          .reduce((prev, cur) => prev + cur.pagesRead, 0) / 10
-      );
+      const reader = readerObjects.find((reader) => reader.id === id);
+  
+      // Check if reader is defined before accessing properties
+      const points = reader ? Math.round(reader.pagesRead / 10) : 0;
+  
       return isNaN(points) ? 0 : points;
     };
-
+  
     const fullMembers = membersObjects.map((member) => {
       return {
         id: member.value.id,
@@ -103,25 +103,23 @@ export function CompetitionRules() {
         usersAverageResult: getUsersAttempts(member.value.id),
         readBooks: getReadBooks(member.value.id),
         lastReadBook: getlastBookRead(member.value.id),
-        attemptsAmount: allAttempts
-          .flat()
-          .filter((attempt) => attempt.player.uid === member.value.id).length,
+        attemptsAmount: allAttempts.flat().filter((attempt) => attempt.player?.uid === member.value.id).length,
         gainedPoints:
           getReadPagesPoints(member.value.id) +
           getUsersAttempts(member.value.id) *
             allAttempts
               .flat()
-              .filter((attempt) => attempt.player.uid === member.value.id)
+              .filter((attempt) => attempt.player?.uid === member.value.id)
               .length *
             2.5 +
           getReadBooks(member.value.id) * 2,
       };
     });
-
+  
     return fullMembers
       .sort((a, b) => b.gainedPoints - a.gainedPoints)
       .slice(0, 3);
   };
-
+  
   return { firstComeServedRule, liftOthersRiseJointlyRule, teachToFishRule };
 }

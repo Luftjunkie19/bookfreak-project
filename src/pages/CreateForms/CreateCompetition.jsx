@@ -1,34 +1,32 @@
-import React, {
+import {
   useEffect,
   useState,
 } from 'react';
 
-import { Alert } from 'flowbite-react';
 import { BsStars } from 'react-icons/bs';
 import { CgDetailsMore } from 'react-icons/cg';
-import { FaX } from 'react-icons/fa6';
 import { GiSwordsPower } from 'react-icons/gi';
-import { useSelector } from 'react-redux';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
 import { useNavigate } from 'react-router';
-import CreatableSelect from 'react-select/creatable';
+import CreatableSelect from 'react-select';
 import uniqid from 'uniqid';
 
 import {
+  Alert,
   Autocomplete,
   Box,
-  Snackbar,
   TextField,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
-import {
-  competitionTypes,
-  differentPrize,
-  prizeTypes,
-} from '../../assets/CreateVariables';
+import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/FormsTranslations.json';
 import FailLoader from '../../components/FailLoader';
 import Loader from '../../components/Loader';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
@@ -44,13 +42,37 @@ function CreateCompetition() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const [document, setDocument] = useState(null);
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
-  const [openState, setOpenState] = useState({
-    open: false,
-    message: "",
-  });
+  const dispatch=useDispatch();
+
+   const competitionTypes = [
+    { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
+    {
+      value: "Lift others, rise",
+      label: translations.competitionTypes.second[selectedLanguage],
+    },
+    { value: "Teach to fish", label: translations.competitionTypes.third[selectedLanguage] },
+  ];
+  
+   const prizeTypes = [
+    { value: "item", label: translations.item[selectedLanguage] },
+    {
+      value: "Money",
+      label: translations.money[selectedLanguage],
+    },
+  ];
+  
+   const differentPrize = [
+    { value: "book", label:translations.book[selectedLanguage] },
+    {
+      value: "Voucher",
+      label: "Voucher",
+    },
+    { value: "ticket", label: translations.ticket[selectedLanguage] },
+  ];
 
   const navigate = useNavigate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -175,11 +197,7 @@ function CreateCompetition() {
     setIsPending(true);
     try {
       if (!competition.expiresAt) {
-        setOpenState((state) => {
-          state.message = "You cannot set the earlier date than today.";
-          state.open = true;
-          return state;
-        });
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.earlyDate[selectedLanguage]}`,alertType:"error", }));
         setIsPending(false);
         return;
       }
@@ -188,22 +206,17 @@ function CreateCompetition() {
         competition.prizeType === "Money" &&
         competition.prize.moneyPrize.amount === 0
       ) {
-        setOpenState((state) => {
-          state.message =
-            "You cannot create competition, where the prize is 0.";
-          state.open = true;
-          return state;
-        });
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.zeroAmount[selectedLanguage]}`, alertType:"error"}));
+        
+        
         setIsPending(false);
         return;
       }
 
       if (competition.prize.moneyPrize.amount > document.creditsAvailable) {
-        setOpenState((state) => {
-          state.message = "You do not have so many credits enough.";
-          state.open = true;
-          return state;
-        });
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.notEnoughCredits[selectedLanguage]}`, alertType:"error"}));
+        
+     
         setIsPending(false);
         return;
       }
@@ -214,11 +227,9 @@ function CreateCompetition() {
         competition.prize.moneyPrize === null ||
         competition.prize.moneyPrize === undefined
       ) {
-        setOpenState((state) => {
-          state.message = "Something went wrong.";
-          state.open = true;
-          return state;
-        });
+        
+          //state.message = "Something went wrong.";
+       
         setIsPending(false);
         return;
       }
@@ -270,6 +281,7 @@ function CreateCompetition() {
         }
       }
       finalizeAll();
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
       setIsPending(false);
     } catch (err) {
       console.log(err);
@@ -289,10 +301,10 @@ function CreateCompetition() {
     }
   }, [error, isPending]);
   return (
-    <div className="min-h-screen h-full w-full flex flex-col">
+    <div className={`min-h-screen h-full w-full flex flex-col  ${!isDarkModed && "pattern-bg"}`}>
       {isPending && error && <FailLoader />}
       {isPending && <Loader />}
-      <form onSubmit={submitForm} className="w-full text-white">
+      <form onSubmit={submitForm} className={`w-full ${isDarkModed ? "text-white" : "text-black"}`}>
         <div className="flex flex-wrap items-center justify-center gap-4 py-4 mb-2">
           <GiSwordsPower className="text-6xl font-semibold" />
           <p className="text-center">
@@ -303,7 +315,7 @@ function CreateCompetition() {
         <div className="flex w-full flex-col gap-2 p-4">
           <p className="font-bold text-2xl flex gap-2 sm:text-center md:text-left">
             {" "}
-            <BsStars /> Essential information <BsStars />{" "}
+            <BsStars /> {translations.essentialInfo[selectedLanguage]} <BsStars />{" "}
           </p>
           <div className="flex flex-wrap w-full gap-4">
             <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
@@ -341,12 +353,8 @@ function CreateCompetition() {
                 onChange={(newValue) => {
                   console.log(new Date(newValue.$d));
                   if (new Date(newValue.$d).getTime() < new Date().getTime()) {
-                    setOpenState((state) => {
-                      state.message =
-                        "You cannot set the earlier date than today.";
-                      state.open = true;
-                      return state;
-                    });
+                    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.earlyDate[selectedLanguage]}`, alertType:"error"}));
+                     
                     return;
                   } else {
                     setCompetition((competition) => {
@@ -362,7 +370,7 @@ function CreateCompetition() {
 
         <div className="flex w-full flex-col gap-2 p-4">
           <p className="font-bold text-2xl flex gap-2 sm:text-center md:text-left">
-            <CgDetailsMore /> Detailed information <CgDetailsMore />
+            <CgDetailsMore /> {translations.detailedInfo[selectedLanguage]} <CgDetailsMore />
           </p>
           <div className="flex flex-wrap items-center w-full gap-4">
             <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
@@ -426,7 +434,7 @@ function CreateCompetition() {
                     {...params}
                     className=" text-white"
                     label={translations.membersInput.label[selectedLanguage]}
-                    placeholder="Invite some users"
+                    placeholder={translations.inviteSomeUsers[selectedLanguage]}
                   />
                 )}
               />
@@ -453,7 +461,7 @@ function CreateCompetition() {
 
         <div className="flex flex-wrap w-full gap-4 p-4">
           <label className="sm:w-full md:max-w-xs xl:max-w-md">
-            <span>Competition's prize</span>
+            <span>{translations.competitionsPrize[selectedLanguage]}</span>
             <CreatableSelect
               required
               className="text-black w-full"
@@ -470,7 +478,7 @@ function CreateCompetition() {
           {competition.prizeType === "Money" && document && (
             <>
               <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
-                <span>Prize amount (in your currency):</span>
+                <span>{translations.prizeMoneyAmountInYourCurrency[selectedLanguage]}:</span>
                 <input
                   className="input w-full border-accColor outline-none"
                   type="number"
@@ -480,6 +488,7 @@ function CreateCompetition() {
                   onChange={(e) => {
                     setCompetition((comp) => {
                       comp.prize.moneyPrize.amount = +e.target.value * 100;
+                      comp.prize.moneyPrize.currency=document.stripeAccountData.default_currency;
                       return comp;
                     });
                     console.log(competition);
@@ -492,7 +501,7 @@ function CreateCompetition() {
           {competition.prizeType === "item" && (
             <>
               <label className="sm:w-full md:max-w-xs xl:max-w-md">
-                <span>Competition's prize </span>
+                <span>{translations.competitionsPrize[selectedLanguage]}</span>
 
                 <CreatableSelect
                   required
@@ -508,7 +517,7 @@ function CreateCompetition() {
               </label>
 
               <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
-                <span>Prize Details:</span>
+                <span>{translations.prizeDetails[selectedLanguage]}:</span>
                 <input
                   className="input border-accColor rounded-md border-2 outline-none w-full px-1"
                   required
@@ -554,29 +563,7 @@ function CreateCompetition() {
         )}
       </form>
 
-      {openState.open === true && (
-        <>
-          <Snackbar
-            onClose={() => {
-              setOpenState({ message: "", open: false });
-            }}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            open={openState.open}
-            autoHideDuration={3000}
-            message={openState.message}
-            action={
-              <button
-                className="flex items-center gap-2"
-                onClick={() => {
-                  setOpenState({ message: "", open: false });
-                }}
-              >
-                <FaX className=" text-red-500" /> Close
-              </button>
-            }
-          />
-        </>
-      )}
+      
     </div>
   );
 }

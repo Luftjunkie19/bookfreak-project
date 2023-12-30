@@ -13,15 +13,18 @@ import {
   uploadBytes,
 } from 'firebase/storage';
 import AvatarEditor from 'react-avatar-editor';
+import ReactFlagsSelect from 'react-flags-select';
 import {
   FaBook,
   FaImage,
   FaWindowClose,
 } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import uniqid from 'uniqid';
 
 import {
@@ -29,12 +32,14 @@ import {
   Autocomplete,
   TextField,
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 
 import { bookCategories } from '../../assets/CreateVariables';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
@@ -52,6 +57,8 @@ function CreateBook() {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [radius, setRadius] = useState(0);
   const [link, setLink] = useState(null);
+  const [selected, setSelected]=useState("");
+  const dispatch= useDispatch();
   const [availableBooks, setAvailableBooks] = useState([]);
   const { getDocuments } = useRealtimeDocuments();
   const { documents } = useGetDocuments("bookReaders");
@@ -72,6 +79,10 @@ function CreateBook() {
     pagesNumber: 1,
     category: null,
     bookCover: null,
+    description: "",
+    dateOfPublishing: null,
+    countryOfRelease:"",
+    publishingHouse:null,
   });
   const editorRef = useRef();
 
@@ -87,7 +98,7 @@ function CreateBook() {
       setAvailableBooks(booksDocs);
     }
   };
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   useEffect(() => {
     loadAvailableBooks();
   }, []);
@@ -105,18 +116,18 @@ function CreateBook() {
       return;
     }
 
-    if (!selected?.type.includes("image")) {
-      setError(
-        alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]
-      );
+    if (!selected.type.includes("image")) {
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]}`, alertType:"error"}));
       setEditCover(null);
       return;
     }
 
     if (selected === null) {
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.selectAnything[selectedLanguage]}`, alertType:"error"}));
       setError(
         alertMessages.notifications.wrong.selectAnything[selectedLanguage]
       );
+      
       setEditCover(null);
       return;
     }
@@ -144,10 +155,9 @@ function CreateBook() {
         setError(
           alertMessages.notifications.wrong.emptyMessage[selectedLanguage]
         );
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.emptyMessage[selectedLanguage]}`, alertType:"error"}));
         setIsPending(false);
-        toast.error(
-          alertMessages.notifications.wrong.emptyMessage[selectedLanguage]
-        );
+     
         return;
       }
 
@@ -155,37 +165,64 @@ function CreateBook() {
         setError(
           alertMessages.notifications.wrong.outOfSpaceReading[selectedLanguage]
         );
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.outOfSpaceReading[selectedLanguage]}`, alertType:"error"}));
         return;
       }
 
       if (
         availableBooks.find(
           (doc) =>
-            doc.title.toLowerCase() === book.title.toLowerCase() &&
-            doc.author.toLowerCase() === book.author.toLowerCase()
+          doc.title.toLowerCase().includes(book.title.toLowerCase()) &&
+          doc.author.toLowerCase().includes(book.author.toLowerCase()) &&
+          doc.countryOfRelease.toLowerCase().includes(book.countryOfRelease.toLowerCase())
         )
       ) {
-        setError("There is already such an book, did you mean that one?");
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.existsBook[selectedLanguage]}`, alertType:"error"}));
+        setError(alertMessages.notifications.wrong.existsBook[selectedLanguage]);
         setLink(
           availableBooks.find(
             (doc) =>
               doc.title.toLowerCase().includes(book.title.toLowerCase()) &&
-              doc.author.toLowerCase().includes(book.author.toLowerCase())
+              doc.author.toLowerCase().includes(book.author.toLowerCase()) &&
+              doc.countryOfRelease.toLowerCase().includes(book.countryOfRelease.toLowerCase())
           ).id
         );
         return;
       }
 
+      if(book.description.trim().length < 20){
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.writeLonger[selectedLanguage]}`, alertType:"error"}));
+        setError(alertMessages.notifications.wrong.writeLonger[selectedLanguage]);
+        return
+      }
+
+      if(book.countryOfRelease.trim().length ===0 || !book.dateOfPublishing || !book.publishingHouse){
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.someFieldsEmpty[selectedLanguage]}`, alertType:"error"}));
+        return
+      }
+
+      if(!book.bookCover){
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.bookCoverReq[selectedLanguage]}`, alertType:"error"}));
+        return
+      }
+
+      
+
+      if(book.dateOfPublishing > new Date().getFullYear()){
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.timeTraveler[selectedLanguage]}`, alertType:"error"}));
+        return
+      }
+
+
       console.log(bookReaders);
 
       if (bookReaders.find((reader) => !reader.hasFinished)) {
-        setError(
-          "You have to firstly finish a book, that you started to read."
-        );
+        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.recentlyStartedReading[selectedLanguage]}`, alertType:"error"}));
         return;
       }
 
       const bookElement = {
+        ...book,
         author: book.author,
         title: book.title,
         pagesNumber: book.pagesNumber,
@@ -233,9 +270,10 @@ function CreateBook() {
         recensions: {},
       });
 
-      toast.success(
-        alertMessages.notifications.successfull.create[selectedLanguage]
-      );
+
+      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
+
+     
 
       setIsPending(false);
       setError(null);
@@ -278,7 +316,7 @@ function CreateBook() {
   };
 
   return (
-    <div className="min-h-screen h-full w-full">
+    <div className={`min-h-screen h-full w-full overflow-x-hidden ${!isDarkModed && "pattern-bg"}`}>
       {editCover && (
         <div class="h-screen bg-imgCover w-screen fixed top-0 left-0 z-[9999999]">
           <button
@@ -352,16 +390,16 @@ function CreateBook() {
           </div>
         </div>
       )}{" "}
-      <form onSubmit={handleSubmit} className="w-full flex flex-col text-white">
+      <form onSubmit={handleSubmit} className={`w-full flex flex-col ${isDarkModed ? "text-white" : "text-black"}`}>
         <div className="flex flex-wrap items-center justify-center  w-full gap-4 p-4">
-          <FaBook className="text-6xl font-bold text-white" />
-          <p className=" text-white font-semibold">
+          <FaBook className={`text-6xl font-bold ${isDarkModed ? "text-white" : "text-black"}`} />
+          <p className={` ${isDarkModed ? "text-white" : "text-black"} font-semibold`}>
             {translations.topText.books[selectedLanguage]}
           </p>
         </div>
 
         <div className="w-full flex-col flex gap-2 p-4">
-          <p className="font-bold text-xl">General Info</p>
+          <p className="text-2xl bg-accColor p-2 font-bold w-max rounded-md text-white">{translations.generalInfo[selectedLanguage]}</p>
           <div className="flex flex-wrap w-full gap-4">
             <label className="flex flex-col sm:w-full md:max-w-lg">
               <span>
@@ -402,9 +440,9 @@ function CreateBook() {
         </div>
 
         <div className="flex flex-col p-4 w-full gap-2">
-          <p className="font-bold text-xl">Detailed Information</p>
+          <p className="text-2xl text-white bg-accColor p-2 font-bold w-max rounded-md">{translations.detailedInfo[selectedLanguage]}</p>
           <div className="flex items-center flex-wrap w-full gap-4">
-            <label className="flex flex-col sm:w-full md:max-w-xl">
+            <label className="flex flex-col sm:w-full md:max-w-lg">
               <Autocomplete
                 className="text-white"
                 sx={{
@@ -451,11 +489,81 @@ function CreateBook() {
                 className="input border-accColor outline-none w-full py-4 px-1 text-lg"
               />
             </label>
+
+            <label className="flex flex-col gap-1 sm:w-full md:max-w-sm p-4">
+              <p>{translations.selectImgBtn.label[selectedLanguage]}</p>
+          <input
+            required
+            type="file"
+            onChange={handleSelect}
+            className="hidden w-full"
+          />
+          <p className="btn w-full bg-accColor text-white border-none hover:bg-primeColor ">
+            {translations.selectImgBtn.label[selectedLanguage]}
+            <FaImage />
+          </p>
+        </label>
+
+
+            <label className="flex flex-col sm:w-full md:max-w-sm">
+              <p>{translations.countryOfBookRelease[selectedLanguage]}</p>
+                <ReactFlagsSelect className="text-black sm:w-full lg:w-3/4"
+                selected={selected}
+              onSelect={(country)=>{
+                setSelected(country);
+                setBook((book)=>{
+                  book.countryOfRelease=country;
+                  return book;
+                })
+              }}
+              selectButtonClassName="bg-accColor text-white rounded-md border-white text-white"/>
+            </label>
+            <label className="flex flex-col sm:w-full md:max-w-md">
+              <p>{translations.publisher[selectedLanguage]}</p>
+              <input onChange={(e)=>{
+                setBook((book)=>{
+                  book.publishingHouse=e.target.value;
+                  return book;
+                });
+              }} className="input border-accColor outline-none w-full py-4 px-1 text-lg" type="text" />
+            </label>
+
+            <label className='sm:w-full md:max-w-sm'>
+              <p>{translations.yearOfRelease[selectedLanguage]}</p>
+              <DatePicker className='w-full' openTo="year" onChange={(value)=>{
+                setError(null);
+const yearOfPublishing=value["$y"];
+
+if(yearOfPublishing > new Date().getFullYear()){
+  dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.timeTraveler[selectedLanguage]}`, alertType:"error"}));
+return;
+}
+
+                setBook((bookItem)=>{
+                  bookItem.dateOfPublishing=yearOfPublishing;
+                  return bookItem;
+                });
+  
+              }} />
+            </label>
+
           </div>
         </div>
 
+<div className="w-full max-w-2xl flex flex-col p-4 gap-3">
+<p className='text-2xl bg-accColor text-white p-2 font-bold w-min rounded-md'>{translations.descriptionTextarea.label[selectedLanguage]}</p>
+  <textarea placeholder={translations.descriptionTextarea.placeholder[selectedLanguage]} required className="textarea border-accColor textarea-bordered outline-none sm:w-full md:max-w-md lg:max-w-2xl h-24 resize-none" onChange={(e)=>{
+    setBook((book)=>{
+      book.description=e.target.value;
+      return book;
+    });
+  }}>
+  </textarea>
+</div>
+
+
         <div className="flex flex-col w-full p-4 gap-2">
-          <p className="font-bold text-xl">User Information</p>
+          <p className="text-2xl text-white bg-accColor p-2 font-bold w-max rounded-md">{translations.userInfo[selectedLanguage]}</p>
 
           <div className="form-control justify-center sm:w-full md:max-w-lg">
             <label className="label cursor-pointer">
@@ -527,33 +635,21 @@ function CreateBook() {
           )}
         </div>
 
-        <label className="flex flex-col gap-3 sm:w-full md:max-w-sm p-4">
-          <span>{translations.selectImgBtn.label[selectedLanguage]}:</span>
-          <input
-            required
-            type="file"
-            onChange={handleSelect}
-            className="hidden w-full"
-          />
-          <p className="btn w-full bg-accColor text-white border-none hover:bg-primeColor">
-            {translations.selectImgBtn.text[selectedLanguage]}
-            <FaImage />
-          </p>
-        </label>
+        
+        {error && (
+          <Alert className='m-1 w-max' severity="error">
+            {error}
+          </Alert>
+        )}
 
-        <div className="flex justify-center items-center w-full w-full my-4">
+        <div className="flex justify-center items-center w-full my-4">
           <button className="btn sm:w-full md:max-w-lg text-white bg-accColor">
             {translations.submit[selectedLanguage]}
           </button>
         </div>
 
-        {error && (
-          <Alert className="bg-transparent" severity="error">
-            {error}
-          </Alert>
-        )}
 
-        {link && <Link to={`/book/${link}`}>Move to the book</Link>}
+        {link && <Link to={`/book/${link}`}>{translations.moveToBook[selectedLanguage]}</Link>}
       </form>
     </div>
   );

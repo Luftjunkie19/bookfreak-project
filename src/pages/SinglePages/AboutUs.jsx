@@ -1,5 +1,6 @@
 import '../stylings/backgrounds.css';
 import '../stylings/scrollbarStyling.css';
+import 'react-image-gallery/styles/css/image-gallery.css';
 
 import React from 'react';
 
@@ -18,6 +19,8 @@ import {
   TbCircleNumber2,
   TbCircleNumber3,
 } from 'react-icons/tb';
+import ImageGallery from 'react-image-gallery';
+import { useSelector } from 'react-redux';
 import { Typewriter } from 'react-simple-typewriter';
 import {
   Steps,
@@ -35,10 +38,12 @@ import difficultiesImage1
   from '../../assets/ProjectHistory/Zrzut ekranu (1128).png';
 import begginingImage3 from '../../assets/ProjectHistory/Zrzut_ekranu_983.png';
 import begginingImage2 from '../../assets/ProjectHistory/Zrzut_ekranu_999.png';
+import aboutUsTranslations
+  from '../../assets/translations/aboutUsTranslations.json';
 
 function AboutUs() {
   const { next, prev, current, total } = useSteps();
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const mainHolderVariant = {
     offscreen: { y: 100, opacity: 0 },
     onscreen: {
@@ -51,7 +56,9 @@ function AboutUs() {
       },
     },
   };
-
+  const selectedLanguage = useSelector(
+    (state) => state.languageSelection.selectedLangugage
+  );
   const iconVariant = {
     onscreen: {
       opacity: 1,
@@ -92,17 +99,9 @@ function AboutUs() {
     offscreen: { y: 100, opacity: 0 },
   };
 
-  const secondImageVariant = {
-    onscreen: { y: 0, opacity: 1, transition: { delay: 1 } },
-    offscreen: { y: 100, opacity: 0 },
-  };
-
-  const thirdImageVariant = {
-    onscreen: { y: 0, opacity: 1, transition: { delay: 1.25 } },
-    offscreen: { y: 100, opacity: 0 },
-  };
+;
   return (
-    <div className="min-h-screen h-full w-full overflow-x-hidden pattern-bg">
+    <div className={`min-h-screen h-full w-full overflow-x-hidden pattern-bg ${isDarkModed ? "text-white" : "text-black"}`}>
       <div className="w-full flex justify-center items-center py-8">
         <div className="sm:w-full lg:max-w-[96rem] flex flex-wrap sm:justify-start lg:justify-around sm:items-center lg:items-start lg:gap-12 py-6">
           <motion.div
@@ -128,23 +127,17 @@ function AboutUs() {
               transition={{ duration: 0.5, delay: 0.75 }}
               initial={{ x: -100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className="text-4xl font-bold text-white px-1"
+              className="text-4xl font-bold  px-1"
             >
-              <Typewriter words={["Hello And Welcome"]} loop={1} />
+              <Typewriter words={[aboutUsTranslations.aboutSection.TopText[selectedLanguage]]} loop={1} />
             </motion.div>
             <motion.p
               transition={{ duration: 0.5, delay: 1.25 }}
               initial={{ x: 100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className="text-white p-2"
+              className=" p-2"
             >
-              My name is Łukasz, I'm 19 years old and I created BookFreak,
-              because something was missing for me in the books industry. There
-              were some book's forums etc. However it was not that, what I was
-              looking for. I initialized this project in February 2023, however
-              the work on it not always was possible. Because of complications,
-              I had at school, because I wanted to develop this project and also
-              because of my mental collapse at some point.
+           {aboutUsTranslations.aboutSection.description[selectedLanguage]}
             </motion.p>
           </div>
         </div>
@@ -155,9 +148,9 @@ function AboutUs() {
           initial="offscreen"
           whileInView="onscreen"
           viewport={{ once: true }}
-          className="sm:w-full lg:w-1/3 sm:h-screen md:h-[50vh] bg-accColor text-white flex flex-col justify-center items-center gap-3"
+          className="sm:w-full lg:w-1/3 sm:h-screen md:h-[50vh] bg-accColor  flex flex-col justify-center items-center gap-3"
         >
-          <GiBull className=" text-7xl" />
+          <GiBull className=" text-7xl text-white" />
 
           <motion.div
             variants={typingTextVariant}
@@ -166,10 +159,10 @@ function AboutUs() {
             viewport={{ once: true }}
           >
             <CountUp
-              className="font-bold text-6xl rounded-full p-4"
+              className="font-bold text-6xl rounded-full text-white p-4"
               start={0}
               end={Math.round(
-                (new Date().getTime() - new Date("02.15.2023").getTime()) /
+                (new Date().getTime("31.12.2023") - new Date("02.15.2023").getTime()) /
                   1000 /
                   60 /
                   60 /
@@ -183,9 +176,9 @@ function AboutUs() {
             initial="offscreen"
             whileInView="onscreen"
             viewport={{ once: true }}
-            className=" font-semibold text-2xl text-center p-2"
+            className=" font-semibold text-2xl text-center p-2 text-white"
           >
-            Months of struggling
+            {aboutUsTranslations.ThreeBoxes.first[selectedLanguage]}
           </motion.p>
         </motion.div>
         <motion.div
@@ -216,17 +209,17 @@ function AboutUs() {
             viewport={{ once: true }}
             className=" font-semibold text-2xl text-center p-2"
           >
-            Of hours of acquiring knowledge from tutorials
+            {aboutUsTranslations.ThreeBoxes.second[selectedLanguage]}
           </motion.p>
         </motion.div>
         <motion.div
-          className="sm:w-full lg:w-1/3 flex flex-col justify-center items-center sm:h-screen md:h-[50vh] bg-primeColor text-white gap-3"
+          className="sm:w-full lg:w-1/3 flex flex-col justify-center items-center sm:h-screen md:h-[50vh] bg-primeColor  gap-3"
           variants={mainHolderVariant}
           initial="offscreen"
           whileInView="onscreen"
           viewport={{ once: true }}
         >
-          <ImBooks className=" text-7xl" />
+          <ImBooks className=" text-7xl text-white" />
           <motion.div
             variants={typingTextVariant}
             initial="offscreen"
@@ -234,7 +227,7 @@ function AboutUs() {
             viewport={{ once: true }}
           >
             <CountUp
-              className="font-bold text-6xl rounded-full p-4"
+              className="font-bold text-6xl rounded-full p-4 text-white"
               start={0}
               end={23}
             />
@@ -244,9 +237,9 @@ function AboutUs() {
             initial="offscreen"
             whileInView="onscreen"
             viewport={{ once: true }}
-            className=" font-semibold text-2xl text-center p-2"
+            className=" font-semibold text-2xl text-center p-2 text-white"
           >
-            Books, I have read since I stopped being stupid (23.06.2022)
+             {aboutUsTranslations.ThreeBoxes.third[selectedLanguage]}
           </motion.p>
         </motion.div>
       </div>
@@ -274,9 +267,9 @@ function AboutUs() {
             whileInView="onscreen"
             viewport={{ once: true }}
             variants={typingTextVariant}
-            className="text-white font-bold text-4xl self-center justify-self-center"
+            className=" font-bold text-4xl self-center justify-self-center"
           >
-            <Typewriter words={["The Very Beginnings"]} />
+            <Typewriter words={[aboutUsTranslations.steps.first.header[selectedLanguage]]} />
           </motion.div>
           <div className="w-full flex 2xl:justify-evenly flex-wrap gap-6">
             <div className="flex flex-col max-w-xl self-center">
@@ -285,9 +278,9 @@ function AboutUs() {
                 whileInView="onscreen"
                 variants={headingTextVariant}
                 viewport={{ once: true }}
-                className="text-white text-2xl font-bold"
+                className=" text-2xl font-bold"
               >
-                When it all started?
+              {aboutUsTranslations.steps.first.sideHeader[selectedLanguage]}
               </motion.p>
               <motion.div
                 transition={{ delay: 0.5, duration: 0.5 }}
@@ -295,47 +288,28 @@ function AboutUs() {
               >
                 <motion.span
                   viewport={{ once: true }}
-                  className="text-white"
+                  className=""
                   initial="offscreen"
                   whileInView="onscreen"
                   variants={descriptionVariant}
                 >
-                  The has been initialized on 15.02.2023, I've been typing the
-                  every line of CSS-code by my own, here are the results. It
-                  won't be a lie that you would not use BookFreak, if it would
-                  stay like that, would you?
+                 {aboutUsTranslations.steps.first.sideDescription[selectedLanguage]}
                 </motion.span>
               </motion.div>
             </div>
-            <div className="flex flex-wrap gap-4 sm:justify-around max-w-[90rem]">
-              <motion.img
-                initial="offscreen"
-                whileInView="onscreen"
-                variants={firstImageVariant}
-                viewport={{ once: true }}
-                className=" w-64 h-42 object-cover"
-                src={begginingImage1}
-                alt=""
-              />{" "}
-              <motion.img
-                initial="offscreen"
-                whileInView="onscreen"
-                variants={firstImageVariant}
-                viewport={{ once: true }}
-                className=" w-64 h-42 object-cover"
-                src={begginingImage2}
-                alt=""
-              />
-              <motion.img
-                initial="offscreen"
-                viewport={{ once: true }}
-                whileInView="onscreen"
-                variants={thirdImageVariant}
-                className=" w-64 h-42 object-cover"
-                src={begginingImage3}
-                alt=""
-              />
-            </div>
+
+            
+        
+            <ImageGallery
+     showFullscreenButton={false}
+     showPlayButton={false}
+    items={[
+      { original: begginingImage1, fullscreen:begginingImage1, thumbnail: begginingImage1, originalClass: "sm:w-full md:max-w-xl", thumbnailClass: "w-24 h-16" },
+      { original: begginingImage2, fullscreen:begginingImage2, thumbnail: begginingImage2, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
+      { original: begginingImage3, fullscreen:begginingImage3,  thumbnail: begginingImage3, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
+    ]}
+  />
+ 
           </div>
         </motion.div>
 
@@ -361,50 +335,41 @@ function AboutUs() {
             whileInView="onscreen"
             variants={typingTextVariant}
             viewport={{ once: true }}
-            className="text-white font-bold text-4xl self-center "
+            className=" font-bold text-4xl self-center"
           >
-            <Typewriter words={["The Difficulties"]} />
+            <Typewriter words={[aboutUsTranslations.steps.second.header[selectedLanguage]]} />
           </motion.div>
 
-          <div className="flex w-full 2xl:justify-evenly flex-wrap gap-4 p-3">
+          <div className="flex w-full 2xl:justify-evenly flex-wrap gap-2 p-3">
             <div className="sm:w-full md:max-w-2xl flex flex-wrap">
               <motion.p
                 initial="offscreen"
                 whileInView="onscreen"
                 variants={headingTextVariant}
                 viewport={{ once: true }}
-                className="text-white text-2xl font-bold"
+                className="text-2xl font-bold"
               >
-                What was wrong?
+                {aboutUsTranslations.steps.second.sideHeader[selectedLanguage]}
               </motion.p>
               <motion.span
-                className="text-white"
+                className=""
                 viewport={{ once: true }}
                 initial="offscreen"
                 whileInView="onscreen"
                 variants={descriptionVariant}
               >
-                Unfortunetely, every bigger project has his own struggles, it
-                has to face with. The same was in my case I struggled at school
-                and I had a classification test after vacation in order to pass
-                the class. I did pass, but it had an enormous impact on the
-                state of my app. Even I contemplated, if I shouldn't shut it
-                just up and give up with coding. But after all, there was kinda
-                breakthough 😮
+                {aboutUsTranslations.steps.second.sideDescription[selectedLanguage]}
               </motion.span>
             </div>
 
-            <div className="flex flex-wrap gap-4 sm:justify-center lg:justify-start max-w-6xl px-3">
-              <motion.img
-                initial="offscreen"
-                whileInView="onscreen"
-                viewport={{ once: true }}
-                variants={firstImageVariant}
-                className="w-80 h-42 object-cover"
-                src={difficultiesImage1}
-                alt=""
-              />
-            </div>
+
+            <ImageGallery
+                 showFullscreenButton={false}
+                 showPlayButton={false}
+    items={[
+      { original: difficultiesImage1, fullscreen:difficultiesImage1, thumbnail: difficultiesImage1, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
+    ]}
+  />
           </div>
         </motion.div>
 
@@ -429,54 +394,44 @@ function AboutUs() {
             whileInView="onscreen"
             variants={typingTextVariant}
             viewport={{ once: true }}
-            className="text-white font-bold text-4xl self-center"
+            className=" font-bold text-4xl self-center"
           >
-            <Typewriter words={["BreakThrough"]} />
+            <Typewriter words={[aboutUsTranslations.steps.third.header[selectedLanguage]]} />
           </motion.div>
-          <div className="flex flex-wrap w-full 2xl:justify-evenly gap-3 p-2">
+          <div className="flex flex-wrap w-full 2xl:justify-evenly items-center gap-3 p-2">
             <div className="max-w-2xl flex flex-col gap-2">
               <motion.p
-                className="text-white text-2xl font-bold"
+                className=" text-2xl font-bold"
                 viewport={{ once: true }}
                 initial="offscreen"
                 whileInView="onscreen"
                 variants={headingTextVariant}
               >
-                What happened?
+                {aboutUsTranslations.steps.third.sideHeader[selectedLanguage]}
               </motion.p>
               <motion.span
-                className="text-white"
+                className=""
                 viewport={{ once: true }}
                 initial="offscreen"
                 whileInView="onscreen"
                 variants={descriptionVariant}
               >
-                Finally, after 3 months break, i've got the spirit to work and
-                continue this project. You have to admit, that the Interface
-                looks much better here, doesn't it?
+                {aboutUsTranslations.steps.third.sideDescription[selectedLanguage]}
               </motion.span>
             </div>
 
-            <div className="flex flex-wrap gap-4 sm:justify-center lg:justify-start max-w-6xl px-3">
-              <motion.img
-                viewport={{ once: true }}
-                initial="offscreen"
-                whileInView="onscreen"
-                variants={firstImageVariant}
-                className="w-80 h-42 object-cover"
-                src={breakImg1}
-                alt=""
-              />
-              <motion.img
-                viewport={{ once: true }}
-                initial="offscreen"
-                whileInView="onscreen"
-                variants={secondImageVariant}
-                className="w-80 h-42 object-cover"
-                src={breakImg2}
-                alt=""
-              />
-            </div>
+      
+            <ImageGallery
+            showFullscreenButton={false}
+            showPlayButton={false}
+    items={[
+      { original: breakImg1, fullscreen:breakImg1, thumbnail: breakImg1, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
+      { original: breakImg2, fullscreen:breakImg2, thumbnail: breakImg2, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
+    ]}
+  />
+
+
+         
           </div>
         </motion.div>
       </Steps>
@@ -506,25 +461,22 @@ function AboutUs() {
         >
           <div className="max-w-xl flex flex-col gap-2">
             <motion.p
-              className="text-white font-bold text-3xl"
+              className=" font-bold text-3xl"
               initial="offscreen"
               whileInView="onscreen"
               variants={headingTextVariant}
               viewport={{ once: true }}
             >
-              Why have I decided to create this project?
+              {aboutUsTranslations.reasonForProject.header[selectedLanguage]}
             </motion.p>
             <motion.p
-              className="text-white"
+              className=""
               initial="offscreen"
               whileInView="onscreen"
               variants={descriptionVariant}
               viewport={{ once: true }}
             >
-              I decided to create this project, not only because I thought about
-              my future portfolio as a developer, but I also wanted to
-              revolutionize an outdated industry. This project contains tests,
-              books, competitions, chats, clubs, money. Everything in one place.
+             {aboutUsTranslations.reasonForProject.description[selectedLanguage]}
             </motion.p>
           </div>
 
@@ -561,21 +513,18 @@ function AboutUs() {
               whileInView="onscreen"
               viewport={{ once: true }}
               variants={headingTextVariant}
-              className="text-4xl text-white font-semibold"
+              className="text-4xl  font-semibold"
             >
-              First Logo
+                 {aboutUsTranslations.firstLogoSection.header[selectedLanguage]}
             </motion.p>
             <motion.p
               initial="offscreen"
               whileInView="onscreen"
               viewport={{ once: true }}
               variants={descriptionVariant}
-              className="text-white text-lg"
+              className=" text-lg"
             >
-              It is worth to emphasize, that I'm not great at graphics and so
-              forth. That's why I had to create our first logo by the means of
-              Intenet. That one appealed to me, thus it's like that for now. How
-              do you rate it?
+               {aboutUsTranslations.firstLogoSection.description[selectedLanguage]}
             </motion.p>
           </div>
         </div>

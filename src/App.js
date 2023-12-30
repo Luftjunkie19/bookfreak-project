@@ -3,7 +3,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import './pages/stylings/scrollbarStyling.css';
 
 import { useDetectAdBlock } from 'adblock-detect-react';
-import { useSelector } from 'react-redux';
+import { FaX } from 'react-icons/fa6';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
 import {
   BrowserRouter,
   Route,
@@ -12,6 +16,10 @@ import {
 import { StepsProvider } from 'react-step-builder';
 import { ToastContainer } from 'react-toastify';
 
+import {
+  Alert,
+  Snackbar,
+} from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
@@ -27,6 +35,7 @@ import AdblockAlert from './components/WarningsComponents/AdblockAlert';
 import LanguageSelection
   from './components/WarningsComponents/LanguageSelection';
 import Warning from './components/WarningsComponents/Warning';
+import { snackbarActions } from './context/SnackBarContext.jsx';
 import { useAuthContext } from './hooks/useAuthContext';
 import Login from './pages/AuthorizationForms/Login';
 import LogInWithPhone from './pages/AuthorizationForms/LogInWithPhone';
@@ -68,7 +77,10 @@ function App() {
   const { user, userIsReady } = useAuthContext();
 
   const isUsingAdblock = useDetectAdBlock();
-
+const isAlertVisibile= useSelector((state)=>state.snackbarAlert.open);
+const alertMessage= useSelector((state)=>state.snackbarAlert.message);
+const alertType= useSelector((state)=>state.snackbarAlert.alertType);
+const dispatch=useDispatch();
   const isDarkmode = useSelector((state) => state.mode.isDarkMode);
   const warningVisibility = useSelector(
     (state) => state.warning.isWarningVisible
@@ -298,6 +310,31 @@ function App() {
 
                   {user && <LanguageSelection />}
 
+                  {isAlertVisibile &&  <Snackbar
+          onClose={() => {
+          dispatch(snackbarActions.hideMessage())
+          }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={isAlertVisibile}
+          autoHideDuration={3000}
+  
+          action={
+            <button
+              className="flex items-center gap-2"
+              onClick={() => {
+                dispatch(snackbarActions.hideMessage())
+              }}
+            >
+              <FaX className=" text-red-500" /> Close
+            </button>
+          }
+        >
+            <Alert onClose={() => {
+          dispatch(snackbarActions.hideMessage())
+          }} severity={alertType} sx={{ maxWidth:500 }}>
+{alertMessage}
+  </Alert>
+          </Snackbar>}
                   <Footer />
                 </BrowserRouter>
                 <ToastContainer />

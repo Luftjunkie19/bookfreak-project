@@ -1,3 +1,5 @@
+import '../../pages/stylings/backgrounds.css';
+
 import React, {
   useEffect,
   useState,
@@ -39,7 +41,7 @@ function RecensionsForBook({
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadUsers = async () => {
     const documents = await getDocuments("users");
@@ -128,7 +130,7 @@ function RecensionsForBook({
           onSubmit={handlePublish}
         >
           <label className="flex flex-col">
-            <span>{translations.buttonsTexts.rateBook[selectedLanguage]}:</span>
+            <span className="font-bold text-lg">{translations.buttonsTexts.rateBook[selectedLanguage]}:</span>
             <Rating
               name="customized-10"
               className="sm:text-2xl xl:text-4xl"
@@ -143,7 +145,7 @@ function RecensionsForBook({
           </label>
 
           <label className="flex flex-col gap-2">
-            <span>{translations.recensionLabel[selectedLanguage]}:</span>
+            <span className={`font-bold text-lg ${isDarkModed ? "text-white" :"text-black"}`}>{translations.recensionLabel[selectedLanguage]}:</span>
             <textarea
               type="text"
               className="textarea textarea-bordered border-accColor resize-none w-full textarea-lg"
@@ -158,7 +160,7 @@ function RecensionsForBook({
         </form>
       )}
 
-      <p className="lg:text-xl font-medium text-white">
+      <p className={`lg:text-xl font-medium ${isDarkModed ? "text-white" :"text-black"}`}>
         {translations.averageRateText[selectedLanguage]}:{" "}
         <span className="font-bold text-3xl text-amber-300">
           {!isNaN(
@@ -193,7 +195,7 @@ function RecensionsForBook({
         max={10}
       />
 
-      <p className="sm:text-base lg:text-xl py-2 text-white">
+      <p className={`sm:text-base lg:text-xl py-2 ${isDarkModed ? "text-white" :"text-black"}`}>
         {translations.recensionsTo[selectedLanguage]}{" "}
         <span className="text-amber-300 not-italic font-bold">{title}</span>:
       </p>
