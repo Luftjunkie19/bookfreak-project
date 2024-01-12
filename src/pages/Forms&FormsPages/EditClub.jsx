@@ -7,7 +7,6 @@ import {
 
 import {
   getDownloadURL,
-  getStorage,
   ref,
   uploadBytes,
 } from 'firebase/storage';
@@ -25,6 +24,7 @@ import CreatableSelect from 'react-select';
 
 import { Alert } from '@mui/material';
 
+import { storage } from '../../';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import formsTranslation from '../../assets/translations/FormsTranslations.json';
 import Loader from '../../components/Loader';
@@ -111,7 +111,6 @@ function EditClub() {
       if (clubLogo.name) {
         const uploadPath = `clubLogo/uid${user.uid}/${clubLogo.name}`;
 
-        const storage = getStorage();
 
         const image = ref(storage, uploadPath);
 

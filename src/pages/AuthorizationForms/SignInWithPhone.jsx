@@ -4,14 +4,12 @@ import '../stylings/backgrounds.css';
 import { useState } from 'react';
 
 import {
-  getAuth,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   updateProfile,
 } from 'firebase/auth';
 import {
   getDownloadURL,
-  getStorage,
   ref,
   uploadBytes,
 } from 'firebase/storage';
@@ -22,6 +20,10 @@ import VerificationInput from 'react-verification-input';
 
 import { Alert } from '@mui/material';
 
+import {
+  auth,
+  storage,
+} from '../../';
 import formsTranslations
   from '../../assets/translations/FormsTranslations.json';
 import { useAuthContext } from '../../hooks/useAuthContext';
@@ -42,21 +44,22 @@ function SignInWithPhone() {
   const [verificationCode, setVerificationCode] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [error, setError] = useState(null);
-  const { dispatch } = useAuthContext();
-  const myAuth = getAuth();
+  const { dispatch } = useAuthContext();;
   const navigate = useNavigate();
 
   const handleSendVerificationCode = async (e) => {
     e.preventDefault();
     setError(null);
     try {
+      
       const recaptchaVerifier = new RecaptchaVerifier(
-        myAuth,
+        auth,
         "recaptcha-container",
         { size: "invisible" }
       );
+      window.recaptchaVerifier = recaptchaVerifier;
       const confirmResult = await signInWithPhoneNumber(
-        myAuth,
+        auth,
         phone,
         recaptchaVerifier
       );
@@ -87,7 +90,6 @@ function SignInWithPhone() {
       if (!userToAdd) {
         const uploadPath = `profileImg/uid${result.user.uid}/${result.user.photoURL}`;
 
-        const storage = getStorage();
 
         const image = ref(storage, uploadPath);
 
@@ -100,7 +102,7 @@ function SignInWithPhone() {
         });
 
         const fetchedObject = await fetch(
-          "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount",
+          "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount",
           {
             method: "POST",
             headers: {
@@ -121,7 +123,7 @@ function SignInWithPhone() {
         const stripeAccountData = await fetchedObject.json();
 
         const accountLinkResponse = await fetch(
-          "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink",
+          "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink",
           {
             method: "POST",
             headers: {

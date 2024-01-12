@@ -609,8 +609,13 @@
   "ger":"Angeben"
 },
 "info":{
-  "eng":" If you get redirected, try to create a new link, clicking button below.",
-  "pl":" Jeśli zostaniesz przekierowany z powrotem tutaj, spróbuj stworzyć nowy link klikając przycisk",
-  "ger":"Wenn Sie hier weitergeleitet werden, versuchen Sie, einen neuen Link zu erstellen."
+  "eng":" If you get redirected, try to create a new link, clicking button below. Btw, the financial data is needed to take part in money competitions",
+  "pl":" Jeśli zostaniesz przekierowany z powrotem tutaj, spróbuj stworzyć nowy link klikając przycisk. Dane finansowe są potrzebne do m.in. brania udziału w pieniężnych konkursach.",
+  "ger":"Wenn Sie hier weitergeleitet werden, versuchen Sie, einen neuen Link zu erstellen. Die Finanzielle Angaben sind nötig, falls Sie an einem Geldwettbewerb teilnehmen wollen."
+}, 
+"askLater":{
+  "eng":"Ask later",
+  "pl":"Zapytaj później",
+  "ger":"Frag später"
 }
 }

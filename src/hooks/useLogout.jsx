@@ -1,9 +1,7 @@
-import {
-  getAuth,
-  signOut,
-} from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
+import { auth } from '../';
 import { useAuthContext } from './useAuthContext';
 
 export function useLogout() {
@@ -12,9 +10,9 @@ export function useLogout() {
 
   const logout = async () => {
     try {
-      const myAuth = getAuth();
+  
 
-      await signOut(myAuth);
+      await signOut(auth);
 
       navigate("/");
 

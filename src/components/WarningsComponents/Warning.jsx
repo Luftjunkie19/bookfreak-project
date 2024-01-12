@@ -51,7 +51,7 @@ function Warning() {
       const userDoc = await getDocument("users", document.createdBy.id);
 
       const response = await fetch(
-        "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/sendRefund",
+        `https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/sendRefund`,
         {
           method: "POST",
           headers: {

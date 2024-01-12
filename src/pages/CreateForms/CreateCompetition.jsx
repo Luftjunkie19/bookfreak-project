@@ -47,7 +47,6 @@ function CreateCompetition() {
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const dispatch=useDispatch();
-
    const competitionTypes = [
     { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
     {
@@ -236,7 +235,7 @@ function CreateCompetition() {
 
       if (competition.prizeType === "Money" && competition.prize.moneyPrize) {
         const payoutObject = await fetch(
-          "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/payCompetitionCharge",
+       "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/payCompetitionCharge",
           {
             method: "POST",
             headers: {

@@ -2,16 +2,14 @@ import '../stylings/backgrounds.css';
 
 import { useState } from 'react';
 
-import {
-  getAuth,
-  sendPasswordResetEmail,
-} from 'firebase/auth';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import {
   useDispatch,
   useSelector,
 } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+import { auth } from '../../';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import formsTranslations
   from '../../assets/translations/FormsTranslations.json';
@@ -23,14 +21,13 @@ function ForgotPassword() {
     (state) => state.languageSelection.selectedLangugage
   );
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  const myAuth = getAuth();
 const dispatch= useDispatch();
   const navigate = useNavigate();
 
   const submitForm = async (e) => {
     e.preventDefault();
 
-    await sendPasswordResetEmail(myAuth, email);
+    await sendPasswordResetEmail(auth, email);
 
     dispatch(snackbarActions.showMessage({message:alertMessages.notifications.successfull[selectedLanguage], alertType:"success"}));
     navigate("/");

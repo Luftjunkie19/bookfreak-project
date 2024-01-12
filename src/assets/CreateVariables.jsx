@@ -28,31 +28,31 @@ export const bookCategories = [
 export const allOffers = [
   {
     name: "2.99$ Credits",
-    id: "price_1OMrgvL8z1e5mvb6MRq8xS50",
+    id: "price_1OTNvuL8z1e5mvb6SGzZ5auM",
     price: 2.99,
     bucksToToUp: 299,
   },
   {
     name: "9.99$ Credits ",
-    id: "price_1OMrhcL8z1e5mvb6anibomYF",
+    id: "price_1OTNwmL8z1e5mvb6LkqrtyHx",
     price: 9.99,
     bucksToToUp: 999,
   },
   {
     name: "19,99$ Credits ",
-    id: "price_1OMriCL8z1e5mvb6rfznTSIs",
+    id: "price_1OTNxOL8z1e5mvb64feLZzhH",
     price: 19.99,
     bucksToToUp: 1999,
   },
   {
     name: "39.99$ Credits",
-    id: "price_1OMricL8z1e5mvb6asqUag5t",
+    id: "price_1OTNxzL8z1e5mvb6DME5k3Tm",
     price: 39.99,
     bucksToToUp: 3999,
   },
   {
     name: "69.99$ Credits ",
-    id: "price_1OMrjJL8z1e5mvb6SNLEzYrj",
+    id: "price_1OTNynL8z1e5mvb6b9FDBFyK",
     price: 69.99,
     bucksToToUp: 6999,
   },

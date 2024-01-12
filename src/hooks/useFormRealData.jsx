@@ -1,6 +1,14 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { getDatabase, onValue, ref } from "firebase/database";
+import {
+  onValue,
+  ref,
+} from 'firebase/database';
+
+import { database } from '../';
 
 export function useFormRealData(col, id) {
   const [document, setDocument] = useState();
@@ -8,7 +16,7 @@ export function useFormRealData(col, id) {
   const [loading, setLoading] = useState(true); // Dodajemy stan loading
 
   useEffect(() => {
-    const reference = ref(getDatabase(), `${col}/${id}`);
+    const reference = ref(database `${col}/${id}`);
     const unsub = onValue(
       reference,
       (snap) => {

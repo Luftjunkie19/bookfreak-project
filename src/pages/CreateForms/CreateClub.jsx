@@ -8,7 +8,6 @@ import React, {
 
 import {
   getDownloadURL,
-  getStorage,
   ref,
   uploadBytes,
 } from 'firebase/storage';
@@ -34,6 +33,7 @@ import {
   TextField,
 } from '@mui/material';
 
+import { storage } from '../../';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
@@ -247,7 +247,7 @@ function CreateClub() {
     const byteArray = new Uint8Array(byteNumbers);
 
     const storageRef = ref(
-      getStorage(),
+      storage,
       `readersClub-logos/${user.uid}/${
         readersClub.clubsName ? readersClub.clubsName : `readersClub${uniqid()}`
       }.jpg`

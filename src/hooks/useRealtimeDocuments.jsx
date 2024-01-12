@@ -1,17 +1,18 @@
 import { useState } from 'react';
 
 import {
-  getDatabase,
   onValue,
   ref,
 } from 'firebase/database';
+
+import { database } from '../';
 
 export default function useRealtimeDocuments() {
   const [loadingDocs, setIsLoading] = useState(false);
 
   const getDocuments = (col) => {
     setIsLoading(true);
-    const documentsAvailable = ref(getDatabase(), `${col}`);
+    const documentsAvailable = ref(database, `${col}`);
 
     return new Promise((resolve, reject) => {
       const array = [];

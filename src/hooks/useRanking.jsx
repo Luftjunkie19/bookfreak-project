@@ -1,6 +1,6 @@
-import { useCallback } from "react";
+import { useCallback } from 'react';
 
-import { CompetitionRules } from "../assets/CompetitionsRules/CompetitionRules";
+import { CompetitionRules } from '../assets/CompetitionsRules/CompetitionRules';
 
 export const useRanking = ({
   readerObjects,

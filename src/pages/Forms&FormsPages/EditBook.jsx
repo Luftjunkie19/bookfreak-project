@@ -6,7 +6,6 @@ import {
 
 import {
   getDownloadURL,
-  getStorage,
   ref,
   uploadBytes,
 } from 'firebase/storage';
@@ -25,6 +24,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Alert } from '@mui/material';
 
+import { storage } from '../../';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
@@ -51,7 +51,7 @@ function EditBook({ id }) {
   const [photoImg, setPhotoImg] = useState(null);
   const [editPhotoImg, setEditPhotoImg] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const storage = getStorage();
+
   const { user } = useAuthContext();
   const editorRef = useRef();
   const navigate = useNavigate();
