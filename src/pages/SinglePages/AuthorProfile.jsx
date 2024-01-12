@@ -1,7 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import React from 'react';
 
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
@@ -9,31 +6,17 @@ import { Link } from 'react-router-dom';
 
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import useGetDocuments from '../../hooks/useGetDocuments';
 
 function AuthorProfile() {
   const { authorName } = useParams();
-  const [books, setBooks] = useState([]);
-  const [data, setData] = useState(null);
-  const { getDocuments } = useRealtimeDocuments();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+const {documents:books}=useGetDocuments('books');
 
 
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadBooks = async () => {
-    const bookEls = await getDocuments("books");
-
-    if (bookEls) {
-      setBooks(bookEls);
-    }
-  };
-  useEffect(() => {
-    loadBooks();
-  }, [loadBooks]);
-
+ 
 
   return (
     <div className="min-h-screen h-full w-full realtive top-0 left-0">

@@ -35,7 +35,6 @@ import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/BookPageTranslations.json';
 import formTranslations from '../../assets/translations/FormsTranslations.json';
 import { snackbarActions } from '../../context/SnackBarContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
 import { useFormRealData } from '../../hooks/useFormRealData';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
@@ -45,9 +44,8 @@ const alphabet = require("alphabet");
 function EditTest() {
   const { testId } = useParams();
   const dispatch=useDispatch();
-  const { user } = useAuthContext();
   const { getDocuments } = useRealtimeDocuments();
-  const { updateDatabase, addToDataBase } = useRealDatabase();
+  const { updateDatabase } = useRealDatabase();
   const { document } = useFormRealData("tests", testId);
   const [books, setBooks] = useState([]);
   const [data, setData] = useState(null);

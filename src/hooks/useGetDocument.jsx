@@ -11,7 +11,7 @@ import {
 import { database } from '../';
 
 export default function useGetDocument(col, id) {
-  const [documentData, setDocumentData] = useState(null);
+  const [document, setDocumentData] = useState(null);
 
   useEffect(() => {
     const reference = ref(database, `${col}/${id}`);
@@ -25,5 +25,5 @@ export default function useGetDocument(col, id) {
     };
   }, [col, id]);
 
-  return { documentData };
+  return { document };
 }

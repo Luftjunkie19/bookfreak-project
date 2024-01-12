@@ -50,6 +50,7 @@ import Loader from '../../components/Loader';
 import { modalActions } from '../../context/ModalContext';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
 import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
@@ -62,7 +63,6 @@ function Book() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const [isPending, setIsPending] = useState(false);
-  const [document, setDocument] = useState(null);
   const { getDocument } = useRealtimeDocument();
   const { getDocuments } = useRealtimeDocuments();
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
@@ -72,7 +72,6 @@ function Book() {
   const [bookReaderForm, setBookReaderForm] = useState(false);
   const [updateReaderStatus, setUpdateReaderStatus] = useState(false);
   const [showLikers, setShowLikers] = useState(false);
-  const [recensions, setRecensions] = useState([]);
   const [expanded, setExpanded] = useState(false);
 
   const handleOpenAccord = (panel) => (event, isExpanded) => {
@@ -89,35 +88,24 @@ function Book() {
 
 
 const {documents:likers}=useGetDocuments("lovedBooks");
+const {documents: recensionObjects}=useGetDocuments('bookRecensions');
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadRecensions = async () => {
-    const likersEls = await getDocuments("bookRecensions");
+const recensions= recensionObjects.map((bookReader) => {
+  if (bookReader.recensions) {
+    return bookReader.recensions;
+  } else {
+    return [];
+  }
+}).map((obj) => {
+  if (obj !== null && obj !== undefined) {
+    const nestedObject = Object.values(obj);
+    return nestedObject;
+  } else {
+    return;
+  }
+}).flat();
 
-    const realObjects = likersEls.map((bookReader) => {
-      if (bookReader.recensions) {
-        return bookReader.recensions;
-      } else {
-        return [];
-      }
-    });
-
-    if (realObjects) {
-      const newArray = realObjects.map((obj) => {
-        if (obj !== null && obj !== undefined) {
-          const nestedObject = Object.values(obj);
-          return nestedObject;
-        } else {
-          return;
-        }
-      });
-
-      if (newArray) {
-        setRecensions(newArray.flat());
-      }
-    }
-  };
-
+ 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const showIfLiked = async () => {
     const docElement = await getDocument("lovedBooks", `${id}-${user.uid}`);
@@ -129,14 +117,7 @@ const {documents:likers}=useGetDocuments("lovedBooks");
     }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadObject = async () => {
-    const docElement = await getDocument("books", id);
-    if (docElement) {
-      setDocument(docElement);
-    }
-  };
-
+const {document}=useGetDocument('books', id);
   const {documents:readersObjects}=useGetDocuments("bookReaders");
 
   const readers=readersObjects.map((bookReader) => {
@@ -175,44 +156,19 @@ const {documents:likers}=useGetDocuments("lovedBooks");
     );
   };
 
-  const [competitionsMembers, setCompetitionsMembers] = useState([]);
-  const [competitions, setCompetitions] = useState([]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadCompetitionsMembers = async () => {
-    const communityMembers = await getDocuments("communityMembers");
-
-    const realObjects = communityMembers.map((communityMember) => {
-      return communityMember.users;
-    });
-
-    const alreadyObjects = realObjects.map((member) => {
-      return Object.values(member);
-    });
-
-    setCompetitionsMembers(alreadyObjects.flat());
-  };
-
-
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadCompetitions = async () => {
-    const communityMembers = await getDocuments("competitions");
-
-    setCompetitions(communityMembers);
-  };
+  const {documents: membersObjects}=useGetDocuments('communityMembers');
+  const competitionsMembers= membersObjects.map((communityMember) => {
+    return communityMember.users;
+  }).map((member) => {
+    return Object.values(member);
+  }).flat();
 
   useEffect(() => {
-    loadObject();
     showIfLiked();
-    loadRecensions();
-    loadCompetitionsMembers();
-    loadCompetitions();
+
+;
   }, [
-    loadCompetitions,
-    loadCompetitionsMembers,
-    loadObject,
-    loadRecensions,
     showIfLiked,
   ]);
 

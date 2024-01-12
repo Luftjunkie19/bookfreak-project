@@ -2,10 +2,7 @@ import '../stylings/scrollbarStyling.css';
 import '../stylings/backgrounds.css';
 import '../../components/stylings/mui-stylings.css';
 
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
@@ -44,8 +41,9 @@ import Ranking from '../../components/Ranking';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Club() {
@@ -54,38 +52,17 @@ function Club() {
   );
   const { id } = useParams();
   const dispatch = useDispatch();
-  const [document, setDocument] = useState(null);
-  const [members, setMembers] = useState([]);
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
-  const { getDocument } = useRealtimeDocument();
   const { getDocuments } = useRealtimeDocuments();
   const { removeFromDataBase, addToDataBase } = useRealDatabase();
   const [message, setMessage] = useState({ open: false, message: null });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadDocument = async () => {
-    const loadDocumentEl = await getDocument("readersClubs", id);
+  const {document}=useGetDocument("readersClubs", id);
+ const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
 
-    if (loadDocumentEl) {
-      setDocument(loadDocumentEl);
-    }
-  };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadMembers = async () => {
-    const memberElements = await getDocuments(`communityMembers/${id}/users`);
-
-    if (memberElements) {
-      setMembers(memberElements);
-    }
-  };
-
-  useEffect(() => {
-    loadDocument();
-    loadMembers();
-  }, [loadDocument, loadMembers]);
 
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);

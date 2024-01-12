@@ -1,8 +1,6 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
+import { httpsCallable } from 'firebase/functions';
 import { BsStars } from 'react-icons/bs';
 import { CgDetailsMore } from 'react-icons/cg';
 import { GiSwordsPower } from 'react-icons/gi';
@@ -22,31 +20,29 @@ import {
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
+import { functions } from '../../';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/FormsTranslations.json';
 import FailLoader from '../../components/FailLoader';
 import Loader from '../../components/Loader';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function CreateCompetition() {
   const { user } = useAuthContext();
   const { addToDataBase, updateDatabase } = useRealDatabase();
-  const { getDocuments } = useRealtimeDocuments();
-  const { getDocument } = useRealtimeDocument();
-  const [documents, setDocuments] = useState([]);
   const [attachedUsers, setAttachedUsers] = useState([]);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  const [document, setDocument] = useState(null);
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const dispatch=useDispatch();
+  const payCompetitionCharge= httpsCallable(functions, 'payCompetitionCharge');
    const competitionTypes = [
     { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
     {
@@ -74,30 +70,9 @@ function CreateCompetition() {
   ];
 
   const navigate = useNavigate();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadUsers = async () => {
-    const usersElements = await getDocuments("users");
+  const { documents }=useGetDocuments('users');
+  const {document}=useGetDocument("users", user.uid);
 
-    if (usersElements) {
-      setDocuments(usersElements);
-    }
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadUser = async () => {
-    const userObject = await getDocument("users", user.uid);
-    if (userObject) {
-      setDocument(userObject);
-    }
-  };
-
-  useEffect(() => {
-    loadUser();
-  }, [loadUser]);
-
-  useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
 
   let notCurrentUsers = documents
     .filter((doc) => {
@@ -234,25 +209,15 @@ function CreateCompetition() {
       }
 
       if (competition.prizeType === "Money" && competition.prize.moneyPrize) {
-        const payoutObject = await fetch(
-       "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/payCompetitionCharge",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Connection: "keep-alive",
-              Accept: "*",
-            },
-            body: JSON.stringify({
-              organizatorObject: document,
-              payerId: document.stripeAccountData.id,
-              amount: competition.prize.moneyPrize.amount,
-              currency:
-                document.stripeAccountData.default_currency.toUpperCase(),
-            }),
-          }
-        );
-        const { error, chargeObject } = await payoutObject.json();
+        const payoutObject = await payCompetitionCharge({
+          organizatorObject: document,
+          payerId: document.stripeAccountData.id,
+          amount: competition.prize.moneyPrize.amount,
+          currency:
+            document.stripeAccountData.default_currency.toUpperCase(),
+        });
+        
+        const { error, chargeObject } = payoutObject.data;
 
         console.log(chargeObject);
 
@@ -288,17 +253,7 @@ function CreateCompetition() {
     }
   };
 
-  useEffect(() => {
-    if (isPending && error) {
-      const timeoutId = setTimeout(() => {
-        setIsPending(false);
-        setError(null);
-      }, 3000);
 
-      // Clear the timeout if the component is unmounted before the timeout is reached
-      return () => clearTimeout(timeoutId);
-    }
-  }, [error, isPending]);
   return (
     <div className={`min-h-screen h-full w-full flex flex-col  ${!isDarkModed && "pattern-bg"}`}>
       {isPending && error && <FailLoader />}
@@ -474,7 +429,7 @@ function CreateCompetition() {
             />
           </label>
 
-          {competition.prizeType === "Money" && document && (
+          {competition.prizeType === "Money" && (
             <>
               <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
                 <span>{translations.prizeMoneyAmountInYourCurrency[selectedLanguage]}:</span>

@@ -28,21 +28,13 @@ import translations from '../../assets/translations/SearchTranslations.json';
 import typesTranslation from '../../assets/translations/TypesTranslations.json';
 import BooksManagmentBar
   from '../../components/RecensionsComponents/BooksManagmentBar';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import useGetDocuments from '../../hooks/useGetDocuments';
 
 function Books() {
-  const { getDocuments } = useRealtimeDocuments();
-  const [orderedDocuments, setElements] = useState([]);
+  const {documents: orderedDocuments}=useGetDocuments('books');
   const [filterQuery, setFilterQuery] = useSearchParams({ filters: "" });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadElements = async () => {
-    const booksEl = await getDocuments("books");
-    setElements(booksEl);
-  };
+  
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  useEffect(() => {
-    loadElements();
-  }, [loadElements]);
 
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage

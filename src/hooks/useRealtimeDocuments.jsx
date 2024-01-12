@@ -11,7 +11,6 @@ export default function useRealtimeDocuments() {
   const [loadingDocs, setIsLoading] = useState(false);
 
   const getDocuments = (col) => {
-    setIsLoading(true);
     const documentsAvailable = ref(database, `${col}`);
 
     return new Promise((resolve, reject) => {
@@ -23,7 +22,6 @@ export default function useRealtimeDocuments() {
           });
           unsubscribe();
           resolve(array);
-          setIsLoading(false); // Move this line inside the if block
         }
       });
     });

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { increment } from 'firebase/database';
+import { httpsCallable } from 'firebase/functions';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { GiExitDoor } from 'react-icons/gi';
 import {
@@ -19,11 +20,13 @@ import {
   Slide,
 } from '@mui/material';
 
+import { functions } from '../../';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import alertTranslations from '../../assets/translations/AlertMessages.json';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
@@ -32,6 +35,7 @@ function Warning() {
   const dispatch = useDispatch();
   const item = useSelector((state) => state.warning.referedTo);
   const { removeFromDataBase, updateDatabase } = useRealDatabase();
+  const sendRefund= httpsCallable(functions, "sendRefund");
   const { getDocument } = useRealtimeDocument();
   const collectionName = useSelector((state) => state.warning.collection);
   const selectedLanguage = useSelector(
@@ -39,10 +43,10 @@ function Warning() {
   );
   const communityName = useSelector((state) => state.warning.typeOf);
   const isVisible = useSelector((state) => state.warning.isWarningVisible);
+const {document}=useGetDocument(collectionName, item);
 
   const deleteCommunity = async () => {
-    console.log(item, collectionName);
-    const document = await getDocument(collectionName, item);
+
     if (
       !document.prizeHandedIn &&
       document.prize.moneyPrize &&
@@ -50,22 +54,12 @@ function Warning() {
     ) {
       const userDoc = await getDocument("users", document.createdBy.id);
 
-      const response = await fetch(
-        `https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/sendRefund`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Connection: "keep-alive",
-            Accept: "*",
-          },
-          body: JSON.stringify({
-            chargeId: document.chargeId,
-          }),
-        }
-      );
+      const response = await sendRefund({
+        chargeId: document.chargeId,
+      });
 
-      const { error } = await response.json();
+
+      const { error } =  response.data;
 
       if (error) {
         return;

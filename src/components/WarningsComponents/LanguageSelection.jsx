@@ -1,8 +1,6 @@
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import React, { useState } from 'react';
 
+import { httpsCallable } from 'firebase/functions';
 import ReactFlagsSelect from 'react-flags-select';
 import {
   useDispatch,
@@ -10,10 +8,12 @@ import {
 } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import { functions } from '../../';
 import formsTranslations
   from '../../assets/translations/FormsTranslations.json';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 
@@ -21,40 +21,18 @@ function LanguageSelection() {
   const { user } = useAuthContext();
   const dispatch = useDispatch();
   const [selected, setSelected] = useState('');
-  const [hasNoNationality, setHasNoNationalitySet] = useState(false);
-  const [hasNotRegistered, setHasNotRegistered] = useState(false);
   const { addToDataBase, updateDatabase, removeFromDataBase} = useRealDatabase();
   const selectedLanguage = useSelector((state) => state.languageSelection.selectedLangugage);
   const { getDocument } = useRealtimeDocument();
-  const [link, setLink] = useState(null);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadUserDocument = async () => {
-    if (user) {
-      const userObject = await getDocument('users', user.uid);
-
-      if (userObject) {
-        setLink(userObject?.accountLinkObject?.url);
-      }
-
-      if (!userObject.nationality && user && userObject.accountLinkObject) {
-        setHasNoNationalitySet(true);
-      } else if (userObject.nationality && user && userObject.accountLinkObject) {
-        setHasNotRegistered(true);
-      } else {
-        setHasNoNationalitySet(false);
-        setHasNotRegistered(false);
-      }
-    }
-  };
+  const createNewLink=httpsCallable(functions, "createAccountLink")
+  const {document}=useGetDocument('users',user.uid);
+ 
 
   const askLater=()=>{
     removeFromDataBase('users', `${user.uid}/accountLinkObject`);
-    setHasNotRegistered(false);
   }
 
-  useEffect(() => {
-    loadUserDocument();
-  }, [loadUserDocument]);
+ 
 
   const submitHandle = () => {
     if (user && selected.trim('') !== '') {
@@ -62,7 +40,6 @@ function LanguageSelection() {
         nationality: selected.toLowerCase(),
         nationalityFlag: `https://flagcdn.com/h40/${selected.toLowerCase()}.png`,
       });
-      setHasNoNationalitySet(false);
     }
   };
 
@@ -70,24 +47,12 @@ function LanguageSelection() {
     try {
       const userObject = await getDocument('users', user.uid);
 
-      const accountLinkResponse =await fetch(
-        "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Connection: "keep-alive",
-            Accept: "*",
-          },
-          body: JSON.stringify({ accountId: userObject.stripeAccountData.id }),
-        }
-      );
+      const accountLinkResponse =await createNewLink({ accountId: userObject.stripeAccountData.id });
 
       const { accountLinkObject } = accountLinkResponse.data;
 
       updateDatabase(accountLinkObject, 'users', `${user.uid}/accountLinkObject`);
 
-      setLink(accountLinkObject.url);
       dispatch(snackbarActions.showMessage({ message: '', alertType: 'success' }));
     } catch (error) {
       dispatch(snackbarActions.showMessage({ message: '', alertType: 'error' }));
@@ -95,10 +60,13 @@ function LanguageSelection() {
     }
   };
 
+
+
   return (
+    <>{document &&
     <div
       className={`fixed z-[99999999] top-0 left-0 w-full h-full bg-imgCover ${
-        (hasNoNationality || hasNotRegistered) ? 'flex' : 'hidden'
+        (!document.nationality || document.accountLinkObject) ? 'flex' : 'hidden'
       } flex-col justify-center items-center group`}
     >
   
@@ -106,14 +74,14 @@ function LanguageSelection() {
       <div className="flex flex-col gap-2 justify-center items-center border-2 border-primeColor shadow-md shadow-primeColor bg-accColor rounded-xl py-8 px-4 mx-3 sm:w-full max-w-md transition-all duration-500">
         <ul className="steps">
           <li className="step step-success">{formsTranslations.fullfillData.first[selectedLanguage]}</li>
-          <li className={`step ${!hasNoNationality && 'step-success'}`}>
+          <li className={`step ${!!document.nationality && 'step-success'}`}>
             {formsTranslations.fullfillData.second[selectedLanguage]}
           </li>
-          <li className={`step ${!hasNotRegistered && !hasNoNationality && 'step-success'}`}>
+          <li className={`step ${!document.accountLinkObject && document.nationality && 'step-success'}`}>
             {formsTranslations.fullfillData.third[selectedLanguage]}
           </li>
         </ul>
-        {hasNoNationality && (
+        {!document.nationality && (
           <>
             <h2 className="text-xl text-white font-bold text-center">
               {formsTranslations.topText.selectNationality[selectedLanguage]}
@@ -136,10 +104,10 @@ function LanguageSelection() {
           </>
         )}
 
-        {!hasNoNationality && hasNotRegistered && (
+        {document.nationality && document.accountLinkObject && (
           <>
             <p className="text-white font-medium">{formsTranslations.provideFinancialData[selectedLanguage]}</p>
-            <Link to={`${link}`} className="btn bg-primeColor border-none text-white">
+            <Link to={`${document.accountLinkObject.url}`} className="btn bg-primeColor border-none text-white">
               {formsTranslations.provide[selectedLanguage]}
             </Link>
 
@@ -159,6 +127,8 @@ function LanguageSelection() {
         )}   
       </div>
     </div>
+    }
+    </>
   );
 }
 
