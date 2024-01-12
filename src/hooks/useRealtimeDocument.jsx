@@ -1,5 +1,5 @@
 import {
-  onValue,
+  get,
   ref,
 } from 'firebase/database';
 
@@ -8,10 +8,19 @@ import { database } from '../';
 export default function useRealtimeDocument() {
   const getDocument = async (col, id) => {
     const reference = ref(database, `${col}/${id}`);
-    const val = await new Promise((resolve, reject) => {
-      onValue(reference, (snap) => resolve(snap.val()), { onlyOnce: true });
-    });
-    return val;
+
+    try {
+      const snapshot = await get(reference);
+   if(snapshot.exists()){
+    return snapshot.val();
+   }else{
+    return null
+   }
+    } catch (error) {
+      // Handle errors
+      console.error(error);
+      throw error;
+    }
   };
 
   return { getDocument };

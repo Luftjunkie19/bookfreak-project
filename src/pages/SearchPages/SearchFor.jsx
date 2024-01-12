@@ -1,10 +1,5 @@
 import '../stylings/backgrounds.css';
 
-import {
-  useEffect,
-  useState,
-} from 'react';
-
 import Lottie from 'lottie-react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
@@ -16,7 +11,7 @@ import {
 import lottieAnimation
   from '../../assets/lottieAnimations/Animation - 1699294838586.json';
 import translations from '../../assets/translations/SearchTranslations.json';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import useGetDocuments from '../../hooks/useGetDocuments';
 
 function SearchFor() {
   const { id } = useParams();
@@ -25,19 +20,8 @@ function SearchFor() {
     (state) => state.languageSelection.selectedLangugage
   );
   const query = queries.get("q");
-  const { getDocuments } = useRealtimeDocuments();
-  const [elements, setElements] = useState([]);
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadElements = async () => {
-    const booksEl = await getDocuments(id);
-    setElements(booksEl);
-  };
-
-  useEffect(() => {
-    loadElements();
-  }, [loadElements]);
-
+const {documents:elements}=useGetDocuments(id);
   const searchedArray = elements.filter((doc) => {
     return id === "books"
       ? doc.title.toLowerCase().includes(query.toLocaleLowerCase())

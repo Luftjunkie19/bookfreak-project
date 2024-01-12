@@ -2,7 +2,6 @@ import '../stylings/sizes.css';
 import '../../pages/stylings/backgrounds.css';
 
 import {
-  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -29,8 +28,9 @@ import { storage } from '../../';
 import alertsMessages from '../../assets/translations/AlertMessages.json';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function MessageArea({ chatId, messagedUser }) {
@@ -41,14 +41,9 @@ function MessageArea({ chatId, messagedUser }) {
     (state) => state.languageSelection.selectedLangugage
   );
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  const { getDocument } = useRealtimeDocument();
   const { addToDataBase } = useRealDatabase();
   const { getDocuments } = useRealtimeDocuments();
   const messagesHolder = useRef();
-  const [messages, setMessages] = useState([]);
-  const [currentChat, setCurrentChat] = useState(null);
-  const [entitledUsers, setEntitledUsers] = useState([]);
-  const [users, setUsers] = useState([]);
   const [imageMessages, setImageMessages] = useState([]);
 
   const updateImageMessage = (index, message) => {
@@ -57,32 +52,15 @@ function MessageArea({ chatId, messagedUser }) {
     setImageMessages(updatedImageMessages);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadUsersChat = async () => {
-    const existingChat = await getDocument("usersChats", chatId);
-    const entitledToChat = await getDocuments("entitledToChat");
-    const usersChatMessages = await getDocuments("usersChatMessages");
-    const usersObjects = await getDocuments("users");
+  const {document: currentChat}=useGetDocument("usersChats", chatId);
+const {documents: users}=useGetDocuments('users');
+const {documents:messagesObjects}=useGetDocuments("usersChatMessages");
 
-    const entitledToChatMembers = entitledToChat.map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    });
+const messages=messagesObjects.map((obj) => {
+  const nestedObject = Object.values(obj);
+  return nestedObject;
+}).flat();
 
-    const chatMessagesArray = usersChatMessages.map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    });
-
-    setCurrentChat(existingChat);
-    setMessages(chatMessagesArray.flat());
-    setEntitledUsers(entitledToChatMembers.flat());
-    setUsers(usersObjects);
-  };
-
-  useEffect(() => {
-    loadUsersChat();
-  }, [loadUsersChat]);
 
   const sendMessage = async () => {
     if (!currentChat) {
@@ -294,7 +272,7 @@ function MessageArea({ chatId, messagedUser }) {
         </div>
         <div ref={messagesHolder} className="messages-holder">
           {messages.length > 0 &&
-            messages
+messages
               .filter((message) => message.chatId === chatId)
               .map((message, i) => (
                 <>

@@ -1,9 +1,6 @@
 import '../stylings/scrollbarStyling.css';
 
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import React, { useState } from 'react';
 
 import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
@@ -38,8 +35,9 @@ import Ranking from '../../components/Ranking';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function OverallClub() {
@@ -65,6 +63,7 @@ function OverallClub() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const open = Boolean(anchorEl);
   const openMangement = Boolean(managmentEl);
   const { id } = useParams();
@@ -72,40 +71,11 @@ function OverallClub() {
   const { getDocuments } = useRealtimeDocuments();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { getDocument } = useRealtimeDocument();
-  const [members, setMembers] = useState([]);
-  const [document, setDocument] = useState();
   const { removeFromDataBase } = useRealDatabase();
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadDocument = async () => {
-    const loadDocumentEl = await getDocument("readersClubs", id);
-
-    if (loadDocumentEl) {
-      setDocument(loadDocumentEl);
-    }
-  };
-
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadMembers = async () => {
-    const memberElements = await getDocuments(`communityMembers/${id}/users`);
-
-    if (memberElements) {
-      setMembers(memberElements);
-    }
-  };
-
-  
-
-  useEffect(() => {
-    loadMembers();
-    loadDocument();
-
-
-  }, [loadDocument, loadMembers,]);
-
-
+const {document}=useGetDocument("readersClubs", id); 
+const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
 
   const leaveClub = async () => {
     const arrayWithoutYou = members.filter((doc) => doc.value.id !== user.uid);

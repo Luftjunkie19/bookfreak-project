@@ -1,28 +1,14 @@
 import '../../pages/stylings/backgrounds.css';
 
-import {
-  useEffect,
-  useState,
-} from 'react';
-
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import useGetDocuments from '../../hooks/useGetDocuments';
 
 function HomeClubs() {
-  const { getDocuments } = useRealtimeDocuments();
-  const [documents, setElements] = useState([]);
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadElements = async () => {
-    const booksEl = await getDocuments("readersClubs");
-    setElements(booksEl);
-  };
+  const {documents}=useGetDocuments("readersClubs");
 
-  useEffect(() => {
-    loadElements();
-  }, []);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );

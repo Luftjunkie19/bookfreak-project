@@ -1,5 +1,4 @@
 import './App.css';
-import 'react-toastify/dist/ReactToastify.css';
 import './pages/stylings/scrollbarStyling.css';
 
 import { useDetectAdBlock } from 'adblock-detect-react';
@@ -124,10 +123,10 @@ const dispatch=useDispatch();
 
                     <Route
                       path="/author/:authorName"
-                      element={<AuthorProfile />}
+                      element={(user && <AuthorProfile />) || (!user && <SignUp/>)}
                     />
 
-                    <Route path="/edit-test/:testId" element={<EditTest />} />
+                    <Route path="/edit-test/:testId" element={(user && <EditTest />) || (!user && <SignUp/>)} />
 
                     <Route
                       path="/test/:testId"

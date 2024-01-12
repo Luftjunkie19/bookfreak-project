@@ -1,9 +1,6 @@
 import '../../pages/stylings/backgrounds.css';
 
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import { formatDistanceToNow } from 'date-fns';
 import { FaPaperPlane } from 'react-icons/fa';
@@ -18,16 +15,14 @@ import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
 import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 import Loader from '../Loader';
 
 function CompetitionChat({ collectionName, id }) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [document, setDocument] = useState();
-  const { getDocument } = useRealtimeDocument();
 const dispatch=useDispatch();
   const { addToDataBase } = useRealDatabase();
   const { user } = useAuthContext();
@@ -36,19 +31,8 @@ const dispatch=useDispatch();
   );
 
 const {documents:messages}=useGetDocuments(`communityChats/${id}/messages`);
+const {document}=useGetDocument(collectionName, id);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadDocument = async () => {
-    const documentEl = await getDocument(collectionName, id);
-
-    if (documentEl) {
-      setDocument(documentEl);
-    }
-  };
-
-  useEffect(() => {
-    loadDocument();
-  }, [loadDocument]);
 
   const sendMessage = async () => {
     console.log(messages);

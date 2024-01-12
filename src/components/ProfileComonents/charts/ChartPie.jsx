@@ -1,36 +1,20 @@
 import '../../stylings/mui-stylings.css';
 
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import React from 'react';
 
 import { useSelector } from 'react-redux';
 
 import { PieChart } from '@mui/x-charts';
 
-import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
+import useGetDocuments from '../../../hooks/useGetDocuments';
 
 function ChartPie({ yourReadersBooks }) {
-  const [books, setBooks] = useState([]);
-  const { getDocuments } = useRealtimeDocuments();
+const {documents:booksObjects} = useGetDocuments("books");
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadBooks = async () => {
-    const booksObjects = await getDocuments("books");
+const books = booksObjects.filter((book, i) => book.id === yourReadersBooks[i]?.bookReadingId);
+   
 
-    if (booksObjects) {
-      setBooks(
-        booksObjects.filter(
-          (book, i) => book.id === yourReadersBooks[i]?.bookReadingId
-        )
-      );
-    }
-  };
 
-  useEffect(() => {
-    loadBooks();
-  }, [loadBooks]);
 
   const transformBooks = (books) => {
     const transformedBooks = {};

@@ -8,6 +8,7 @@ import {
   signInWithPhoneNumber,
   updateProfile,
 } from 'firebase/auth';
+import { httpsCallable } from 'firebase/functions';
 import {
   getDownloadURL,
   ref,
@@ -22,6 +23,7 @@ import { Alert } from '@mui/material';
 
 import {
   auth,
+  functions,
   storage,
 } from '../../';
 import formsTranslations
@@ -46,7 +48,8 @@ function SignInWithPhone() {
   const [error, setError] = useState(null);
   const { dispatch } = useAuthContext();;
   const navigate = useNavigate();
-
+const createStripeAccount=httpsCallable(functions, 'createAccount');
+const createAccountLink=httpsCallable(functions, "createAccountLink");
   const handleSendVerificationCode = async (e) => {
     e.preventDefault();
     setError(null);
@@ -101,41 +104,21 @@ function SignInWithPhone() {
           photoURL: photoURL,
         });
 
-        const fetchedObject = await fetch(
-          "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Connection: "keep-alive",
-              Accept: "*",
-            },
-            body: JSON.stringify({
-              accountData: {
-                id: result.user.uid,
-                nickname: result.user.displayName,
-                email: result.user.email,
-              },
-            }),
-          }
-        );
+        const fetchedObject = await createStripeAccount({
+          accountData: {
+            id: result.user.uid,
+            nickname: result.user.displayName,
+            email: result.user.email,
+          },
+        });
+    
+        
 
-        const stripeAccountData = await fetchedObject.json();
+        const stripeAccountData =  fetchedObject.data;
 
-        const accountLinkResponse = await fetch(
-          "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Connection: "keep-alive",
-              Accept: "*",
-            },
-            body: JSON.stringify({ accountId: stripeAccountData.id }),
-          }
-        );
+        const accountLinkResponse = await createAccountLink({ accountId: stripeAccountData.id });
 
-        const { accountLinkObject } = await accountLinkResponse.json();
+        const accountLinkObject = accountLinkResponse.data;
 
         addToDataBase("users", result.user.uid, {
           nickname: result.user.displayName,
@@ -148,7 +131,7 @@ function SignInWithPhone() {
             currency: stripeAccountData.default_currency,
           },
           stripeAccountData,
-          accountLinkObject: { ...accountLinkObject },
+          accountLinkObject: { ...accountLinkObject.accountLinkObject },
         });
       }
       dispatch({ type: "LOGIN", payload: result.user });

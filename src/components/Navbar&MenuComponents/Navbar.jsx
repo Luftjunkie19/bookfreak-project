@@ -1,11 +1,6 @@
 import '../stylings/effects.css';
 
 import {
-  useEffect,
-  useState,
-} from 'react';
-
-import {
   FaBell,
   FaComments,
   FaHome,
@@ -30,9 +25,9 @@ import navBarTranslation
   from '../../assets/translations/navbarTranslations.json';
 import { burgerActions } from '../../context/BurgerContext';
 import { viewerActions } from '../../context/ViewerContext';
+import useGetDocument from '../../hooks/useGetDocument';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useLogout } from '../../hooks/useLogout';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 import CreateBtn from './CreateBtn';
 import LanguageSelect from './LanguageSelect';
 
@@ -45,39 +40,15 @@ function Navbar({ user }) {
   const { logout } = useLogout();
   const location = useLocation();
   const isOpened = useSelector((state) => state.notificationViewer.isOpened);
-  const [documentBase, setDocumentBase] = useState(null);
-  const { getDocument } = useRealtimeDocument();
+
   const checkLocation = (linkLocation) => {
     if (location.pathname === linkLocation) {
       return true;
     }
   };
-  const { getDocuments } = useRealtimeDocuments();
-  const [documents, setDocuments] = useState([]);
-  /* eslint-disable react-hooks/exhaustive-deps */
-  const loadNotifications = async () => {
-    const notificationsEl = await getDocuments("notifications");
+const {documents}=useGetDocuments('notifications');
+const {document: documentBase}=useGetDocument('users', user.uid);
 
-    if (notificationsEl) {
-      setDocuments(notificationsEl);
-    }
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const effectFunction = async () => {
-    const userDoc = await getDocument("users", user.uid);
-
-    if (userDoc && user) {
-      setDocumentBase(userDoc);
-    } else {
-      setDocumentBase(null);
-    }
-  };
-
-  useEffect(() => {
-    effectFunction();
-    loadNotifications();
-  }, [effectFunction, loadNotifications]);
 
   const dispatch = useDispatch();
 

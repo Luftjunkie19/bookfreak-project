@@ -3,7 +3,6 @@ import './index.css';
 import React from 'react';
 
 import AOS from 'aos';
-import { getAnalytics } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
@@ -34,9 +33,10 @@ export const auth= getAuth(app);
 export const database=getDatabase(app);
 export const storage=getStorage(app);
 export const functions=getFunctions(app);
-export const analytics=getAnalytics(app);
 
-getAnalytics(initializeApp(firebaseConfig));
+
+
+
 
 AOS.init();
 

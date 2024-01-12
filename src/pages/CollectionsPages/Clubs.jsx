@@ -26,18 +26,14 @@ import clubsTranslations
 import formTranslations from '../../assets/translations/FormsTranslations.json';
 import ClubsManagmentBar
   from '../../components/RecensionsComponents/ClubsManagmentBar';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import useGetDocuments from '../../hooks/useGetDocuments';
 
 function Clubs() {
-  const { getDocuments } = useRealtimeDocuments();
+  const {documents:clubs}=useGetDocuments('readersClubs');
   const [documents, setElements] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadElements = async () => {
-    const booksEl = await getDocuments("readersClubs");
-    setElements(booksEl);
-  };
+  
 
   const filterOptions = [{
     label:"<= 100 read pages", filter:(array)=>{
@@ -79,9 +75,6 @@ function Clubs() {
   ];
 
 
-  useEffect(() => {
-    loadElements();
-  }, [loadElements]);
 
   const objectsOnPage = () => {
     if (document.body.clientWidth > 0 && document.body.clientWidth < 1024) {
@@ -94,10 +87,10 @@ function Clubs() {
     (page) => {
       const start = (page - 1) * objectsOnPage();
       const end = start + objectsOnPage();
-      const pageObjects = documents.slice(start, end);
+      const pageObjects = clubs.slice(start, end);
       return pageObjects;
     },
-    [documents]
+    [clubs]
   );
 
   const handlePagesChange = (e, value) => {

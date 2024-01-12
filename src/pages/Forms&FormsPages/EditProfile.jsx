@@ -10,6 +10,7 @@ import {
   updateEmail,
   updateProfile,
 } from 'firebase/auth';
+import { httpsCallable } from 'firebase/functions';
 import {
   getDownloadURL,
   ref,
@@ -29,7 +30,10 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
-import { storage } from '../../';
+import {
+  functions,
+  storage,
+} from '../../';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import formsTranslation from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
@@ -54,6 +58,8 @@ function EditProfile() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const createPayout= httpsCallable(functions, 'createPayout');
+  const createAccountLink= httpsCallable(functions, 'createAccountLink');
   const [nickname, setNickname] = useState(user.displayName);
   const [email, setEmail] = useState(user.email);
   const [profileImg, setProfileImg] = useState(defaultImg);
@@ -224,25 +230,15 @@ function EditProfile() {
     e.preventDefault();
     try {
       setIsPending(true);
-      await fetch(
-         `https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createPayout`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Connection: "keep-alive",
-            Accept: "*",
-          },
-          body: JSON.stringify({
-            amount: amountToPayout,
-            currentUserId: user.uid,
-            userId: document.stripeAccountData.id,
-            currency: document.stripeAccountData.default_currency,
-            destinationAccount:
-              document.stripeAccountData.external_accounts.data["0"].id,
-          }),
-        }
-      );
+      await createPayout({
+        amount: amountToPayout,
+        currentUserId: user.uid,
+        userId: document.stripeAccountData.id,
+        currency: document.stripeAccountData.default_currency,
+        destinationAccount:
+          document.stripeAccountData.external_accounts.data["0"].id,
+      });
+       
     
       setAmountToPayout(0);
       setBalance((prev) => {
@@ -258,18 +254,7 @@ function EditProfile() {
   const moveToProvideFinanceData = async (e) => {
     e.preventDefault();
     try {
-      const accountLinkResponse = await fetch(
-        "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Connection: "keep-alive",
-            Accept: "*",
-          },
-          body: JSON.stringify({ accountId: document.stripeAccountData.id }),
-        }
-      );
+      const accountLinkResponse = await createAccountLink({ accountId: document.stripeAccountData.id });
       const { accountLinkObject } = accountLinkResponse.data;
 
       window.location.href = accountLinkObject.url;

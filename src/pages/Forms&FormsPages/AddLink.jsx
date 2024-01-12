@@ -2,10 +2,7 @@ import '../../components/stylings/mui-stylings.css';
 import '../stylings/backgrounds.css';
 
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import generateUniqueId from 'react-id-generator';
 import {
@@ -27,6 +24,7 @@ import profileTranslations
 import Loader from '../../components/Loader';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
@@ -44,34 +42,14 @@ function AddLink() {
   const { getDocuments } = useRealtimeDocuments();
   const { addToDataBase } = useRealDatabase();
   const { user } = useAuthContext();
-  const [document, setDocument] = useState(null);
-  const [links, setLinks] = useState([]);
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const documentObject = async () => {
-    const doc = await getDocument("users", user.uid);
 
-    if (doc) {
-      setDocument(doc);
-    }
-  };
+ const {documents}=useGetDocuments('links');
 
-  const loadLinksObjects = async () => {
-    const readerObjects = await getDocuments("links");
-
-    const realObjects = readerObjects
-      .map((bookReader) => {
-        return bookReader;
-      })
-      .filter((reader) => reader.belongsTo === user.uid);
-
-    setLinks(realObjects);
-  };
-
-  useEffect(() => {
-    documentObject();
-    loadLinksObjects();
-  }, [documentObject, loadLinksObjects]);
+ const links = documents.map((bookReader) => {
+  return bookReader;
+})
+.filter((reader) => reader.belongsTo === user.uid);
 
   const navigate = useNavigate();
 

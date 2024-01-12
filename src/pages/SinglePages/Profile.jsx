@@ -1,12 +1,8 @@
 import '../stylings/scrollbarStyling.css';
 import '../stylings/backgrounds.css';
 
-import {
-  useEffect,
-  useState,
-} from 'react';
-
 import { deleteUser } from 'firebase/auth';
+import { httpsCallable } from 'firebase/functions';
 import {
   BiSolidBook,
   BiSolidLike,
@@ -37,6 +33,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
+import { functions } from '../../';
 import translations from '../../assets/translations/ProfileTranslations.json';
 import ChatsPage from '../../components/ProfileComonents/ChatsPage';
 import FavouriteBooks from '../../components/ProfileComonents/FavouriteBooks';
@@ -44,11 +41,11 @@ import FullyReadBooks from '../../components/ProfileComonents/FullyReadBooks';
 import Links from '../../components/ProfileComonents/Links';
 import OwnedBooks from '../../components/ProfileComonents/OwnedBooks';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
 import useGetDocuments from '../../hooks/useGetDocuments';
 import { useLogout } from '../../hooks/useLogout';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Profile() {
   const { id } = useParams();
@@ -56,53 +53,24 @@ function Profile() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+  const removeAccount=httpsCallable(functions, 'removeAccount');
   const { logout } = useLogout();
-  const [document, setDocument] = useState(null);
-  const [books, setBooks] = useState([]);
-  const [readerObjects, setReaderObjects] = useState([]);
   const { getDocument } = useRealtimeDocument();
   const { removeFromDataBase } = useRealDatabase();
-  const { getDocuments } = useRealtimeDocuments();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const documentObject = async () => {
-    const doc = await getDocument("users", id);
+  const {document}=useGetDocument('users', id);
 
-    if (doc) {
-      setDocument(doc);
-    }
-  };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadReaderObjects = async () => {
-    const readerObjects = await getDocuments("bookReaders");
-
-    const realObjects = readerObjects.map((bookReader) => {
-      return bookReader.readers;
-    });
-
-    const newArray = realObjects.map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    });
-
-    setReaderObjects(newArray.flat());
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadBooks = async () => {
-    const booksEl = await getDocuments("books");
-    setBooks(booksEl);
-  };
-
+const {documents:books}=useGetDocuments('books');
   const {documents: links}= useGetDocuments("links");
   const { documents: favBooks } = useGetDocuments("lovedBooks");
+const {documents: readers}=useGetDocuments("bookReaders");
 
-  useEffect(() => {
-    documentObject();
-    loadReaderObjects();
-    loadBooks();
-
-  }, [documentObject, loadBooks, loadReaderObjects]);
+const readerObjects=readers.map((bookReader) => {
+  return bookReader.readers;
+}).map((obj) => {
+  const nestedObject = Object.values(obj);
+  return nestedObject;
+}).flat();
 
   const navigate = useNavigate();
 
@@ -133,19 +101,11 @@ const providedIdPartTwo=providedId.split("-")[1];
 
   };
 
-  const removeAccount = async () => {
+  const removeFiancialAccount = async () => {
+    await removeAccount( { accountId: document.stripeAccountData.id });
+    removeFromDataBase("users", user.uid);
     await logout();
     await deleteUser(user);
-    removeFromDataBase("users", user.uid);
-    await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/removeAccount",  {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Connection: "keep-alive",
-        Accept: "*",
-      },
-      body: JSON.stringify(  { accountId: document.stripeAccountData.id }),
-    });
   };
 
 
@@ -173,6 +133,7 @@ const providedIdPartTwo=providedId.split("-")[1];
                 <p className={`${isDarkModed ? "text-white" : "text-black"} font-bold text-3xl tracking-wide py-3`}>
                   {document.nickname}
                 </p>
+           
               </div>
 
               {document.id === user.uid && (
@@ -303,7 +264,7 @@ const providedIdPartTwo=providedId.split("-")[1];
 
                     <button
                       className="btn bg-red-600 text-white border-none hover:bg-darkRed flex gap-2"
-                      onClick={removeAccount}
+                      onClick={removeFiancialAccount}
                     >
                       {
                         translations.managmentButtons.removeUserButton[

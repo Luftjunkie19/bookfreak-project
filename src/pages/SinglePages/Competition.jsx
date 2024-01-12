@@ -1,12 +1,10 @@
 import '../stylings/scrollbarStyling.css';
 import '../stylings/backgrounds.css';
 
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import { increment } from 'firebase/database';
+import { httpsCallable } from 'firebase/functions';
 import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
   FaFacebookMessenger,
@@ -31,6 +29,7 @@ import {
   MenuItem,
 } from '@mui/material';
 
+import { functions } from '../../';
 import alertTranslations from '../../assets/translations/AlertMessages.json';
 import competitionsTranslations
   from '../../assets/translations/CompetitionsTranslations.json';
@@ -47,14 +46,16 @@ import Warning from '../../components/WarningsComponents/Warning';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { warningActions } from '../../context/WarningContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocument from '../../hooks/useGetDocument';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Competition() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
   const [isPending, setIsPending] = useState(false);
+  const sendRefund=httpsCallable(functions, 'sendRefund');
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
   };
@@ -78,41 +79,19 @@ function Competition() {
   const { id } = useParams();
   const { user } = useAuthContext();
 
-  const [document, setDocument] = useState();
-  const [members, setMembers] = useState([]);
+
   const { getDocument } = useRealtimeDocument();
-  const { getDocuments } = useRealtimeDocuments();
   const navigate = useNavigate();
   const { removeFromDataBase, updateDatabase, addToDataBase } =
     useRealDatabase();
 
   const isWarningVisible = useSelector((state) => state.isWarningVisible);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadDocument = async () => {
-    const documentEl = await getDocument("competitions", id);
+const {document}=useGetDocument("competitions", id);
+const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
 
-    if (documentEl) {
-      setDocument(documentEl);
-    }
-  };
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadDocuments = async () => {
-    const documentsEl = await getDocuments(`communityMembers/${id}/users`);
-
-    if (documentsEl) {
-      setMembers(documentsEl);
-    }
-  };
-
-  useEffect(() => {
-    loadDocument();
-  }, [loadDocument]);
-
-  useEffect(() => {
-    loadDocuments();
-  }, [loadDocuments]);
+ 
 
   const competitionExpirationDate =
     document && (document.expiresAt - new Date().getTime()) / 86400000;
@@ -127,23 +106,11 @@ function Competition() {
     ) {
       const userDoc = await getDocument("users", document.createdBy.id);
 
-      const response=  await fetch(
-        "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/sendRefund",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Connection: "keep-alive",
-            Accept: "*",
-          },
-          body: JSON.stringify({
-            chargeId: document.chargeId,
-          }),
-        }
-      );
+      const response=  await sendRefund({
+        chargeId: document.chargeId,
+      });
 
       
-
       const { error } = response.data;
 
       if (error) {

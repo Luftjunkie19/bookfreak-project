@@ -1,8 +1,3 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
-
 import { formatDistanceToNow } from 'date-fns';
 import { BiSolidMessageRoundedDetail } from 'react-icons/bi';
 import { FaImage } from 'react-icons/fa';
@@ -12,73 +7,29 @@ import { Link } from 'react-router-dom';
 
 import translations from '../../assets/translations/ChatsTranslation.json';
 import { useAuthContext } from '../../hooks/useAuthContext';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import useGetDocuments from '../../hooks/useGetDocuments';
 
 function MessagesBar() {
   const { user } = useAuthContext();
   const location = useLocation();
-  const { getDocuments } = useRealtimeDocuments();
-  const [documents, setDocuments] = useState([]);
-  const [entitledToChat, setEntitledToChat] = useState([]);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [users, setUsers] = useState([]);
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
+const {documents}=useGetDocuments('usersChats');
+const {documents:users}=useGetDocuments('users');
+const {documents:chatMessagesObjects}=useGetDocuments("usersChatMessages");
+const chatMessages=chatMessagesObjects.map((obj) => {
+  const nestedObject = Object.values(obj);
+  return nestedObject;
+}).flat();
+const {documents:entitledToChatMembers}=useGetDocuments("entitledToChat");
+const entitledToChat= entitledToChatMembers.map((obj) => {
+  const nestedObject = Object.values(obj);
+  return nestedObject;
+}).flat();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadChats = async () => {
-    const realObjects = await getDocuments("usersChats");
 
-    if (realObjects) {
-      setDocuments(realObjects);
-    }
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadUsers = async () => {
-    const usersObjects = await getDocuments("users");
-
-    if (usersObjects) {
-      setUsers(usersObjects);
-    }
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadEntitledToChat = async () => {
-    const realEntitled = await getDocuments("entitledToChat");
-
-    const entitledToChatMembers = realEntitled.map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    });
-
-    if (entitledToChatMembers) {
-      setEntitledToChat(entitledToChatMembers.flat());
-    }
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadChatMessages = async () => {
-    const chatMessages = await getDocuments("usersChatMessages");
-
-    const chatMessagesArray = chatMessages.map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    });
-
-    if (chatMessagesArray) {
-      setChatMessages(chatMessagesArray.flat());
-    }
-  };
-
-  useEffect(() => {
-    loadChats();
-    loadEntitledToChat();
-    loadChatMessages();
-    loadUsers();
-  }, [loadChatMessages, loadChats, loadEntitledToChat, loadUsers]);
 
   const setCurrent = (path) => {
     if (location.pathname === path) {
@@ -108,6 +59,7 @@ function MessagesBar() {
             .map((doc) => (
               <>
                 <Link
+                key={doc.chatId}
                   to={`/message-to/${doc.chatId}`}
                   className={`sm:w-full ${
                     location.pathname.includes("/message-to") &&

@@ -1,10 +1,5 @@
 import '../../pages/stylings/backgrounds.css';
 
-import {
-  useEffect,
-  useState,
-} from 'react';
-
 import { formatDistanceToNow } from 'date-fns';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -13,21 +8,12 @@ import itemReward from '../../assets/ItemReward.webp';
 import moneyPrize from '../../assets/MoneyPrize.webp';
 import competitionsTranslations
   from '../../assets/translations/CompetitionsTranslations.json';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import useGetDocuments from '../../hooks/useGetDocuments';
 
 function HomeCompetitions() {
-  const { getDocuments } = useRealtimeDocuments();
-  const [documents, setElements] = useState([]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadElements = async () => {
-    const booksEl = await getDocuments("competitions");
-    setElements(booksEl);
-  };
+const {documents}=useGetDocuments('competitions');
 
-  useEffect(() => {
-    loadElements();
-  }, []);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );

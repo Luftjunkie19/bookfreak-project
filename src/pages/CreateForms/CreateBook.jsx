@@ -1,7 +1,6 @@
 import '../../components/stylings/mui-stylings.css';
 
 import {
-  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -43,7 +42,6 @@ import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function CreateBook() {
   const { user } = useAuthContext();
@@ -59,8 +57,7 @@ function CreateBook() {
   const [link, setLink] = useState(null);
   const [selected, setSelected]=useState("");
   const dispatch= useDispatch();
-  const [availableBooks, setAvailableBooks] = useState([]);
-  const { getDocuments } = useRealtimeDocuments();
+  const { documents:availableBooks } = useGetDocuments("books");
   const { documents } = useGetDocuments("bookReaders");
   const bookReaders = documents
     .map((bookReader) => {
@@ -91,17 +88,7 @@ function CreateBook() {
     (state) => state.languageSelection.selectedLangugage
   );
 
-  const loadAvailableBooks = async () => {
-    const booksDocs = await getDocuments("books");
-
-    if (booksDocs) {
-      setAvailableBooks(booksDocs);
-    }
-  };
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  useEffect(() => {
-    loadAvailableBooks();
-  }, []);
 
   const handleSelect = (e) => {
     setError(null);

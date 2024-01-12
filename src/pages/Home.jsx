@@ -17,16 +17,12 @@ import translations from '../assets/translations/homePageTranslations.json';
 import HomeBooks from '../components/HomeComponents/HomeBooks';
 import HomeClubs from '../components/HomeComponents/HomeClubs';
 import HomeCompetitions from '../components/HomeComponents/HomeCompetitions';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useLogout } from '../hooks/useLogout';
 
 function Home() {
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-  const { logout } = useLogout();
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  const { user } = useAuthContext();
  
   return (
     <>

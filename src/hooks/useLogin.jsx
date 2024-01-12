@@ -10,6 +10,7 @@ import {
   signInWithPopup,
   updateProfile,
 } from 'firebase/auth';
+import { httpsCallable } from 'firebase/functions';
 import {
   getDownloadURL,
   getStorage,
@@ -18,6 +19,7 @@ import {
 } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 
+import { functions } from '../';
 import { useAuthContext } from './useAuthContext';
 import { useRealDatabase } from './useRealDatabase';
 import useRealtimeDocument from './useRealtimeDocument';
@@ -27,10 +29,11 @@ export function useLogin() {
   const [isPending, setIsPending] = useState(false);
   const { getDocument } = useRealtimeDocument();
   const { addToDataBase } = useRealDatabase();
-
+const createStripeAccount= httpsCallable(functions, "createAccount");
+const createStripeAccountLink=httpsCallable(functions, "createAccountLink");
   const context = useAuthContext();
 
-  const { dispatch, user } = context;
+  const { dispatch } = context;
 
   const navigate = useNavigate();
 
@@ -57,34 +60,23 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        const fetchedObject = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount", {
-          method:"POST",
-             headers: {
-              'Content-Type': 'application/json',
-               'Connection': 'keep-alive',
-            'Accept': '*',
-          },
-          body: JSON.stringify({
-            accountData: {
-              id: res.user.uid,
-              nickname: res.user.displayName,
-              email: res.user.email,
-             }})
-        });
+        const accountData={
+          accountData: {
+            id: res.user.uid,
+            nickname: res.user.displayName,
+            email: res.user.email,
+           }};
 
-        const stripeAccountData = await fetchedObject.json();
+           console.log(accountData);
+
+const fetchedObject= await createStripeAccount(accountData);
+
+        const stripeAccountData =  fetchedObject.data;
    
-          const accountLinkResponse = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink", {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json',
-               'Connection': 'keep-alive',
-            'Accept': '*',
-            },
-            body: JSON.stringify({accountId: stripeAccountData.id})
-          });
+        const accountLinkResponse=await createStripeAccountLink({accountId: stripeAccountData.id});
+        console.log(accountLinkResponse);
   
-     const {accountLinkObject} = await accountLinkResponse.json();
+     const accountLinkObject = accountLinkResponse.data;
   
         console.log(accountLinkObject);
 
@@ -99,7 +91,7 @@ export function useLogin() {
           id: res.user.uid,
           creditsAvailable:{ valueInMoney:0, currency:stripeAccountData.default_currency },
           stripeAccountData,
-          accountLinkObject:{...accountLinkObject}
+          accountLinkObject:{...accountLinkObject.accountLinkObject}
         });
       }
 
@@ -141,34 +133,20 @@ console.log(error);
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        const fetchedObject = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount", {
-          method:"POST",
-             headers: {
-              'Content-Type': 'application/json',
-               'Connection': 'keep-alive',
-            'Accept': '*',
-          },
-          body: JSON.stringify({
-            accountData: {
-              id: res.user.uid,
-              nickname: res.user.displayName,
-              email: res.user.email,
-             }})
-        });
-
-        const stripeAccountData = await fetchedObject.json();
-   
-          const accountLinkResponse = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink", {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json',
-               'Connection': 'keep-alive',
-            'Accept': '*',
-            },
-            body: JSON.stringify({accountId: stripeAccountData.id})
-          });
-  
-         const {accountLinkObject} = await accountLinkResponse.json();
+        const fetchedObject= await createStripeAccount({
+          accountData: {
+            id: res.user.uid,
+            nickname: res.user.displayName,
+            email: res.user.email,
+           }});
+           console.log(fetchedObject);
+        
+                const stripeAccountData =  fetchedObject.data;
+           
+                const accountLinkResponse=await createStripeAccountLink({accountId: stripeAccountData.id});
+        
+          
+             const accountLinkObject = accountLinkResponse.data;
   
         console.log(accountLinkObject);
 
@@ -182,7 +160,7 @@ console.log(error);
           description: "",
           id: res.user.uid,
           stripeAccountData,
-          accountLinkObject:{...accountLinkObject},
+          accountLinkObject:{...accountLinkObject.accountLinkObject},
            creditsAvailable:{ valueInMoney:0, currency:stripeAccountData.default_currency },
         });
       }
@@ -225,39 +203,24 @@ console.log(error);
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        const fetchedObject = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount", {
-          method:"POST",
-             headers: {
-              'Content-Type': 'application/json',
-               'Connection': 'keep-alive',
-            'Accept': '*',
-          },
-          body: JSON.stringify({
-            accountData: {
-              id: res.user.uid,
-              nickname: res.user.displayName,
-              email: res.user.email,
-             }})
-        });
-
-        const stripeAccountData = await fetchedObject.json();
-   
-          const accountLinkResponse = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink", {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json',
-               'Connection': 'keep-alive',
-            'Accept': '*',
-            },
-            body: JSON.stringify({accountId: stripeAccountData.id})
-          });
+        const fetchedObject= await createStripeAccount({
+          accountData: {
+            id: res.user.uid,
+            nickname: res.user.displayName,
+            email: res.user.email,
+           }});
+        
+          const stripeAccountData =  fetchedObject.data;
+           
+          const accountLinkResponse=await createStripeAccountLink({accountId: stripeAccountData.id});
+        
+          
+        const {accountLinkObject} = accountLinkResponse.data;
   
-          const {accountLinkObject} = await accountLinkResponse.json();
-  
-        console.log(accountLinkObject);
+        console.log(accountLinkObject,accountLinkResponse);
 
         
-        console.log(stripeAccountData);
+        console.log(stripeAccountData, fetchedObject);
 
         addToDataBase("users", res.user.uid, {
           nickname: res.user.displayName,
@@ -267,7 +230,7 @@ console.log(error);
            creditsAvailable:{ valueInMoney:0, currency:stripeAccountData.default_currency },
           id: res.user.uid,
           stripeAccountData,
-           accountLinkObject:{...accountLinkObject},
+           accountLinkObject:{...accountLinkObject.accountLinkObject},
         });
       }
 
@@ -327,37 +290,19 @@ console.log(error);
 
       await updateProfile(res.user, { displayName, photoURL });
 
-   const fetchedObject = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount", {
-          method:"POST",
-             headers: {
-              'Content-Type': 'application/json',
-               'Connection': 'keep-alive',
-            'Accept': '*',
-          },
-          body: JSON.stringify({
-            accountData: {
-              id: res.user.uid,
-              nickname: res.user.displayName,
-              email: res.user.email,
-             }})
-        });
-
-        const stripeAccountData = await fetchedObject.json();
-   
-        const accountLinkResponse = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink", {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json',
-               'Connection': 'keep-alive',
-            'Accept': '*',
-            },
-            body: JSON.stringify({accountId: stripeAccountData.id})
-          });
-  
-        const {accountLinkObject} = await accountLinkResponse.json();
-  
+      const fetchedObject= await createStripeAccount({
+        accountData: {
+          id: res.user.uid,
+          nickname: res.user.displayName,
+          email: res.user.email,
+         }});
       
-
+              const stripeAccountData =  fetchedObject.data;
+         
+              const accountLinkResponse=await createStripeAccountLink({accountId: stripeAccountData.id});
+      
+        
+           const accountLinkObject = accountLinkResponse.data;
         
         console.log(stripeAccountData);
       
@@ -366,9 +311,9 @@ console.log(error);
         email: res.user.email,
         photoURL: res.user.photoURL,
         description: "",
-         creditsAvailable:{ valueInMoney:0, currency:stripeAccountData.default_curren},
+         creditsAvailable:{ valueInMoney:0, currency:stripeAccountData.default_currency},
         id: res.user.uid,
-        accountLinkObject: { ...accountLinkObject },
+        accountLinkObject: { ...accountLinkObject.accountLinkObject },
         stripeAccountData,
         
       });

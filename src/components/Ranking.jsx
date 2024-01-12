@@ -3,6 +3,7 @@ import {
   useState,
 } from 'react';
 
+import { httpsCallable } from 'firebase/functions';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -16,6 +17,7 @@ import {
   TableRow,
 } from '@mui/material';
 
+import { functions } from '../';
 import reuseableTranslations
   from '../assets/translations/ReusableTranslations.json';
 import { useAuthContext } from '../hooks/useAuthContext';
@@ -47,7 +49,7 @@ function Ranking({
   const [isPending, setIsPending] = useState(false);
   const [books, setBooks] = useState([]);
   const [readerObjects, setReaderObjects] = useState([]);
-
+const createTransferToWinner= httpsCallable(functions, 'createTransfetToWinner');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadReaderObjects = async () => {
     const readerObjects = await getDocuments("bookReaders");
@@ -134,27 +136,16 @@ function Ranking({
         communityObject.prize.moneyPrize &&
         !communityObject.prize.itemPrize
       ) {
-        const payoutObject = await fetch(
-          "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createTransferToWinner",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Connection: "keep-alive",
-              Accept: "*",
-            },
-            body: JSON.stringify({
-              winnerObject: winnerDoc,
-              destinationId: winnerDoc.stripeAccountData.id,
-              chargeId: communityObject.chargeId,
-              amount: communityObject.prize.moneyPrize.amount,
-              currency: hostId.stripeAccountData.default_currency.toUpperCase(),
-              winnerCurrency:
-                winnerDoc.stripeAccountData.default_currency.toUpperCase(),
-              communityObject: communityObject,
-            }),
-          }
-        );
+        const payoutObject = await createTransferToWinner({
+          winnerObject: winnerDoc,
+          destinationId: winnerDoc.stripeAccountData.id,
+          chargeId: communityObject.chargeId,
+          amount: communityObject.prize.moneyPrize.amount,
+          currency: hostId.stripeAccountData.default_currency.toUpperCase(),
+          winnerCurrency:
+            winnerDoc.stripeAccountData.default_currency.toUpperCase(),
+          communityObject: communityObject,
+        });
         const payoutFullfilled = payoutObject.data;
         console.log(payoutFullfilled);
         setIsPending(false);

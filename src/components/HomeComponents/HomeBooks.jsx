@@ -1,30 +1,18 @@
 import '../../pages/stylings/backgrounds.css';
 
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import React from 'react';
 
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import translations from '../../assets/translations/homePageTranslations.json';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
-import SkeletonBook from '../SkeletonsObjects/SkeletonBook';
+import useGetDocuments from '../../hooks/useGetDocuments';
 
 function HomeBooks() {
-  const { getDocuments, loadingDocs } = useRealtimeDocuments();
-  const [documents, setElements] = useState([]);
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadElements = async () => {
-    const booksEl = await getDocuments("books");
-    setElements(booksEl);
-  };
+const {documents}=useGetDocuments('books');
 
-  useEffect(() => {
-    loadElements();
-  }, []);
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
@@ -48,7 +36,6 @@ function HomeBooks() {
       )}
       <div className="sm:grid sm:grid-flow-col snap-always snap-inline sm:auto-cols-[100%] md:auto-cols-[67%] lg:auto-cols-[41%] sm:overflow-x-auto xl:flex xl:items-center w-full py-8 px-4 gap-5">
         {documents.length > 0 &&
-          !loadingDocs &&
           documents.slice(0, getRightNumber()).map((doc, i) => (
             <Link
               to={`/book/${doc.id}`}
@@ -91,8 +78,7 @@ function HomeBooks() {
             </Link>
           ))}
 
-        {loadingDocs &&
-          Array.from(getRightNumber()).map((sceleton) => <SkeletonBook />)}
+ 
       </div>
     </>
   );

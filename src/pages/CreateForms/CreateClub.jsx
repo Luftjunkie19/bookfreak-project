@@ -1,7 +1,6 @@
 import '../../components/stylings/mui-stylings.css';
 
 import React, {
-  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -40,17 +39,14 @@ import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function CreateClub() {
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const dispatch=useDispatch();
-  const { getDocuments } = useRealtimeDocuments();
   const [attachedUsers, setAttachedUsers] = useState([]);
-  const [allMembers, setAllMembers] = useState([]);
-  const [documents, setDocuments] = useState([]);
   const [editCover, setEditCover] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [radius, setRadius] = useState(0);
@@ -66,36 +62,16 @@ function CreateClub() {
     (state) => state.languageSelection.selectedLangugage
   );
   const { user } = useAuthContext();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadUsers = async () => {
-    const usersElements = await getDocuments("users");
-
-    if (usersElements) {
-      setDocuments(usersElements);
-    }
-  };
+  const {documents}=useGetDocuments("users");
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadAllMembers = async () => {
-    const ClubswithMembers = await getDocuments("communityMembers");
-    if (ClubswithMembers) {
-      const membersOfClubsEls = ClubswithMembers.map((club) => {
-        return club.users;
-      });
+  const {documents: members}=useGetDocuments('communityMembers');
+  const allMembers= members.map((club) => {
+    return club.users;
+  }).map((object) => {
+    return Object.values(object);
+  }).flat();
+ 
 
-      const allMembersEls = membersOfClubsEls.map((object) => {
-        return Object.values(object);
-      });
-
-      const finalConversion = allMembersEls.flat();
-      setAllMembers(finalConversion);
-    }
-  };
-
-  useEffect(() => {
-    loadUsers();
-    loadAllMembers();
-  }, [loadAllMembers, loadUsers]);
 
   let notCurrentUsers = documents
     .filter((doc) => {

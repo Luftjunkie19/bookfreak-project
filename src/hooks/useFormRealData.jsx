@@ -16,7 +16,7 @@ export function useFormRealData(col, id) {
   const [loading, setLoading] = useState(true); // Dodajemy stan loading
 
   useEffect(() => {
-    const reference = ref(database `${col}/${id}`);
+    const reference = ref(database, `${col}/${id}`);
     const unsub = onValue(
       reference,
       (snap) => {

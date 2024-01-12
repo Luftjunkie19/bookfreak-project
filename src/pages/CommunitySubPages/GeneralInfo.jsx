@@ -4,6 +4,7 @@ import '../stylings/backgrounds.css';
 import React, { useState } from 'react';
 
 import { increment } from 'firebase/database';
+import { httpsCallable } from 'firebase/functions';
 import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
   FaFacebookMessenger,
@@ -11,7 +12,6 @@ import {
   FaPencilAlt,
   FaTrashAlt,
 } from 'react-icons/fa';
-import { FaX } from 'react-icons/fa6';
 import {
   useDispatch,
   useSelector,
@@ -26,9 +26,9 @@ import {
   Button,
   Menu,
   MenuItem,
-  Snackbar,
 } from '@mui/material';
 
+import { functions } from '../../';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import competitionTranslations
   from '../../assets/translations/CompetitionsTranslations.json';
@@ -59,14 +59,11 @@ function GeneralInfo() {
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-
+  const sendRefund=httpsCallable(functions, "sendRefund");
+const dispatch=useDispatch();
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
   };
-  const [openState, setOpenState] = useState({
-    open: false,
-    message: "",
-  });
   const handleOpenManagement = (e) => {
     setManagmentEl(e.currentTarget);
   };
@@ -104,27 +101,16 @@ function GeneralInfo() {
     ) {
       const userDoc = await getDocument("users", document.createdBy.id);
 
-      const response =  await fetch(
-        "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/sendRefund",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Connection: "keep-alive",
-            Accept: "*",
-          },
-          body: JSON.stringify({
-            chargeId: document.chargeId,
-          }),
-        }
-      );
+      const response =  await sendRefund({
+        chargeId: document.chargeId,
+      });
    
 
       const { error } =  response.data;
 
       if (error) {
         setIsPending(false);
-        setOpenState({ open: true, message: error });
+        dispatch(snackbarActions.showMessage({message:error, alertType:"error"}));
         return;
       }
       console.log(error, userDoc);
@@ -161,10 +147,7 @@ function GeneralInfo() {
       !document.prize.itemPrize
     ) {
       setIsPending(false);
-      setOpenState({
-        open: true,
-        message: "The winner has to claim the reward !",
-      });
+      dispatch(snackbarActions.showMessage({message:"The winner has to claim the reward", alertType:"error"}));
       return;
     } else {
       removeFromDataBase("competitions", id);
@@ -176,7 +159,6 @@ function GeneralInfo() {
     dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}))
   };
 
-  const dispatch = useDispatch();
 
   const leaveCompetition = async () => {
     const arrayWithoutYou = members.filter((doc) => doc.value.id !== user.uid);
@@ -201,30 +183,6 @@ function GeneralInfo() {
   return (
     <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
       {isPending && <Loader />}
-      {openState.open === true && (
-        <>
-          <Snackbar
-            onClose={() => {
-              setOpenState({ message: "", open: false });
-            }}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            open={openState.open}
-            autoHideDuration={3000}
-            severity="success"
-            message={openState.message}
-            action={
-              <button
-                className="flex items-center gap-2"
-                onClick={() => {
-                  setOpenState({ message: "", open: false });
-                }}
-              >
-                <FaX className=" text-red-500" /> Close
-              </button>
-            }
-          />
-        </>
-      )}
 
       {document &&
         members.find(

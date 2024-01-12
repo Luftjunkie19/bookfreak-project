@@ -1,11 +1,13 @@
 import React from 'react';
 
+import { httpsCallable } from 'firebase/functions';
 import {
   useDispatch,
   useSelector,
 } from 'react-redux';
 import { useNavigate } from 'react-router';
 
+import { functions } from '../../';
 import {
   allOffers,
   offerImages,
@@ -17,6 +19,7 @@ import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 function BookBucksComponent() {
   const dispatch= useDispatch();
   const { user } = useAuthContext();
+  const createStripeCheckout=httpsCallable(functions,"createStripeCheckout");
   const { getDocument } = useRealtimeDocument();
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
@@ -26,34 +29,26 @@ function BookBucksComponent() {
     try {
       const document = await getDocument("users", user.uid);
 
-      const response = await fetch(
-        "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createStripeCheckout",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Connection: "keep-alive",
-            Accept: "*",
-          },
-          body: JSON.stringify({
-            quantity: 1,
-            price: offer.id,
-            destinationId: document.stripeAccountData.id,
-            customer: {
-              id: user.uid,
-              nickname: user.displayName,
-              selectedOptionName: offer.name,
-              priceForOffer: offer.id,
-              priceInNumber: offer.price,
-              boughtOption: offer.bucksToToUp,
-              destinationId: document.stripeAccountData.id,
-            },
-            customerCurrency: document.stripeAccountData.default_currency,
-          }),
-        }
-      );
 
-      const data = await response.json();
+      const response = await createStripeCheckout({
+        quantity: 1,
+        price: offer.id,
+        destinationId: document.stripeAccountData.id,
+        customer: {
+          id: user.uid,
+          nickname: user.displayName,
+          selectedOptionName: offer.name,
+          priceForOffer: offer.id,
+          priceInNumber: offer.price,
+          boughtOption: offer.bucksToToUp,
+          destinationId: document.stripeAccountData.id,
+        },
+        customerCurrency: document.stripeAccountData.default_currency,
+      });
+
+
+
+      const data = response.data;
 
       if (data.error) {
         dispatch(snackbarActions.showMessage({message:data.error.raw.message, alertType:"error"}))
