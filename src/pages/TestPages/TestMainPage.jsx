@@ -40,7 +40,7 @@ function TestMainPage() {
   const { getDocument } = useRealtimeDocument();
   const [showOnlyYours, setShowOnlyYours] = useState(false);
   const { removeFromDataBase } = useRealDatabase();
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
@@ -69,7 +69,7 @@ function TestMainPage() {
   };
 
   return (
-    <div className="min-h-screen h-full w-full">
+    <div className={`min-h-screen h-full w-full ${!isDarkModed && 'pattern-bg'}`}>
       {document && (
         <div className="max-w-[110rem] flex sm:flex-col lg:flex-row flex-wrap gap-4 justify-around items-center max-h-[64rem]">
           <div className="sm:w-full xl:w-2/5 flex items-center justify-center flex-col gap-2 py-6">
@@ -113,7 +113,7 @@ function TestMainPage() {
                     </Button>
                   </div>
                 )}
-                <p className=" py-2 text-white font-semibold text-xl">
+                <p className={` py-2 ${isDarkModed ? "text-white" : "text-black"} font-semibold text-xl`}>
                   {document.refersToBook.title}
                 </p>
               </div>
@@ -157,16 +157,16 @@ function TestMainPage() {
                     </Button>
                   </div>
                 )}
-                <p className="text-lg text-white font-semibold">{document.refersToBook}</p>
+                <p className={`text-lg ${isDarkModed ? "text-white" : "text-black"} font-semibold`}>{document.refersToBook}</p>
               </>
             )}
             <div className="flex sm:w-4/5 md:w-3/5 lg:w-2/5 flex-col">
-              <p classsName="text-white font-medium">
+              <p classsName={`${isDarkModed ? "text-white" : "text-black"} font-medium`}>
                 {Object.values(document.queries).length}{" "}
                 {formTranslations.queries[selectedLanguage]}
               </p>
-              <p classsName="text-white font-medium">Created: {formatDistanceToNow(document.createdAt)} ago</p>
-              <p className="text-white">
+              <p classsName={`${isDarkModed ? "text-white" : "text-black"} font-medium`}>Created: {formatDistanceToNow(document.createdAt)} ago</p>
+              <p className={`${isDarkModed ? "text-white" : "text-black"}`}>
                 Made by:{" "}
                 <Link className=' underline text-info' to={`/profile/${document.createdBy.id}`}>
                   {document.createdBy.nickname}
@@ -212,7 +212,7 @@ function TestMainPage() {
                 className="max-w-lg self-center"
                 animationData={animationLottie}
               />
-              <p className=" text-white font-semibold text-lg self-center ">
+              <p className={`${isDarkModed ? "text-white" : "text-black"} font-semibold text-lg self-center `}>
                 Perhabs somebody is solving now{" "}
               </p>
             </div>

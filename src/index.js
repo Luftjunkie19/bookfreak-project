@@ -5,6 +5,10 @@ import React from 'react';
 import AOS from 'aos';
 import { getAnalytics } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
+import { getFunctions } from 'firebase/functions';
+import { getStorage } from 'firebase/storage';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 
@@ -22,13 +26,20 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_APPID,
   measurementId: process.env.REACT_APP_MEASUREMENTS,
 };
-// Initialize Firebase
 
-initializeApp(firebaseConfig);
+
+const app= initializeApp(firebaseConfig);
+
+export const auth= getAuth(app);
+export const database=getDatabase(app);
+export const storage=getStorage(app);
+export const functions=getFunctions(app);
+export const analytics=getAnalytics(app);
 
 getAnalytics(initializeApp(firebaseConfig));
 
 AOS.init();
+
 
 
 

@@ -58,7 +58,6 @@ function Competition() {
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
   };
-
   const handleOpenManagement = (e) => {
     setManagmentEl(e.currentTarget);
   };
@@ -128,8 +127,8 @@ function Competition() {
     ) {
       const userDoc = await getDocument("users", document.createdBy.id);
 
-      const response = await fetch(
-        "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/sendRefund",
+      const response=  await fetch(
+        "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/sendRefund",
         {
           method: "POST",
           headers: {
@@ -143,7 +142,9 @@ function Competition() {
         }
       );
 
-      const { error } = await response.json();
+      
+
+      const { error } = response.data;
 
       if (error) {
         setIsPending(false);

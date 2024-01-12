@@ -21,14 +21,13 @@ function BookBucksComponent() {
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
-  
   const navigate = useNavigate();
   const purchaseItem = async (offer) => {
     try {
       const document = await getDocument("users", user.uid);
 
       const response = await fetch(
-        "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createStripeCheckout",
+        "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createStripeCheckout",
         {
           method: "POST",
           headers: {

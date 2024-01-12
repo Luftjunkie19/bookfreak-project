@@ -63,7 +63,6 @@ function Profile() {
   const { getDocument } = useRealtimeDocument();
   const { removeFromDataBase } = useRealDatabase();
   const { getDocuments } = useRealtimeDocuments();
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const documentObject = async () => {
     const doc = await getDocument("users", id);
@@ -138,18 +137,15 @@ const providedIdPartTwo=providedId.split("-")[1];
     await logout();
     await deleteUser(user);
     removeFromDataBase("users", user.uid);
-    await fetch(
-      "http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/removeAccount",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Connection: "keep-alive",
-          Accept: "*",
-        },
-        body: JSON.stringify({ accountId: document.stripeAccountData.id }),
-      }
-    );
+    await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/removeAccount",  {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Connection: "keep-alive",
+        Accept: "*",
+      },
+      body: JSON.stringify(  { accountId: document.stripeAccountData.id }),
+    });
   };
 
 

@@ -256,7 +256,9 @@ function Competitions() {
                 <p>
                   {competitionsTranslations.competitionObject.prize[selectedLanguage]}:{" "}
                   {doc.prize.moneyPrize.amount > 0
-                    ? doc.prize.moneyPrize.amount
+                    ? `${(doc.prize.moneyPrize.amount / 100).toFixed(
+                        2
+                      )} ${doc.prize.moneyPrize.currency.toUpperCase()}`
                     : doc.prize.itemPrize.typeOfPrize}
                 </p>
                 <p>Est. {formatDistanceToNow(doc.createdBy.createdAt)} ago</p>

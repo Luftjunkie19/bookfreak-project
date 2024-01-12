@@ -1,12 +1,20 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { getDatabase, onValue, ref } from "firebase/database";
+import {
+  onValue,
+  ref,
+} from 'firebase/database';
+
+import { database } from '../';
 
 const useGetDocuments = (col) => {
   const [documents, setDocuments] = useState([]);
 
   useEffect(() => {
-    const reference = ref(getDatabase(), col);
+    const reference = ref(database, col);
     const unsubscribe = onValue(reference, (snap) => {
       const data = snap.val();
       if (data) {

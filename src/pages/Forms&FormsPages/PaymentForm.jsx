@@ -26,7 +26,7 @@ function PaymentForm() {
   const { paymentId, sessionId } = useParams();
   const { getDocument } = useRealtimeDocument();
   const [stripePromise, setStripePromise] = useState(() =>
-    loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
+    loadStripe(`${process.env.REACT_APP_STRIPE_PUBLIC_KEY}`)
   );
   const navigate = useNavigate();
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);

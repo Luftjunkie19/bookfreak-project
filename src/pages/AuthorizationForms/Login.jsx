@@ -27,6 +27,7 @@ function Login() {
     signInWithGoogle,
     signInWithFacebook,
     error,
+    isPending
   } = useLogin();
 
   const selectedLanguage = useSelector(
@@ -80,9 +81,17 @@ function Login() {
     </div>
 
     <div className="flex justify-center items-center flex-col my-3">
+      {!isPending &&
       <button className={`btn sm:w-full lg:w-1/2 ${isDarkModed ? "bg-accColor " : "bg-primeColor"} text-white`}>
         {formsTranslations.signUpForm.btnText[selectedLanguage]}
       </button>
+      }
+  {isPending && (
+            <button className="btn sm:w-full lg:w-1/2 my-6">Loading...</button>
+          )}
+
+
+
 
       {error && (
         <Alert className="bg-transparent text-red-400" severity="error">

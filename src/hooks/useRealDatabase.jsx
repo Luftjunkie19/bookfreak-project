@@ -1,14 +1,15 @@
 import {
-  getDatabase,
   ref,
   remove,
   set,
   update,
 } from 'firebase/database';
 
+import { database } from '../';
+
 export const useRealDatabase = () => {
   const addToDataBase = (col, id, object) => {
-    set(ref(getDatabase(), `${col}/${id}`), object)
+    set(ref(database, `${col}/${id}`), object)
       .then(() => {
         console.log("Added doc");
       })
@@ -18,14 +19,14 @@ export const useRealDatabase = () => {
   };
 
   const removeFromDataBase = (col, id) => {
-    const removealRef = ref(getDatabase(), `${col}/${id}`);
+    const removealRef = ref(database, `${col}/${id}`);
     remove(removealRef).then(() => {
       console.log("location removed");
     });
   };
 
   const updateDatabase = (updateObject, col, id) => {
-    const updateDocRef = ref(getDatabase(), `${col}/${id}`);
+    const updateDocRef = ref(database, `${col}/${id}`);
 
     update(updateDocRef, updateObject);
   };

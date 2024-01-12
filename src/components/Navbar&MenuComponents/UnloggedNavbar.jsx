@@ -1,17 +1,24 @@
-import React from "react";
+import React from 'react';
 
-import { GiBookmarklet, GiHamburgerMenu } from "react-icons/gi";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import {
+  GiBookmarklet,
+  GiHamburgerMenu,
+} from 'react-icons/gi';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import languageTranslation from "../../assets/translations/navbarTranslations.json";
-import { burgerActions } from "../../context/BurgerContext";
-import { useAuthContext } from "../../hooks/useAuthContext";
-import LanguageSelect from "./LanguageSelect";
+import languageTranslation
+  from '../../assets/translations/navbarTranslations.json';
+import { burgerActions } from '../../context/BurgerContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import LanguageSelect from './LanguageSelect';
 
 function UnloggedNavbar() {
   const { user } = useAuthContext();
-
+  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const selectedLangugage = useSelector(
     (state) => state.languageSelection.selectedLangugage
   );
@@ -21,7 +28,7 @@ function UnloggedNavbar() {
   return (
     <>
       <div
-        className={`sticky top-0 left-0 z-50 scrolled flex justify-between items-center px-3 py-4 bg-accColor text-neutral-50 rounded-b-lg w-screen`}
+        className={`sticky top-0 left-0 z-50 scrolled flex justify-between items-center px-3 py-4 ${isDarkModed ? "bg-accColor" :"bg-primeColor"} text-neutral-50 rounded-b-lg w-screen`}
       >
         <Link
           to="/"

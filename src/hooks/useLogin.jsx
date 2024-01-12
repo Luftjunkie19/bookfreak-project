@@ -57,7 +57,7 @@ export function useLogin() {
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount", {
+        const fetchedObject = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount", {
           method:"POST",
              headers: {
               'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export function useLogin() {
 
         const stripeAccountData = await fetchedObject.json();
    
-          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink", {
+          const accountLinkResponse = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ console.log(error);
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount", {
+        const fetchedObject = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount", {
           method:"POST",
              headers: {
               'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ console.log(error);
 
         const stripeAccountData = await fetchedObject.json();
    
-          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink", {
+          const accountLinkResponse = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
@@ -225,7 +225,7 @@ console.log(error);
         const snapshot = await uploadBytes(image, res.user.photoURL);
         await getDownloadURL(image);
 
-        const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount", {
+        const fetchedObject = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount", {
           method:"POST",
              headers: {
               'Content-Type': 'application/json',
@@ -242,7 +242,7 @@ console.log(error);
 
         const stripeAccountData = await fetchedObject.json();
    
-          const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink", {
+          const accountLinkResponse = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
@@ -327,7 +327,7 @@ console.log(error);
 
       await updateProfile(res.user, { displayName, photoURL });
 
-   const fetchedObject = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccount", {
+   const fetchedObject = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccount", {
           method:"POST",
              headers: {
               'Content-Type': 'application/json',
@@ -344,7 +344,7 @@ console.log(error);
 
         const stripeAccountData = await fetchedObject.json();
    
-        const accountLinkResponse = await fetch("http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createAccountLink", {
+        const accountLinkResponse = await fetch("https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',

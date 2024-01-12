@@ -8,7 +8,6 @@ import {
 
 import {
   getDownloadURL,
-  getStorage,
   ref,
   uploadBytes,
 } from 'firebase/storage';
@@ -34,6 +33,7 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 
+import { storage } from '../../';
 import { bookCategories } from '../../assets/CreateVariables';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import translations from '../../assets/translations/FormsTranslations.json';
@@ -298,7 +298,7 @@ function CreateBook() {
     const byteArray = new Uint8Array(byteNumbers);
 
     const storageRef = ref(
-      getStorage(),
+      storage,
       `book-covers/${user.uid}/${
         book.title ? book.title : `book${uniqid()}`
       }.jpg`

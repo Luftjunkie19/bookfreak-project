@@ -27,7 +27,7 @@ function Home() {
   const { logout } = useLogout();
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const { user } = useAuthContext();
-
+ 
   return (
     <>
       <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
@@ -42,7 +42,6 @@ function Home() {
 
             <Link
               to="/about-us"
-        
               className="btn bg-accColor text-white transition-all duration-500 hover:bg-lightModeCol hover:text-primeColor lg:w-1/2 my-2"
             >
               {translations.heroSection.button[selectedLangugage]}
@@ -70,7 +69,8 @@ function Home() {
             <Link
               to="/books"
               className={`bg-accColor h-48 text-white sm:w-full md:w-2/5 xl:w-1/5 2xl:w-1/6 p-4 rounded-md flex flex-col justify-around items-center group hover:-translate-y-2 transition-all duration-500 ${isDarkModed ? "hover:bg-lightModeCol hover:text-primeColor" : "hover:bg-primeColor hover:text-white"} `}
-            >
+        
+           >
               <FaBook className="text-5xl" />
               <p className={`text-white ${isDarkModed ? "group-hover:text-primeColor" : "group-hover:text-white"}`}>
                 {

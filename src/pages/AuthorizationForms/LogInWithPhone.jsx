@@ -4,7 +4,6 @@ import '../stylings/backgrounds.css';
 import { useState } from 'react';
 
 import {
-  getAuth,
   RecaptchaVerifier,
   signInWithPhoneNumber,
 } from 'firebase/auth';
@@ -15,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import VerificationInput from 'react-verification-input';
 
+import { auth } from '../../';
 import formsTranslations
   from '../../assets/translations/FormsTranslations.json';
 import { useAuthContext } from '../../hooks/useAuthContext';
@@ -27,7 +27,7 @@ function LogInWithPhone() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [error, setError] = useState(null);
   const { dispatch } = useAuthContext();
-  const myAuth = getAuth();
+
   const navigate = useNavigate();
   const { getDocument } = useRealtimeDocument();
   const selectedLanguage = useSelector(
@@ -39,13 +39,13 @@ function LogInWithPhone() {
     setError(null);
     try {
       const recaptchaVerifier = new RecaptchaVerifier(
-        myAuth,
+        auth,
         "recaptcha-container",
         { size: "invisible" }
       );
-
+      window.recaptchaVerifier = recaptchaVerifier;
       const confirmResult = await signInWithPhoneNumber(
-        myAuth,
+        auth,
         phone,
         recaptchaVerifier
       );

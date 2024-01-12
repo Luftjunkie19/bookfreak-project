@@ -12,7 +12,6 @@ import {
 } from 'firebase/auth';
 import {
   getDownloadURL,
-  getStorage,
   ref,
   uploadBytes,
 } from 'firebase/storage';
@@ -30,6 +29,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
+import { storage } from '../../';
 import alertMessages from '../../assets/translations/AlertMessages.json';
 import formsTranslation from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
@@ -66,9 +66,9 @@ function EditProfile() {
   const editorRef = useRef();
   const [amountToPayout, setAmountToPayout] = useState(0);
   const [balance, setBalance] = useState(null);
-  const storage = getStorage();
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   const navigate = useNavigate();
+
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadBookReaders = async () => {
@@ -225,7 +225,7 @@ function EditProfile() {
     try {
       setIsPending(true);
       await fetch(
-        `http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createPayout`,
+         `https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createPayout`,
         {
           method: "POST",
           headers: {
@@ -243,6 +243,7 @@ function EditProfile() {
           }),
         }
       );
+    
       setAmountToPayout(0);
       setBalance((prev) => {
         return prev - amountToPayout;
@@ -258,7 +259,7 @@ function EditProfile() {
     e.preventDefault();
     try {
       const accountLinkResponse = await fetch(
-        "http://127.0.0.1:5001/bookfreak-8d935/us-central1/stripeFunctions/createAccountLink",
+        "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createAccountLink",
         {
           method: "POST",
           headers: {
@@ -269,8 +270,7 @@ function EditProfile() {
           body: JSON.stringify({ accountId: document.stripeAccountData.id }),
         }
       );
-
-      const { accountLinkObject } = await accountLinkResponse.json();
+      const { accountLinkObject } = accountLinkResponse.data;
 
       window.location.href = accountLinkObject.url;
       window.location.assign(accountLinkObject.url);

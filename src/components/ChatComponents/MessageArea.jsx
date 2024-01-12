@@ -10,7 +10,6 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import {
   getDownloadURL,
-  getStorage,
   ref,
   uploadBytes,
 } from 'firebase/storage';
@@ -26,6 +25,7 @@ import {
 import { Link } from 'react-router-dom';
 import uniqid from 'uniqid';
 
+import { storage } from '../../';
 import alertsMessages from '../../assets/translations/AlertMessages.json';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
@@ -200,7 +200,7 @@ function MessageArea({ chatId, messagedUser }) {
       for (let i = 0; i < imageMessages.length; i++) {
         const { file, message } = imageMessages[i];
 
-        const storage = getStorage();
+      
         const uploadPath = `messages/uid${user.uid}-${messagedUser.id}/${file.name}`;
         const image = ref(storage, uploadPath);
 

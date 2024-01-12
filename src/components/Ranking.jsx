@@ -45,7 +45,6 @@ function Ranking({
   const { updateDatabase } = useRealDatabase();
   const { user } = useAuthContext();
   const [isPending, setIsPending] = useState(false);
-
   const [books, setBooks] = useState([]);
   const [readerObjects, setReaderObjects] = useState([]);
 
@@ -136,7 +135,7 @@ function Ranking({
         !communityObject.prize.itemPrize
       ) {
         const payoutObject = await fetch(
-          "http://127.0.0.1:5001/bookfreak-954da/us-central1/stripeFunctions/createTransferToWinner",
+          "https://us-central1-bookfreak-954da.cloudfunctions.net/stripeFunctions/createTransferToWinner",
           {
             method: "POST",
             headers: {
@@ -156,7 +155,7 @@ function Ranking({
             }),
           }
         );
-        const payoutFullfilled = await payoutObject.json();
+        const payoutFullfilled = payoutObject.data;
         console.log(payoutFullfilled);
         setIsPending(false);
       }
