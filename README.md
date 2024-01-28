@@ -6,6 +6,7 @@ BookFreak is the first ever platform, that enables the users to update user's to
 BookFreak has been initialized on 15th February 2023, you might have asked now: (#Ok, so if the project build lasted so long, why does it still look kinda `shity`?). 
 
 `The answer`
+
 I had a lot of predicaments related to school and mental health (however it sounds) and also I did encounter unexptected occurrences like Death of my Grandfather and dormancy of my Dog.
 
 ### `npm start`
