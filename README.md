@@ -1,7 +1,6 @@
-# Getting Started with Create React App
+# BookFreak
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
+BookFreak is the first ever platform, that enables the users to update user's to update your reader's state. You can track by using bookfreak, how many books you have read, what precentage of certain book have you already read, what categories do you often read and so forth.
 ## Available Scripts
 
 In the project directory, you can run:
