@@ -90,7 +90,8 @@
     "uuid": "^9.0.1",
     "web-vitals": "^2.1.4",
     "wikijs": "^6.4.1",
-    "wikipedia": "^2.1.1"
+    "wikipedia": "^2.1.1",
+    "@react-native-masked-view/masked-view": "0.2.8"
   },
   "scripts": {
     "start": "react-scripts start",

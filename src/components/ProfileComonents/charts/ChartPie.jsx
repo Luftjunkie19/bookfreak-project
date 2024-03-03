@@ -14,8 +14,6 @@ const {documents:booksObjects} = useGetDocuments("books");
 const books = booksObjects.filter((book, i) => book.id === yourReadersBooks[i]?.bookReadingId);
    
 
-
-
   const transformBooks = (books) => {
     const transformedBooks = {};
 

@@ -1,11 +1,112 @@
- .Mui-expanded  {
-  background-color: rgba(66, 102, 181, 0.654);
+ .Mui-expanded, .css-r8u8y9 .Mui-expanded {
+  background-color: rgba(66, 102, 181, 0.654) !important;
   transition: all 0.5s;
 }
 
-.Mui-focused {
+.css-r8u8y9{
+  background-color: #1a2339 !important;
+  z-index: 9999999;
+  list-style: none;
+    margin: 0px;
+    padding: 8px 0px;
+    position: relative;
+    outline: 0px;
+}
+.css-1ald77x.Mui-focused{
+  color: white !important;
+}
+.css-ue1yok {
+  background:  #1a2339 !important;
+}
+.css-154xyx0-MuiInputBase-root-MuiOutlinedInput-root{
+  background-color: rgb(66, 102, 181) !important;
+}
+.css-ue1yok .MuiAutocomplete-option{
+  color: white !important;
+  background: rgb(66, 102, 181)  !important;
+}
+
+[data-theme=acid] .css-1ald77x.Mui-focused{
+  color: black !important;
+}
+
+.css-9iedg7{
+  color: white !important;
+}
+
+.css-o1spff .MuiChip-deleteIcon{
+  color:#FF0000 !important; 
+}
+
+.css-1ald77x{
+  color: white !important;
+}
+
+[data-theme=acid] .css-1ald77x{
+  color: black !important;
+}
+
+.css-vubbuv{
+  color: white !important;
+}
+
+.css-vubbuv{
+  color: black !important;
+}
+
+.css-ue1yok{
+  background-color: "#1a2339";
+}
+
+.css-1km1ehz {
+  background-color: #4266b5 !important;
+  color: #fff !important;
+}
+
+
+.Mui-focused, .css-r8u8y9 .Mui-focused {
   background-color: rgba(66, 102, 181, 0.654);
 }
+
+.css-1bn53lx{
+  background-color: #4266b5  !important;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.4375em;
+    letter-spacing: 0.00938em;
+    color: rgba(0, 0, 0, 0.87);
+    box-sizing: border-box;
+    cursor: text;
+    display: inline-flex;
+    -webkit-box-align: center;
+    align-items: center;
+    position: relative;
+    border-radius: 4px;
+    padding-right: 14px;
+}
+.css-1uvydh2{
+  font: inherit;
+  letter-spacing: inherit;
+  color: white;
+  border: 0px;
+  box-sizing: content-box;
+  background: none;
+  height: 1.4375em;
+  margin: 0px;
+  -webkit-tap-highlight-color: transparent;
+  display: block;
+  min-width: 0px;
+  width: 100%;
+  animation-name: mui-auto-fill-cancel;
+  animation-duration: 10ms;
+  padding: 16.5px 0px 16.5px 14px 
+}
+
+.css-segi59{
+  background-color: #4266b5  !important;
+}
+
 .MuiAutocomplete-input {
   color: white;
 }
@@ -48,7 +149,7 @@
 }
 
 .MuiAutocomplete-paper {
-  background: rgb(66, 102, 181);
+  background: rgb(66, 102, 181)  !important;
 }
 
 .Mui-focused {
@@ -60,54 +161,56 @@
   background-color: "#1a2339";
   color: white;
 }
-.MuiAutocomplete-root {
-  background-color: rgba(66, 102, 181, 0.416);
+.css-2gkruv-MuiAutocomplete-root .MuiOutlinedInput-root{
+  background-color: #4266b5 !important;
 }
 
-.css-11ztvzh-MuiButtonBase-root-MuiMenuItem-root.Mui-selected {
+.css-11ztvzh-MuiButtonBase-root-MuiMenuItem-root.Mui-selected,.css-r8u8y9 .MuiButtonBase-root-MuiMenuItem-root.Mui-selected {
   background-color: #1a2339;
 }
 
-.css-2bjhza-MuiButtonBase-root-MuiMenuItem-root.Mui-selected:hover {
+.css-2bjhza-MuiButtonBase-root-MuiMenuItem-root.Mui-selected:hover,.css-r8u8y9 .MuiButtonBase-root-MuiMenuItem-root.Mui-selected:hover {
   background-color: rgba(66, 102, 181, 0.8) !important;
 }
 
-.css-6hp17o-MuiList-root-MuiMenu-list {
+.css-6hp17o-MuiList-root-MuiMenu-list, .css-r8u8y9 .MuiList-root-MuiMenu-list {
   background-color: #1a2339 !important;
 }
 
-.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root {
+.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root, .css-r8u8y9 .MuiButtonBase-root-MuiMenuItem-root {
   background: #4266b5 !important;
   color: white !important;
 }
-.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root:hover {
+.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root:hover, .css-r8u8y9 .MuiButtonBase-root-MuiMenuItem-root:hover {
   background: rgba(26, 35, 57, 0.7);
 }
 
-.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root, .css-r8u8y9 .MuiFormLabel-root-MuiInputLabel-root{
   color: white !important;
 }
-.css-2gkruv-MuiAutocomplete-root .MuiAutocomplete-tag {
+.css-2gkruv-MuiAutocomplete-root .MuiAutocomplete-tag, .css-r8u8y9 .MuiAutocomplete-root .MuiAutocomplete-tag{
   color: white;
 }
 
-.css-1y7coo4-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected {
+.css-1y7coo4-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected, .css-r8u8y9 .MuiButtonBase-root-MuiPaginationItem-root.Mui-selected {
   background-color: rgba(0, 87, 158, 0.72) !important;
   color: white !important;
   border-color: white !important;
 }
 
-.css-1h51icj-MuiAutocomplete-root .MuiAutocomplete-tag {
+.css-1h51icj-MuiAutocomplete-root .MuiAutocomplete-tag, .css-r8u8y9 .MuiAutocomplete-root .MuiAutocomplete {
   color: white;
 }
 
 .css-1h51icj-MuiAutocomplete-root
   .MuiOutlinedInput-root
+  .MuiAutocomplete-input,  .css-r8u8y9 .MuiAutocomplete-root
+  .MuiOutlinedInput-root
   .MuiAutocomplete-input {
   color: white;
 }
 
-.css-2gkruv-MuiAutocomplete-root .MuiOutlinedInput-root .MuiAutocomplete-input {
+.css-2gkruv-MuiAutocomplete-root .MuiOutlinedInput-root .MuiAutocomplete-input, .css-r8u8y9 .MuiAutocomplete-root .MuiOutlinedInput-root .MuiAutocomplete-input {
   color: white;
 }
 
@@ -115,27 +218,27 @@
   color: white;
 }
 
-.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
+.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root, .MuiInputBase-root-MuiOutlinedInput-root {
   background-color: rgba(0, 87, 158, 0.72) !important;
   color: white !important;
 }
 
-.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-line {
+.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-line, .css-34hspi .MuiChartsAxis-line{
   stroke: white !important;
 }
 
-.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-label {
+.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-label,  .css-34hspi .MuiChartsAxis-label{
   stroke: whitesmoke !important;
 }
-.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-tick {
+.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-tick,   .css-34hspi .MuiChartsAxis-tick {
   stroke: rgba(66, 102, 181) !important;
 }
 
-.css-1mhcdve-MuiPieArc-root {
+.css-1mhcdve-MuiPieArc-root, .css-1b95g7z {
   stroke: transparent !important;
 }
 
-.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-tickLabel {
+.css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-tickLabel,    .css-34hspi .MuiChartsAxis-tickLabel{
   stroke: white !important;
 }
 
@@ -170,14 +273,14 @@
   background: transparent !important;
 }
 
-[data-theme=acid] .css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-line{
+[data-theme=acid] .css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-line, [data-theme=acid] .css-34hspi .MuiChartsAxis-line{
   stroke: black !important;
 }
 
-[data-theme=acid] .css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-label {
+[data-theme=acid] .css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-label, [data-theme=acid] .css-34hspi .MuiChartsAxis-label{
   stroke: black !important;
 }
 
-[data-theme=acid] .css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-tickLabel{
+[data-theme=acid] .css-1k2u9zb-MuiChartsAxis-root .MuiChartsAxis-tickLabel, [data-theme=acid] .css-34hspi .MuiChartsAxis-tickLabel{
   stroke: black !important;
 }

@@ -43,6 +43,7 @@ function CreateCompetition() {
   const [isPending, setIsPending] = useState(false);
   const dispatch=useDispatch();
   const payCompetitionCharge= httpsCallable(functions, 'payCompetitionCharge');
+  const [prize, setPrize]=useState(null)
    const competitionTypes = [
     { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
     {
@@ -232,6 +233,7 @@ function CreateCompetition() {
             comp.chargeId = chargeObject.id;
             comp.prize.moneyPrize.currency =
               document.stripeAccountData.default_currency;
+            return comp;
           });
           updateDatabase(
             {
@@ -259,7 +261,7 @@ function CreateCompetition() {
       {isPending && error && <FailLoader />}
       {isPending && <Loader />}
       <form onSubmit={submitForm} className={`w-full ${isDarkModed ? "text-white" : "text-black"}`}>
-        <div className="flex flex-wrap items-center justify-center gap-4 py-4 mb-2">
+        <div className="flex flex-wrap items-center justify-center gap-4 py-4 m-2">
           <GiSwordsPower className="text-6xl font-semibold" />
           <p className="text-center">
             {translations.topText.competitions[selectedLanguage]}
@@ -272,7 +274,7 @@ function CreateCompetition() {
             <BsStars /> {translations.essentialInfo[selectedLanguage]} <BsStars />{" "}
           </p>
           <div className="flex flex-wrap w-full gap-4">
-            <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <span>
                 {translations.bookTitleInput.label[selectedLanguage]}:
               </span>
@@ -290,7 +292,7 @@ function CreateCompetition() {
               />
             </label>
 
-            <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <span>
                 {translations.expirationDateInput.label[selectedLanguage]}:
               </span>
@@ -298,7 +300,7 @@ function CreateCompetition() {
               <DateTimePicker
                 required
                 label={`${translations.expirationDateInput.label[selectedLanguage]}`}
-                className="myDatePicker w-full bg-modalAccColor"
+                className="myDatePicker w-full"
                 sx={{
                   color: "#fff",
                   svg: { color: "#fff" },
@@ -327,7 +329,7 @@ function CreateCompetition() {
             <CgDetailsMore /> {translations.detailedInfo[selectedLanguage]} <CgDetailsMore />
           </p>
           <div className="flex flex-wrap items-center w-full gap-4">
-            <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <Autocomplete
                 sx={{
                   color: "#fff",
@@ -394,7 +396,7 @@ function CreateCompetition() {
               />
             </label>
 
-            <label className="sm:w-full md:max-w-xs xl:max-w-md">
+            <label className="sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <span>
                 {translations.competitionCategory.label[selectedLanguage]}:
               </span>
@@ -414,7 +416,7 @@ function CreateCompetition() {
         </div>
 
         <div className="flex flex-wrap w-full gap-4 p-4">
-          <label className="sm:w-full md:max-w-xs xl:max-w-md">
+          <label className="sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
             <span>{translations.competitionsPrize[selectedLanguage]}</span>
             <CreatableSelect
               required
@@ -424,15 +426,17 @@ function CreateCompetition() {
                   comp.prizeType = value.value;
                   return comp;
                 });
+
+                setPrize(value.value);
               }}
               options={prizeTypes}
             />
           </label>
 
-          {competition.prizeType === "Money" && (
+          {prize === "Money" && (
             <>
-              <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
-                <span>{translations.prizeMoneyAmountInYourCurrency[selectedLanguage]}:</span>
+              <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
+                <span>{translations.prizeMoneyAmountInYourCurrency[selectedLanguage]}</span>
                 <input
                   className="input w-full border-accColor outline-none"
                   type="number"
@@ -452,9 +456,9 @@ function CreateCompetition() {
             </>
           )}
 
-          {competition.prizeType === "item" && (
+          {prize === "item" && (
             <>
-              <label className="sm:w-full md:max-w-xs xl:max-w-md">
+              <label className="sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
                 <span>{translations.competitionsPrize[selectedLanguage]}</span>
 
                 <CreatableSelect

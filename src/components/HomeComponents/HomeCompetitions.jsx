@@ -44,7 +44,7 @@ const {documents}=useGetDocuments('competitions');
             className={`flex  ${
               (doc.expiresAt - new Date().getTime()) / 86400000 <= 0 ?
               "bg-gray-500 text-black hover:bg-gray-800" : `${isDarkModed ? "bg-accColor" : "bg-primeColor"} ${isDarkModed ? "hover:bg-lightModeCol hover:text-primeColor" : "hover:bg-accColor hover:text-white"}`
-            } lg:w-2/5 2xl:w-1/6 xl:w-3/10 border-2 ${isDarkModed ? "border-white" : "border-black"} justify-between items-center snap-start flex-row py-4 rounded-lg text-white shadow-md hover:shadow-lg  hover:shadow-black transition-all duration-300 hover:-translate-y-1`}
+            } lg:w-2/5 xl:max-w-xs 2xl:w-1/6 border-2 ${isDarkModed ? "border-white" : "border-black"} justify-between items-center snap-start flex-row py-4 rounded-lg text-white shadow-md hover:shadow-lg  hover:shadow-black transition-all duration-300 hover:-translate-y-1`}
           >
             <div className="flex flex-col justify-around px-2">
               <h3 className=" font-semibold">{doc.competitionTitle}</h3>

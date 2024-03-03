@@ -611,13 +611,13 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
             )?.hasFinished
           }
           hasRecension={
-            readers &&
-            readers
+            recensions &&
+            recensions
               .find(
                 (reader) =>
-                  reader.id === user.uid && reader.bookReadingId === id
+                  reader.id === user.uid && reader.recension.trim() !== ""
               )
-              ?.recension.trim("") !== ""
+         
           }
           publishRecension={publishRecension}
           recensions={

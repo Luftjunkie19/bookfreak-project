@@ -330,7 +330,7 @@ function CreateClub() {
             <BsStars /> Essential information <BsStars />{" "}
           </p>
           <div className="flex flex-wrap w-full gap-4 items-center">
-            <label className="flex flex-col sm:w-full md:max-w-md">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <span className={` ${isDarkModed ? "text-white" : "text-black"}`}>
                 {translations.clubsNameInput.label[selectedLanguage]}:
               </span>
@@ -347,7 +347,7 @@ function CreateClub() {
                 }
               />
             </label>
-            <label className="flex flex-col sm:w-full md:max-w-lg">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <Autocomplete
                 multiple
                 autoHighlight
@@ -404,7 +404,7 @@ function CreateClub() {
             <CgDetailsMore /> Detailed information <CgDetailsMore />
           </p>
           <div className="flex flex-wrap w-full gap-4 items-center">
-            <label className="flex flex-col sm:w-full md:max-w-sm">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <span>
                 {translations.clubsLogoInput.label[selectedLanguage]}:
               </span>
@@ -421,7 +421,7 @@ function CreateClub() {
               </div>
             </label>
 
-            <label className="flex flex-col ssm:w-full md:max-w-xl">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <span className={`label-text ${isDarkModed ? "text-white" : "text-black"} py-1`}>
                 {translations.requiredPagesToJoin.label[selectedLanguage]}
               </span>

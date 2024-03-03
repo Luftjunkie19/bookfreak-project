@@ -136,7 +136,7 @@ function AddLink() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <h2 className={`text-5xl font-bold ${isDarkModed ? "text-white" : "text-black"}`}>
+        <h2 className={`text-3xl font-bold ${isDarkModed ? "text-white" : "text-black"}`}>
           {profileTranslations.addLinkForm.topText[selectedLanguage]}
         </h2>
 

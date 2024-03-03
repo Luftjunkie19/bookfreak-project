@@ -432,12 +432,12 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
           (member) =>
             member.value.id === user.uid && member.belongsTo === document.id
         ) && (
-          <div className="flex sm:flex-col xl:flex-row justify-between w-full items-center gap-4 p-4">
-            <div className={`h-full sm:w-full xl:w-2/5 gap-6 flex flex-col items-center justify-between rounded-md py-4 ${isDarkModed ? "text-white" : 'text-black'}`}>
+          <div className="flex flex-col justify-between w-full gap-4 p-2 py-6">
+            <div className={`h-full sm:w-full max-w-4xl gap-6 flex flex-col items-center justify-between rounded-md py-4 ${isDarkModed ? "text-white" : 'text-black'}`}>
               <p className="sm:text-2xl lg:text-4xl font-bold">
                 {document.competitionTitle}
               </p>
-              <div className="flex sm:flex-col gap-4 lg:flex-row xl:flex-col 2xl:flex-row w-full justify-around border-t-2 border-accColor p-4">
+              <div className="flex sm:flex-col gap-4 2xl:flex-row w-full justify-around border-t-2 border-accColor p-4">
                 <div className='self-start'>
                   <h3 className=" text-lg font-semibold">
                     {document.competitionsName}
@@ -459,7 +459,7 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
 
                 {competitionExpirationDate > 0 && (
                   <button
-                    className="btn bg-accColor hover:bg-info text-white border-none"
+                    className="btn bg-accColor hover:bg-info text-white border-none max-w-80"
                     onClick={sendJoiningRequest}
                   >
                     {reuseableTranslations.joinTo.competition[selectedLanguage]}{" "}

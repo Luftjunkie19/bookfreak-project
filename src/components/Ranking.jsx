@@ -207,7 +207,7 @@ let array=[];
       {(expirationTime > 0 || !expirationTime) && (
         <TableContainer
           component={Paper}
-          className="sm:w-full lg:max-w-lg xl:max-w-2xl 2xl:max-w-4xl bg-accColor  self-center"
+          className="sm:w-full lg:max-w-lg xl:max-w-3xl bg-accColor"
         >
           <Table aria-label="simple table">
             <TableHead>

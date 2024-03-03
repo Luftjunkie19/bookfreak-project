@@ -83,7 +83,7 @@ const dispatch=useDispatch();
   const { user } = useAuthContext();
 
   const navigate = useNavigate();
-  const { documentData: document } = useGetDocument("competitions", id);
+  const { document } = useGetDocument("competitions", id);
   const { documents: members } = useGetDocuments(
     `communityMembers/${id}/users`
   );
@@ -383,13 +383,13 @@ const dispatch=useDispatch();
         )}
 
       {document && (
-        <div className="flex sm:flex-col xl:flex-row justify-between w-full items-center gap-4 py-4">
-          <div className={`h-full ${isDarkModed ? "text-white" : "text-black"} sm:w-full xl:w-2/5 gap-6 flex flex-col items-center justify-between rounded-md py-4`}>
-            <p className="sm:text-2xl lg:text-4xl font-bold">
+        <div className="flexflex-col justify-between w-full gap-4 py-4">
+          <div className={`h-full ${isDarkModed ? "text-white" : "text-black"} max-w-4xl flex flex-col items-center rounded-md py-4`}>
+            <p className="sm:text-2xl lg:text-4xl font-bold p-2">
               {document.competitionTitle}
             </p>
-            <div className="flex sm:flex-col gap-4 lg:flex-row xl:flex-col 2xl:flex-row w-full justify-around xl:items-center border-t-2 border-accColor p-4">
-              <p className=" text-2xl font-thin">
+            <div className="flex sm:flex-col gap-4 2xl:flex-row w-full justify-around 2xl:items-center border-t-2 border-accColor p-4">
+              <p className="text-2xl font-thin">
                 {reuseableTranslations.detailsText[selectedLanguage]}:
               </p>
               <div >
@@ -419,7 +419,7 @@ const dispatch=useDispatch();
                 <AllMembersModal users={members} />
               </div>
             </div>
-            <div className="self-start gap-3">
+            <div className="self-start gap-3 px-2">
               {document.prize.moneyPrize &&
                 document.prize.moneyPrize.amount > 0 && (
                   <div className="p-2">

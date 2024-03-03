@@ -40,8 +40,8 @@ function CreateTests() {
   const [testName, setTestName] = useState('');
   const [refersToBook, setRefersToBook] = useState(null);
   const { addToDataBase } = useRealDatabase();
-  const navigate = useNavigate();
   const { documents: books } = useGetDocuments('books');
+  const navigate = useNavigate();
 const dispatch=useDispatch();
   const selectedLanguage = useSelector(
     (state) => state.languageSelection.selectedLangugage
