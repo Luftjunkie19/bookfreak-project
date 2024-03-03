@@ -27,7 +27,7 @@ function HomeClubs() {
           <Link
             to={`/readers-clubs/${doc.id}`}
             key={doc.id}
-            className={`snap-start flex xl:w-1/5 flex-col group p-2 ${isDarkModed ? "bg-accColor" : "bg-primeColor"} rounded-lg overflow-hidden hover:shadow-md hover:shadow-black ${isDarkModed ? "hover:bg-lightModeCol" : "hover:bg-accColor"} hover:scale-95 duration-200 transition-all`}
+            className={`snap-start flex xl:w-[20rem] 2xl:w-[24rem] flex-col group p-2 ${isDarkModed ? "bg-accColor" : "bg-primeColor"} rounded-lg overflow-hidden hover:shadow-md hover:shadow-black ${isDarkModed ? "hover:bg-lightModeCol" : "hover:bg-accColor"} hover:scale-95 duration-200 transition-all`}
           >
             <img
               src={doc.clubLogo}

@@ -131,8 +131,6 @@ export function BookCategoryChart({ readerObjects, bookObjects }) {
       .filter((reader) => reader.bookReadingId === book.id)
       .reduce((total, reader) => total + reader.pagesRead, 0);
 
-    console.log(`Category: ${book.category}, Total Pages Read: ${totalPagesReadInCategory}`);
-
     return {
       x: book.category,
       y: totalPagesReadInCategory,

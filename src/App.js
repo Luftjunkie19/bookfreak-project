@@ -35,6 +35,7 @@ import LanguageSelection
   from './components/WarningsComponents/LanguageSelection';
 import Warning from './components/WarningsComponents/Warning';
 import { snackbarActions } from './context/SnackBarContext.jsx';
+import ScrollToTop from './hooks/ScrollToTop.jsx';
 import { useAuthContext } from './hooks/useAuthContext';
 import Login from './pages/AuthorizationForms/Login';
 import LogInWithPhone from './pages/AuthorizationForms/LogInWithPhone';
@@ -96,6 +97,8 @@ const dispatch=useDispatch();
             {userIsReady && (
               <>
                 <BrowserRouter>
+                <ScrollToTop/>
+
                   {user && <Navbar user={user} />}
                   {!user && <UnloggedNavbar />}
                   {!user && <HamburgerMenuUnlogged />}

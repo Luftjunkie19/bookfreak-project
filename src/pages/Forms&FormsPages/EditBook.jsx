@@ -130,8 +130,7 @@ function EditBook({ id }) {
     setEditPhotoImg(null);
   };
 
-  const handleUpdate = (e) => {
-    e.preventDefault();
+  const handleUpdate = () => {
     setError(null);
     setIsPending(true);
     try {
@@ -152,8 +151,6 @@ function EditBook({ id }) {
         id
       );
 
-      navigate(`/book/${id}`);
-      dispatch(modalActions.closeModal());
     } catch (error) {
       setError(error.message);
     }

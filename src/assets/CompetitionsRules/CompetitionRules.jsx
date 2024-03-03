@@ -11,11 +11,11 @@ export function CompetitionRules() {
       photoURL: user.value.photoURL,
       readBooks: getReadBooks(user.value.id),
       lastReadBook: getlastBookRead(user.value.id),
+      gainedPoints: getReadBooks(user.value.id) * 5,
     }));
 
     return usersWithReadBooks
-      .sort((a, b) => b.readBooks - a.readBooks)
-      .slice(0, 3);
+      .sort((a, b) => b.gainedPoints - a.gainedPoints).slice(0,3);
   };
 
   const liftOthersRiseJointlyRule = (
@@ -50,10 +50,10 @@ export function CompetitionRules() {
             recommendationsAmount: getReccomendationsNumber(member.value.id),
             readBooks: getReadBooks(member.value.id),
             lastReadBook: getlastBookRead(member.value.id),
+            gainedPoints: getReadBooks(member.value.id) + getReccomendationsNumber(member.value.id),
           };
         })
-        .sort((a, b) => b.recommendationsAmount - a.recommendationsAmount)
-        .slice(0, 3);
+        .sort((a, b) => b.gainedPoints - a.gainedPoints).slice(0,3);
     } else {
       return [].length;
     }
@@ -117,8 +117,7 @@ export function CompetitionRules() {
     });
   
     return fullMembers
-      .sort((a, b) => b.gainedPoints - a.gainedPoints)
-      .slice(0, 3);
+      .sort((a, b) => b.gainedPoints - a.gainedPoints).slice(0,3);
   };
   
   return { firstComeServedRule, liftOthersRiseJointlyRule, teachToFishRule };

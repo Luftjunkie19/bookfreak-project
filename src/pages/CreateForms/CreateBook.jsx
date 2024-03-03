@@ -388,7 +388,7 @@ function CreateBook() {
         <div className="w-full flex-col flex gap-2 p-4">
           <p className="text-2xl bg-accColor p-2 font-bold w-max rounded-md text-white">{translations.generalInfo[selectedLanguage]}</p>
           <div className="flex flex-wrap w-full gap-4">
-            <label className="flex flex-col sm:w-full md:max-w-lg">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <span>
                 {translations.bookTitleInput.label[selectedLanguage]}:
               </span>
@@ -406,7 +406,7 @@ function CreateBook() {
               />
             </label>
 
-            <label className="flex flex-col sm:w-full md:max-w-lg">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <span>
                 {translations.bookAuthorInput.label[selectedLanguage]}:
               </span>
@@ -429,7 +429,7 @@ function CreateBook() {
         <div className="flex flex-col p-4 w-full gap-2">
           <p className="text-2xl text-white bg-accColor p-2 font-bold w-max rounded-md">{translations.detailedInfo[selectedLanguage]}</p>
           <div className="flex items-center flex-wrap w-full gap-4">
-            <label className="flex flex-col sm:w-full md:max-w-lg">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-sm">
               <Autocomplete
                 className="text-white"
                 sx={{
@@ -457,7 +457,7 @@ function CreateBook() {
               />
             </label>
 
-            <label className="flex flex-col sm:w-full md:max-w-md">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-sm">
               <span>
                 {translations.pagesAmountInput.label[selectedLanguage]}:
               </span>
@@ -477,7 +477,7 @@ function CreateBook() {
               />
             </label>
 
-            <label className="flex flex-col gap-1 sm:w-full md:max-w-sm p-4">
+            <label className="flex flex-col gap-1 sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-sm">
               <p>{translations.selectImgBtn.label[selectedLanguage]}</p>
           <input
             required
@@ -492,9 +492,9 @@ function CreateBook() {
         </label>
 
 
-            <label className="flex flex-col sm:w-full md:max-w-sm">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-sm">
               <p>{translations.countryOfBookRelease[selectedLanguage]}</p>
-                <ReactFlagsSelect className="text-black sm:w-full lg:w-3/4"
+                <ReactFlagsSelect className="text-black w-full"
                 selected={selected}
               onSelect={(country)=>{
                 setSelected(country);
@@ -505,7 +505,7 @@ function CreateBook() {
               }}
               selectButtonClassName="bg-accColor text-white rounded-md border-white text-white"/>
             </label>
-            <label className="flex flex-col sm:w-full md:max-w-md">
+            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
               <p>{translations.publisher[selectedLanguage]}</p>
               <input onChange={(e)=>{
                 setBook((book)=>{
@@ -515,7 +515,7 @@ function CreateBook() {
               }} className="input border-accColor outline-none w-full py-4 px-1 text-lg" type="text" />
             </label>
 
-            <label className='sm:w-full md:max-w-sm'>
+            <label className='sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md'>
               <p>{translations.yearOfRelease[selectedLanguage]}</p>
               <DatePicker className='w-full' openTo="year" onChange={(value)=>{
                 setError(null);

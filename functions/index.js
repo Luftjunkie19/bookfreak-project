@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable max-len */
 /* eslint-disable new-cap */
 require("dotenv").config();
@@ -40,6 +41,7 @@ exports.getBalance=functions.https.onCall(async (req)=>{
   return balance;
 });
 
+
 exports.createStripeCheckout=functions.https.onCall(async (req)=>{
   try {
     const {price, quantity, customerCurrency, destinationId} = req;
@@ -56,7 +58,7 @@ exports.createStripeCheckout=functions.https.onCall(async (req)=>{
         enabled: true,
       },
       return_url: "https://bookfreak.org",
-      payment_method_configuration: "pmc_1OJMbVL8z1e5mvb6Z20IXHkG",
+      payment_method_configuration: "pmc_1OH8UDL8z1e5mvb6pg8zlaau",
       payment_intent_data: {
         transfer_data: {
           destination: destinationId,
@@ -77,7 +79,6 @@ exports.createStripeCheckout=functions.https.onCall(async (req)=>{
 });
 
 
-const whSec = "whsec_3Hm3V6bLJwQASvZnPj14D2Fd5eqxjZz2";
 const whAcc = "whsec_wnV9tFgI5eNSjw6OX3Aj3anVioGqTdLV";
 
 exports.createAccount= functions.https.onCall(async (req)=>{
@@ -128,6 +129,7 @@ exports.payCompetitionCharge=functions.https.onCall(async (req)=>{
       currency: currency,
       source: payerId,
     });
+    console.log(charge);
     await admin
         .database()
         .ref(`users/${organizatorObject.id}/creditsAvailable`)
@@ -151,6 +153,7 @@ exports.payCompetitionCharge=functions.https.onCall(async (req)=>{
 exports.sendRefund=functions.https.onCall(async (req)=>{
   try {
     const {chargeId} = req;
+    console.log(chargeId);
     await stripe.refunds.create({
       charge: chargeId,
     });
@@ -218,6 +221,8 @@ exports.createPayout=functions.https.onCall(async (req)=>{
           stripeAccount: userId,
         },
     );
+
+    console.log(payout);
     await admin
         .database()
         .ref(`users/${currentUserId}/creditsAvailable/balance/0`)
@@ -227,8 +232,8 @@ exports.createPayout=functions.https.onCall(async (req)=>{
         .ref(`users/${currentUserId}/creditsAvailable`)
         .update({valueInMoney: increment(-amount)});
     return {payout};
-  } catch (err) {
-    return {err};
+  } catch (error) {
+    return {error: error.raw.message};
   }
 });
 
@@ -242,6 +247,37 @@ exports.removeAccount=functions.https.onCall(async (req)=>{
   }
 });
 
+
+exports.createStripePaymentMobile=functions.https.onCall(async (req)=>{
+  try {
+    const {price, customerCurrency, destinationId, customer} = req;
+    const createdCustomer = await stripe.customers.create({
+      name: req.customer.id,
+      metadata: {...req.customer, customerCurrency},
+    });
+    const empheralKeys= await stripe.ephemeralKeys.create(
+        {customer: createdCustomer.id},
+        {apiVersion: "2023-10-16"},
+    );
+    const paymentIntent= await stripe.paymentIntents.create({
+      amount: price,
+      currency: "pln",
+      payment_method_configuration: "pmc_1OH8UDL8z1e5mvb6pg8zlaau",
+      customer: createdCustomer.id,
+      transfer_data: {
+        destination: destinationId,
+        amount: price - (100 + Math.round(price * 0.075)),
+      },
+
+    });
+
+    return {paymentIntent: paymentIntent.client_secret, empheral: empheralKeys.secret, customer: createdCustomer.id, publishableKey: process.env.REACT_APP_STRIPE_PUBLIC_KEY, buyer: customer};
+  } catch (error) {
+    console.log(error);
+    console.error("Error creating checkout session:", error.message);
+    return {clientSecret: null, sessioned: null, error: error};
+  }
+});
 
 exports.accountWebhook=functions.https.onRequest(async (req, res)=>{
   let event;
@@ -278,95 +314,100 @@ exports.accountWebhook=functions.https.onRequest(async (req, res)=>{
 
 exports.webhook=functions.https.onRequest(async (req, res)=>{
   let event;
-
   try {
     event = stripe.webhooks.constructEvent(
         req.rawBody,
         req.headers["stripe-signature"],
-        whSec,
+        "whsec_GNRrLYHmYwGfrjnF9j8L5On8Fzwl9ccU",
     );
 
-    if (event) {
-      const paymentObject = {
-        amount: null,
-        paymentId: null,
-        paymentIntentId: null,
-        customerId: null,
-        email: null,
-        nickname: null,
-        boughtOption: null,
-        topUp: 0,
-        customerAppId: null,
-        receiptURL: null,
-      };
-      let paymentCustomer;
-      if (event.data.object.customer) {
-        paymentCustomer = await stripe.customers.retrieve(
-            event.data.object.customer,
-        );
-      }
-      if (paymentCustomer && event.data.object.client_secret !== undefined) {
-        paymentObject.clientSecret = event.data.object.client_secret;
-      }
-      if (paymentCustomer) {
-        paymentObject.email = paymentCustomer.email;
-        paymentObject.nickname = paymentCustomer.metadata.nickname;
-        paymentObject.boughtOption =
+
+    const paymentObject = {
+      amount: null,
+      paymentId: null,
+      paymentIntentId: null,
+      customerId: null,
+      email: null,
+      nickname: null,
+      boughtOption: null,
+      topUp: 0,
+      customerAppId: null,
+      receiptURL: null,
+      invoice: null,
+    };
+    let paymentCustomer;
+    if (event.data.object.customer) {
+      paymentCustomer = await stripe.customers.retrieve(
+          event.data.object.customer,
+      );
+      console.log("Customer:", paymentCustomer);
+    }
+    if (paymentCustomer && event.data.object.client_secret !== undefined) {
+      paymentObject.clientSecret = event.data.object.client_secret;
+      paymentObject.paymentId = event.data.object.id;
+      paymentObject.paymentIntentId = event.data.object.id;
+      console.log(event.data.object.client_secret);
+      console.log(event.data.object.id);
+    }
+
+
+    if (paymentCustomer) {
+      paymentObject.email = paymentCustomer.email;
+      paymentObject.nickname = paymentCustomer.metadata.nickname;
+      paymentObject.boughtOption =
             paymentCustomer.metadata.selectedOptionName;
-        paymentObject.topUp = parseInt(paymentCustomer.metadata.boughtOption);
-        paymentObject.customerAppId = paymentCustomer.metadata.id;
-        paymentObject.customerId = paymentCustomer.id;
-        paymentObject.amount = paymentCustomer.metadata.priceInNumber;
-      }
-      if (event.type === "checkout.session.completed") {
-        paymentObject.paymentId = event.data.object.id;
-        paymentObject.paymentIntentId = event.data.object.payment_intent;
-        const paymentIntentObject = await stripe.paymentIntents.retrieve(
-            event.data.object.payment_intent,
-        );
-        const paymentAmountConverted =
+      paymentObject.topUp = parseInt(paymentCustomer.metadata.boughtOption);
+      paymentObject.customerAppId = paymentCustomer.metadata.id;
+      paymentObject.customerId = paymentCustomer.id;
+      paymentObject.amount = paymentCustomer.metadata.priceInNumber;
+    }
+
+    if (event.data.object.invoice) {
+      paymentObject.invoice=event.data.object.invoice;
+    }
+
+    if (event.type === "checkout.session.completed" || event.type === "payment_intent.succeeded") {
+      console.log(event.data.object);
+      const paymentIntentObject = await stripe.paymentIntents.retrieve(
+          paymentObject.paymentId,
+      );
+      console.log("paymentObject", paymentObject);
+      console.log("paymentIntentObject", paymentIntentObject);
+      const paymentAmountConverted =
             (await convertToYourCurrenct(
                 paymentObject.amount,
                 paymentCustomer.metadata.customerCurrency,
             )) * 100;
-        const balance = await stripe.balance.retrieve({
-          stripeAccount: paymentCustomer.metadata.destinationId,
-        });
-        console.log(balance.available);
-        console.log(
-            "converted",
-            Math.round(paymentAmountConverted),
-            "converted",
-        );
-        const invoice = await stripe.invoices.retrieve(
-            event.data.object.invoice,
-        );
-        await admin
-            .database()
-            .ref(`users/${paymentObject.customerAppId}`)
-            .update({
-              creditsAvailable: {
-                balance: balance.available,
-                valueInMoney: Math.round(balance.available[0].amount),
-                currency: paymentCustomer.metadata.customerCurrency,
-              },
-            });
-        await admin
-            .database()
-            .ref(`payments/${paymentObject.customerAppId}`)
-            .push({
-              ...paymentObject,
-              purchasedAt: event.data.object.created,
-              clientSecret: paymentIntentObject.client_secret,
-              currency: paymentIntentObject.currency,
-              receipt: {
-                receiptURL: invoice.hosted_invoice_url,
-                receiptPDF: invoice.invoice_pdf,
-                status: invoice.status,
-              },
-            });
-      }
+      const balance = await stripe.balance.retrieve({
+        stripeAccount: paymentCustomer.metadata.destinationId,
+      });
+      console.log(balance.available);
+      console.log(
+          "converted",
+          Math.round(paymentAmountConverted),
+          "converted",
+      );
+
+      await admin.database().ref(`payments/${paymentObject.customerAppId}`).push({
+        ...paymentObject,
+        purchasedAt: event.data.object.created,
+        clientSecret: paymentIntentObject.client_secret,
+        currency: paymentIntentObject.currency,
+      });
+
+      await admin
+          .database()
+          .ref(`users/${paymentObject.customerAppId}`)
+          .update({
+            creditsAvailable: {
+              balance: balance.available,
+              valueInMoney: Math.round(balance.available[0].amount),
+              currency: paymentCustomer.metadata.customerCurrency,
+            },
+          });
     }
+    console.log("Event finished");
+
     return res.sendStatus(200).end();
   } catch (error) {
     console.error(error);
@@ -375,4 +416,46 @@ exports.webhook=functions.https.onRequest(async (req, res)=>{
   }
 });
 
+exports.updateBalanceWebhook = functions.https.onRequest(async (req, res) => {
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+        req.rawBody,
+        req.headers["stripe-signature"],
+        "whsec_EpL54HxZ9RqUyFuKyIydwOcHBOa0pyje",
+    );
 
+    if (event.type === "balance.available") {
+      if (event.type === "balance.available") {
+        const snapshot = await admin.database().ref("users").once("value");
+        const accounts = snapshot.val();
+
+        const account = Object.values(accounts).find((a) => a.stripeAccountData.id === event.account);
+
+        console.log("accounts", accounts, "accounts");
+        console.log("account", account, "account");
+
+        if (account) {
+          await admin
+              .database()
+              .ref(`users/${account.id}`)
+              .update({
+                creditsAvailable: {
+                  balance: event.data.object.available,
+                  valueInMoney: Math.round(event.data.object.available[0].amount),
+                  currency: event.data.object.available[0].currency,
+                },
+              });
+        } else {
+          console.log("Account not found.");
+        }
+      }
+    }
+    console.log("EVENT", event, "EVENT");
+
+    return res.sendStatus(200).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(400).send(`Webhook failed ${err}`).end();
+  }
+});

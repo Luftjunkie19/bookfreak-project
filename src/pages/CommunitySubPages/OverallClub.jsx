@@ -38,7 +38,6 @@ import { useAuthContext } from '../../hooks/useAuthContext';
 import useGetDocument from '../../hooks/useGetDocument';
 import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function OverallClub() {
   const selectedLanguage = useSelector(
@@ -68,7 +67,6 @@ function OverallClub() {
   const openMangement = Boolean(managmentEl);
   const { id } = useParams();
   const { user } = useAuthContext();
-  const { getDocuments } = useRealtimeDocuments();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { removeFromDataBase } = useRealDatabase();
@@ -291,8 +289,8 @@ const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
 
       {document && (
         <>
-          <div className="flex sm:flex-col xl:flex-row w-full h-full justify-between items-center px-4 gap-5 flex-wrap">
-            <div className="xl:h-1/2 sm:h-full xl:w-1/4 sm:w-4/5 py-6 flex  flex-col lg:flex-row xl:flex-col gap-4">
+          <div className="flex flex-col w-full h-full justify-between px-4 gap-5 flex-wrap">
+            <div className="sm:h-full max-w-3xl  py-6 flex  flex-col lg:flex-row xl:flex-col gap-4">
               <div className="sm:w-36 sm:h-36 lg:w-64 lg:h-64">
                 <img
                   className="w-full h-full rounded-full"
@@ -332,7 +330,7 @@ const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
                   </p>
                 </div>
                 {document.description && document.description.trim() !== "" && (
-                  <div class={`flex flex-col  p-3 w-full ${isDarkModed ? "text-white" : "text-black"}`}>
+                  <div class={`flex flex-col w-full ${isDarkModed ? "text-white" : "text-black"}`}>
                     <h2 class="text-3xl font-extralight pb-2">
                       {
                         formsTranslations.descriptionTextarea.label[
@@ -348,7 +346,9 @@ const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
                 )}
               </div>
             </div>
-            <div className="sm:w-full xl:max-w-5xl">
+            <div className="sm:w-full xl:max-w-5xl mx-1 my-4">
+<p className={`text-2xl font-semibold p-2 ${isDarkModed ? "text-white" : "text-black"}`}>Club's Data:</p>
+
               <Ranking
                 communityObject={document}
                 communityMembers={members.filter(

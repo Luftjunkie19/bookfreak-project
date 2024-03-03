@@ -381,8 +381,8 @@ function Club() {
         !members.find(
           (member) => member.value.id === user.uid && member.belongsTo === id
         ) && (
-          <div className={`flex justify-between items-center w-full h-full sm:flex-col xl:flex-row px-4 py-4 gap-6 ${isDarkModed ? "text-white" : 'text-black'}`}>
-            <div className="sm:w-full xl:w-1/3 h-full  flex flex-col items-center justify-between rounded-md py-4">
+          <div className={`flex justify-between w-full h-full flex-col  px-4 py-4 gap-6 ${isDarkModed ? "text-white" : 'text-black'}`}>
+            <div className="sm:w-full max-w-4xl h-full flex flex-col rounded-md py-4">
               <div className="sm:w-36 sm:h-36 md:w-48 md:h-48 lg:h-64 lg:w-64">
                 <img
                   className="w-full h-full rounded-full object-cover border-accColor border-2"
@@ -390,10 +390,10 @@ function Club() {
                   alt=""
                 />
               </div>
-              <div className="flex gap-3 items-center sm:flex-col xl:flex-row w-full justify-around mt-6">
+              <div className="flex gap-6 sm:flex-col xl:flex-row w-full mt-6">
                 <div className="flex flex-col gap-2">
                   <h3
-                    className=" text-xl font-semibold text-center"
+                    className=" text-xl font-semibold"
                     onClick={() => {
                       console.log(members);
                     }}
@@ -431,7 +431,7 @@ function Club() {
                 </div>
 
                 <button
-                  className="btn bg-accColor hover:bg-info text-white border-none"
+                  className="btn max-w-72 bg-accColor hover:bg-info text-white border-none"
                   onClick={sendJoiningRequest}
                 >
                   {reusableTranslations.joinTo.club[selectedLanguage]}{" "}
@@ -439,7 +439,7 @@ function Club() {
                 </button>
               </div>
               {document && document.description.trim() !== "" && (
-                <div class="flex flex-col text-white p-3 w-full">
+                <div class="flex flex-col text-white py-3 w-full">
                   <h2 class="text-3xl font-extralight pb-2">
                     {
                       formsTranslations.descriptionTextarea.label[

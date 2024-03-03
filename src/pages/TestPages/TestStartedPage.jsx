@@ -23,9 +23,9 @@ function TestStartedPage() {
   const [accquiredPoints, setAccquiredPoints] = useState(0);
   const [test, setTest] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const { getDocument } = useRealtimeDocument();
   const navigate = useNavigate();
   const { addToDataBase } = useRealDatabase();
+  const { getDocument } = useRealtimeDocument();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadDocument = async () => {
     const testDocument = await getDocument("tests", testId);
