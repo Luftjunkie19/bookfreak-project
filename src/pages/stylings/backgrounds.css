@@ -35,3 +35,10 @@
   border-radius: 5px;
   color: white;
 }
+
+
+.css-1fbare3-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected{
+  color: white !important;
+  background-color:  #1a2339 !important;
+  border: 1px solid #4267B5 !important;
+}

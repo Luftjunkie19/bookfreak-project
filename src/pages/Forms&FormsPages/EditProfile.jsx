@@ -98,10 +98,15 @@ function EditProfile() {
 
   useEffect(() => {
     if (document) {
-      setDescription(document.description);
-      setBalance(document.creditsAvailable.valueInMoney);
-    }
-  }, [document]);
+
+      if (document.id === user.uid) {
+              setDescription(document.description);
+              setBalance(document.creditsAvailable.valueInMoney);
+            } else {
+              navigate('/');
+            }
+      }
+  }, [document, navigate, user]);
 
   const handleImg = (e) => {
     setEditProfileImg(null);

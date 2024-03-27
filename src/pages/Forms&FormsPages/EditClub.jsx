@@ -53,12 +53,16 @@ function EditClub() {
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   useEffect(() => {
     if (document) {
-      setClubsName(document.clubsName);
-      setClubLogo(document.clubLogo);
-      setDescription(document.description);
-      setRequiredPagesRead(document.requiredPagesRead);
+      if (document.createdBy.id === user.uid) {    
+        setClubsName(document.clubsName);
+        setClubLogo(document.clubLogo);
+        setDescription(document.description);
+        setRequiredPagesRead(document.requiredPagesRead);
+      } else {
+        navigate('/');
+      }
     }
-  }, [document]);
+  }, [document, user]);
 
   const notCurrentUsers = [].filter((doc) => {
     return doc.id !== user.uid;
@@ -294,7 +298,7 @@ function EditClub() {
         )}
 
         <div className="flex  w-full justify-center items-center">
-          <button className="btn bg-accColor sm:w-full md:w-3/4 lg:max-w-xl text-white mt-2">
+          <button disabled={document && document.createdBy.id !== user.uid} className="btn bg-accColor sm:w-full md:w-3/4 lg:max-w-xl text-white mt-2">
             {formsTranslation.updateBtn[selectedLanguage]}
           </button>
         </div>

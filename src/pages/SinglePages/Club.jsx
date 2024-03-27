@@ -381,7 +381,7 @@ function Club() {
         !members.find(
           (member) => member.value.id === user.uid && member.belongsTo === id
         ) && (
-          <div className={`flex justify-between w-full h-full flex-col  px-4 py-4 gap-6 ${isDarkModed ? "text-white" : 'text-black'}`}>
+          <div className={`flex justify-between w-full h-full sm:flex-col xl:flex-row  px-4 py-4 gap-6 ${isDarkModed ? "text-white" : 'text-black'}`}>
             <div className="sm:w-full max-w-4xl h-full flex flex-col rounded-md py-4">
               <div className="sm:w-36 sm:h-36 md:w-48 md:h-48 lg:h-64 lg:w-64">
                 <img
@@ -390,7 +390,7 @@ function Club() {
                   alt=""
                 />
               </div>
-              <div className="flex gap-6 sm:flex-col xl:flex-row w-full mt-6">
+              <div className="flex gap-6 flex-col w-full mt-6">
                 <div className="flex flex-col gap-2">
                   <h3
                     className=" text-xl font-semibold"

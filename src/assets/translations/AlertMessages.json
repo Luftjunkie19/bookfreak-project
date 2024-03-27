@@ -65,6 +65,11 @@
         "ger": "Erfolgereich kopiert !",
         "eng": "Successfully copied !",
         "pl": "Pomyślnie skopiowano !"
+      },
+      "answer":{
+          "ger": "Korrekte Antwort !",
+        "eng": "Correct Answer !",
+        "pl": "Poprawna Odpowiedź !"
       }
     },
     "wrong": {
@@ -76,6 +81,11 @@
         "eng":"Recension has to be at least 10 characters long.",
         "ger":"Die Recension muss mindestens 10 Zeichen lang sein.",
         "pl":"Ocena musi mieć co najmniej 10 znaków."
+      },
+        "answer":{
+          "ger": "Inkorrekte Antwort !",
+        "eng": "Incorrect Answer !",
+        "pl": "Niepoprawna Odpowiedź !"
       },
 
       "winnerClaimError":{

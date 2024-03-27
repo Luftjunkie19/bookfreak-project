@@ -133,7 +133,7 @@ function RecensionsForBook({
             <span className="font-bold text-lg">{translations.buttonsTexts.rateBook[selectedLanguage]}:</span>
             <Rating
               name="customized-10"
-              className="sm:text-2xl xl:text-4xl"
+              className="sm:text-2xl md:text-[2.5rem] xl:text-5xl"
               value={bookRate}
               onChange={(event, newValue) => {
                 setBookRate(newValue);
@@ -148,7 +148,7 @@ function RecensionsForBook({
             <span className={`font-bold text-lg ${isDarkModed ? "text-white" :"text-black"}`}>{translations.recensionLabel[selectedLanguage]}:</span>
             <textarea
               type="text"
-              className="textarea textarea-bordered border-accColor resize-none w-full textarea-lg"
+              className="textarea text-lg textarea-bordered border-accColor resize-none w-full textarea-lg"
               onChange={(e) => setRecension(e.target.value)}
               placeholder={`${translations.recensionPlaceholder[selectedLanguage]}`}
             ></textarea>
@@ -177,7 +177,7 @@ function RecensionsForBook({
 
       <Rating
         name="customized-10"
-        className="sm:text-2xl xl:text-4xl"
+        className="sm:text-2xl md:text-[2.5rem] xl:text-5xl"
         value={
           !isNaN(
             recensions.reduce((prev, cur) => prev + cur.bookRate, 0) /
@@ -209,11 +209,11 @@ function RecensionsForBook({
       </div>
 
       {sortedRecensions().length > 0 ? (
-        <div className="flex flex-col sm:justify-center lg:justify-start w-full sm:items-center lg:items-start gap-4 sm:p-3 xl:p-1">
+        <div className="flex flex-col sm:justify-center lg:justify-start w-full sm:items-center lg:items-start gap-6 sm:p-4 xl:p-1 xl:m-2">
           {sortedRecensions().map((recensioner) => (
             <div
               key={recensioner.id}
-              className="flex sm:w-full flex-col lg:w-3/4 justify-between xl:w-1/2 bg-accColor py-2 relative top-0 left-0"
+              className={`flex sm:w-full rounded-md flex-col max-w-3xl justify-between bg-accColor ${isDarkModed ? 'border-white' : ' border-primeColor'} border py-2 relative top-0 left-0`}
             >
               {" "}
               {users.find((member) => member.id === recensioner.id) && (

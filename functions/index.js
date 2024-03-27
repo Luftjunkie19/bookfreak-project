@@ -44,7 +44,10 @@ exports.getBalance=functions.https.onCall(async (req)=>{
 
 exports.createStripeCheckout=functions.https.onCall(async (req)=>{
   try {
-    const {price, quantity, customerCurrency, destinationId} = req;
+    const {price, quantity, customerCurrency, destinationId, customer} = req;
+    console.log("Customer Object");
+    console.log(customer);
+    console.log("Customer Object");
     const createdCustomer = await stripe.customers.create({
       name: req.customer.id,
       metadata: {...req.customer, customerCurrency},
@@ -62,6 +65,7 @@ exports.createStripeCheckout=functions.https.onCall(async (req)=>{
       payment_intent_data: {
         transfer_data: {
           destination: destinationId,
+          amount: customer.boughtOption - (25 + Math.round(customer.boughtOption * 0.075)),
         },
       },
     });
@@ -176,12 +180,12 @@ exports.createTransferToWinner=functions.https.onCall(async (req)=>{
       communityObject,
     } = req;
     const transfer = await stripe.transfers.create({
-      amount: amount,
+      amount: amount - Math.round(amount * 0.016),
       currency: currency,
       source_transaction: chargeId,
       destination: destinationId,
     });
-    const money = await convertMoneyFromTo(amount, currency, winnerCurrency);
+    const money = await convertMoneyFromTo(amount - Math.round(amount * 0.016), currency, winnerCurrency);
     const convertedMoney = Math.round(money);
     await admin
         .database()
@@ -261,12 +265,12 @@ exports.createStripePaymentMobile=functions.https.onCall(async (req)=>{
     );
     const paymentIntent= await stripe.paymentIntents.create({
       amount: price,
-      currency: "pln",
+      currency: "USD",
       payment_method_configuration: "pmc_1OH8UDL8z1e5mvb6pg8zlaau",
       customer: createdCustomer.id,
       transfer_data: {
         destination: destinationId,
-        amount: price - (100 + Math.round(price * 0.075)),
+        amount: price - (25 + Math.round(price * 0.075)),
       },
 
     });

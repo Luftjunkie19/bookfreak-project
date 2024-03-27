@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import translations from "../../assets/translations/ProfileTranslations.json";
+import translations from '../../assets/translations/ProfileTranslations.json';
 
 function FavouriteBooks({ favBooks }) {
   const selectedLanguage = useSelector(
@@ -16,7 +16,7 @@ function FavouriteBooks({ favBooks }) {
         {favBooks.length > 0 &&
           favBooks.map((doc, i) => (
             <Link to={`/book/${doc.id}`} key={doc.id}>
-              <div key={i} className="rounded-lg relative top-0 left-0">
+              <div key={i} className="rounded-lg relative top-0 left-0 transition-all hover:scale-95">
                 <img
                   src={doc.photoURL}
                   alt=""

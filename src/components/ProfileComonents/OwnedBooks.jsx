@@ -1,7 +1,7 @@
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import translations from "../../assets/translations/ProfileTranslations.json";
+import translations from '../../assets/translations/ProfileTranslations.json';
 
 function OwnedBooks({ ownedBooks, ownerId }) {
   const selectedLanguage = useSelector(
@@ -16,7 +16,7 @@ function OwnedBooks({ ownedBooks, ownerId }) {
           .filter((ownedBook) => ownedBook.createdBy.id === ownerId)
           .map((book, i) => (
             <Link to={`/book/${book.id}`} key={book.id}>
-              <div className="rounded-lg relative top-0 left-0" key={i}>
+              <div className="rounded-lg relative top-0 left-0 transition-all hover:scale-95" key={i}>
                 {/** 
                 <div className="absolute top-0 left-0 w-full h-full rounded-lg bg-imgCover flex justify-center items-center">
                   <p className=" font-extrabold text-lg text-white">

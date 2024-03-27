@@ -80,7 +80,17 @@ const readerObjects=readers.map((bookReader) => {
     return { bookId: book.id, pagesNumber: book.pagesNumber };
   });
 
+
+  
   const readersFiltered = readerObjects.filter((reader) => reader.id === id);
+
+  const lovedBooks=books.map((book,i)=>{
+    return books.filter((bookItem)=>bookItem.id === favBooks.filter((fav)=>fav.lovedBy===user.uid)[i]?.lovedBookId);
+  }).flat();
+
+  const yourFinishedBooks=readersFiltered.map((reader)=>{
+    return books.filter((bookItem)=>bookItem.id === reader?.bookReadingId && reader.pagesRead === bookItem?.pagesNumber);
+}).flat();
 
   const redirectToExistedChat = async (providedId) => {
 const providedIdPartOne=providedId.split("-")[0];
@@ -192,13 +202,7 @@ const providedIdPartTwo=providedId.split("-")[1];
                       {translations.stats.booksRead[selectedLanguage]}
                     </div>
                     <div className="stat-value">
-                      {
-                        readersFiltered.filter(
-                          (reader, i) =>
-                            reader.pagesRead === booksFilter[i]?.pagesNumber &&
-                            booksFilter[i]?.bookId === reader.bookReadingId
-                        ).length
-                      }
+                    {yourFinishedBooks.length}
                     </div>
                   </div>
 
@@ -227,8 +231,7 @@ const providedIdPartTwo=providedId.split("-")[1];
                     </div>
                     <div className="stat-value">
                       {
-                        favBooks.filter((book) => book.lovedBy === document.id)
-                          .length
+                        lovedBooks.length
                       }
                     </div>
                   </div>
@@ -361,24 +364,15 @@ const providedIdPartTwo=providedId.split("-")[1];
                     path="read-books"
                     element={
                       <FullyReadBooks
-                        readBooks={books.filter(
-                          (book, i) =>
-                            readersFiltered[i]?.pagesRead ===
-                              book.pagesNumber && readersFiltered[i]?.id === id
-                        )}
-                        usersReadPages={readersFiltered.filter(
-                          (reader, i) =>
-                            reader.pagesRead === books[i]?.pagesNumber &&
-                            reader.id === id &&
-                            reader.hasFinished
-                        )}
+                        readBooks={yourFinishedBooks}
+                        usersReadPages={yourFinishedBooks}
                       />
                     }
                   />
 
 <Route
   path="users-fav"
-  element={<FavouriteBooks favBooks={[]} />}
+  element={<FavouriteBooks favBooks={lovedBooks} />}
 />
 
                   {document.id === user.uid && (

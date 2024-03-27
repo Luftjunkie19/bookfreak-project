@@ -189,7 +189,7 @@ const dispatch=useDispatch();
           (member) =>
             member.value.id === user.uid && member.belongsTo === document.id
         ) && (
-          <div className="w-full flex justify-between items-center p-3 bg-primeColor z-[99999] sticky top-[4.5rem] left-0">
+          <div className="w-full flex justify-between items-center p-3 bg-primeColor z-[99999] sticky sm:top-0 xl:top-[4.5rem] left-0">
             <div className="flex flex-col text-white items-center">
               <p>{document.competitionTitle}</p>
               <p>{document.competitionsName}</p>
@@ -383,7 +383,7 @@ const dispatch=useDispatch();
         )}
 
       {document && (
-        <div className="flexflex-col justify-between w-full gap-4 py-4">
+        <div className="flex sm:flex-col xl:flex-row justify-between max-w-[95rem] gap-4 py-4">
           <div className={`h-full ${isDarkModed ? "text-white" : "text-black"} max-w-4xl flex flex-col items-center rounded-md py-4`}>
             <p className="sm:text-2xl lg:text-4xl font-bold p-2">
               {document.competitionTitle}
@@ -507,7 +507,7 @@ const dispatch=useDispatch();
               </div>
             )}
           </div>
-
+          <div className="max-w-3xl p-2">    
           <Ranking
             expirationTimeNumber={document.expiresAt}
             communityMembers={members.filter(
@@ -516,6 +516,7 @@ const dispatch=useDispatch();
             communityObject={document}
             expirationTime={competitionExpirationDate}
           />
+</div>
         </div>
       )}
 

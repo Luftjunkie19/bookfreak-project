@@ -28,8 +28,8 @@ import useRealtimeDocuments from '../hooks/useRealtimeDocuments';
 import Loader from './Loader';
 import {
   BookCategoryChart,
-  UserComparisonChart,
-} from './ProfileComonents/charts/LineChart';
+  UserComparisonBarChart,
+} from './ProfileComonents/charts/BarChart';
 import Top3Winners from './Top3Winners';
 
 function Ranking({
@@ -207,7 +207,7 @@ let array=[];
       {(expirationTime > 0 || !expirationTime) && (
         <TableContainer
           component={Paper}
-          className="sm:w-full lg:max-w-lg xl:max-w-3xl bg-accColor"
+          className="sm:w-full lg:max-w-lg xl:max-w-3xl bg-accColor self-center"
         >
           <Table aria-label="simple table">
             <TableHead>
@@ -333,7 +333,7 @@ let array=[];
 
       {filteredReaders().length > 0 && (
         <div className="flex flex-wrap gap-1">
-          <UserComparisonChart
+          <UserComparisonBarChart
             readerObjects={filteredReaders()}
             bookObjects={filteredBooks()}
           />

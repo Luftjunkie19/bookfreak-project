@@ -15,7 +15,9 @@ import {
 
 import {
   Autocomplete,
+  Box,
   Pagination,
+  PaginationItem,
   TextField,
 } from '@mui/material';
 
@@ -259,6 +261,7 @@ const sortedArray=() => {
             );
           }}
           sx={{
+            color:"white",
             ".MuiAutocomplete-input": {
               color: "white",
             },
@@ -273,8 +276,10 @@ const sortedArray=() => {
           id="free-solo-demo"
           freeSolo
           options={books.map((option) => option.title)}
+          renderOption={(props, option) => (<Box {...props} sx={{ color: 'white'}}>{option}</Box>)}
           renderInput={(params) => (
             <TextField
+              sx={{ color: 'white'}}
               {...params}
          label={formTranslations.placeHoldersCollections.booksTitle[selectedLanguage]}
               onChange={(e, value) => {
@@ -362,11 +367,17 @@ const sortedArray=() => {
       </div>
       <div className="flex justify-center items-center p-2">
         <Pagination
+          shape="rounded" 
           variant="outlined"
           color="primary"
           showLastButton
           showFirstButton
           count={pagesAmount}
+          renderItem={(item) => (<PaginationItem sx={{
+            backgroundColor: "#4267B5", color: 'white', ":active": {
+              backgroundColor: "#1a2339",
+           color: "#4267B5"
+          }}} {...item}/>)}
           onChange={handlePagesChange}
         />
       </div>

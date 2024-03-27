@@ -289,8 +289,8 @@ const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
 
       {document && (
         <>
-          <div className="flex flex-col w-full h-full justify-between px-4 gap-5 flex-wrap">
-            <div className="sm:h-full max-w-3xl  py-6 flex  flex-col lg:flex-row xl:flex-col gap-4">
+          <div className="flex sm:flex-col xl:flex-row w-full h-full justify-between items-center px-4 gap-5">
+            <div className="sm:h-full sm:w-full xl:max-w-3xl py-6 flex flex-col lg:flex-row xl:flex-col gap-6">
               <div className="sm:w-36 sm:h-36 lg:w-64 lg:h-64">
                 <img
                   className="w-full h-full rounded-full"
@@ -298,7 +298,7 @@ const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
                   alt=""
                 />
               </div>
-              <div className={`${isDarkModed ? "text-white" : "text-black"}`}>
+              <div className={`${isDarkModed ? "text-white" : "text-black"} flex flex-col gap-2`}>
                 <p className="font-bold text-3xl">
                   {reusableTranslations.detailsText[selectedLanguage]}:{" "}
                 </p>
@@ -347,7 +347,7 @@ const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
               </div>
             </div>
             <div className="sm:w-full xl:max-w-5xl mx-1 my-4">
-<p className={`text-2xl font-semibold p-2 ${isDarkModed ? "text-white" : "text-black"}`}>Club's Data:</p>
+<p className={`text-2xl font-semibold text-center p-3 ${isDarkModed ? "text-white" : "text-black"}`}>Club's Data:</p>
 
               <Ranking
                 communityObject={document}

@@ -218,7 +218,7 @@ function CreateCompetition() {
             document.stripeAccountData.default_currency.toUpperCase(),
         });
         
-        const { error, chargeObject } = payoutObject.data;
+        const { error, chargeObject } = await payoutObject.data;
 
         console.log(chargeObject);
 
