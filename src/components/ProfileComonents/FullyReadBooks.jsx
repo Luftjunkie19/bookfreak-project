@@ -13,11 +13,10 @@ function FullyReadBooks({ readBooks, usersReadPages }) {
       {readBooks.length > 0 ? (
         readBooks.map((book, i) => (
           <Link to={`/book/${book.id}`} key={book.id}>
-            <div className="rounded-lg relative top-0 left-0" key={i}>
+            <div className="rounded-lg relative top-0 left-0 transition-all hover:scale-95" key={i}>
               <div className="absolute top-0 left-0 w-full h-full rounded-lg bg-imgCover flex justify-center items-center">
                 <p className=" font-extrabold text-lg text-white">
-                  {(book.pagesNumber / usersReadPages[i].pagesRead).toFixed(2) *
-                    100}{" "}
+                  {Math.round(book.pagesNumber/usersReadPages[i].pagesNumber) * 100}
                   %
                 </p>
               </div>

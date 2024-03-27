@@ -14,7 +14,9 @@ import {
 
 import {
   Autocomplete,
+  Box,
   Pagination,
+  PaginationItem,
   TextField,
 } from '@mui/material';
 
@@ -42,7 +44,7 @@ function Competitions() {
 }, 
 {
     label:"prize (Item)", filter:(array)=>{
-        return array.filter((doc)=>doc.prize.itemPrize.typeOfPrize !== undefined || doc.prize.itemPrize.typeOfPrize !== null);
+        return array.filter((doc)=>doc.prize.moneyPrize.amount === 0);
     }
 }, 
 {
@@ -202,7 +204,8 @@ function Competitions() {
               { replace: true }
             );
           }}
-          sx={{
+         sx={{
+            color:"white",
             ".MuiAutocomplete-input": {
               color: "white",
             },
@@ -216,6 +219,7 @@ function Competitions() {
           }}
           id="free-solo-demo"
           freeSolo
+        renderOption={(props, option) => (<Box {...props} sx={{ color: 'white'}}>{option}</Box>)}
           options={documents.map((option) => option.competitionTitle)}
           renderInput={(params) => (
             <TextField
@@ -283,11 +287,16 @@ function Competitions() {
       </div>
       <div className="flex justify-center items-center p-2">
         <Pagination
+ shape="rounded" 
           variant="outlined"
-          color="primary"
           showLastButton
           showFirstButton
           count={pagesAmount}
+             renderItem={(item) => (<PaginationItem sx={{
+            backgroundColor: "#4267B5", color: 'white', ":active": {
+              backgroundColor: "#1a2339",
+           color: "#4267B5"
+          }}} {...item}/>)}
           onChange={handlePagesChange}
         />
       </div>

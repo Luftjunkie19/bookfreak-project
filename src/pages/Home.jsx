@@ -27,8 +27,8 @@ function Home() {
   return (
     <>
       <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
-        <div className="flex justify-around items-center w-screen min-h-screen hero-section sm:flex-col-reverse md:flex-row">
-          <div className="flex flex-col flex-1 justify-center pt-8 px-3 z-10">
+        <div className="flex justify-around items-center my-0 mx-auto gap-6 sm:flex-col-reverse md:flex-row">
+          <div className="flex flex-col justify-center max-w-3xl w-full pt-8 px-3 z-10">
             <h2 className="text-4xl font-extrabold my-4 text-white">
               {translations.heroSection.title[selectedLangugage]}
             </h2>
@@ -44,14 +44,14 @@ function Home() {
             </Link>
           </div>
 
-          <div className="flex sm:flex-row sm:justify-around sm:items-center flex-1 p-4 md:flex-col z-10">
+          <div className="flex w-full max-w-2xl sm:flex-row sm:justify-around sm:items-center p-4 md:flex-col z-10">
             <Lottie
-              className=" sm:w-2/3 sm:h-1/3 sm:self-end md:w-56 md:h-1/2 2xl:w-1/2 2xl:h-1/2"
+              className="sm:hidden lg:block  md:max-w-[16rem] md:max-h-[16rem] sm:self-end sm:h-full "
               animationData={animationLottie}
             />
 
             <Lottie
-              className="sm:w-4/5 sm:h-1/3 sm:self-start md:w-56 md:h-1/2 2xl:w-1/2 2xl:h-1/2"
+              className="w-full sm:w-5/6 md:max-w-[12rem] md:max-h-[12rem] lg:max-w-[16rem] lg:max-h-[16rem] md:self-start sm:h-full"
               animationData={animationLottie2}
             />
           </div>

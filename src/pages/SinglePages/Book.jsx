@@ -516,7 +516,7 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
               <p className={`text-3xl font-bold ${isDarkModed ? "text-white" :"text-black"}`}>
                 {reuseableTranslations.detailsText[selectedLanguage]}:
               </p>
-              <div className={`flex flex-col mt-1 ${isDarkModed ? "text-white" :"text-black"}`}>
+              <div className={`flex flex-col gap-1 mt-1 ${isDarkModed ? "text-white" :"text-black"}`}>
                 <p className=" font-semibold">
                   {reuseableTranslations.pagesText[selectedLanguage]}:{" "}
                   <span className=" font-normal">

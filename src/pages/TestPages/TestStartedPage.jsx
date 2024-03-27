@@ -6,11 +6,16 @@ import React, {
 } from 'react';
 
 import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
   useNavigate,
   useParams,
 } from 'react-router';
-import { toast } from 'react-toastify';
 
+import alertMessages from '../../assets/translations/AlertMessages.json';
+import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../hooks/useRealtimeDocument';
@@ -18,6 +23,7 @@ import useRealtimeDocument from '../../hooks/useRealtimeDocument';
 function TestStartedPage() {
   const { user } = useAuthContext();
   const alphabet = require("alphabet");
+  const selectedLanguage = useSelector((state) => state.languageSelection.selectedLangugage);
   const { testId, startTime, attemptId } = useParams();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [accquiredPoints, setAccquiredPoints] = useState(0);
@@ -26,6 +32,7 @@ function TestStartedPage() {
   const navigate = useNavigate();
   const { addToDataBase } = useRealDatabase();
   const { getDocument } = useRealtimeDocument();
+  const dispatch = useDispatch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadDocument = async () => {
     const testDocument = await getDocument("tests", testId);
@@ -45,9 +52,9 @@ function TestStartedPage() {
         return points + 1;
       });
 
-      toast.success("Correct answer");
+      dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.successfull.answer[selectedLanguage]}`, alertType: "success" }));
     } else {
-      toast.error("Wrong answer");
+    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.answer[selectedLanguage]}`, alertType:"error"}))
     }
   };
 

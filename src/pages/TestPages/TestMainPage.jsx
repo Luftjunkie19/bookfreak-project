@@ -1,3 +1,5 @@
+import '../stylings/TableStyling.css';
+
 import React, {
   useEffect,
   useState,
@@ -69,15 +71,15 @@ function TestMainPage() {
   };
 
   return (
-    <div className={`min-h-screen h-full w-full ${!isDarkModed && 'pattern-bg'}`}>
+    <div className={`min-h-screen h-full w-full ${!isDarkModed ? 'pattern-bg' : ''}`}>
       {document && (
-        <div className="max-w-[110rem] flex sm:flex-col lg:flex-row flex-wrap gap-4 justify-around items-center max-h-[64rem]">
+        <div className="flex sm:flex-col lg:flex-row gap-4 justify-around items-center">
           <div className="sm:w-full xl:w-2/5 flex items-center justify-center flex-col gap-2 py-6">
             {document.refersToBook.photoURL ? (
               <div className="w-full flex items-center justify-center flex-col gap-2">
-                <div className=" w-56 h-72">
+                <div className="w-56 h-72">
                   <img
-                    className="w-full h-full object-cover"
+                    className="w-full h-full rounded-lg object-cover"
                     src={document.refersToBook.photoURL}
                     alt=""
                   />
@@ -119,9 +121,9 @@ function TestMainPage() {
               </div>
             ) : (
               <>
-                <div className=" w-56 h-72">
+                <div className="w-56 h-72">
                   <img
-                    className="w-full h-full object-cover"
+                    className="w-full h-full rounded-lg object-cover"
                     src="https://img.freepik.com/free-vector/college-entrance-exam-concept-illustration_114360-13742.jpg?size=338&ext=jpg&ga=GA1.1.1826414947.1699833600&semt=sph"
                     alt=""
                   />
@@ -182,9 +184,9 @@ function TestMainPage() {
             </button>
           </div>{" "}
           {document.attempts && Object.values(document.attempts).length > 0 ? (
-            <div className="flex flex-col gap-3 sm:w-full xl:w-1/2">
+            <div className="flex flex-col gap-3 sm:m-3 md:m-0 max-w-3xl w-full">
               <ButtonGroup
-                className="sm:self-center xl:self-start"
+                className="sm:self-center xl:self-start p-2"
                 variant="contained"
                 aria-label="outlined primary button group"
               >

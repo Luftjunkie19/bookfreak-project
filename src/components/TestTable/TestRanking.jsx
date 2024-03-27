@@ -8,10 +8,7 @@ import {
   Avatar,
   Box,
 } from '@mui/material';
-import {
-  DataGrid,
-  GridToolbar,
-} from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 
 function TestRanking({ rowData }) {
   const columns = [
@@ -19,14 +16,14 @@ function TestRanking({ rowData }) {
       field: "id",
       headerName: "Attempt Id",
       headerAlign: "center",
-
+width: 100, minWidth: 150, maxWidth: 200,
       headerClassName: "bg-accColor w-full",
       cellClassName: "bg-white text-accColor border-accColor border-2",
     },
     {
       field: "player.photoURL",
       headerName: "Image",
-   
+  width: 100, minWidth: 150, maxWidth: 200,
       headerClassName: "bg-accColor",
       headerAlign: "center",
       cellClassName:
@@ -44,7 +41,7 @@ function TestRanking({ rowData }) {
     {
       field: "player.nickname",
       headerClassName: "bg-accColor",
-    
+   width: 100, minWidth: 75, maxWidth: 200,
       headerAlign: "center",
       cellAlign: "center",
       cellClassName:
@@ -58,7 +55,7 @@ function TestRanking({ rowData }) {
     {
       field: "finalResult",
       headerClassName: "bg-accColor",
-     
+     width: 100, minWidth: 150, maxWidth: 200,
       cellClassName:
         "bg-white text-accColor font-bold border-b-2 border-accColor",
       type: "number",
@@ -72,7 +69,7 @@ function TestRanking({ rowData }) {
     {
       field: "timeOfGame",
       headerClassName: "bg-accColor",
-
+      width: 100, minWidth: 150, maxWidth: 200,
       cellClassName:
         "bg-white text-accColor border-accColor border-l-2 border-r-2",
       headerName: "Solved in",
@@ -80,8 +77,8 @@ function TestRanking({ rowData }) {
       type: "number",
       renderCell: (params) => {
         return `${Math.floor(params.row.timeOfGame / 1000 / 60)}:${
-          Math.floor(params.row.timeOfGame / 1000) < 10
-            ? `0${Math.floor(params.row.timeOfGame / 1000)}`
+          Math.floor(params.row.timeOfGame / 1000) % 60 < 10
+            ? `0${Math.floor(params.row.timeOfGame / 1000) % 60}`
             : `${Math.floor((params.row.timeOfGame / 1000) % 60)}`
         }`;
       },
@@ -89,15 +86,13 @@ function TestRanking({ rowData }) {
   ];
 
   return (
-    <Box>
+    <Box sx={{maxWidth:576, width:"100%", }}>
       <DataGrid
-      sx={{fontFamily:"Montserrat", maxWidth:650, maxHeight:440}}
-        className="text-white bg-primeColor max-w-xl m-4"
-        slots={{ toolbar: GridToolbar,  }}
+        sx={{ fontFamily: "Montserrat",}}
+        className="text-white bg-primeColor m-4"
+
         rows={rowData}
         columns={columns}
-        
-      
       />
     </Box>
   );

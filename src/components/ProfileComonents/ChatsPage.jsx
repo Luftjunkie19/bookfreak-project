@@ -1,7 +1,7 @@
 import React from 'react';
 
+import { ChartBar } from './charts/BarChart';
 import ChartPie from './charts/ChartPie';
-import SimpleLineChart from './charts/LineChart';
 
 function ChatsPage({ readerObjects, bookObjects }) {
   return (
@@ -13,12 +13,13 @@ function ChatsPage({ readerObjects, bookObjects }) {
           )}
         />
       )}
-      {readerObjects.length > 0 && bookObjects.length > 0 && (
-        <SimpleLineChart
-          readerObjects={readerObjects}
-          bookObjects={bookObjects}
-        />
-      )}
+
+  
+
+        <ChartBar readerObjects={readerObjects}
+          bookObjects={bookObjects} />
+   
+  
     </div>
   );
 }

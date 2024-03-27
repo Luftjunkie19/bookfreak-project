@@ -56,12 +56,16 @@ function EditCompetition() {
 
   useEffect(() => {
     if (document) {
-      setTitle(document.competitionTitle);
-      setCompetitionsName(document.competitionsName);
-      setDescription(document.description);
-      setExpirationDate(document.expiresAt);
+      if (document.createdBy.id === user.uid) {
+        setTitle(document.competitionTitle);
+        setCompetitionsName(document.competitionsName);
+        setDescription(document.description);
+        setExpirationDate(document.expiresAt);
+      } else {
+        navigate('/');
+      }
     }
-  }, [document]);
+  }, [document, user]);
 
   const competitionTypes = [
      "First read, first served",
@@ -209,7 +213,7 @@ function EditCompetition() {
           )}
 
           <div className="flex w-full justify-center items-center">
-            <button className="btn sm:max-w-xs md:w-80 mt-2 bg-accColor text-white">
+            <button disabled={document && document.createdBy.id !== user.uid} className="btn sm:max-w-xs md:w-80 mt-2 bg-accColor text-white">
               {formsTranslation.updateBtn[selectedLanguage]}
             </button>
           </div>
