@@ -25,6 +25,7 @@ import formsTranslations
   from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
+import Loader from '../../components/Loader';
 import { useLogin } from '../../hooks/useLogin';
 
 function SignUp() {
@@ -258,6 +259,7 @@ function SignUp() {
             <FaGithub className="text-5xl" />
           </button>
         </div>
+         {isPending && <Loader/>}
         {error && (
           <div className="flex justify-center items-center p-4">
             <Alert className="bg-transparent text-red-400" severity="error">

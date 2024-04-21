@@ -19,7 +19,6 @@ import {
   TbCircleNumber2,
   TbCircleNumber3,
 } from 'react-icons/tb';
-import ImageGallery from 'react-image-gallery';
 import { useSelector } from 'react-redux';
 import { Typewriter } from 'react-simple-typewriter';
 import {
@@ -31,13 +30,10 @@ import myImage from '../../assets/about-image.jpg';
 import logoImage from '../../assets/Logo.png';
 import lottieAnimation
   from '../../assets/lottieAnimations/Animation - 1702680446031.json';
-import begginingImage1 from '../../assets/ProjectHistory/another.png';
 import breakImg2 from '../../assets/ProjectHistory/Screenshot (1167).png';
 import breakImg1 from '../../assets/ProjectHistory/Screenshot (1174).png';
 import difficultiesImage1
   from '../../assets/ProjectHistory/Zrzut ekranu (1128).png';
-import begginingImage3 from '../../assets/ProjectHistory/Zrzut_ekranu_983.png';
-import begginingImage2 from '../../assets/ProjectHistory/Zrzut_ekranu_999.png';
 import aboutUsTranslations
   from '../../assets/translations/aboutUsTranslations.json';
 
@@ -142,24 +138,24 @@ function AboutUs() {
           </div>
         </div>
       </div>
-      <div className="w-full flex flex-wrap">
+      <div className="flex gap-4 justify-around sm:flex-wrap xl:flex-nowrap items-center">
         <motion.div
           variants={mainHolderVariant}
           initial="offscreen"
           whileInView="onscreen"
           viewport={{ once: true }}
-          className="sm:w-full lg:w-1/3 sm:h-screen md:h-[50vh] bg-accColor  flex flex-col justify-center items-center gap-3"
+          className="flex sm:w-full lg:w-64 xl:w-80 flex-col gap-4 p-4 rounded-lg bg-blue-500"
         >
-          <GiBull className=" text-7xl text-white" />
-
-          <motion.div
+          <div className="flex justify-between items-center">
+                    <GiBull className=" text-7xl text-white" />
+           <motion.div
             variants={typingTextVariant}
             initial="offscreen"
             whileInView="onscreen"
             viewport={{ once: true }}
           >
             <CountUp
-              className="font-bold text-6xl rounded-full text-white p-4"
+              className="font-bold text-6xl rounded-full stat-title text-white p-4"
               start={0}
               end={Math.round(
                 (new Date().getTime("31.12.2023") - new Date("02.15.2023").getTime()) /
@@ -171,23 +167,30 @@ function AboutUs() {
               )}
             />
           </motion.div>
+  
+     </div>
+
+     
           <motion.p
             variants={headingTextVariant}
             initial="offscreen"
             whileInView="onscreen"
             viewport={{ once: true }}
-            className=" font-semibold text-2xl text-center p-2 text-white"
+            className="font-semibold  text-lg p-2 text-white"
           >
             {aboutUsTranslations.ThreeBoxes.first[selectedLanguage]}
           </motion.p>
         </motion.div>
+        
         <motion.div
           variants={mainHolderVariant}
           initial="offscreen"
           whileInView="onscreen"
           viewport={{ once: true }}
-          className="sm:w-full lg:w-1/3 sm:h-screen md:h-[50vh] flex gap-3 flex-col justify-center items-center bg-white text-accColor"
+          className="flex flex-col sm:w-full lg:w-64 xl:w-80 gap-4 p-4 rounded-lg bg-white text-accColor"
         >
+
+          <div className="flex justify-between items-center">
           <SiFuturelearn className=" text-7xl" />
 
           <motion.div
@@ -202,23 +205,25 @@ function AboutUs() {
               end={1000}
             />
           </motion.div>
+          </div>
           <motion.p
             variants={headingTextVariant}
             initial="offscreen"
             whileInView="onscreen"
             viewport={{ once: true }}
-            className=" font-semibold text-2xl text-center p-2"
+            className=" font-semibold text-lg  p-2"
           >
             {aboutUsTranslations.ThreeBoxes.second[selectedLanguage]}
           </motion.p>
         </motion.div>
-        <motion.div
-          className="sm:w-full lg:w-1/3 flex flex-col justify-center items-center sm:h-screen md:h-[50vh] bg-primeColor  gap-3"
+         <motion.div
+          className="flex flex-col sm:w-full lg:w-64 xl:w-80 gap-4 p-4 rounded-lg bg-primeColor "
           variants={mainHolderVariant}
           initial="offscreen"
           whileInView="onscreen"
           viewport={{ once: true }}
         >
+          <div className="flex justify-between items-center">
           <ImBooks className=" text-7xl text-white" />
           <motion.div
             variants={typingTextVariant}
@@ -232,16 +237,17 @@ function AboutUs() {
               end={23}
             />
           </motion.div>
+          </div>
           <motion.p
             variants={headingTextVariant}
             initial="offscreen"
             whileInView="onscreen"
             viewport={{ once: true }}
-            className=" font-semibold text-2xl text-center p-2 text-white"
+            className=" font-semibold text-lg p-2 text-white"
           >
              {aboutUsTranslations.ThreeBoxes.third[selectedLanguage]}
           </motion.p>
-        </motion.div>
+        </motion.div> 
       </div>
 
       <Steps>
@@ -272,13 +278,13 @@ function AboutUs() {
             <Typewriter words={[aboutUsTranslations.steps.first.header[selectedLanguage]]} />
           </motion.div>
           <div className="w-full flex 2xl:justify-evenly flex-wrap gap-6">
-            <div className="flex flex-col max-w-xl self-center">
+            <div className="flex flex-col gap-2 max-w-xl self-center">
               <motion.p
                 initial="offscreen"
                 whileInView="onscreen"
                 variants={headingTextVariant}
                 viewport={{ once: true }}
-                className=" text-2xl font-bold"
+                className=" text-4xl font-bold"
               >
               {aboutUsTranslations.steps.first.sideHeader[selectedLanguage]}
               </motion.p>
@@ -299,16 +305,37 @@ function AboutUs() {
             </div>
 
             
-        
-            <ImageGallery
-     showFullscreenButton={false}
-     showPlayButton={false}
-    items={[
-      { original: begginingImage1, fullscreen:begginingImage1, thumbnail: begginingImage1, originalClass: "sm:w-full md:max-w-xl", thumbnailClass: "w-24 h-16" },
-      { original: begginingImage2, fullscreen:begginingImage2, thumbnail: begginingImage2, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
-      { original: begginingImage3, fullscreen:begginingImage3,  thumbnail: begginingImage3, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
-    ]}
-  />
+<div className="carousel sm:w-full max-w-xl h-80">
+  <div id="slide1" className="carousel-item relative w-full h-full">
+    <img alt='' src={logoImage} className="w-full h-full object-cover" />
+    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide4" className="btn btn-circle">❮</a> 
+      <a href="#slide2" className="btn btn-circle">❯</a>
+    </div>
+  </div> 
+  <div id="slide2" className="carousel-item relative w-full h-full">
+    <img alt='' src={myImage} className="w-full h-full object-cover" />
+    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide1" className="btn btn-circle">❮</a> 
+      <a href="#slide3" className="btn btn-circle">❯</a>
+    </div>
+  </div> 
+  <div id="slide3" className="carousel-item relative w-full h-full">
+    <img alt='' src={breakImg2} className="w-full h-full object-cover" />
+    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide2" className="btn btn-circle">❮</a> 
+      <a href="#slide4" className="btn btn-circle">❯</a>
+    </div>
+  </div> 
+  <div id="slide4" className="carousel-item relative w-full h-full">
+    <img alt='' src={breakImg1} className="w-full h-full object-cover" />
+    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide3" className="btn btn-circle">❮</a> 
+      <a href="#slide1" className="btn btn-circle">❯</a>
+    </div>
+  </div>
+</div>
+  
  
           </div>
         </motion.div>
@@ -341,13 +368,13 @@ function AboutUs() {
           </motion.div>
 
           <div className="flex w-full 2xl:justify-evenly flex-wrap gap-2 p-3">
-            <div className="sm:w-full md:max-w-2xl flex flex-wrap">
+            <div className="sm:w-full md:max-w-2xl self-center flex flex-col gap-4">
               <motion.p
                 initial="offscreen"
                 whileInView="onscreen"
                 variants={headingTextVariant}
                 viewport={{ once: true }}
-                className="text-2xl font-bold"
+                className="text-4xl font-bold"
               >
                 {aboutUsTranslations.steps.second.sideHeader[selectedLanguage]}
               </motion.p>
@@ -363,13 +390,16 @@ function AboutUs() {
             </div>
 
 
-            <ImageGallery
-                 showFullscreenButton={false}
-                 showPlayButton={false}
-    items={[
-      { original: difficultiesImage1, fullscreen:difficultiesImage1, thumbnail: difficultiesImage1, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
-    ]}
-  />
+<div className="carousel sm:w-full max-w-xl h-80">
+  <div id="slide1" className="carousel-item relative w-full h-full">
+    <img alt='' src={difficultiesImage1} className="w-full h-full object-cover" />
+    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide1" className="btn btn-circle">❮</a> 
+      <a href="#slide1" className="btn btn-circle">❯</a>
+    </div>
+  </div> 
+ 
+</div>
           </div>
         </motion.div>
 
@@ -401,7 +431,7 @@ function AboutUs() {
           <div className="flex flex-wrap w-full 2xl:justify-evenly items-center gap-3 p-2">
             <div className="max-w-2xl flex flex-col gap-2">
               <motion.p
-                className=" text-2xl font-bold"
+                className=" text-4xl font-bold"
                 viewport={{ once: true }}
                 initial="offscreen"
                 whileInView="onscreen"
@@ -421,14 +451,23 @@ function AboutUs() {
             </div>
 
       
-            <ImageGallery
-            showFullscreenButton={false}
-            showPlayButton={false}
-    items={[
-      { original: breakImg1, fullscreen:breakImg1, thumbnail: breakImg1, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
-      { original: breakImg2, fullscreen:breakImg2, thumbnail: breakImg2, originalClass: "max-w-lg", thumbnailClass: "w-24 h-16" },
-    ]}
-  />
+ <div className="carousel sm:w-full max-w-xl h-80">
+  <div id="slide1" className="carousel-item relative w-full h-full">
+    <img alt='' src={breakImg1} className="w-full h-full object-cover" />
+    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide2" className="btn btn-circle">❮</a> 
+      <a href="#slide2" className="btn btn-circle">❯</a>
+    </div>
+  </div> 
+  <div id="slide2" className="carousel-item relative w-full h-full">
+    <img alt='' src={breakImg2} className="w-full h-full object-cover" />
+    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+      <a href="#slide1" className="btn btn-circle">❮</a> 
+      <a href="#slide1" className="btn btn-circle">❯</a>
+    </div>
+  </div> 
+
+</div>
 
 
          

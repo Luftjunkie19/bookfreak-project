@@ -7,12 +7,20 @@ import { increment } from 'firebase/database';
 import { httpsCallable } from 'firebase/functions';
 import { BsFillDoorOpenFill } from 'react-icons/bs';
 import {
+  FaBook,
   FaFacebookMessenger,
   FaInfo,
+  FaMoneyBillWave,
   FaPencilAlt,
   FaTrashAlt,
-  FaUserPlus,
 } from 'react-icons/fa';
+import {
+  FaTicket,
+  FaTicketSimple,
+  FaUser,
+} from 'react-icons/fa6';
+import { FiType } from 'react-icons/fi';
+import { GrUserManager } from 'react-icons/gr';
 import {
   useDispatch,
   useSelector,
@@ -31,14 +39,11 @@ import {
 
 import { functions } from '../../';
 import alertTranslations from '../../assets/translations/AlertMessages.json';
-import competitionsTranslations
-  from '../../assets/translations/CompetitionsTranslations.json';
 import competitionTranslations
   from '../../assets/translations/CompetitionsTranslations.json';
 import translations from '../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
-import AllMembersModal from '../../components/AllMembersModal';
 import CompetitionChat from '../../components/ChatComponents/CommunityChat';
 import Loader from '../../components/Loader';
 import Ranking from '../../components/Ranking';
@@ -216,11 +221,7 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
 
   return (
     <div
-      className={`min-h-screen h-full ${
-        document &&
-        !members.find((member) => member.value.id === user.uid) &&
-        "flex flex-col justify-center items-center" 
-      } ${!isDarkModed && "pattern-bg"}`}
+      className={`min-h-screen h-full  ${!isDarkModed && "pattern-bg"}`}
     >
       {isPending && <Loader />}
 
@@ -432,129 +433,173 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
           (member) =>
             member.value.id === user.uid && member.belongsTo === document.id
         ) && (
-          <div className="flex sm:flex-col xl:flex-row justify-between w-full gap-4 p-2 py-6">
-            <div className={`h-full sm:w-full max-w-4xl gap-6 flex flex-col items-center justify-between rounded-md py-4 ${isDarkModed ? "text-white" : 'text-black'}`}>
-              <p className="sm:text-2xl lg:text-4xl font-bold">
-                {document.competitionTitle}
-              </p>
-              <div className="flex sm:flex-col gap-4 2xl:flex-row w-full justify-around border-t-2 border-accColor p-4">
-                <div className='self-start'>
-                  <h3 className=" text-lg font-semibold">
-                    {document.competitionsName}
-                  </h3>
-                  <AllMembersModal users={members} />
-             
+               <div className="flex flex-col justify-between max-w-[95rem] gap-4 py-4">
+          <div className={`h-full ${isDarkModed ? "text-white" : "text-black"} max-w-6xl flex flex-col items-center rounded-md py-4`}>
+            <p className="sm:text-2xl lg:text-4xl font-bold border-b-2 border-accColor  p-4">
+              {document.competitionTitle}
+            </p>
 
-                  <p>
-                    {reuseableTranslations.createdBy[selectedLanguage]}:{" "}
-                    <Link
-                      className="link hover:text-yellow-400 duration-500 transition-all"
-                      to={`/user/profile/${document.createdBy.id}`}
-                    >
-                      {document.createdBy.displayName}
-                    </Link>
+
+            <div className="self-start sm:flex-col-reverse lg:flex-row px-2 py-6 flex gap-4 items-center">
+              <button className="btn bg-accColor border-none text-white" onClick={sendJoiningRequest}>{reuseableTranslations.joinTo.competition[selectedLanguage]}</button>
+              {competitionExpirationDate > 0 && (
+                  <p className="text-xl">
+                    {
+                      competitionTranslations.competitionObject.expiration
+                        .notExpired.part1[selectedLanguage]
+                    }{" "}
+                    <span className="text-3xl font-bold text-red-500">
+                      {Math.round(competitionExpirationDate) > 0 && (
+                        <span>
+                          {
+                            competitionTranslations.competitionObject.expiration
+                              .notExpired.part2.notToday.expiresIN[
+                              selectedLanguage
+                            ]
+                          }{" "}
+                          {Math.round(competitionExpirationDate)}{" "}
+                          {
+                            competitionTranslations.competitionObject.expiration
+                              .notExpired.part2.notToday[selectedLanguage]
+                          }
+                        </span>
+                      )}
+                      {Math.round(competitionExpirationDate) === 0 && (
+                        <span>
+                          {
+                            competitionTranslations.competitionObject.expiration
+                              .notExpired.part2.today[selectedLanguage]
+                          }{" "}
+                        </span>
+                      )}
+                    </span>
                   </p>
-                </div>
-            
-
-                {competitionExpirationDate > 0 && (
-                  <button
-                    className="btn bg-accColor hover:bg-info text-white border-none max-w-80"
-                    onClick={sendJoiningRequest}
-                  >
-                    {reuseableTranslations.joinTo.competition[selectedLanguage]}{" "}
-                    <FaUserPlus />
-                  </button>
                 )}
-              </div>
 
-              <div className="self-start gap-3">
-              {document.prize.moneyPrize &&
+                {competitionExpirationDate <= 0 && (
+                  <p className="text-xl">
+                    {
+                      competitionTranslations.competitionObject.expiration
+                        .Expired.part1[selectedLanguage]
+                    }{" "}
+                    <span className="text-3xl font-bold text-red-500">
+                      {competitionExpirationDate <= -1
+                        ? `${Math.round(competitionExpirationDate) * -1} ${
+                            competitionTranslations.competitionObject.expiration
+                              .Expired.part2.notToday[selectedLanguage]
+                          }`
+                        : ` ${competitionTranslations.competitionObject.expiration.Expired.part2.today[selectedLanguage]}`}
+                    </span>
+                  </p>
+                )}
+            </div>
+            
+           
+              <div className="flex sm:flex-wrap sm:justify-around lg:justify-start lg:flex-nowrap lg:flex-row gap-4 w-full px-2" >
+
+                <div className=" bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    <FiType size={36} />
+                    <p className="text-2xl">Type</p>
+                  </div>
+                  <p className="text-lg">{document.competitionsName}</p>
+                </div>
+                
+                <div className="bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    <FaUser size={36}/>
+                    <p className="text-2xl"> {members.filter((member) => member.belongsTo === document.id).length}</p>
+                  </div>
+                  <p className="text-lg">{
+                    competitionTranslations.competitionObject.membersAttending[
+                      selectedLanguage
+                    ]
+                  }</p>
+                </div>
+
+           <div className="bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    <GrUserManager size={32} />
+     <Link
+                    className="link hover:text-yellow-400 duration-500 transition-all"
+                    to={`/user/profile/${document.createdBy.id}`}
+                  >
+          <img className="w-12 h-12 rounded-full" src={document.createdBy.photoURL} alt="" />    
+                  </Link>
+            </div>
+             
+          <p className="text-lg">{reuseableTranslations.createdBy[selectedLanguage]}</p>
+           </div>
+              
+               {document.prize.moneyPrize &&
                 document.prize.moneyPrize.amount > 0 && (
-                  <div className="p-2">
-                    <p className="font-bold text-4xl">{competitionsTranslations.competitionObject.prizeFor[selectedLanguage]}</p>
+                <div className="bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    <FaMoneyBillWave />
                     <span className="text-2xl text-yellow-500 font-semibold">
                       {(document.prize.moneyPrize.amount / 100).toFixed(2)}{" "}
                       {document.prize.moneyPrize.currency.toUpperCase()}
                     </span>
                   </div>
+                    <p className="font-bold text-yellow-500 text-lg">{competitionTranslations.competitionObject.prizeFor[selectedLanguage]}</p>
+                  </div>
                 )}
               {document.prize.itemPrize !== undefined && (
-                <>
-                  <p className="text-3xl font-bold">{competitionsTranslations.competitionObject.prizeDetails[selectedLanguage]}:</p>
-                  <p className="text-lg font-semibold">
-                    {document.prize.itemPrize.title}
+                <div className="bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    {document.prize.itemPrize.typeOfPrize === "book" ? <FaBook size={36} /> : document.prize.itemPrize.typeOfPrize === "ticket" ? <FaTicket size={36}/> : <FaTicketSimple size={36}/>}
+                      <p className="text-2xl capitalize font-semibold">
+                    {document.prize.itemPrize.typeOfPrize}
                   </p>
-                </>
+                  </div>
+                  <p className=" text-lg font-bold text-yellow-500">{competitionTranslations.competitionObject.prizeFor[selectedLanguage]}</p>
+                </div>
               )}
-            </div>
-              {document && document.description.trim() !== "" && (
-                <div className={`flex flex-col ${isDarkModed ? "text-white" : 'text-black'} p-3 w-full`}>
-                  {competitionExpirationDate > 0 && (
-                    <p>
-                      {
-                        competitionTranslations.competitionObject.expiration
-                          .notExpired.part1[selectedLanguage]
-                      }{" "}
-                      {
-                        competitionTranslations.competitionObject.expiration
-                          .notExpired.part2.notToday.expiresIN[selectedLanguage]
-                      }
-                      <span className="text-2xl font-bold text-red-500">
-                        {Math.round(competitionExpirationDate) > 0 && (
-                          <span>
-                            {" "}
-                            {Math.round(competitionExpirationDate)}{" "}
-                            {
-                              competitionTranslations.competitionObject
-                                .expiration.notExpired.part2.notToday[
-                                selectedLanguage
-                              ]
-                            }
-                          </span>
-                        )}
-                      </span>
-                    </p>
-                  )}
+                
+              </div>
+         
 
-                  {competitionExpirationDate <= 0 && (
-                    <p>
-                      {
-                        competitionTranslations.competitionObject.expiration
-                          .Expired.part1[selectedLanguage]
-                      }{" "}
-                      <span className="text-2xl font-bold text-red-500">
-                        {" "}
-                        {competitionExpirationDate <= -1
-                          ? `${Math.round(competitionExpirationDate) * -1} ${
-                              competitionTranslations.competitionObject
-                                .expiration.Expired.part2.notToday[
-                                selectedLanguage
-                              ]
-                            }`
-                          : ` ${competitionTranslations.competitionObject.expiration.Expired.part2.today[selectedLanguage]}`}
-                      </span>
-                    </p>
-                  )}
-                  <h2 class="text-3xl font-extralight pb-2">
-                    {translations.descriptionTextarea.label[selectedLanguage]}:
-                  </h2>
-                  <p class="overflow-y-scroll overflow-x-hidden h-40 py-2 pr-4">
-                    {document.description}
+            <div className="self-start gap-3 py-2 w-full">
+            <p className="text-2xl font-bold">{competitionTranslations.competitionObject.prizeDetails[selectedLanguage]}:</p>
+             {document.prize.itemPrize !== undefined && (
+                <div className="m-1 max-w-lg px-2 py-1 h-48 bg-accColor/20 rounded-lg border border-primeColor overflow-y-auto">
+                  <p className="text-base font-semibold">
+                    {document.prize.itemPrize.title}
                   </p>
                 </div>
               )}
+                
             </div>
 
-            <Ranking
-              communityObject={document}
-              communityMembers={members.filter(
-                (member) => member.belongsTo === document.id
-              )}
-              expirationTimeNumber={document.expiresAt}
-              expirationTime={competitionExpirationDate}
-            />
+            {document && document.description.trim() !== "" && (
+              <div class={`flex flex-col gap-2 ${isDarkModed ? "text-white" : "text-black"} w-full`}>
+
+                <h2 class="text-3xl font-bold">
+                  {
+                    translations.descriptionTextarea.label[
+                      selectedLanguage
+                    ]
+                  }
+                  :
+                </h2>
+                <p class="overflow-y-scroll overflow-x-hidden h-40 p-2 rounded-lg bg-accColor/20 max-w-xl mx-2">
+                  {document.description}
+                </p>
+              </div>
+            )}
+                         
           </div>
+          <div className="max-w-3xl p-2">    
+          <Ranking
+            expirationTimeNumber={document.expiresAt}
+            communityMembers={members.filter(
+              (member) => member.belongsTo === id
+            )}
+            communityObject={document}
+            expirationTime={competitionExpirationDate}
+          />
+</div>
+        </div>
         )}
       {document &&
         members.find(

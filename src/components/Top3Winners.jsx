@@ -1,98 +1,57 @@
 import React from 'react';
 
-import { FaCrown } from 'react-icons/fa6';
 import { useSelector } from 'react-redux';
 
 import defaultImg
   from '../assets/default-avatar-profile-trendy-style-social-media-user-icon-187599373.jpg';
-import competitionTranslations
-  from '../assets/translations/CompetitionsTranslations.json';
 
 function Top3Winners({ topWinners }) {
   // Create an artificial second place if there is only one person
   const secondPlace = { photoURL: defaultImg, nickname: "Second Place" };
   // Check if there is a third winner
-  const hasThirdPlace = topWinners.length >= 2;
+  const hasThirdPlace = topWinners.length > 2;
   // Use default values for the third place if not present
   const thirdPlace = hasThirdPlace
-    ? topWinners[1]
+    ? topWinners[2]
     : { photoURL: defaultImg, nickname: "Third Place" };
     const isDarkModed = useSelector((state) => state.mode.isDarkMode);
     const selectedLanguage = useSelector(
       (state) => state.languageSelection.selectedLangugage
     );
   return (
-    <div className="sm:w-full md:w-1/2 xl:w-1/2">
-      <div className="flex flex-col justify-center items-center w-full">
-        <div className="flex sm:flex-col md:flex-row gap-5 justify-center items-center w-full min-h-[24rem]">
-          {topWinners.map((winner, i) => (
-            <div
-              key={i}
-              className={`${
-                i === 0
-                  ? `md:self-start md:order-2 md:justify-self-start`
-                  : `md:self-center md:justify-self-center`
-              } gap-2 flex flex-col ${
-                i === 1 ? "md:order-1" : "md:order-3"
-              } sm:w-full `}
-            >
-              <div className="">
-                {i === 0 && (
-                  <FaCrown className="mx-auto text-yellow-400 text-2xl" />
-                )}
-                <img
-                  src={winner?.photoURL}
-                  alt=""
-                  className={`w-16 h-16 md:h-20 md:w-20 ${
-                    i === 0 && "md:h-24 md:w-24"
-                  } rounded-full object-cover mx-auto`}
-                />
-              </div>
-              <p
-                className={`text-center text-white text-lg font-semibold ${
-                  i === 0
-                    ? "text-yellow-500"
-                    : i === 1
-                      ? "text-gray-400"
-                      : " text-amber-800"
-                }`}
-              >
-                {winner?.nickname}
-              </p>
+<>
+      <div className="flex w-full sm:flex-col items-center justify-center md:flex-row gap-12 py-3">
+        {topWinners.length < 2 && <div className='flex md:order-1 h-fit  rounded-lg bg-discord  p-4 flex-col gap-3 justify-center items-center'>
+          <div className="flex  w-full gap-2 sm:flex-row justify-around items-center md:flex-col">
+          <img src={secondPlace.photoURL} className='w-16 h-16 rounded-full' alt="" />
+          <p className='text-white text-center'>{secondPlace.nickname}</p>
+          </div>
+            <p>#{2}</p>
+          <p>{0} points</p>
+        </div>}
+
+        {topWinners.map((contender, i) => (<div className={`flex sm:w-full max-w-xs rounded-lg bg-discord py-4 px-8 flex-col gap-3 justify-center items-center ${i === 0 ? 'md:mb-8 md:order-2' : ''}`}>
+           <div className="flex gap-2 justify-around w-full  sm:flex-row items-center md:flex-col">
+          <img className={`${i === 0 ? 'w-24 h-24 rounded-full' : 'w-16 h-16 rounded-full'}`} src={contender.photoURL} alt='' />
+            <p className={`${i === 0 ? 'text-yellow-400 text-lg' : 'text-white'}`}>{contender.nickname}</p>
             </div>
-          ))}
-          {/* Display artificial second place if there is only one person */}
-          {topWinners.length < 2 && (
-            <div className="flex flex-col items-center md:order-1">
-              <img
-                src={secondPlace.photoURL}
-                alt=""
-                className="w-auto h-auto max-w-16 max-h-16 md:max-w-20 md:max-h-20 rounded-full object-cover"
-              />
-              <p className="text-center font-semibold text-gray-400 text-lg">
-              {competitionTranslations.competitionObject.expiration.rankingWinner.secondPlace[selectedLanguage]}
-              </p>
+          <p className={`${i === 0 ? 'text-yellow-400 text-lg' : 'text-white'}`}>#{i + 1}</p>
+          <p>{contender.gainedPoints} points</p>
+</div>))}
+        
+        {thirdPlace && <div className='flex sm:w-full max-w-xs md:order-3 h-fit  rounded-lg bg-discord  p-4 flex-col gap-3 justify-center items-center'>
+               <div className="flex gap-2 justify-around w-full sm:flex-row items-center md:flex-col">
+          <img src={thirdPlace.photoURL} className='w-16 h-16 rounded-full' alt="" />
+            <p className='text-white text-center'>{thirdPlace.nickname}</p>
             </div>
-          )}
-          {/* Display default third place if not present */}
-          {!hasThirdPlace && (
-            <div className="flex flex-col items-center md:order-3">
-              <img
-                src={thirdPlace.photoURL}
-                alt=""
-                className="w-auto h-auto max-w-16 max-h-16 md:max-w-20 md:max-h-20 rounded-full object-cover"
-              />
-              <p className="text-center text-amber-800 font-semibold text-lg">
-                {competitionTranslations.competitionObject.expiration.rankingWinner.thirtPlace[selectedLanguage]}
-              </p>
-            </div>
-          )}
+          <p className='text-white'>#{3}</p>
+          <p>{0} points</p>
+        </div>}
+        
+
         </div>
-        <p className="text-center text-xl text-orange-400 font-semibold py-2">
-       {competitionTranslations.competitionObject.expiration.rankingWinner.winnerMsg[selectedLanguage]}    {topWinners[0]?.nickname}
-        </p>
-      </div>
-    </div>
+</>
+
   );
 }
 

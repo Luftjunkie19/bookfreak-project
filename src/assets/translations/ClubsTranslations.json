@@ -44,9 +44,9 @@
       "pl": "Społeczność"
     },
     "pagesRequiredText": {
-      "eng": "Read pages required to join",
-      "ger": "Erforderliche Menge der gelesenen Seiten, um beizutreten",
-      "pl": "Wymagana ilość przeczytanych stron aby dołączyć"
+      "eng": "Required to join",
+      "ger": "Beitrittserfordert",
+      "pl": "Wymagane"
     }
   }
 }

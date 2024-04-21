@@ -13,6 +13,15 @@ import {
   FaTrashAlt,
 } from 'react-icons/fa';
 import {
+  FaBook,
+  FaMoneyBillWave,
+  FaTicket,
+  FaTicketSimple,
+  FaUser,
+} from 'react-icons/fa6';
+import { FiType } from 'react-icons/fi';
+import { GrUserManager } from 'react-icons/gr';
+import {
   useDispatch,
   useSelector,
 } from 'react-redux';
@@ -383,72 +392,22 @@ const dispatch=useDispatch();
         )}
 
       {document && (
-        <div className="flex sm:flex-col xl:flex-row justify-between max-w-[95rem] gap-4 py-4">
-          <div className={`h-full ${isDarkModed ? "text-white" : "text-black"} max-w-4xl flex flex-col items-center rounded-md py-4`}>
-            <p className="sm:text-2xl lg:text-4xl font-bold p-2">
+        <div className="flex flex-col justify-between max-w-[95rem] gap-4 py-4">
+          <div className={`h-full ${isDarkModed ? "text-white" : "text-black"} max-w-6xl flex flex-col items-center rounded-md py-4`}>
+            <p className="sm:text-2xl lg:text-4xl font-bold border-b-2 border-accColor  p-4">
               {document.competitionTitle}
             </p>
-            <div className="flex sm:flex-col gap-4 2xl:flex-row w-full justify-around 2xl:items-center border-t-2 border-accColor p-4">
-              <p className="text-2xl font-thin">
-                {reuseableTranslations.detailsText[selectedLanguage]}:
-              </p>
-              <div >
-                <h3 className=" text-lg font-semibold">
-                  {document.competitionsName}
-                </h3>
-                <p className=" font-medium">
-                  {
-                    members.filter((member) => member.belongsTo === document.id)
-                      .length
-                  }{" "}
-                  {
-                    translations.competitionObject.membersAttending[
-                      selectedLanguage
-                    ]
-                  }
-                </p>
-                <p>
-                  {reuseableTranslations.createdBy[selectedLanguage]}:{" "}
-                  <Link
-                    className="link hover:text-yellow-400 duration-500 transition-all"
-                    to={`/user/profile/${document.createdBy.id}`}
-                  >
-                    {document.createdBy.displayName}
-                  </Link>
-                </p>
-                <AllMembersModal users={members} />
-              </div>
-            </div>
-            <div className="self-start gap-3 px-2">
-              {document.prize.moneyPrize &&
-                document.prize.moneyPrize.amount > 0 && (
-                  <div className="p-2">
-                    <p className="font-bold text-4xl">{translations.competitionObject.prizeFor[selectedLanguage]}</p>
-                    <span className="text-2xl text-yellow-500 font-semibold">
-                      {(document.prize.moneyPrize.amount / 100).toFixed(2)}{" "}
-                      {document.prize.moneyPrize.currency.toUpperCase()}
-                    </span>
-                  </div>
-                )}
-              {document.prize.itemPrize !== undefined && (
-                <>
-                  <p className="text-3xl font-bold">{translations.competitionObject.prizeDetails[selectedLanguage]}:</p>
-                  <p className="text-lg font-semibold">
-                    {document.prize.itemPrize.title}
-                  </p>
-                </>
-              )}
-            </div>
 
-            {document && document.description.trim() !== "" && (
-              <div class={`flex flex-col ${isDarkModed ? "text-white" : "text-black"} p-3 w-full`}>
-                {competitionExpirationDate > 0 && (
-                  <p>
+
+            <div className="self-start sm:flex-col-reverse lg:flex-row px-2 py-6 flex gap-4 items-center">
+               <AllMembersModal users={members} />
+              {competitionExpirationDate > 0 && (
+                  <p className="text-xl">
                     {
                       competitionTranslations.competitionObject.expiration
                         .notExpired.part1[selectedLanguage]
                     }{" "}
-                    <span className="text-2xl font-bold text-red-500">
+                    <span className="text-3xl font-bold text-red-500">
                       {Math.round(competitionExpirationDate) > 0 && (
                         <span>
                           {
@@ -477,12 +436,12 @@ const dispatch=useDispatch();
                 )}
 
                 {competitionExpirationDate <= 0 && (
-                  <p>
+                  <p className="text-xl">
                     {
                       competitionTranslations.competitionObject.expiration
                         .Expired.part1[selectedLanguage]
                     }{" "}
-                    <span className="text-2xl font-bold text-red-500">
+                    <span className="text-3xl font-bold text-red-500">
                       {competitionExpirationDate <= -1
                         ? `${Math.round(competitionExpirationDate) * -1} ${
                             competitionTranslations.competitionObject.expiration
@@ -492,8 +451,89 @@ const dispatch=useDispatch();
                     </span>
                   </p>
                 )}
+            </div>
+            
+           
+              <div className="flex sm:flex-wrap sm:justify-around lg:justify-start lg:flex-nowrap lg:flex-row gap-4 w-full px-2" >
 
-                <h2 class="text-3xl font-extralight pb-2">
+                <div className=" bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    <FiType size={36} />
+                    <p className="text-2xl">Type</p>
+                  </div>
+                  <p className="text-lg">{document.competitionsName}</p>
+                </div>
+                
+                <div className="bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    <FaUser size={36}/>
+                    <p className="text-2xl"> {members.filter((member) => member.belongsTo === document.id).length}</p>
+                  </div>
+                  <p className="text-lg">{
+                    translations.competitionObject.membersAttending[
+                      selectedLanguage
+                    ]
+                  }</p>
+                </div>
+
+           <div className="bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    <GrUserManager size={32} />
+     <Link
+                    className="link hover:text-yellow-400 duration-500 transition-all"
+                    to={`/user/profile/${document.createdBy.id}`}
+                  >
+          <img className="w-12 h-12 rounded-full" src={document.createdBy.photoURL} alt="" />    
+                  </Link>
+            </div>
+             
+          <p className="text-lg">{reuseableTranslations.createdBy[selectedLanguage]}</p>
+           </div>
+              
+               {document.prize.moneyPrize &&
+                document.prize.moneyPrize.amount > 0 && (
+                <div className="bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    <FaMoneyBillWave />
+                    <span className="text-2xl text-yellow-500 font-semibold">
+                      {(document.prize.moneyPrize.amount / 100).toFixed(2)}{" "}
+                      {document.prize.moneyPrize.currency.toUpperCase()}
+                    </span>
+                  </div>
+                    <p className="font-bold text-yellow-500 text-lg">{translations.competitionObject.prizeFor[selectedLanguage]}</p>
+                  </div>
+                )}
+              {document.prize.itemPrize !== undefined && (
+                <div className="bg-accColor justify-between px-2 py-4 max-w-xs w-full rounded-lg flex flex-col gap-8">
+                  <div className="flex justify-between items-center">
+                    {document.prize.itemPrize.typeOfPrize === "book" ? <FaBook size={36} /> : document.prize.itemPrize.typeOfPrize === "ticket" ? <FaTicket size={36}/> : <FaTicketSimple size={36}/>}
+                      <p className="text-2xl capitalize font-semibold">
+                    {document.prize.itemPrize.typeOfPrize}
+                  </p>
+                  </div>
+                  <p className=" text-lg font-bold text-yellow-500">{translations.competitionObject.prizeFor[selectedLanguage]}</p>
+                </div>
+              )}
+                
+              </div>
+         
+
+            <div className="self-start gap-3 py-2 w-full">
+            <p className="text-2xl font-bold">{translations.competitionObject.prizeDetails[selectedLanguage]}:</p>
+             {document.prize.itemPrize !== undefined && (
+                <div className="m-1 max-w-lg px-2 py-1 h-48 bg-accColor/20 rounded-lg border border-primeColor overflow-y-auto">
+                  <p className="text-base font-semibold">
+                    {document.prize.itemPrize.title}
+                  </p>
+                </div>
+              )}
+                
+            </div>
+
+            {document && document.description.trim() !== "" && (
+              <div class={`flex flex-col gap-2 ${isDarkModed ? "text-white" : "text-black"} w-full`}>
+
+                <h2 class="text-3xl font-bold">
                   {
                     formsTranslations.descriptionTextarea.label[
                       selectedLanguage
@@ -501,11 +541,12 @@ const dispatch=useDispatch();
                   }
                   :
                 </h2>
-                <p class="overflow-y-scroll overflow-x-hidden h-40 py-2 pr-4">
+                <p class="overflow-y-scroll overflow-x-hidden h-40 p-2 rounded-lg bg-accColor/20 max-w-xl mx-2">
                   {document.description}
                 </p>
               </div>
             )}
+                         
           </div>
           <div className="max-w-3xl p-2">    
           <Ranking

@@ -2,9 +2,9 @@ import React from 'react';
 
 import { BarChart } from '@mui/x-charts/BarChart';
 
-export function ChartBar({readerObjects,
-bookObjects}) {
-      const userReadingProgressData = readerObjects
+export function ChartBar({ readerObjects,
+  bookObjects }) {
+  const userReadingProgressData = readerObjects
     .map((reader) => {
       const book = bookObjects.find((b) => b.id === reader.bookReadingId);
       if (!book) {
@@ -19,19 +19,21 @@ bookObjects}) {
         y: proportion,
       };
     })
-        .filter((data) => data !== null);
+    .filter((data) => data !== null);
     
-    const xLabels = userReadingProgressData.map((data) => data.x);
+  const xLabels = userReadingProgressData.map((data) => data.x);
   const userReadingProgress = userReadingProgressData.map((data) => data.y)
     
   return (
-      <BarChart
-          sx={{ color: "whitesmoke" }}
-             yAxis={[{ scaleType: "linear", position: "left", label: "%" }]}
-         xAxis={[{ scaleType: 'band', data: xLabels }]}
-          series={[{ data: userReadingProgress }]}
-          width={500}
-      height={300}/>
+    <BarChart
+      className='max-w-md'
+      sx={{ color: "whitesmoke", maxWidth: 448, height: 256, minWidth: 280, width: "100%" }}
+      yAxis={[{ scaleType: "linear", position: "left", label: "%" }]}
+      xAxis={[{ scaleType: 'band', data: xLabels }]}
+      series={[{ data: userReadingProgress }]}
+  width={300}
+      height={300}
+       />
       )
 }
 
@@ -55,12 +57,13 @@ export function UserComparisonBarChart({ readerObjects, bookObjects }) {
   const userComparison = userComparisonData.map((data) => data.y);
 
       return (
-      <BarChart
-          sx={{ color: "whitesmoke" }}
+        <BarChart
+          className='max-w-md'
+          sx={{ color: "whitesmoke", maxWidth: 448, height: 256, minWidth: 280, width: "100%" }}
              yAxis={[{ scaleType: "linear", position: "left", label: "%" }]}
          xAxis={[{ scaleType: 'band', data: xLabels }]}
           series={[{ data: userComparison }]}
-          width={500}
+          width={300}
       height={300}/>
       )
     
@@ -81,12 +84,12 @@ export function BookCategoryChart({ readerObjects, bookObjects }) {
   const xLabels = bookCategoryData.map((data) => data.x);
   const totalPagesReadByCategory = bookCategoryData.map((data) => data.y);
    return (
-      <BarChart
-          sx={{ color: "whitesmoke" }}
+      <BarChart className='max-w-md'
+        sx={{ color: "whitesmoke", maxWidth: 448, height: 256, minWidth: 280, width: "100%" }}
              yAxis={[{ scaleType: "linear", position: "left", label: "%" }]}
          xAxis={[{ scaleType: 'band', data: xLabels }]}
           series={[{ data: totalPagesReadByCategory }]}
-          width={500}
+          width={300}
       height={300}/>
       )
 }

@@ -207,7 +207,7 @@ let array=[];
       {(expirationTime > 0 || !expirationTime) && (
         <TableContainer
           component={Paper}
-          className="sm:w-full lg:max-w-lg xl:max-w-3xl bg-accColor self-center"
+          className="sm:w-full lg:max-w-xl xl:max-w-3xl bg-accColor "
         >
           <Table aria-label="simple table">
             <TableHead>
@@ -332,7 +332,7 @@ let array=[];
 
 
       {filteredReaders().length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex sm:flex-col lg:flex-row gap-1">
           <UserComparisonBarChart
             readerObjects={filteredReaders()}
             bookObjects={filteredBooks()}

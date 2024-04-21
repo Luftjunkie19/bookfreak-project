@@ -9,6 +9,12 @@ import {
   FaPencilAlt,
   FaTrashAlt,
 } from 'react-icons/fa';
+import { FaUsers } from 'react-icons/fa6';
+import {
+  GiBookmarklet,
+  GiRibbonShield,
+} from 'react-icons/gi';
+import { GrUserManager } from 'react-icons/gr';
 import {
   useDispatch,
   useSelector,
@@ -289,73 +295,84 @@ const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
 
       {document && (
         <>
-          <div className="flex sm:flex-col xl:flex-row w-full h-full justify-between items-center px-4 gap-5">
-            <div className="sm:h-full sm:w-full xl:max-w-3xl py-6 flex flex-col lg:flex-row xl:flex-col gap-6">
-              <div className="sm:w-36 sm:h-36 lg:w-64 lg:h-64">
+           <div className={`flex justify-between w-full h-full flex-col  px-4 py-4 gap-6 ${isDarkModed ? "text-white" : 'text-black'}`}>
+            <div className="sm:w-full max-w-7xl h-full flex flex-col rounded-md py-4">
+              <div className="sm:w-36 sm:h-36 md:w-48 md:h-48 lg:h-64 lg:w-64 sm:self-center lg:self-start">
                 <img
-                  className="w-full h-full rounded-full"
+                  className="w-full h-full rounded-full object-cover border-accColor border-2"
                   src={document.clubLogo}
                   alt=""
                 />
               </div>
-              <div className={`${isDarkModed ? "text-white" : "text-black"} flex flex-col gap-2`}>
-                <p className="font-bold text-3xl">
-                  {reusableTranslations.detailsText[selectedLanguage]}:{" "}
-                </p>
-                <div className="flex flex-col gap-2 p-1">
-                  <p>
-                    <span className="text-lg font-semibold">
-                      {translations.clubObject.clubsName[selectedLanguage]}
-                    </span>
-                    : {document.clubsName}
-                  </p>
-                  <p>
-                    <span className="text-lg font-semibold">
-                      {translations.clubObject.community[selectedLanguage]}
-                    </span>
-                    :{" "}
-                    {members.filter((member) => member.belongsTo === id).length}{" "}
-                    {translations.clubObject.members[selectedLanguage]}
-                  </p>
-                  <p>
-                    <span className="text-lg font-semibold">
-                      {
+              <div className="flex sm:flex-wrap sm:justify-around lg:justify-start lg:flex-nowrap gap-6 w-full mt-6">
+                
+                  <div className="flex sm:w-72 lg:w-80 flex-col gap-8 p-4 rounded-lg bg-accColor">
+                  <div className="flex justify-between items-center w-full">
+                    <GiRibbonShield size={36}/>
+                  <p className="text-lg">Club</p>  
+                  </div>
+                    <p className=" font-semibold"> {document.clubsName}</p>
+              </div>
+              
+                   
+                  <div className="flex sm:w-72 lg:w-80 flex-col gap-8 p-4 rounded-lg bg-accColor">
+                  <div className="flex justify-between items-center w-full">
+                    <FaUsers size={36}/>
+                  <p className="text-lg">{members.filter((member) => member.belongsTo === id).length}</p>  
+                  </div>
+                    <p className="  font-semibold">{translations.clubObject.members[selectedLanguage]}</p>
+              </div>
+
+          
+                 <div className="flex sm:w-72 lg:w-80 flex-col gap-8 p-4 rounded-lg bg-accColor">
+                  <div className="flex justify-between items-center w-full">
+                    <GiBookmarklet size={36}/>
+                  <p className="text-lg">{document.requiredPagesRead}</p>  
+                  </div>
+                    <p className=" font-semibold">  {
                         translations.clubObject.pagesRequiredText[
                           selectedLanguage
                         ]
-                      }
-                    </span>
-                    : {document.requiredPagesRead}{" "}
-                    {reusableTranslations.pagesText[selectedLanguage]}
-                  </p>
-                </div>
-                {document.description && document.description.trim() !== "" && (
-                  <div class={`flex flex-col w-full ${isDarkModed ? "text-white" : "text-black"}`}>
-                    <h2 class="text-3xl font-extralight pb-2">
-                      {
-                        formsTranslations.descriptionTextarea.label[
-                          selectedLanguage
-                        ]
-                      }
-                      :
-                    </h2>
-                    <p class={`overflow-y-scroll overflow-x-hidden h-40 py-2 pr-4 ${isDarkModed ? "text-white" : "text-black"} `}>
-                      {document.description}
-                    </p>
-                  </div>
-                )}
+                      }</p>
               </div>
-            </div>
-            <div className="sm:w-full xl:max-w-5xl mx-1 my-4">
-<p className={`text-2xl font-semibold text-center p-3 ${isDarkModed ? "text-white" : "text-black"}`}>Club's Data:</p>
 
-              <Ranking
-                communityObject={document}
-                communityMembers={members.filter(
-                  (member) => member.belongsTo === id
-                )}
-              />
+                <div className="flex sm:w-72 lg:w-80 flex-col gap-8 p-4 rounded-lg bg-accColor">
+                  <div className="flex justify-between items-center w-full">
+                    <GrUserManager size={36}/>
+                     <Link to={`/user/profile/${document.createdBy.id}`}>
+                <img src={document.createdBy.photoURL} alt="" className="w-10 h-10 rounded-full"/>
+                    </Link>
+                  </div>
+                    <p className=" font-semibold">{reusableTranslations.createdBy[selectedLanguage]}</p>
+              </div>
+                
+                
+              </div>
+              {document && document.description.trim() !== "" && (
+                <div class="flex flex-col gap-4 text-white py-3 w-full">
+
+                  <h2 class="text-3xl font-extralight ">
+                    {
+                      formsTranslations.descriptionTextarea.label[
+                        selectedLanguage
+                      ]
+                    }
+                    :
+                  </h2>
+                  <p class="overflow-y-scroll max-w-xl bg-accColor/60 rounded-lg overflow-x-hidden h-40 p-2">
+                    {document.description}
+                  </p>
+                 
+                </div>
+              )}
             </div>
+
+            <Ranking
+              communityId={id}
+              communityMembers={members.filter((member) => {
+                return member.belongsTo === id;
+              })}
+            />
           </div>
         </>
       )}

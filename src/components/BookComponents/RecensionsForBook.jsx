@@ -35,7 +35,6 @@ function RecensionsForBook({
   const [showMore, setShowMore] = useState(false);
   const handlePublish = (e) => {
     e.preventDefault();
-    console.log(recensions);
     publishRecension(resension, bookRate);
   };
   const selectedLanguage = useSelector(
@@ -59,68 +58,140 @@ function RecensionsForBook({
     setShowMore(!showMore);
   };
 
-  const [selectedFilters, setSelectedFilters] = useState([]);
-  const [selectedSort, setSelectedSort] = useState("");
+const [selectedFilters, setFilters] = useState([]);
+  const [selectedSorting, setSorting] = useState("");
+  const filterOptions = [
+    {
+      label: "⭐ 10.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 10);
+      },
+    },
+    {
+      label: "⭐ 9.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 9);
+      },
+    },
+    {
+      label: "⭐ 8.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 8);
+      },
+    },
+    {
+      label: "⭐ 7.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 7);
+      },
+    },
+    {
+      label: "⭐ 6.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 6);
+      },
+    },
+    {
+      label: "⭐ 5.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 5);
+      },
+    },
+    {
+      label: "⭐ 4.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 4);
+      },
+    },
+    {
+      label: "⭐ 3.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 3);
+      },
+    },
+    {
+      label: "⭐ 2.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 2);
+      },
+    },
+    {
+      label: "⭐ 1.0",
+      filterArray: (array) => {
+        return array.filter((item) => item.bookRate === 1);
+      },
+    },
+  ];
 
-  const applyFilters = (filters) => {
-    setSelectedFilters(filters);
-    console.log(filters);
-  };
-
-  const applySort = (sort) => {
-    setSelectedSort(sort);
-  };
   const sortOptions = [
     {
       label: "Highest Rating",
-      sort: (array) => {
+      sortArray: (array) => {
         return array.slice().sort((a, b) => b.bookRate - a.bookRate);
       },
     },
     {
       label: "Lowest Rating",
-      sort: (array) => {
+      sortArray: (array) => {
         return array.slice().sort((a, b) => a.bookRate - b.bookRate);
       },
     },
     {
       label: "Earliest Recensions",
-      sort: (array) => {
+      sortArray: (array) => {
         return array.slice().sort((a, b) => a.dateOfFinish - b.dateOfFinish);
       },
     },
     {
       label: "Latest Recensions",
-      sort: (array) => {
+      sortArray: (array) => {
         return array.slice().sort((a, b) => b.dateOfFinish - a.dateOfFinish);
       },
     },
   ];
 
-  const filteredItems = () => {
-    if (selectedFilters.length > 0) {
-      const temps = selectedFilters.map((selectedFilter) => {
-        const temp = recensions.filter(
-          (recension) => recension.bookRate === +selectedFilter
-        );
-        return temp;
-      });
+  const addToFilters = (label) => {
+    console.log(label);
+    // setFilters((prev) => {
+    //   return [...prev, label];
+    // });
+  }
+  
+  const removeFromFilters = (label) => {
+    setFilters((prev) => {
+      return prev.filter((item) => item !== label);
+    });
+  }
 
-      return temps.flat();
+  const selectSorting = (label) => {
+    console.log(label);
+    setSorting(label);
+  }
+
+  const filteredArray = () => {
+    let array = []
+    if (selectedFilters.length > 0) {
+      // eslint-disable-next-line array-callback-return
+      selectedFilters.map((filter) => {
+        const option = filterOptions.find((filterOption) => filterOption.label === filter);
+  
+        array.push(...option.filterArray(recensions));
+      });
+     return  array;
     } else {
       return recensions;
     }
-  };
+  }
 
-  const sortedRecensions = () => {
-    if (selectedSort.trim("") !== "") {
-      return sortOptions
-        .find((option) => option.label === selectedSort)
-        .sort(filteredItems());
-    } else {
-      return filteredItems();
-    }
-  };
+  const sortedArray = () => {
+    // if (selectedSorting !== "") {
+    //   const selectedSortingOption = sortOptions.find((sort) => sort.label === selectedSorting);
+    // return selectedSortingOption.sort(filteredArray());
+    // } else {
+      return filteredArray();
+    //}
+  }
+
 
   return (
     <div className="sm:w-full xl:w-11/12 mt-4">
@@ -203,14 +274,19 @@ function RecensionsForBook({
       <div className="">
         <RecensionManagmentBar
           recensions={recensions}
-          applySort={applySort}
-          applyFilters={applyFilters}
+          applySort={addToFilters}
+          applyFilters={selectSorting}
+          removeFromFilters={removeFromFilters}
+          sortings={sortOptions}
+          filters={filterOptions}
+          filtersSelected={selectedFilters}
+          sortSelected={selectedSorting}
         />
       </div>
 
-      {sortedRecensions().length > 0 ? (
+      {sortedArray().length > 0 ? (
         <div className="flex flex-col sm:justify-center lg:justify-start w-full sm:items-center lg:items-start gap-6 sm:p-4 xl:p-1 xl:m-2">
-          {sortedRecensions().map((recensioner) => (
+          {sortedArray().map((recensioner) => (
             <div
               key={recensioner.id}
               className={`flex sm:w-full rounded-md flex-col max-w-3xl justify-between bg-accColor ${isDarkModed ? 'border-white' : ' border-primeColor'} border py-2 relative top-0 left-0`}

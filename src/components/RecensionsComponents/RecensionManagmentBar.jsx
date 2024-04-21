@@ -1,6 +1,6 @@
 import '../../components/stylings/mui-stylings.css';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { FaStar } from 'react-icons/fa';
 
@@ -14,115 +14,25 @@ import {
   Select,
 } from '@mui/material';
 
-function RecensionManagmentBar({ applyFilters, applySort }) {
-  const filterOptions = [
-    {
-      label: "10.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 10);
-      },
-    },
-    {
-      label: "9.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 9);
-      },
-    },
-    {
-      label: "8.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 8);
-      },
-    },
-    {
-      label: "7.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 7);
-      },
-    },
-    {
-      label: "6.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 6);
-      },
-    },
-    {
-      label: "5.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 5);
-      },
-    },
-    {
-      label: "4.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 4);
-      },
-    },
-    {
-      label: "3.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 3);
-      },
-    },
-    {
-      label: "2.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 2);
-      },
-    },
-    {
-      label: "1.0",
-      filter: (array) => {
-        return array.filter((item) => item.bookRate === 1);
-      },
-    },
-  ];
+function RecensionManagmentBar({ applyFilters,removeFromFilters, applySort, filters, sortings, filtersSelected, sortSelected }) {
 
-  const sortOptions = [
-    {
-      label: "Highest Rating",
-      sort: (array) => {
-        return array.slice().sort((a, b) => b.bookRate - a.bookRate);
-      },
-    },
-    {
-      label: "Lowest Rating",
-      sort: (array) => {
-        return array.slice().sort((a, b) => a.bookRate - b.bookRate);
-      },
-    },
-    {
-      label: "Earliest Recensions",
-      sort: (array) => {
-        return array.slice().sort((a, b) => a.dateOfFinish - b.dateOfFinish);
-      },
-    },
-    {
-      label: "Latest Recensions",
-      sort: (array) => {
-        return array.slice().sort((a, b) => b.dateOfFinish - a.dateOfFinish);
-      },
-    },
-  ];
-
-  const [sortSelected, setSort] = useState("");
-
-  const [filtersSelected, setFilters] = useState([]);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setFilters(value);
-    applyFilters(value); // Apply selected filters to recensions
+    if (!filtersSelected.find((item) => item.label === value)) {
+      applyFilters(value);
+    } else {
+      removeFromFilters(value);
+    }
   };
 
   const handleSortChange = (event) => {
     const {
       target: { value },
     } = event;
-    setSort(value);
-    applySort(value); // Apply selected sort to recensions
+    applySort(value);
   };
 
   return (
@@ -144,7 +54,7 @@ function RecensionManagmentBar({ applyFilters, applySort }) {
           }}
           multiple
           defaultValue=""
-          value={filtersSelected}
+          value={filtersSelected.map((item)=>item.label)}
           onChange={handleChange}
           input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
           renderValue={(selected) => (
@@ -155,7 +65,7 @@ function RecensionManagmentBar({ applyFilters, applySort }) {
             </Box>
           )}
         >
-          {filterOptions.map((option) => (
+          {filters.map((option) => (
             <MenuItem
               value={option.label}
               key={option.label}
@@ -191,7 +101,7 @@ function RecensionManagmentBar({ applyFilters, applySort }) {
           label="Sort by"
           onChange={handleSortChange}
         >
-          {sortOptions.map((option) => (
+          {sortings.map((option) => (
             <MenuItem value={option.label} key={option.label}>
               {option.label}
             </MenuItem>

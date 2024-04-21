@@ -18,6 +18,7 @@ import loginAnimation
   from '../../assets/lottieAnimations/Animation - 1703334726800.json';
 import formsTranslations
   from '../../assets/translations/FormsTranslations.json';
+import Loader from '../../components/Loader';
 import { useLogin } from '../../hooks/useLogin';
 
 function Login() {
@@ -90,6 +91,8 @@ function Login() {
             <button className="btn sm:w-full lg:w-1/2 my-6">Loading...</button>
           )}
 
+          
+      {isPending && <Loader/>}
 
 
 
