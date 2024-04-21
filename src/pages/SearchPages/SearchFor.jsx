@@ -10,7 +10,10 @@ import {
 
 import lottieAnimation
   from '../../assets/lottieAnimations/Animation - 1699294838586.json';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
 import translations from '../../assets/translations/SearchTranslations.json';
+import Book from '../../components/Items/Book';
 import useGetDocuments from '../../hooks/useGetDocuments';
 
 function SearchFor() {
@@ -109,39 +112,9 @@ const {documents:elements}=useGetDocuments(id);
         {id === "books" && (
           <>
             {searchedArray.length > 0 ? (
-              searchedArray.map((res) => (
+              searchedArray.map((res, i) => (
                 <>
-                  <Link
-                    to={`/book/${res.id}`}
-                    className="flex flex-col sm:w-48 h-80 gap-2 bg-accColor"
-                  >
-                    <div className="w-full">
-                      <img
-                        className="w-full h-full object-cover"
-                        src={res.photoURL}
-                        alt=""
-                      />
-                    </div>
-
-                    <div className="px-1 text-white">
-                      <h5 className="lg:text-base sm:text-sm font-semibold">
-                        {res.title.trim("").length > 15
-                          ? `${res.title.slice(0, 15)}...`
-                          : res.title}
-                      </h5>
-                      <p className="font-medium">
-                        {res.author.trim("").length > 10
-                          ? `${res.author.slice(0, 10)}...`
-                          : res.author}
-                      </p>
-                      <p>{res.pagesNumber} Pages</p>
-                      <p className="text-xs">
-                        {res.category && res.category.split(" ").length > 3
-                          ? `${res.category.slice(0, 24)}...`
-                          : res.category}
-                      </p>
-                    </div>
-                  </Link>
+                 <Book doc={res} i={i} translateText={reuseableTranslations.pagesText[selectedLanguage]}/>
                 </>
               ))
             ) : (

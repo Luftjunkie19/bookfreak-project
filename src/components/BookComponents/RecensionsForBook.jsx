@@ -1,6 +1,6 @@
 import '../../pages/stylings/backgrounds.css';
 
-import React, {
+import {
   useEffect,
   useState,
 } from 'react';
@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { Rating } from '@mui/material';
 
 import guyAnimation
-  from '../../assets/lottieAnimations/Animation - 1700233510410.json';
+  from '../../assets/lottieAnimations/Animation - 1703453392997.json';
 import translations from '../../assets/translations/BookPageTranslations.json';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 import RecensionManagmentBar
@@ -150,22 +150,23 @@ const [selectedFilters, setFilters] = useState([]);
     },
   ];
 
-  const addToFilters = (label) => {
-    console.log(label);
-    // setFilters((prev) => {
-    //   return [...prev, label];
-    // });
+  const addToFilters = (labels) => {
+
+
+    setFilters((prev) => 
+ labels.flat()
+    );
   }
   
   const removeFromFilters = (label) => {
-    setFilters((prev) => {
-      return prev.filter((item) => item !== label);
-    });
+    setFilters((prev) => (
+       [...prev].filter((item) => item !== label)
+    ));
   }
 
   const selectSorting = (label) => {
-    console.log(label);
     setSorting(label);
+    console.log(selectedSorting);
   }
 
   const filteredArray = () => {
@@ -175,7 +176,8 @@ const [selectedFilters, setFilters] = useState([]);
       selectedFilters.map((filter) => {
         const option = filterOptions.find((filterOption) => filterOption.label === filter);
   
-        array.push(...option.filterArray(recensions));
+        array.push(...option.filterArray(recensions))
+
       });
      return  array;
     } else {
@@ -184,18 +186,18 @@ const [selectedFilters, setFilters] = useState([]);
   }
 
   const sortedArray = () => {
-    // if (selectedSorting !== "") {
-    //   const selectedSortingOption = sortOptions.find((sort) => sort.label === selectedSorting);
-    // return selectedSortingOption.sort(filteredArray());
-    // } else {
+    if (selectedSorting !== "") {
+      const selectedSortingOption = sortOptions.find((sort) => sort.label === selectedSorting);
+    return selectedSortingOption.sortArray(filteredArray());
+    } else {
       return filteredArray();
-    //}
+    }
   }
 
 
   return (
     <div className="sm:w-full xl:w-11/12 mt-4">
-      {bookPages === readPages && hasReadBook && !hasRecension && (
+      { hasReadBook && !hasRecension && (
         <form
           className="sm:w-full lg:w-1/2 py-2 sm:px-4 lg:px-0 lg:ml-5"
           onSubmit={handlePublish}
@@ -274,8 +276,8 @@ const [selectedFilters, setFilters] = useState([]);
       <div className="">
         <RecensionManagmentBar
           recensions={recensions}
-          applySort={addToFilters}
-          applyFilters={selectSorting}
+          applySort={selectSorting}
+          applyFilters={addToFilters}
           removeFromFilters={removeFromFilters}
           sortings={sortOptions}
           filters={filterOptions}

@@ -27,8 +27,9 @@ import moneyPrize from '../../assets/MoneyPrize.webp';
 import competitionsTranslations
   from '../../assets/translations/CompetitionsTranslations.json';
 import formTranslations from '../../assets/translations/FormsTranslations.json';
-import CompetitionManagmentBar
-  from '../../components/RecensionsComponents/CompetitionManagmentBar';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import ManagementBar from '../../components/RecensionsComponents/ManagementBar';
 import useGetDocuments from '../../hooks/useGetDocuments';
 
 function Competitions() {
@@ -182,7 +183,7 @@ function Competitions() {
   return (
     <div className={`min-h-screen h-full overflow-x-hidden w-full ${!isDarkModed && "pattern-bg"}`}>
      <div className="flex gap-2 flex-wrap items-center justify-center py-4">
-<CompetitionManagmentBar applyFilters={applyFilters} applySort={applySort}/>
+<ManagementBar filterText={reuseableTranslations.categoryText[selectedLanguage]} sortText={reuseableTranslations.sortTexts[selectedLanguage]} sortOptions={selectedSort} filterOptions={filterOptions} sortSelected={selectedSort} filtersSelected={selectedFilters} applyFilters={applyFilters} applySort={applySort} />
 <Autocomplete
           className="sm:w-3/4 md:max-w-lg"
           onChange={(e, value) => {

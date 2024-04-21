@@ -26,8 +26,9 @@ import lottieAnimation
 import clubsTranslations
   from '../../assets/translations/ClubsTranslations.json';
 import formTranslations from '../../assets/translations/FormsTranslations.json';
-import ClubsManagmentBar
-  from '../../components/RecensionsComponents/ClubsManagmentBar';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import ManagementBar from '../../components/RecensionsComponents/ManagementBar';
 import useGetDocuments from '../../hooks/useGetDocuments';
 
 function Clubs() {
@@ -186,7 +187,7 @@ function Clubs() {
           : `${clubsTranslations.clubObject.founded.one[selectedLanguage]}`}
       </h2>
       <div className="flex w-full justify-center items-center flex-wrap">
-        <ClubsManagmentBar applyFilters={applyFilters} applySort={applySort} />
+        <ManagementBar filterText={reuseableTranslations.categoryText[selectedLanguage]} sortText={reuseableTranslations.sortTexts[selectedLanguage]} sortOptions={selectedSort} filterOptions={filterOptions} sortSelected={selectedSort} filtersSelected={selectedFilters} applyFilters={applyFilters} applySort={applySort} />
         
         <Autocomplete
           className="sm:w-3/4 md:max-w-lg"

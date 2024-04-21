@@ -24,8 +24,9 @@ import {
 import lottieAnimation
   from '../../assets/lottieAnimations/Animation - 1700320134586.json';
 import formTranslations from '../../assets/translations/FormsTranslations.json';
-import TestsManagmentBar
-  from '../../components/RecensionsComponents/TestsManagmentBar';
+import reuseableTranslations
+  from '../../assets/translations/ReusableTranslations.json';
+import ManagementBar from '../../components/RecensionsComponents/ManagementBar';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 
 function Tests() {
@@ -138,7 +139,7 @@ function Tests() {
   return (
     <div className={`min-h-screen h-full overflow-x-hidden ${!isDarkModed && "pattern-bg"}`}>
       <div className="w-full flex flex-wrap justify-center items-center">
-        <TestsManagmentBar applyFilters={applyFilters} applySort={applySort} />
+        <ManagementBar filterText={reuseableTranslations.categoryText[selectedLanguage]} sortText={reuseableTranslations.sortTexts[selectedLanguage]} sortOptions={selectedSort} filterOptions={filterOptions} sortSelected={selectedSort} filtersSelected={selectedFilters} applyFilters={applyFilters} applySort={applySort} />
         <Autocomplete
           className="sm:w-3/4 md:max-w-lg"
           onChange={(e, value) => {

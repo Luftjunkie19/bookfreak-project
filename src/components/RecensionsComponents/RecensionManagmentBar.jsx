@@ -21,17 +21,16 @@ function RecensionManagmentBar({ applyFilters,removeFromFilters, applySort, filt
     const {
       target: { value },
     } = event;
-    if (!filtersSelected.find((item) => item.label === value)) {
+
       applyFilters(value);
-    } else {
-      removeFromFilters(value);
-    }
+  
   };
 
   const handleSortChange = (event) => {
     const {
       target: { value },
     } = event;
+    console.log(value);
     applySort(value);
   };
 
@@ -54,7 +53,7 @@ function RecensionManagmentBar({ applyFilters,removeFromFilters, applySort, filt
           }}
           multiple
           defaultValue=""
-          value={filtersSelected.map((item)=>item.label)}
+          value={filtersSelected}
           onChange={handleChange}
           input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
           renderValue={(selected) => (

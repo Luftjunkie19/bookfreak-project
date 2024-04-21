@@ -8,10 +8,7 @@ import React, {
 
 import Lottie from 'lottie-react';
 import { useSelector } from 'react-redux';
-import {
-  Link,
-  useSearchParams,
-} from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import {
   Autocomplete,
@@ -28,8 +25,8 @@ import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
 import translations from '../../assets/translations/SearchTranslations.json';
 import typesTranslation from '../../assets/translations/TypesTranslations.json';
-import BooksManagmentBar
-  from '../../components/RecensionsComponents/BooksManagmentBar';
+import Book from '../../components/Items/Book';
+import ManagementBar from '../../components/RecensionsComponents/ManagementBar';
 import useGetDocuments from '../../hooks/useGetDocuments';
 
 function Books() {
@@ -238,7 +235,7 @@ const sortedArray=() => {
   return (
     <div className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}>
       <div className="flex flex-wrap gap-6 items-center p-3 w-full">
-        <BooksManagmentBar applyFilters={applyFilters} applySort={applySort} filterText={reuseableTranslations.categoryText[selectedLanguage]} sortText={reuseableTranslations.sortTexts[selectedLanguage]}/>
+        <ManagementBar sortSelected={selectedSort} filtersSelected={selectedFilters} sortOptions={sortTypes} filterOptions={categoryTypes} applyFilters={applyFilters} applySort={applySort} filterText={reuseableTranslations.categoryText[selectedLanguage]} sortText={reuseableTranslations.sortTexts[selectedLanguage]}/>
         <Autocomplete
           className="sm:w-3/4 md:max-w-lg"
           onChange={(e, value) => {
@@ -311,42 +308,7 @@ const sortedArray=() => {
             .toLowerCase()
             .includes(filterQuery.get("filters").toLowerCase())
         ).map((doc, i) => (
-            <Link
-              to={`/book/${doc.id}`}
-              key={i}
-              className="2xl:w-[10%] xl:w-[15%] sm:w-[47%] md:w-[30%] lg:w-1/6  flex items-center flex-col bg-accColor rounded-md"
-            >
-              <div className="w-full">
-                <img
-                  className="w-full h-full rounded-t-lg"
-                  src={doc.photoURL}
-                  alt=""
-                />
-              </div>
-
-              <div className="flex flex-col w-full h-full text-white p-2">
-                <p className="font-bold text-sm xl:text-base">
-                  {doc.title.trim(" ").length > 10
-                    ? `${doc.title.slice(0, 10)}...`
-                    : doc.title}
-                </p>
-                <p className="text-xs">
-                  {doc.author.trim(" ").length > 12
-                    ? `${doc.author.slice(0, 12)}...`
-                    : doc.author}
-                </p>
-
-                <p className="text-xs">
-                  {doc.pagesNumber}{" "}
-                  {reuseableTranslations.pagesText[selectedLanguage]}
-                </p>
-                <p className="text-xs">
-                  {doc.category.trim(" ").length > 15
-                    ? `${doc.category.slice(0, 15)}...`
-                    : doc.category}
-                </p>
-              </div>
-            </Link>
+          <Book doc={doc} i={i} translateText={reuseableTranslations.pagesText[selectedLanguage]}/>
           ))
         ) : (
           <>

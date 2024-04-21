@@ -11,12 +11,7 @@ import {
   FaShare,
   FaTrash,
 } from 'react-icons/fa';
-import { GiBookshelf } from 'react-icons/gi';
-import {
-  MdPlaylistRemove,
-  MdRecommend,
-  MdUpdate,
-} from 'react-icons/md';
+import { MdRecommend } from 'react-icons/md';
 import {
   useDispatch,
   useSelector,
@@ -400,9 +395,10 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
       {isOpened && <EditBook id={id} />}
 
       {document && (
+        <>
         <div className="flex h-full justify-around items-center sm:flex-col lg:flex-row mt-16">
-          <div className="flex flex-col items-center justify-around w-full md:w-1/2">
-            <div className="w-64 h-72 m-2">
+          <div className="flex flex-col sm:items-center sm:justify-around w-full md:w-1/2">
+            <div className=" sm:w-72 sm:h-72 xl:h-80 xl:w-80 m-2">
               <img
                 className="h-full w-full rounded-md object-cover"
                 src={document.photoURL}
@@ -430,7 +426,7 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
               </div>
             )}
           </div>
-          <div className="w-full mt-5 md:ml-8 md:mt-0 max-w-2xl">
+          <div className="w-full mt-5 lg:ml-8 md:mt-2 max-w-2xl">
             <h3 className={` ${isDarkModed ? "text-white" : "text-black"} uppercase text-2xl`}>{document.title}</h3>
             <Link
               to={`/author/${document.author}`}
@@ -512,7 +508,47 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
                 />
               )}
             </div>
-            <div className="mt-3">
+       
+
+            <div className="flex sm:flex-wrap lg:flex-nowrap gap-2 w-full items-center my-3">
+              {document &&
+              !readers.find(
+                (reader) =>
+                  reader.id === user.uid && reader.bookReadingId === id
+              ) ? (
+                <button
+                  className="btn max-w-xs text-xs text-white bg-accColor"
+                  onClick={openBookReaderForm}
+                >
+                  {translations.buttonsTexts.addToShelf[selectedLanguage]}{" "}
+       
+                </button>
+              ) : (
+                <button
+                  className="btn max-w-xs text-xs text-white bg-error"
+                  onClick={removeFromShelf}
+                >
+                  {translations.buttonsTexts.removeShelf[selectedLanguage]}{" "}
+             
+                </button>
+              )}
+              {document &&
+                readers.find(
+                  (reader) =>
+                    reader.id === user.uid && reader.bookReadingId === id
+                ) && (
+                  <button
+                    onClick={openUpdateReaderForm}
+                    className="btn max-w-xs text-xs text-white bg-accColor"
+                  >
+                    {translations.buttonsTexts.updateStatus[selectedLanguage]}
+              
+                  </button>
+                )}
+            </div>
+          </div>
+        </div>
+     <div className="px-2 py-6">
               <p className={`text-3xl font-bold ${isDarkModed ? "text-white" :"text-black"}`}>
                 {reuseableTranslations.detailsText[selectedLanguage]}:
               </p>
@@ -554,45 +590,7 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
 </Accordion>
               </div>
             </div>
-
-            <div className="flex flex-wrap gap-2 w-full items-center my-3">
-              {document &&
-              !readers.find(
-                (reader) =>
-                  reader.id === user.uid && reader.bookReadingId === id
-              ) ? (
-                <button
-                  className="btn text-white bg-accColor"
-                  onClick={openBookReaderForm}
-                >
-                  {translations.buttonsTexts.addToShelf[selectedLanguage]}{" "}
-                  <GiBookshelf />
-                </button>
-              ) : (
-                <button
-                  className="btn text-white bg-error"
-                  onClick={removeFromShelf}
-                >
-                  {translations.buttonsTexts.removeShelf[selectedLanguage]}{" "}
-                  <MdPlaylistRemove />
-                </button>
-              )}
-              {document &&
-                readers.find(
-                  (reader) =>
-                    reader.id === user.uid && reader.bookReadingId === id
-                ) && (
-                  <button
-                    onClick={openUpdateReaderForm}
-                    className="btn text-white bg-accColor"
-                  >
-                    {translations.buttonsTexts.updateStatus[selectedLanguage]}
-                    <MdUpdate />
-                  </button>
-                )}
-            </div>
-          </div>
-        </div>
+            </>
       )}
       {document && readers && (
         <RecensionsForBook
