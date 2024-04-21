@@ -594,7 +594,7 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
       )}
       {document && readers && (
         <RecensionsForBook
-          bookPages={document.pagesNumber}
+         bookPages={document.pagesNumber}
           readPages={
             readers &&
             readers.find(
@@ -615,7 +615,6 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
                 (reader) =>
                   reader.id === user.uid && reader.recension.trim() !== ""
               )
-         
           }
           publishRecension={publishRecension}
           recensions={

@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { Rating } from '@mui/material';
 
 import guyAnimation
-  from '../../assets/lottieAnimations/Animation - 1703453392997.json';
+  from '../../assets/lottieAnimations/Animation - 1700233510410.json';
 import translations from '../../assets/translations/BookPageTranslations.json';
 import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 import RecensionManagmentBar
@@ -32,7 +32,9 @@ function RecensionsForBook({
   const [resension, setRecension] = useState("");
   const [users, setUsers] = useState([]);
   const { getDocuments, loadingDocs } = useRealtimeDocuments();
-  const [showMore, setShowMore] = useState(false);
+  const [showMore, setShowMore] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [recensionsNumber, setRecensionsNumber] = useState(10);
   const handlePublish = (e) => {
     e.preventDefault();
     publishRecension(resension, bookRate);
@@ -54,8 +56,8 @@ function RecensionsForBook({
     loadUsers();
   }, [loadUsers]);
 
-  const toggleContent = () => {
-    setShowMore(!showMore);
+  const toggleContent = (id) => {
+    setShowMore(id);
   };
 
 const [selectedFilters, setFilters] = useState([]);
@@ -197,7 +199,7 @@ const [selectedFilters, setFilters] = useState([]);
 
   return (
     <div className="sm:w-full xl:w-11/12 mt-4">
-      { hasReadBook && !hasRecension && (
+      { readPages === bookPages && hasReadBook && !hasRecension && (
         <form
           className="sm:w-full lg:w-1/2 py-2 sm:px-4 lg:px-0 lg:ml-5"
           onSubmit={handlePublish}
@@ -286,9 +288,9 @@ const [selectedFilters, setFilters] = useState([]);
         />
       </div>
 
-      {sortedArray().length > 0 ? (
+      {sortedArray().slice(currentIndex, recensionsNumber).length > 0 ? (
         <div className="flex flex-col sm:justify-center lg:justify-start w-full sm:items-center lg:items-start gap-6 sm:p-4 xl:p-1 xl:m-2">
-          {sortedArray().map((recensioner) => (
+          {sortedArray().slice(currentIndex, recensionsNumber).map((recensioner) => (
             <div
               key={recensioner.id}
               className={`flex sm:w-full rounded-md flex-col max-w-3xl justify-between bg-accColor ${isDarkModed ? 'border-white' : ' border-primeColor'} border py-2 relative top-0 left-0`}
@@ -314,18 +316,18 @@ const [selectedFilters, setFilters] = useState([]);
                 />
                 <div>
                   <p className=" text-white italic font-light">
-                    {showMore
+                    {showMore === recensioner.id
                       ? recensioner.recension
                       : `${
-                          recensioner.recension.length <= 100
+                          recensioner.recension.length <= 50
                             ? recensioner.recension
-                            : `${recensioner.recension.slice(0, 100)}...`
+                            : `${recensioner.recension.slice(0, 50)}...`
                         }`}
                   </p>
-                  {recensioner.recension.trim(" ").length >= 100 && (
+                  {recensioner.recension.trim(" ").length >= 50 && (
                     <button
                       className="text-white hover:text-primeColor transition-all duration-500"
-                      onClick={toggleContent}
+                      onClick={()=>toggleContent(recensioner.id)}
                     >
                       {showMore ? "Read Less" : "Read More"}
                     </button>
@@ -361,6 +363,19 @@ const [selectedFilters, setFilters] = useState([]);
           <Lottie className=" max-w-md" animationData={guyAnimation} />
         </div>
       )}
+
+
+      <div className="flex gap-4">
+      {currentIndex > 0 && sortedArray().slice(currentIndex - 10, recensionsNumber - 10).length > 0 && <button className="btn bg-accColor border-none" onClick={() => {
+        setCurrentIndex(prev => prev - 10);
+        setRecensionsNumber(prev => prev - 10);
+      }}>Back</button>}
+      {sortedArray().slice(currentIndex + 10, recensionsNumber + 10).length > 0 && <button className="btn bg-accColor border-none" onClick={() => {
+        setCurrentIndex(prev => prev + 10);
+        setRecensionsNumber(prev => prev + 10);
+      }}>Next</button>}
+      </div>
+      
     </div>
   );
 }
