@@ -14,8 +14,6 @@ function ChatsPage({ readerObjects, bookObjects }) {
         />
       )}
 
-  
-
         <ChartBar readerObjects={readerObjects}
           bookObjects={bookObjects} />
    
