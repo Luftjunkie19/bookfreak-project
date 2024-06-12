@@ -1,6 +1,14 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import './globals.css';
+
+import GoogleAdsense from 'adsense/GoogleAdsense';
+import AuthContextProvider from 'context/AuthContext';
+import ReduxProvider from 'context/ReduxProvider';
+import { Providers } from 'lib/NextUiProvider';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Toaster } from 'react-hot-toast';
+
+import Navbar from '../components/Navbar/Navbar';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +24,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body>
+        <AuthContextProvider>
+          <ReduxProvider>
+            <Providers>
+              <Toaster/>
+            <Navbar />
+        {children}
+          </Providers>
+      </ReduxProvider>      
+          </AuthContextProvider>
+      </body>
+      <GoogleAdsense pId={process.env.NEXT_PUBLIC_ADSENSE_ID as string} />
     </html>
   );
 }
