@@ -14,7 +14,7 @@ initializeApp();
 app.use(express.static("./bookfreak-project/public"));
 app.use(cors({origin: true}));
 // eslint-disable-next-line max-len
-const stripe = require("stripe")(`${process.env.REACT_APP_STRIPE_SEC_KEY}`);
+const stripe = require("stripe")(`${process.env.NEXT_PUBLIC_STRIPE_SEC_KEY}`);
 app.use(express.json());
 app.use(bodyParser.json());
 const {increment} = require("firebase/database");
