@@ -1,0 +1,39 @@
+[debug] [2024-04-23T15:02:19.556Z] ----------------------------------------------------------------------
+[debug] [2024-04-23T15:02:19.561Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\HP\OneDrive\Pulpit\BookFreak\bookfreak-project\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2024-04-23T15:02:19.562Z] CLI Version:   12.9.1
+[debug] [2024-04-23T15:02:19.562Z] Platform:      win32
+[debug] [2024-04-23T15:02:19.563Z] Node Version:  v21.3.0
+[debug] [2024-04-23T15:02:19.564Z] Time:          Tue Apr 23 2024 17:02:19 GMT+0200 (Central European Summer Time)
+[debug] [2024-04-23T15:02:19.565Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-04-23T15:02:19.571Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2024-04-23T15:02:19.810Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-04-23T15:02:19.811Z] > authorizing via signed-in user (kshjssjjs@gmail.com)
+[debug] [2024-04-23T15:02:19.811Z] [iam] checking project bookfreak-954da for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2024-04-23T15:02:19.814Z] > refreshing access token with scopes: []
+[debug] [2024-04-23T15:02:19.818Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-04-23T15:02:19.819Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-04-23T15:02:19.994Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-04-23T15:02:19.994Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-04-23T15:02:20.009Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/bookfreak-954da:testIamPermissions [none]
+[debug] [2024-04-23T15:02:20.009Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/bookfreak-954da:testIamPermissions x-goog-quota-user=projects/bookfreak-954da
+[debug] [2024-04-23T15:02:20.010Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bookfreak-954da:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2024-04-23T15:02:20.159Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2024-04-23T15:02:20.159Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2024-04-23T15:02:20.822Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/bookfreak-954da:testIamPermissions 200
+[debug] [2024-04-23T15:02:20.823Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/bookfreak-954da:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2024-04-23T15:02:20.824Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/bookfreak-954da/serviceAccounts/bookfreak-954da@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2024-04-23T15:02:20.824Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/bookfreak-954da/serviceAccounts/bookfreak-954da@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2024-04-23T15:02:21.636Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/bookfreak-954da/serviceAccounts/bookfreak-954da@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2024-04-23T15:02:21.637Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/bookfreak-954da/serviceAccounts/bookfreak-954da@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2024-04-23T15:02:21.638Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/bookfreak-954da [none]
+[debug] [2024-04-23T15:02:21.972Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/bookfreak-954da 200
+[debug] [2024-04-23T15:02:21.972Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/bookfreak-954da {"projectId":"bookfreak-954da","projectNumber":"389109624627","displayName":"BookFreak","name":"projects/bookfreak-954da","resources":{"hostingSite":"bookfreak-954da","realtimeDatabaseInstance":"bookfreak-954da-default-rtdb","storageBucket":"bookfreak-954da.appspot.com","locationId":"us-central"},"state":"ACTIVE","etag":"1_b9e16fb4-40e5-4f2e-9642-9b899a817db7"}
+[debug] [2024-04-23T15:02:21.973Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/bookfreak-954da [none]
+[debug] [2024-04-23T15:02:22.191Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/bookfreak-954da 200
+[debug] [2024-04-23T15:02:22.191Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/bookfreak-954da {"projectId":"bookfreak-954da","projectNumber":"389109624627","displayName":"BookFreak","name":"projects/bookfreak-954da","resources":{"hostingSite":"bookfreak-954da","realtimeDatabaseInstance":"bookfreak-954da-default-rtdb","storageBucket":"bookfreak-954da.appspot.com","locationId":"us-central"},"state":"ACTIVE","etag":"1_b9e16fb4-40e5-4f2e-9642-9b899a817db7"}
+[info] 
+[info] === Deploying to 'bookfreak-954da'...
+[info] 
+[info] i  deploying database, storage, functions, hosting 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
