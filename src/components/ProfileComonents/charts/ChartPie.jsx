@@ -2,11 +2,29 @@ import '../../stylings/mui-stylings.css';
 
 import React from 'react';
 
+import {
+  ArcElement,
+  Chart as ChartJS,
+  defaults,
+  Legend,
+  Tooltip,
+} from 'chart.js/auto';
+import { Doughnut } from 'react-chartjs-2';
 import { useSelector } from 'react-redux';
 
-import { PieChart } from '@mui/x-charts';
-
 import useGetDocuments from '../../../hooks/useGetDocuments';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+defaults.animation = true;
+defaults.responsive = true;
+defaults.maintainAspectRatio = false;
+
+defaults.plugins.title.display = true;
+defaults.plugins.title.align = "start";
+defaults.plugins.title.font.size = 20;
+
+
 
 function ChartPie({ yourReadersBooks }) {
 const {documents:booksObjects} = useGetDocuments("books");
@@ -42,9 +60,16 @@ const books = booksObjects.filter((book, i) => book.id === yourReadersBooks[i]?.
   const transformedBooksArray = transformBooks(books);
   const isDarkModed = useSelector((state) => state.mode.isDarkMode);
   return (
-    <>
-      <PieChart 
-        colors={[
+    <div className="max-w-xs w-full p-2 rounded-lg bg-black/40 flex items-center justify-center h-64">
+      <Doughnut  
+  
+        data={{
+          labels: transformedBooksArray.map((book) => book.category),
+          datasets: [
+            {
+              label:"Count of Books",
+              data: transformedBooksArray.map((item) => item.count),
+              backgroundColor:[
           "#4267B5",
           "#800000",
           "#424549",
@@ -75,7 +100,13 @@ const books = booksObjects.filter((book, i) => book.id === yourReadersBooks[i]?.
           "#800080",
           "#4682B4",
           "#00FA9A",
-        ]}
+              ],
+              
+            },
+      
+          ],
+        }}
+       
         series={[
           {
             startAngle: -180,
@@ -86,21 +117,10 @@ const books = booksObjects.filter((book, i) => book.id === yourReadersBooks[i]?.
             }),
           },
         ]}
-        slotProps={{
-          legend: {
-            direction: "row",
-            position: { vertical: "bottom", horizontal: "middle" },
-            labelStyle: {
-              color:`${isDarkModed ? "white" : "black"}`,
-              fill:`${isDarkModed ? "white" : "black"}`,
-            },
-            padding: 0,
-          },
-        }}
-        width={300}
-        height={400}
+        
+      
       />
-    </>
+    </div>
   );
 }
 
