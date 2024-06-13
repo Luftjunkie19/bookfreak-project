@@ -1,8 +1,14 @@
+// import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
+import 'swiper/css/bundle';
 import React from 'react'
 
 import {Swiper} from 'swiper/react';
 
-import 'swiper';
+
 
 
 type Props = {
@@ -11,7 +17,7 @@ type Props = {
 
 function BaseSwiper({children}: Props) {
   return (
-    <Swiper className='mySwiper' spaceBetween={24} slidesPerView={3}>
+    <Swiper className='px-2' spaceBetween={8} slidesPerView={6}>
         {children}
     </Swiper>
   )

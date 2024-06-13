@@ -4181,6 +4181,12 @@ details.collapse summary::-webkit-details-marker{
 .h-screen{
   height: 100vh !important;
 }
+.h-32{
+  height: 8rem !important;
+}
+.h-64{
+  height: 16rem !important;
+}
 .max-h-12{
   max-height: 3rem !important;
 }
@@ -4213,6 +4219,9 @@ details.collapse summary::-webkit-details-marker{
 }
 .max-h-\[calc\(100\%_-_7\.5rem\)\]{
   max-height: calc(100% - 7.5rem) !important;
+}
+.max-h-80{
+  max-height: 20rem !important;
 }
 .min-h-10{
   min-height: 2.5rem !important;
