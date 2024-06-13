@@ -1,0 +1,13 @@
+.dark-blue-gradiented{
+    background: linear-gradient(118.471deg, rgba(39, 39, 39, 40%) 0%, rgba(71, 119, 255, 40%) 100%);
+    background-blend-mode:difference;
+
+}
+
+.light-blue-gradient{
+    background: linear-gradient(115.653deg, #4777FF 0%, #FCFCFC 100%);
+}
+
+.dark-white-gradient{
+    background: linear-gradient(119.609deg, #272727 0%, #FCFCFC 100%);
+}

@@ -19,6 +19,7 @@ import {
   DropdownTrigger,
   Selection,
 } from '@nextui-org/react';
+import { languageActions } from 'context/LanguageContext';
 
 function LanguageSelect() {
   const selectedLangugage = useSelector(
@@ -27,9 +28,9 @@ function LanguageSelect() {
     const [selectedKey, setSelectedKey] = useState<Selection>(new Set([selectedLangugage]));
   const dispatch = useDispatch();
 
-  const handleMenuItemClick = (unicode) => {
-    console.log(unicode);
-    // dispatch(languageActions.selectLanguage(unicode));
+  const handleMenuItemClick = (unicode:Selection) => {
+    const transformedValue=Array.from(unicode).join(", ").replaceAll("_", " ");
+    dispatch(languageActions.selectLanguage(transformedValue));
 
     setSelectedKey(unicode);
   };
@@ -49,28 +50,31 @@ function LanguageSelect() {
   
 
   return (
-   <Dropdown>
-      <DropdownTrigger>
-        <Button 
-          color={'default'}
-          variant={'light'}
-          className="capitalize"
-        >
-         <IoLanguage className="text-white text-2xl"/>
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu
-        aria-label="Dropdown Variants"
-        variant="flat"
-        selectionMode="single"
-        selectedKeys={selectedValue}
-        onSelectionChange={setSelectedKey}
+    <Dropdown>
+    <DropdownTrigger>
+      <button 
+      className='flex text-white text-sm capitalize items-center gap-2 p-1'
       >
-        {options.map((item, i) => (<DropdownItem textValue={item.unicode} key={item.unicode}>
-          <Image width={24} height={24} src={item.flagUrl} className=" h-8 w-8 rounded-full object-cover" alt=''/>
+        {selectedValue} 
+        <Image width={24} height={24} alt='' className='w-6 h-6 rounded-full' src={options.find((item)=>item.unicode === selectedValue) ? (options.find((item)=>item.unicode === selectedValue) as any).flagUrl : ''}/>
+      </button>
+    </DropdownTrigger>
+    <DropdownMenu 
+      aria-label="Single selection example"
+      variant="flat"
+      disallowEmptySelection
+      selectionMode="single"
+      selectedKeys={selectedKey}
+      onSelectionChange={handleMenuItemClick}
+    >
+      {options.map((option)=>(<DropdownItem textValue={option.unicode} key={option.unicode} className='flex gap-2 items-center'>
+       <div className="flex gap-2 items-center">
+        <Image width={24} height={24} alt='' className='w-6 h-6 rounded-full' src={option.flagUrl}/>
+        {option.unicode}
+       </div>
         </DropdownItem>))}
-      </DropdownMenu>
-    </Dropdown>
+    </DropdownMenu>
+  </Dropdown>
   );
 }
 

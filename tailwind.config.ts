@@ -25,9 +25,6 @@ module.exports = withMT({
         'secondary-color': "#272727", 
         "dark-gray": '#2E2D2D',
         'bg-color': "#800000",
-        "dark-blue-gradient": "linear-gradient(118.471deg, rgba(39, 39, 39, 40%) 0%, rgba(71, 119, 255, 40%) 100%)",
-        "light-blue-gradient": "linear-gradient(115.653deg, #4777FF 0%, #FCFCFC 100%)",
-        "dark-white-gradient": 'linear-gradient(119.609deg, #272727 0%, #FCFCFC 100%)',
         imgCover: "rgba(0, 0, 0, 0.55)",
         userColumnBgCol: "rgba(0, 0, 0,0.15)",
         spotify: "#1DB954",
@@ -39,15 +36,9 @@ module.exports = withMT({
         modalAccColor: "rgba(66, 103, 181, 0.95)",
         modalPrimeColor: "rgba(26,35,57,0.95)",
       },
-      width: {
-        clubLogo: "48px",
-      },
-      maxWidth: {
-        clubLogo: "48px",
-      },
     },
   },
-  darkMode: "class",
+  
   plugins: [require("daisyui"), nextui()],
  
   important: true,

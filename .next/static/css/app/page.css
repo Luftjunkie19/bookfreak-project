@@ -1,0 +1,16 @@
+/*!************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./stylings/gradient.module.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************/
+.gradient_dark-blue-gradiented__fSSda{
+    background: linear-gradient(118.471deg, rgba(39, 39, 39, 40%) 0%, rgba(71, 119, 255, 40%) 100%);
+    background-blend-mode:difference;
+
+}
+
+.gradient_light-blue-gradient__2msfg{
+    background: linear-gradient(115.653deg, #4777FF 0%, #FCFCFC 100%);
+}
+
+.gradient_dark-white-gradient__gUgzV{
+    background: linear-gradient(119.609deg, #272727 0%, #FCFCFC 100%);
+}

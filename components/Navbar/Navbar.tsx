@@ -18,6 +18,8 @@ import { useLogout } from '../../hooks/useLogout';
 import CreateBtn from './CreateBtn';
 import LanguageSelect from './LanguageSelect';
 import NotificationViewer from './NotificationViewer';
+import SignInBtn from './Sign-Buttons/SignInBtn';
+import SignUpBtn from './Sign-Buttons/SignUpBtn';
 
 function Navbar() {
   const translations = navBarTranslation;
@@ -31,7 +33,7 @@ function Navbar() {
   const location = usePathname();
   const isOpened = useSelector((state:any) => state.notificationViewer.isOpened);
 
-  const checkLocation = (linkLocation) => {
+  const checkLocation = (linkLocation:string) => {
     if (location === linkLocation) {
       return true;
     }
@@ -43,18 +45,21 @@ const {document: documentBase}=useGetDocument('users', user ? (user).uid : '');
   const dispatch = useDispatch();
 
   return (
-    <div className="flex bg-primary-color justify-between px-4 py-2 items-center w-full">
+    <div className="flex sticky top-0 left-0 z-50 bg-primary-color justify-between px-4 py-2 items-center w-full">
       <div className="flex gap-2 items-center sticky top-0 left-0">
         <p className=' text-white text-xl'><span className='text-secondary-color text-2xl font-bold'>B</span>ook<span className='text-secondary-color text-2xl font-bold'>F</span>reak</p>
-        <Input startContent={<FaSearch className='text-white'/>} />
+        <Input classNames={{
+        'inputWrapper':'bg-secondary-color'
+        }} startContent={<FaSearch className=' text-white'/>} />
       </div>
       {user ?     
 <div className="flex items-center gap-2">
         <CreateBtn />
         <NotificationViewer />
         <LanguageSelect />
-        </div> : <div>
-          
+        </div> : <div className="flex items-center gap-1">
+          <SignInBtn/>
+          <SignUpBtn/>
            <LanguageSelect />
       </div>
       }
