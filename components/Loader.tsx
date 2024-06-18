@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import Lottie from 'lottie-react';
 
 import loadingAnimation
-  from '../assets/lottieAnimations/Animation - 1699205493311.json';
+  from '../assets/lottieAnimations/Book-For-Loading.json';
 
 function Loader() {
   return (

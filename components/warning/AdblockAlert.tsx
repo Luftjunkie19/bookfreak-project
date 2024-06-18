@@ -7,7 +7,7 @@ import AlertTranslations from '../../assets/translations/AlertMessages.json';
 function AdblockAlert() {
   const isAdblockOn = useDetectAdBlock();
   const selectedLanguage = useSelector(
-    (state) => state.languageSelection.selectedLangugage
+    (state:any) => state.languageSelection.selectedLangugage
   );
 
   return (

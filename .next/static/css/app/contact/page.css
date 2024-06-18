@@ -1,0 +1,27 @@
+/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/stylings/backgrounds.css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************/
+.book-shadow {
+  box-shadow: 1px 5px 7px 3px rgb(219, 219, 219);
+}
+.snap-inline {
+  scroll-snap-type: inline mandatory;
+}
+
+.snap-inline::-webkit-scrollbar {
+  display: none;
+}
+
+
+.react-tel-input .special-label {
+  background: rgba(66, 102, 181, 0.624) !important;
+  border-radius: 5px;
+  color: white;
+}
+
+
+.css-1fbare3-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected{
+  color: white !important;
+  background-color:  #1a2339 !important;
+  border: 1px solid #4267B5 !important;
+}

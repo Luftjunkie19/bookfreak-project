@@ -1,8 +1,10 @@
 import React from 'react';
 
-type Props = {}
+type Props = {
+  testData:any
+}
 
-function Test({}: Props) {
+function Test({testData}: Props) {
   return (
     <div>Test</div>
   )

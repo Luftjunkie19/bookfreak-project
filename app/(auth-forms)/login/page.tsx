@@ -1,25 +1,21 @@
-import '../stylings/backgrounds.css';
-
+'use client';
 import { useState } from 'react';
 
+import BlueButton from 'components/buttons/BlueButton';
+import LabeledInput from 'components/input/LabeledInput';
+import { useLogin } from 'hooks/useLogin';
 import Lottie from 'lottie-react';
+import toast from 'react-hot-toast';
 import {
   FaFacebook,
   FaGithub,
-  FaGoogle,
-  FaPhoneAlt,
-} from 'react-icons/fa';
+} from 'react-icons/fa6';
+import { FcGoogle } from 'react-icons/fc';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 
-import { Alert } from '@mui/material';
-
-import loginAnimation
-  from '../../assets/lottieAnimations/Animation - 1703334726800.json';
-import formsTranslations
-  from '../../assets/translations/FormsTranslations.json';
-import Loader from '../../components/Loader';
-import { useLogin } from '../../hooks/useLogin';
+import lottieAnimation
+  from '../../../assets/lottieAnimations/Planet-With-Readers.json';
+import classes from '../../../stylings/gradient.module.css';
 
 function Login() {
   const {
@@ -32,117 +28,44 @@ function Login() {
   } = useLogin();
 
   const selectedLanguage = useSelector(
-    (state) => state.languageSelection.selectedLangugage
+    (state: any) => state.languageSelection.selectedLangugage
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    signInNormally(email, password);
+  const handleSubmit = async (formData: FormData) => {
+    try {
+      await signInNormally(email, password);
+    } catch (error) {
+      toast.error('Something went not correct !');
+    }
   };
-  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
 
   return (
-<div className="min-h-screen h-full w-full flex flex-wrap justify-around items-center pattern-bg">
-  <div className="max-w-md">
-    <h2 className={`text-center text-3xl ${isDarkModed ? "text-white" : "text-black"} leading-10 my-2 font-bold`}>
-      {formsTranslations.signInForm.topText[selectedLanguage]}
-    </h2>
-    <Lottie animationData={loginAnimation} />
-  </div>
+    <div className={`min-h-screen h-full w-full flex flex-wrap justify-center bg-secondary-color items-center ${classes['dark-blue-gradiented']}`}>
+      <div className="flex items-center gap-2 w-full justify-around sm:flex-col lg:flex-row">
+        <Lottie className="sm:max-w-60 xl:max-w-sm w-full" animationData={lottieAnimation} />
+        <form action={handleSubmit} className="sm:max-w-sm xl:max-w-lg w-full flex flex-col gap-4 bg-dark-gray p-6 rounded-lg border-primary-color border">
+          <p className='text-white text-center font-medium text-2xl'>Login and enjoy !</p>
+          <LabeledInput label='Email' setValue={setEmail} />
+          <LabeledInput label='Password' setValue={setPassword} />
+          <BlueButton isSubmit additionalClasses='max-w-xs w-full self-center'>Login</BlueButton>
+          <div className=" justify-between self-center max-w-xs w-full flex gap-2 items-center">
+            <button onClick={signInWithGoogle}>
+              <FcGoogle size={42} />
+            </button>
+            <button onClick={signInWithFacebook}>
+              <FaFacebook size={42} className="text-white text-lg" />
+            </button>
+            <button onClick={signInWithGithub}>
+              <FaGithub size={42} className="text-white text-lg" />
+            </button>
+          </div>
+        </form>
 
-  <form
-    onSubmit={handleSubmit}
-    className={`py-8 ${isDarkModed ? "text-white" : "text-black"} sm:w-full md:max-w-md lg:max-w-lg 2xl:max-w-2xl lg:border-2 lg:shadow-md lg:shadow-accColor lg:border-accColor lg:rounded-lg lg:bg-primeColor`}
-  >
-    <div className="flex justify-center items-center flex-wrap gap-3 w-full">
-      <label className={`flex flex-col ${isDarkModed ? "text-white" : "text-black"} lg:text-white sm:w-full md:max-w-md`}>
-        <span>Email:</span>
-        <input
-          className={`p-2 rounded-md border-accColor outline-none input ${isDarkModed ? "text-white" : "text-black"} w-full`}
-          type="email"
-          required
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </label>
-
-      <label className={`flex flex-col lg:text-white ${isDarkModed ? "text-white" : "text-black"} sm:w-full md:max-w-md`}>
-        <span>
-          {formsTranslations.userFields.password[selectedLanguage]}:
-        </span>
-        <input
-          className={`p-2 rounded-md input border-accColor outline-none ${isDarkModed ? "text-white" : "text-black"} w-full`}
-          type="password"
-          required
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </label>
+      </div>
     </div>
-
-    <div className="flex justify-center items-center flex-col my-3">
-      {!isPending &&
-      <button className={`btn sm:w-full lg:w-1/2 ${isDarkModed ? "bg-accColor " : "bg-primeColor"} text-white`}>
-        {formsTranslations.signUpForm.btnText[selectedLanguage]}
-      </button>
-      }
-  {isPending && (
-            <button className="btn sm:w-full lg:w-1/2 my-6">Loading...</button>
-          )}
-
-          
-      {isPending && <Loader/>}
-
-
-
-      {error && (
-        <Alert className="bg-transparent text-red-400" severity="error">
-          {error}
-        </Alert>
-      )}
-    </div>
-
-    <div className="flex w-full flex-wrap gap-5 justify-center items-center my-2">
-      <Link
-        className={`btn sm:w-3/4 lg:w-2/5 ${isDarkModed ? "text-white" : "text-black"} lg:text-white`}
-        to="/forgot-password"
-      >
-        {formsTranslations.signingOptions.passwordForgotten[selectedLanguage]}
-      </Link>
-    </div>
-
-    <h3 className={`text-center text-2xl ${isDarkModed ? "text-white" : "text-black"} lg:text-white leading-9 p-2`}>
-      {formsTranslations.signInForm.optionsText[selectedLanguage]}
-    </h3>
-    <div className="flex w-full flex-wrap justify-center items-center gap-8">
-      <button
-        className={`btn text-white w-24 h-24 bg-blue-600 border-none hover:bg-blue-500`}
-        onClick={signInWithGoogle}
-      >
-        <FaGoogle className=" text-5xl" />
-      </button>
-      <button
-        className={`btn bg-facebook  w-24 h-24 text-white border-none hover:bg-blue-800`}
-        onClick={signInWithFacebook}
-      >
-        <FaFacebook className=" text-5xl" />
-      </button>
-      <button
-        className={`btn text-white w-24 h-24 bg-github hover:bg-gray-900`}
-        onClick={signInWithGithub}
-      >
-        <FaGithub className=" text-5xl" />
-      </button>
-      <Link
-        className={`btn w-24 h-24 bg-green-400 text-white`}
-        to="/login-with-phone"
-      >
-        <FaPhoneAlt className=" text-5xl" />{" "}
-      </Link>
-    </div>
-  </form>
-</div>
   );
 }
 

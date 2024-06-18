@@ -1,12 +1,14 @@
-import React from 'react'
+import React from 'react';
+
+import Link from 'next/link';
 
 type Props = {}
 
 function SignUpBtn({}: Props) {
   return (
-    <button className='text-white text-sm'>
+    <Link href={'/signup'} className='text-white '>
         Sign Up
-    </button>
+    </Link>
   )
 }
 

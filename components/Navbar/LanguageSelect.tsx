@@ -5,7 +5,6 @@ import {
 } from 'react';
 
 import Image from 'next/image';
-import { IoLanguage } from 'react-icons/io5';
 import {
   useDispatch,
   useSelector,

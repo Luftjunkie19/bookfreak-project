@@ -1,6 +1,6 @@
 import '../stylings/backgrounds.css';
 import '../stylings/scrollbarStyling.css';
-import 'react-image-gallery/styles/css/image-gallery.css';
+
 
 import React from 'react';
 
@@ -29,17 +29,18 @@ import {
 import myImage from '../../assets/about-image.jpg';
 import logoImage from '../../assets/Logo.png';
 import lottieAnimation
-  from '../../assets/lottieAnimations/Animation - 1702680446031.json';
+  from '../../assets/lottieAnimations/Astronaut-Reading.json';
 import breakImg2 from '../../assets/ProjectHistory/Screenshot (1167).png';
 import breakImg1 from '../../assets/ProjectHistory/Screenshot (1174).png';
 import difficultiesImage1
   from '../../assets/ProjectHistory/Zrzut ekranu (1128).png';
 import aboutUsTranslations
   from '../../assets/translations/aboutUsTranslations.json';
+import Image from 'next/image';
 
 function AboutUs() {
   const { next, prev, current, total } = useSteps();
-  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const mainHolderVariant = {
     offscreen: { y: 100, opacity: 0 },
     onscreen: {
@@ -53,7 +54,7 @@ function AboutUs() {
     },
   };
   const selectedLanguage = useSelector(
-    (state) => state.languageSelection.selectedLangugage
+    (state:any) => state.languageSelection.selectedLangugage
   );
   const iconVariant = {
     onscreen: {
@@ -112,7 +113,9 @@ function AboutUs() {
             }}
             animate={{ y: 0, x: 0, opacity: 1, scale: 1, rotate: 0 }}
           >
-            <img
+            <Image
+              width={64}
+              height={64}
               className="w-full h-full rounded-full object-cover"
               src={myImage}
               alt=""
@@ -158,7 +161,7 @@ function AboutUs() {
               className="font-bold text-6xl rounded-full stat-title text-white p-4"
               start={0}
               end={Math.round(
-                (new Date().getTime("31.12.2023") - new Date("02.15.2023").getTime()) /
+                (new Date("31.12.2023").getTime() - new Date("02.15.2023").getTime()) /
                   1000 /
                   60 /
                   60 /
@@ -307,36 +310,34 @@ function AboutUs() {
             
 <div className="carousel sm:w-full max-w-xl h-80">
   <div id="slide1" className="carousel-item relative w-full h-full">
-    <img alt='' src={logoImage} className="w-full h-full object-cover" />
+    <Image width={60} height={60} alt='' src={logoImage} className="w-full h-full object-cover" />
     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
       <a href="#slide4" className="btn btn-circle">❮</a> 
       <a href="#slide2" className="btn btn-circle">❯</a>
     </div>
   </div> 
   <div id="slide2" className="carousel-item relative w-full h-full">
-    <img alt='' src={myImage} className="w-full h-full object-cover" />
+    <Image width={60} height={60} alt='' src={myImage} className="w-full h-full object-cover" />
     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
       <a href="#slide1" className="btn btn-circle">❮</a> 
       <a href="#slide3" className="btn btn-circle">❯</a>
     </div>
   </div> 
   <div id="slide3" className="carousel-item relative w-full h-full">
-    <img alt='' src={breakImg2} className="w-full h-full object-cover" />
+    <Image width={60} height={60} alt='' src={breakImg2} className="w-full h-full object-cover" />
     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
       <a href="#slide2" className="btn btn-circle">❮</a> 
       <a href="#slide4" className="btn btn-circle">❯</a>
     </div>
   </div> 
   <div id="slide4" className="carousel-item relative w-full h-full">
-    <img alt='' src={breakImg1} className="w-full h-full object-cover" />
+    <Image width={60} height={60} alt='' src={breakImg1} className="w-full h-full object-cover" />
     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
       <a href="#slide3" className="btn btn-circle">❮</a> 
       <a href="#slide1" className="btn btn-circle">❯</a>
     </div>
   </div>
 </div>
-  
- 
           </div>
         </motion.div>
 
@@ -392,7 +393,7 @@ function AboutUs() {
 
 <div className="carousel sm:w-full max-w-xl h-80">
   <div id="slide1" className="carousel-item relative w-full h-full">
-    <img alt='' src={difficultiesImage1} className="w-full h-full object-cover" />
+    <Image width={60} height={60} alt='' src={difficultiesImage1} className="w-full h-full object-cover" />
     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
       <a href="#slide1" className="btn btn-circle">❮</a> 
       <a href="#slide1" className="btn btn-circle">❯</a>
@@ -453,14 +454,14 @@ function AboutUs() {
       
  <div className="carousel sm:w-full max-w-xl h-80">
   <div id="slide1" className="carousel-item relative w-full h-full">
-    <img alt='' src={breakImg1} className="w-full h-full object-cover" />
+    <Image width={60} height={60} alt='' src={breakImg1} className="w-full h-full object-cover" />
     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
       <a href="#slide2" className="btn btn-circle">❮</a> 
       <a href="#slide2" className="btn btn-circle">❯</a>
     </div>
   </div> 
   <div id="slide2" className="carousel-item relative w-full h-full">
-    <img alt='' src={breakImg2} className="w-full h-full object-cover" />
+    <Image width={60} height={60} alt='' src={breakImg2} className="w-full h-full object-cover" />
     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
       <a href="#slide1" className="btn btn-circle">❮</a> 
       <a href="#slide1" className="btn btn-circle">❯</a>

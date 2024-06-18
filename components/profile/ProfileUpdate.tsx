@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 
-import { functions } from 'app/firebase';
+import { functions, storage } from 'app/firebase';
 import { httpsCallable } from 'firebase/functions';
 import {
   useDispatch,
@@ -20,35 +20,39 @@ import alertMessages from '../../assets/translations/AlertMessages.json';
 import { snackbarActions } from '../../context/SnackBarContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+import useRealtimeDocuments from 'hooks/useRealtimeDocuments';
+import { useFormRealData } from 'hooks/useFormRealData';
+import { updateEmail, updateProfile, User } from 'firebase/auth';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import AvatarEditor from 'react-avatar-editor';
 
 type Props = {}
 
 function ProfileUpdate({ }: Props) {
       const { user } = useAuthContext();
   const dispatch = useDispatch();
-  const { document } = useFormRealData("users", user.uid);
+  const { document } = useFormRealData("users", (user as User).uid );
   const { getDocuments } = useRealtimeDocuments();
   const { updateDatabase } = useRealDatabase();
-  const defaultImg = user.photoURL;
+  const defaultImg = (user as User).photoURL;
   const selectedLanguage = useSelector(
-    (state) => state.languageSelection.selectedLangugage
+    (state:any) => state.languageSelection.selectedLangugage
   );
   const createPayout= httpsCallable(functions, 'createPayout');
   const createAccountLink= httpsCallable(functions, 'createAccountLink');
-  const [nickname, setNickname] = useState(user.displayName);
-  const [email, setEmail] = useState(user.email);
+  const [nickname, setNickname] = useState((user as User).displayName);
+  const [email, setEmail] = useState((user as User).email);
   const [profileImg, setProfileImg] = useState(defaultImg);
   const [description, setDescription] = useState("");
-  const [editProfileImg, setEditProfileImg] = useState(null);
+  const [editProfileImg, setEditProfileImg] = useState<any | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [bookReaders, setBookReaders] = useState([]);
-  const [selected, setSelected] = useState(null);
-  const editorRef = useRef();
+  const [bookReaders, setBookReaders] = useState<any[]>([]);
+  const [selected, setSelected] = useState<any | null>(null);
+  const editorRef = useRef<AvatarEditor>(null);
   const [amountToPayout, setAmountToPayout] = useState(0);
-  const [balance, setBalance] = useState(null);
-  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+  const [balance, setBalance] = useState<number | null>(null);
+  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const navigate = useNavigate();
 
 
@@ -56,11 +60,11 @@ function ProfileUpdate({ }: Props) {
   const loadBookReaders = async () => {
     const documents = await getDocuments("bookReaders");
 
-    const realObjects = documents.map((bookReader) => {
+    const realObjects = (documents as any[]).map((bookReader) => {
       return bookReader.readers;
     });
 
-    const newArray = realObjects.map((obj) => {
+    const newArray = realObjects.map((obj:any[]) => {
       const nestedObject = Object.values(obj)[0];
       return nestedObject;
     });
@@ -75,7 +79,7 @@ function ProfileUpdate({ }: Props) {
   useEffect(() => {
     if (document) {
 
-      if (document.id === user.uid) {
+      if (document.id === (user as User).uid) {
               setDescription(document.description);
               setBalance(document.creditsAvailable.valueInMoney);
             } else {
@@ -120,28 +124,31 @@ function ProfileUpdate({ }: Props) {
   };
 
   const handleSaveAvatar = async () => {
-    const editorImg = editorRef.current
-      .getImageScaledToCanvas()
-      .toDataURL("image/jpg");
-
-    const byteCharacters = atob(editorImg.split(",")[1]);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    if (editorRef.current) {
+      const editorImg = editorRef.current
+        .getImageScaledToCanvas()
+        .toDataURL("image/jpg");
+  
+      const byteCharacters = atob(editorImg.split(",")[1]);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+  
+      const byteArray = new Uint8Array(byteNumbers);
+  
+      const storageRef = ref(
+        storage,
+        `profileImg/uid${(user as User).uid}/${(user as User).displayName}.jpg`
+      );
+      await uploadBytes(storageRef, byteArray);
+      const url = await getDownloadURL(storageRef);
+      console.log(url);
+  
+      setProfileImg(url);
+      setEditProfileImg(null);
+      
     }
-
-    const byteArray = new Uint8Array(byteNumbers);
-
-    const storageRef = ref(
-      storage,
-      `profileImg/uid${user.uid}/${user.displayName}.jpg`
-    );
-    await uploadBytes(storageRef, byteArray);
-    const url = await getDownloadURL(storageRef);
-    console.log(url);
-
-    setProfileImg(url);
-    setEditProfileImg(null);
   };
 
   const handleSubmit = async (e) => {
@@ -151,12 +158,12 @@ function ProfileUpdate({ }: Props) {
     try {
       console.log(nickname, email, profileImg);
 
-      await updateProfile(user, {
+      await updateProfile(user as User, {
         displayName: nickname,
         photoURL: profileImg,
       });
 
-      await updateEmail(user, email);
+      await updateEmail(user as User, email as string);
 
       updateDatabase(
         {
@@ -175,12 +182,12 @@ function ProfileUpdate({ }: Props) {
           },
         },
         "users",
-        user.uid
+        (user as User).uid
       );
 
       if (bookReaders.length > 0) {
         const yourObjects = bookReaders.filter(
-          (reader) => reader.id === user.uid
+          (reader) => reader.id === (user as User).uid
         );
 
         yourObjects.map((reader) => {
@@ -192,13 +199,13 @@ function ProfileUpdate({ }: Props) {
               photoURL: profileImg,
             },
             "bookReaders",
-            `${reader.bookReadingId}/readers/${user.uid}`
+            `${reader.bookReadingId}/readers/${(user as User).uid}`
           );
         });
       }
 
       setIsPending(false);
-      navigate(`/profile/${user.uid}`);
+      navigate(`/profile/${(user as User).uid}`);
       dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.update[selectedLanguage]}`, alertType:"success"}));
     } catch (error) {
       console.log(error);
@@ -213,7 +220,7 @@ function ProfileUpdate({ }: Props) {
       setIsPending(true);
       await createPayout({
         amount: amountToPayout,
-        currentUserId: user.uid,
+        currentUserId: (user as User).uid,
         userId: document.stripeAccountData.id,
         currency: document.stripeAccountData.default_currency,
         destinationAccount:
@@ -222,7 +229,7 @@ function ProfileUpdate({ }: Props) {
        
     
       setAmountToPayout(0);
-      setBalance((prev) => {
+      setBalance((prev:number) => {
         return prev - amountToPayout;
       });
       setIsPending(false);
@@ -236,7 +243,7 @@ function ProfileUpdate({ }: Props) {
     e.preventDefault();
     try {
       const accountLinkResponse = await createAccountLink({ accountId: document.stripeAccountData.id });
-      const { accountLinkObject } = accountLinkResponse.data;
+      const { accountLinkObject } = (accountLinkResponse.data as any);
 
       window.location.href = accountLinkObject.url;
       window.location.assign(accountLinkObject.url);

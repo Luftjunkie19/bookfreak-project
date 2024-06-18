@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import {
@@ -6,39 +7,39 @@ import {
   FaXTwitter,
 } from 'react-icons/fa6';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 function Footer() {
-  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
 
   return (
-    <footer className={`footer p-10 ${isDarkModed ? "bg-accColor" : "bg-primeColor"} text-white`}>
+    <footer className={`footer p-10 ${isDarkModed ? " bg-primary-color" : "bg-secondary-color"} text-white`}>
       <nav>
         <header className={`footer-title ${isDarkModed ? "text-primeColor" : "text-accColor"}`}>Services</header>
-        <Link className="link link-hover">Advertisement</Link>
+        <Link href={''} className="link link-hover">Advertisement</Link>
       </nav>
       <nav>
         <header className={`footer-title ${isDarkModed ? "text-primeColor" : "text-accColor"}`}>Company</header>
-        <Link className="link link-hover" to="/about-us">
+        <Link className="link link-hover" href="/about-us">
           About us
         </Link>
-        <Link to="/contact" className="link link-hover">
+        <Link href="/contact" className="link link-hover">
           Contact
         </Link>
-        <Link className="link link-hover">Jobs</Link>
+        <Link className="link link-hover" href={''}>Jobs</Link>
       </nav>
       <nav>
         <header className={`footer-title ${isDarkModed ? "text-primeColor" : "text-accColor"}`}>Social</header>
         <div className="grid grid-flow-col gap-4">
           <Link
-            to="https://twitter.com/BookFreak_ofc"
+            href="https://twitter.com/BookFreak_ofc"
             target="_blank"
             className="text-2xl hover:text-black transition-all duration-500"
           >
             <FaXTwitter />
           </Link>
           <Link
-            to="https://www.youtube.com/channel/UCSrXE9USUSfnz9kjIfSzBYg"
+            href="https://www.youtube.com/channel/UCSrXE9USUSfnz9kjIfSzBYg"
             target="_blank"
             className="hover:text-youtube transition-all duration-500"
           >
@@ -53,14 +54,14 @@ function Footer() {
             </svg>
           </Link>
           <Link
-            to="https://discord.gg/QDfwaJAKZK"
+            href="https://discord.gg/QDfwaJAKZK"
             target="_blank"
             className="text-2xl"
           >
             <FaDiscord />
           </Link>
           <Link
-            to="https://www.tiktok.com/@bookfreak_official"
+            href="https://www.tiktok.com/@bookfreak_official"
             target="_blank"
             className="text-2xl"
           >

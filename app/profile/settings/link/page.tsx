@@ -1,4 +1,3 @@
-import '../../components/stylings/mui-stylings.css';
 import '../stylings/backgrounds.css';
 
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -11,27 +10,24 @@ import {
 } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  Alert,
-  Autocomplete,
-  TextField,
-} from '@mui/material';
 
-import alertMessages from '../../assets/translations/AlertMessages.json';
-import formTranslations from '../../assets/translations/FormsTranslations.json';
+
+import alertMessages from '../../../../assets/translations/AlertMessages.json';
+import formTranslations from '../../../../assets/translations/FormsTranslations.json';
 import profileTranslations
-  from '../../assets/translations/ProfileTranslations.json';
-import Loader from '../../components/Loader';
-import { snackbarActions } from '../../context/SnackBarContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import useGetDocuments from '../../hooks/useGetDocuments';
-import { useRealDatabase } from '../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../hooks/useRealtimeDocument';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
+  from '../../../../assets/translations/ProfileTranslations.json';
+import Loader from '../../../../components/Loader';
+import { snackbarActions } from '../../../../context/SnackBarContext';
+import { useAuthContext } from '../../../../hooks/useAuthContext';
+import useGetDocuments from '../../../../hooks/useGetDocuments';
+import { useRealDatabase } from '../../../../hooks/useRealDatabase';
+import useRealtimeDocument from '../../../../hooks/useRealtimeDocument';
+import useRealtimeDocuments from '../../../../hooks/useRealtimeDocuments';
+import { User } from 'firebase/auth';
 
 function LinkSettingsPage() {
   const selectedLanguage = useSelector(
-    (state) => state.languageSelection.selectedLangugage
+    (state:any) => state.languageSelection.selectedLangugage
   );
   const dispatch=useDispatch();
   const [option, setOption] = useState("");
@@ -42,14 +38,14 @@ function LinkSettingsPage() {
   const { getDocuments } = useRealtimeDocuments();
   const { addToDataBase } = useRealDatabase();
   const { user } = useAuthContext();
-  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
 
  const {documents}=useGetDocuments('links');
 
  const links = documents.map((bookReader) => {
   return bookReader;
 })
-.filter((reader) => reader.belongsTo === user.uid);
+.filter((reader) => reader.belongsTo === (user as User).uid);
 
   const navigate = useNavigate();
 
@@ -60,7 +56,7 @@ function LinkSettingsPage() {
 
     try {
       const uniqueId = generateUniqueId(
-        `${option}${new Date().getTime()}${user.uid}`
+        `${option}${new Date().getTime()}${(user as User).uid}`
       );
 
       if (option === "discord") {
@@ -81,7 +77,7 @@ function LinkSettingsPage() {
         addToDataBase("links", uniqueId, {
           mediaType: option,
           nickname: link,
-          belongsTo: user.uid,
+          belongsTo: (user as User).uid,
           id: uniqueId,
         });
       } else {
@@ -106,14 +102,14 @@ function LinkSettingsPage() {
         addToDataBase("links", uniqueId, {
           mediaType: option,
           linkTo: link,
-          belongsTo: user.uid,
+          belongsTo: (user as User).uid,
           id: uniqueId,
         });
       }
 
       setError(null);
       setIsPending(false);
-      navigate(`/profile/${user.uid}`);
+      navigate(`/profile/${(user as User).uid}`);
       dispatch(snackbarActions.showMessage({message: `${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
     } catch (error) {
       setError(error.message);
@@ -129,112 +125,7 @@ function LinkSettingsPage() {
 
   return (
     <div className={`min-h-full h-screen flex flex-col justify-center items-center ${!isDarkModed && "pattern-bg"}`}>
-      <form
-        className="h-1/2 justify-around flex flex-col py-6 px-12 gap-4"
-        onSubmit={handleSubmit}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        <h2 className={`text-3xl font-bold ${isDarkModed ? "text-white" : "text-black"}`}>
-          {profileTranslations.addLinkForm.topText[selectedLanguage]}
-        </h2>
-
-        <label className="sm:w-full md:max-w-3xl">
-          <Autocomplete
-     
-        onChange={(event, newValue) => {
-          setOption(newValue);
-          console.log(newValue)
-        }}
-        id="controllable-states-demo"
-        options={availableMedia}
-className="w-full"
-        renderInput={(params) => <TextField {...params} label={profileTranslations.addLinkForm.query[selectedLanguage]} />}
-      />
-
-
-       
-        </label>
-        {option === "discord" && (
-          <label className="flex flex-col sm:w-full md:max-w-xl">
-            <span className={`${isDarkModed ? "text-white" : "text-black"}`}>
-              {formTranslations.userFields.nickname[selectedLanguage]}:
-            </span>
-            <input
-              className="input input-info outline-none w-full py-1"
-              type="text"
-              required
-              placeholder={
-                formTranslations.userFields.nickname[selectedLanguage]
-              }
-              onChange={(e) => setLink(e.target.value)}
-            />
-          </label>
-        )}
-
-        {option === "spotify" && (
-          <>
-            <label className="flex flex-col  sm:w-full md:max-w-xl">
-              <span className={`${isDarkModed ? "text-white" : "text-black"}`}>Link:</span>
-              <input
-                className="input input-info outline-none w-full py-1"
-                type="text"
-                placeholder={`${profileTranslations.addLinkForm.placeHolder[selectedLanguage]}`}
-                required
-                onChange={(e) => setLink(e.target.value)}
-              />
-            </label>
-          </>
-        )}
-
-        {option === "youtube" && (
-          <>
-            <label className="flex flex-col  sm:w-full md:max-w-xl">
-              <span className={`${isDarkModed ? "text-white" : "text-black"}`}>Link:</span>
-              <input
-                className="input input-info outline-none w-full py-1"
-                type="text"
-                required
-                placeholder={`${profileTranslations.addLinkForm.placeHolder[selectedLanguage]}`}
-                onChange={(e) => setLink(e.target.value)}
-              />
-            </label>
-          </>
-        )}
-
-        {option === "github" && (
-          <>
-            <label className="flex flex-col  sm:w-full md:max-w-xl">
-              <span className={`${isDarkModed ? "text-white" : "text-black"}`}>Link:</span>
-              <input
-                className="input input-info outline-none w-full py-1"
-                type="text"
-                required
-                placeholder={`${profileTranslations.addLinkForm.placeHolder[selectedLanguage]}`}
-                onChange={(e) => setLink(e.target.value)}
-              />
-            </label>
-          </>
-        )}
-
-        {option === "" && (
-          <p className={`${isDarkModed ? "text-white" : "text-black"}`}>
-            {profileTranslations.addLinkForm.selectType[selectedLanguage]}
-          </p>
-        )}
-
-        {error && (
-          <Alert className="bg-transparent" severity="error">
-            {error}
-          </Alert>
-        )}
-        <div className="w-full justify-center flex items-center">
-          <button className="btn sm:w-full md:max-w-xl bg-accColor text-white">
-            {profileTranslations.addLinkForm.btnText[selectedLanguage]}
-          </button>
-        </div>
-      </form>
+  
 
       {isPending && <Loader />}
     </div>

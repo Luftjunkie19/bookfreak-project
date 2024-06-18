@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import Lottie from 'lottie-react';
 
 import loadingAnimation
-  from '../../assets/lottieAnimations/Animation%20-%201702816275398.json';
+  from '../../assets/lottieAnimations/Cancel.json';
 
 function FailLoader() {
   return (

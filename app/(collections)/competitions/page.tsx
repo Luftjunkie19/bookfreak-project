@@ -12,30 +12,23 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 
-import {
-  Autocomplete,
-  Box,
-  Pagination,
-  PaginationItem,
-  TextField,
-} from '@mui/material';
 
 import itemReward from '../../assets/ItemReward.webp';
 import lottieAnimation
-  from '../../assets/lottieAnimations/Animation - 1700320134586.json';
+  from '../../../assets/lottieAnimations/No-Data-Found.json';
 import moneyPrize from '../../assets/MoneyPrize.webp';
 import competitionsTranslations
-  from '../../assets/translations/CompetitionsTranslations.json';
-import formTranslations from '../../assets/translations/FormsTranslations.json';
+  from '../../../assets/translations/CompetitionsTranslations.json';
+import formTranslations from '../../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
-  from '../../assets/translations/ReusableTranslations.json';
-import ManagementBar from '../../components/RecensionsComponents/ManagementBar';
-import useGetDocuments from '../../hooks/useGetDocuments';
+  from '../../../assets/translations/ReusableTranslations.json';
+import ManagementBar from '../../../components/recensions/ManagementBar';
+import useGetDocuments from '../../../hooks/useGetDocuments';
 
 function Competitions() {
   const { documents } = useGetDocuments("competitions");
-  const [elements, setElements] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [elements, setElements] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [filterQuery, setFilterQuery] = useSearchParams({ filters: "" });
 
   const filterOptions = [{
@@ -111,14 +104,14 @@ function Competitions() {
     if (currentPage < pagesAmount) {
       setCurrentPage(currentPage + 1);
       const pageObjects = fetchObjects(currentPage + 1);
-      setElements(pageObjects);
+      setElements(pageObjects as any[]);
       return;
     }
 
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
       const pageObjects = fetchObjects(currentPage - 1);
-      setElements(pageObjects);
+      setElements(pageObjects as any[]);
       return;
     }
     setCurrentPage(value);
@@ -129,7 +122,7 @@ function Competitions() {
   useEffect(() => {
     if (documents.length > 0) {
       const fetchedObjects = fetchObjects(currentPage);
-      setElements(fetchedObjects);
+      setElements(fetchedObjects as any[]);
     }
   }, [currentPage, documents, fetchObjects]);
 
@@ -166,9 +159,12 @@ function Competitions() {
   };
 
   const sortedClubs = () => {
-    if (selectedSort.trim("") !== "") {
-      return sortOptions
-        .find((option) => option.label === selectedSort)
+    if (selectedSort.trim() !== "" && sortOptions.find((option) => option.label === selectedSort)) {
+      return (sortOptions
+        .find((option) => option.label === selectedSort) as {
+    label: string;
+    sort: (array: any) => any;
+} )
         .sort(filteredItems())
     } else {
       return filteredItems();
@@ -176,131 +172,17 @@ function Competitions() {
   };
 
   const selectedLanguage = useSelector(
-    (state) => state.languageSelection.selectedLangugage
+    (state:any) => state.languageSelection.selectedLangugage
   );
   const pagesAmount = Math.ceil(sortedClubs().length / objectsOnPage());
-  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   return (
     <div className={`min-h-screen h-full overflow-x-hidden w-full ${!isDarkModed && "pattern-bg"}`}>
      <div className="flex gap-2 flex-wrap items-center justify-center py-4">
 <ManagementBar filterText={reuseableTranslations.categoryText[selectedLanguage]} sortText={reuseableTranslations.sortTexts[selectedLanguage]} sortOptions={selectedSort} filterOptions={filterOptions} sortSelected={selectedSort} filtersSelected={selectedFilters} applyFilters={applyFilters} applySort={applySort} />
-<Autocomplete
-          className="sm:w-3/4 md:max-w-lg"
-          onChange={(e, value) => {
-            if (value === null) {
-              setFilterQuery(
-                (prev) => {
-                  prev.set("filters", "");
-                  return prev;
-                },
-                { replace: true }
-              );
-              return;
-            }
-            setFilterQuery(
-              (prev) => {
-                prev.set("filters", value);
-                return prev;
-              },
-              { replace: true }
-            );
-          }}
-         sx={{
-            color:"white",
-            ".MuiAutocomplete-input": {
-              color: "white",
-            },
-            ".MuiAutocomplete-inputRoot": {
-              background: "#4267B5",
-            },
-
-            "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-              border: "0",
-            },
-          }}
-          id="free-solo-demo"
-          freeSolo
-        renderOption={(props, option) => (<Box {...props} sx={{ color: 'white'}}>{option}</Box>)}
-          options={documents.map((option) => option.competitionTitle)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={formTranslations.placeHoldersCollections.competitionsName[selectedLanguage]}
-              onChange={(e, value) => {
-                setFilterQuery(
-                  (prev) => {
-                    prev.set("filters", e.target.value);
-                    return prev;
-                  },
-                  { replace: true }
-                );
-              }}
-            />
-          )}
-        />
      </div>
 
-      <div className="flex w-full flex-wrap justify-center gap-4 m-2">
-        {sortedClubs() && sortedClubs().length > 0 ? (
-          sortedClubs().filter((doc) =>
-          doc.competitionTitle
-            .toLowerCase()
-            .includes(filterQuery.get("filters").toLowerCase())
-        ).map((doc) => (
-            <Link
-              to={`/competition/${doc.id}`}
-              key={doc.id}
-              className={`flex ${
-                (doc.expiresAt - new Date().getTime()) / 86400000 <= 0 ?
-                "bg-gray-500 text-black hover:bg-gray-800" : `${isDarkModed ? "bg-accColor" : "bg-primeColor"} ${isDarkModed ? "hover:bg-lightModeCol hover:text-primeColor" : "hover:bg-accColor hover:text-white"}`
-              } sm:w-4/5 md:w-[45%] max-w-xs  border-2 border-white justify-between items-center flex-row py-4 rounded-lg text-white   shadow-md hover:shadow-lg  hover:shadow-black transition-all duration-300 hover:-translate-y-1`}
-            >
-              <div className="flex flex-col justify-around px-2">
-                <h3 className=" font-semibold">{doc.competitionTitle}</h3>
-                <p>{doc.competitionsName}</p>
-                <p>
-                  {competitionsTranslations.competitionObject.prize[selectedLanguage]}:{" "}
-                  {doc.prize.moneyPrize.amount > 0
-                    ? `${(doc.prize.moneyPrize.amount / 100).toFixed(
-                        2
-                      )} ${doc.prize.moneyPrize.currency.toUpperCase()}`
-                    : doc.prize.itemPrize.typeOfPrize}
-                </p>
-                <p>Est. {formatDistanceToNow(doc.createdBy.createdAt)} ago</p>
-              </div>
-              <div>
-                {doc.prize.moneyPrize.amount > 0 ? (
-                  <img src={moneyPrize} className="w-12 h-12" alt="" />
-                ) : (
-                  <img src={itemReward} className="w-12 h-12" alt="" />
-                )}
-              </div>
-            </Link>
-          ))
-        ) : (
-          <div>
-            <Lottie animationData={lottieAnimation} />
-            <p className={`text-4xl font-bold ${isDarkModed ? "text-white" : "text-black"} text-center`}>
-              No competitions added yet
-            </p>
-          </div>
-        )}
-      </div>
-      <div className="flex justify-center items-center p-2">
-        <Pagination
- shape="rounded" 
-          variant="outlined"
-          showLastButton
-          showFirstButton
-          count={pagesAmount}
-             renderItem={(item) => (<PaginationItem sx={{
-            backgroundColor: "#4267B5", color: 'white', ":active": {
-              backgroundColor: "#1a2339",
-           color: "#4267B5"
-          }}} {...item}/>)}
-          onChange={handlePagesChange}
-        />
-      </div>
+      
     </div>
   );
 }

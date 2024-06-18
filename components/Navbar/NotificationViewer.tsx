@@ -1,21 +1,23 @@
 'use client';
+import { FaBell } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
 import { useAuthContext } from '../../hooks/useAuthContext';
 import useGetDocuments from '../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../hooks/useRealDatabase';
+import { useLogout } from 'hooks/useLogout';
 
 function NotificationViewer() {
   const { user } = useAuthContext();
-  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
-    (state:any) => state.languageSelection.selectedLangugage
+    (state: any) => state.languageSelection.selectedLangugage
   );
   const { updateDatabase, addToDataBase } = useRealDatabase();
-  const {documents}=useGetDocuments('notifications');
+  const { documents } = useGetDocuments('notifications');
 
-  
-  const openedState = useSelector((state:any) => state.viewer.isOpened);
+
+  const openedState = useSelector((state: any) => state.viewer.isOpened);
 
   const acceptRequest = async (notification, communityId, userData) => {
     updateDatabase(
@@ -43,10 +45,16 @@ function NotificationViewer() {
       `${notification.notificationId}-${notification.notificationTime}`
     );
   };
+  const { logout } = useLogout();
+
+  const signout = async () => {
+    await logout();
+  }
+
   return (
-    <div>
-      Notification Bell
-    </div>
+    <button>
+      <FaBell size={24} className="text-yellow-400" />
+    </button>
   );
 }
 

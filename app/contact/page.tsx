@@ -19,9 +19,9 @@ import aboutUsTranslations
   from '../../assets/translations/aboutUsTranslations.json';
 
 function ContactPage() {
-  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
-    (state) => state.languageSelection.selectedLangugage
+    (state:any) => state.languageSelection.selectedLangugage
   );
   const clipboard= useClipboard();
 
@@ -40,11 +40,11 @@ function ContactPage() {
         >
           <FaDiscord className="w-16 h-16 group-hover:rotate-180 group-hover:scale-95 transition-all duration-500" />
         </Link>
-        <Link className="bg-blue-400 p-8 rounded-lg cursor-pointer group" onClick={()=>{
+        <div className="bg-blue-400 p-8 rounded-lg cursor-pointer group" onClick={()=>{
           clipboard.copy(process.env.REACT_APP_GMAIL);
         }}>
           <FaMailBulk className="w-16 h-16 group-hover:rotate-180 group-hover:scale-95 transition-all duration-500 text-white" />
-        </Link>
+        </div>
         <Link
           className={`bg-white ${!isDarkModed && 'border-2 border-black'} p-8 rounded-lg cursor-pointer group`}
           to="https://www.instagram.com/bookfreak_officiall"

@@ -1,15 +1,18 @@
 'use client';
-import React, { Suspense } from 'react'
-import BaseSwiper from './base-swiper/BaseSwiper'
-import useGetDocuments from 'hooks/useGetDocuments'
+import React from 'react';
+
 import Book from 'components/elements/Book';
+import useGetDocuments from 'hooks/useGetDocuments';
 import { SwiperSlide } from 'swiper/react';
+
+import BaseSwiper from './base-swiper/BaseSwiper';
 
 type Props = {}
 
 function BookSwiper({}: Props) {
     const {documents}=useGetDocuments('books');
-  return (
+  return (<>
+  <p className='text-white text-2xl m-2'>Books, that might interest you</p>
     <BaseSwiper>
     {documents && documents.map((item, i )=>(
         <SwiperSlide key={i}>
@@ -18,7 +21,8 @@ function BookSwiper({}: Props) {
        ))}
   
     </BaseSwiper>
-  )
+    </>
+ )
 }
 
 export default BookSwiper

@@ -1,3 +1,4 @@
+
 import './globals.css';
 
 import GoogleAdsense from 'adsense/GoogleAdsense';
@@ -9,6 +10,7 @@ import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 
 import Navbar from '../components/Navbar/Navbar';
+import Footer from 'components/Footer';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,16 +27,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-      <link rel="icon" href="/Logo.png" sizes="any" />
+        <link rel="icon" href="/Logo.png" sizes="any" />
         <AuthContextProvider>
           <ReduxProvider>
             <Providers>
-              <Toaster/>
-            <Navbar />
-        {children}
-          </Providers>
-      </ReduxProvider>      
-          </AuthContextProvider>
+              <Toaster />
+              <Navbar />
+              {children}
+        <Footer />
+            </Providers>
+          </ReduxProvider>
+        </AuthContextProvider>
       </body>
       <GoogleAdsense pId={process.env.NEXT_PUBLIC_ADSENSE_ID as string} />
     </html>
