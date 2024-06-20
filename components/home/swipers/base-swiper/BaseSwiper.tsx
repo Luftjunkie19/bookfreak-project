@@ -12,26 +12,32 @@ import { Pagination } from 'swiper/modules';
 import { Swiper } from 'swiper/react';
 
 type Props = {
-    children: React.ReactNode
+  children: React.ReactNode,
+  slidesOnSmallScreen?: number,
+  slidesOnLargeScreen?: number,
+  slidesOnLargeScreen2?: number,
+  slidesOnXlScreen?: number,
+    slidesOn2XlScreen?: number,
+
 }
 
-function BaseSwiper({children}: Props) {
+function BaseSwiper({children, slidesOn2XlScreen, slidesOnLargeScreen2, slidesOnLargeScreen, slidesOnSmallScreen, slidesOnXlScreen}: Props) {
   return (
-    <Swiper modules={[Pagination]} className='px-2' spaceBetween={8} breakpoints={{
+    <Swiper modules={[Pagination]} className='p-4' spaceBetween={8} breakpoints={{
       0: {
-        slidesPerView:1,
+        slidesPerView: slidesOnSmallScreen ?? 1,
       },
       640: {
-        slidesPerView:2
+        slidesPerView: slidesOnLargeScreen ?? 2
       },
         768: {
-        slidesPerView:3
+        slidesPerView: slidesOnLargeScreen2 ?? 3
       },
          1024: {
-        slidesPerView:5
+        slidesPerView: slidesOnXlScreen ?? 5
       },
           1440: {
-        slidesPerView:8
+        slidesPerView: slidesOn2XlScreen ?? 8
       },
     }}>
         {children}

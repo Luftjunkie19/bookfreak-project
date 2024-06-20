@@ -20,6 +20,7 @@ import LanguageSelect from './LanguageSelect';
 import NotificationViewer from './NotificationViewer';
 import SignInBtn from './Sign-Buttons/SignInBtn';
 import SignUpBtn from './Sign-Buttons/SignUpBtn';
+import UserDropDown from './User-Dropdown/UserDropDown';
 
 function Navbar() {
   const translations = navBarTranslation;
@@ -51,7 +52,10 @@ function Navbar() {
         <Input startContent={<FaSearch className=' text-white' />} />
       </div>
       {user ?
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
+          {documentBase && 
+          <UserDropDown userObject={documentBase}/>
+          }
           <CreateBtn />
           <NotificationViewer />
           <LanguageSelect />

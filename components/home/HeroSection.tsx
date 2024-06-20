@@ -9,7 +9,7 @@ type Props = {}
 
 function HeroSection({}: Props) {
   return (
-    <div className=' mx-auto m-0 lg:max-w-4xl xl:max-w-5xl 2xl:max-w-7xl w-full flex items-center justify-between p-4'>
+    <div className=' mx-auto m-0 lg:max-w-4xl xl:max-w-5xl 2xl:max-w-7xl w-full flex sm:flex-column lg:flex-row items-center justify-between p-4'>
         <div className="flex sm:max-w-md 2xl:max-w-xl w-full flex-col gap-1 text-white">
             <p className="sm:text-3xl 2xl:text-4xl font-semibold">Welcome To BookFreak !</p>
             <p className="text-lg">The place for everyone that is beloved in Books. Attend competitions and win prizes, Join Clubs and build new friendships. Find books by means of AI and explore new books genres.</p>

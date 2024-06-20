@@ -17,17 +17,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(chat)/[chatId]/page.js"
     ],
-    "/about-us/page": [
+    "/book/[bookId]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/about-us/page.css",
-      "static/chunks/app/about-us/page.js"
-    ],
-    "/contact/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/contact/page.css",
-      "static/chunks/app/contact/page.js"
+      "static/css/app/book/[bookId]/page.css",
+      "static/chunks/app/book/[bookId]/page.js"
     ]
   }
 }

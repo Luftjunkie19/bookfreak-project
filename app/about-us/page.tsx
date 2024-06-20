@@ -30,10 +30,10 @@ import myImage from '../../assets/about-image.jpg';
 import logoImage from '../../assets/Logo.png';
 import lottieAnimation
   from '../../assets/lottieAnimations/Astronaut-Reading.json';
-import breakImg2 from '../../assets/ProjectHistory/Screenshot (1167).png';
-import breakImg1 from '../../assets/ProjectHistory/Screenshot (1174).png';
+import breakImg2 from '../../assets/ProjectHistory/August.png';
+import breakImg1 from '../../assets/ProjectHistory/September2.png';
 import difficultiesImage1
-  from '../../assets/ProjectHistory/Zrzut ekranu (1128).png';
+  from '../../assets/ProjectHistory/March.png';
 import aboutUsTranslations
   from '../../assets/translations/aboutUsTranslations.json';
 import Image from 'next/image';
@@ -538,11 +538,9 @@ function AboutUs() {
         className="w-full flex flex-wrap justify-center items-center p-3"
       >
         <div className="sm:w-full lg:w-[90vw] flex flex-wrap lg:justify-around gap-3">
-          <motion.img
-            initial="offscreen"
-            whileInView="onscreen"
-            variants={firstImageVariant}
-            viewport={{ once: true }}
+          <Image
+            width={60}
+            height={60}
             src={logoImage}
             className="w-60 h-60 object-cover rounded-md"
             alt=""

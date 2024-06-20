@@ -12,11 +12,11 @@ type Props = {}
 function BookSwiper({}: Props) {
     const {documents}=useGetDocuments('books');
   return (<>
-  <p className='text-white text-2xl m-2'>Books, that might interest you</p>
+  <p className='text-white text-2xl px-2 py-1'>Books, that might interest you</p>
     <BaseSwiper>
     {documents && documents.map((item, i )=>(
         <SwiperSlide key={i}>
-        <Book bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} title={item.title} bookCategory={item.category} />
+        <Book bookId={item.id} bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} title={item.title} bookCategory={item.category} />
     </SwiperSlide>     
        ))}
   

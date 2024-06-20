@@ -1,6 +1,8 @@
-import '../stylings/backgrounds.css';
+'use client';
+
 
 import {
+  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -11,7 +13,7 @@ import {
   FaShare,
   FaTrash,
 } from 'react-icons/fa';
-import { MdRecommend } from 'react-icons/md';
+import { MdCancel, MdLibraryBooks, MdRecommend } from 'react-icons/md';
 import {
   useDispatch,
   useSelector,
@@ -44,11 +46,21 @@ import useRealtimeDocument from '../../../hooks/useRealtimeDocument';
 import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
 // import EditBook from '../Forms&FormsPages/EditBook';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import BlueButton from 'components/buttons/BlueButton';
+import toast from 'react-hot-toast';
+import { Chip, Tab, Tabs } from '@nextui-org/react';
+import { IoChatbubbleSharp } from 'react-icons/io5';
+import { FaBookBookmark, FaStar } from 'react-icons/fa6';
+import { Separator } from '@/components/ui/separator';
+import { GrUpdate } from 'react-icons/gr';
+import DarkButton from 'components/buttons/WhiteButton';
+import RemoveBtn from 'components/buttons/RemoveBtn';
 
 function Book({ params }: { params: { bookId: string } }) {
   const { bookId: id } = params;
   const dispatch=useDispatch();
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const { user } = useAuthContext();
   const [isPending, setIsPending] = useState(false);
   const { getDocument } = useRealtimeDocument();
@@ -76,7 +88,7 @@ function Book({ params }: { params: { bookId: string } }) {
 const {documents:likers}=useGetDocuments("lovedBooks");
 const {documents: recensionObjects}=useGetDocuments('bookRecensions');
 
-const recensions= recensionObjects.map((bookReader) => {
+const recensions: any[] = recensionObjects.map((bookReader) => {
   if (bookReader.recensions) {
     return bookReader.recensions;
   } else {
@@ -92,8 +104,8 @@ const recensions= recensionObjects.map((bookReader) => {
 }).flat();
 
  
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const showIfLiked = async () => {
+
+  const showIfLiked =useCallback(async () => {
     if (user) {      
       const docElement = await getDocument("lovedBooks", `${id}-${user.uid}`);
   
@@ -103,7 +115,7 @@ const recensions= recensionObjects.map((bookReader) => {
         setIsLiked(false);
       }
     }
-  };
+  }, [getDocument, id, user]);
 
 const {document}=useGetDocument('books', id);
   const {documents:readersObjects}=useGetDocuments("bookReaders");
@@ -247,7 +259,7 @@ const {document}=useGetDocument('books', id);
     removeFromDataBase("books", id);
 dispatch(snackbarActions.showMessage({message:`${  alertMessages.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
     setIsPending(false);
-    navigate("/");
+    navigate.push("/");
   };
 
   const isOpened = useSelector((state:any) => state.modal.isOpened);
@@ -255,6 +267,7 @@ dispatch(snackbarActions.showMessage({message:`${  alertMessages.notifications.s
 
   const copyPathName = () => {
     clipboard.copy(window.location.href);
+    toast.success('Successfully copied !');
     dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.copied[selectedLanguage]}`, alertType:"success"}));
   };
 
@@ -401,12 +414,77 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
   };
 
   return (
-    <div className={`min-h-screen h-full overflow-x-hidden ${!isDarkModed && "pattern-bg"}`}>
+    <div className={`min-h-screen h-full overflow-x-hidden`}>
       {/* {isOpened && <EditBook id={id} />} */}
 
       {document && (
         <>
-     
+          <div className="flex max-w-7xl justify-around gap-4 mx-auto m-0 w-full xl:p-6">
+
+            <div className="h-72 w-52">
+              <Image src={document.photoURL} alt='' className='w-full border-2 border-white object-cover h-full rounded-xl' width={80} height={80}/> 
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <p className="text-white text-3xl">{document.title}</p>
+              <div className="flex gap-6 items-center">
+                <div className="flex items-center gap-2">
+                  <button onClick={changeLoveState}> 
+                    <FaHeart className={`transition-all duration-400 ${isLiked ? 'text-red-400' : 'text-white'}`} size={24}/>
+                  </button>
+                  {likers && likers.length > 0 && <p className="text-white">{(likers.filter((item) => item.lovedBookId === id)[0].displayName)} and other {(likers.filter((item) => item.lovedBookId === id).length - 1)} loves it</p>}
+</div>
+
+                <BlueButton additionalClasses='flex items-center gap-2' onClick={copyPathName}>
+                  <FaShare size={24} className="text-white" />
+                  Share
+                </BlueButton>
+              </div>
+              <div className="flex gap-6 items-center text-white">
+                 <div className="flex items-center space-x-2">
+              <IoChatbubbleSharp />
+              <span>Recensions</span>
+              <Chip classNames={{
+                    base: " bg-primary-color border border-white",
+                content:"text-white"
+                  }} size='lg' variant="faded">{recensions.length}</Chip>
+            </div>
+              
+             <div className="flex items-center space-x-2">
+              <FaStar className=' text-yellow-700'/>
+              <span>Rate</span>
+              <Chip classNames={{
+                base:" bg-yellow-700 border border-black"
+                  }} size='lg' variant="flat">{(recensions.reduce((prev, cur)=> prev + cur.bookRate, 0) / recensions.length).toFixed(2)}</Chip>
+            </div>
+
+                 <div className="flex items-center space-x-2">
+              <FaBookBookmark/>
+              <span>Read By</span>
+              <Chip classNames={{
+                    base: " bg-primary-color border border-white",
+                content:"text-white"
+                  }} size='lg' variant="faded">1</Chip>
+            </div>
+              </div>
+              
+              <div className="flex gap-4 item-center">
+                <BlueButton additionalClasses='flex items-center gap-4'>
+                  Update
+                  <GrUpdate size={20} />
+                </BlueButton>
+                <RemoveBtn additionalClasses='flex items-center gap-4'>
+                  Remove
+                  <MdCancel size={20} />
+                </RemoveBtn>
+                <DarkButton additionalClasses='flex gap-4 items-center'>
+                  Add To Shelf <MdLibraryBooks size={20}  />
+                </DarkButton>
+           </div>
+
+              </div>
+            </div>
+       
             </>
       )}
       {document &&  readers && (

@@ -1,6 +1,6 @@
 
 import './globals.css';
-
+import classes from '../stylings/gradient.module.css'
 import GoogleAdsense from 'adsense/GoogleAdsense';
 import AuthContextProvider from 'context/AuthContext';
 import ReduxProvider from 'context/ReduxProvider';
@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={`bg-secondary-color ${classes['dark-blue-gradiented']}`}>
         <link rel="icon" href="/Logo.png" sizes="any" />
         <AuthContextProvider>
           <ReduxProvider>

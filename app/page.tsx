@@ -2,14 +2,22 @@
 import HeroSection from 'components/home/HeroSection';
 import classes from '../stylings/gradient.module.css'
 import BookSwiper from 'components/home/swipers/BookSwiper';
+import CompetitionSwiper from 'components/home/swipers/CompetitionSwiper';
+import ClubSwiper from 'components/home/swipers/ClubSwiper';
+import SearchTabs from 'components/home/SearchTabs';
+import Subscriptions from 'components/home/Subscriptions';
 
 
 
 export default function Home() {
   return (
-    <div className={`min-h-screen w-full bg-secondary-color ${classes['dark-blue-gradiented']}`}>
-<HeroSection/>
-<BookSwiper/>
+    <div className={`min-h-screen w-full `}>
+      <HeroSection />
+      <BookSwiper />
+      <SearchTabs/>
+      <CompetitionSwiper />
+      <ClubSwiper />
+      <Subscriptions/>
     </div>
   );
 }

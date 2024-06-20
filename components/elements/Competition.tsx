@@ -1,5 +1,7 @@
+import BlueButton from 'components/buttons/BlueButton'
 import BlueDarkGradientButton from 'components/buttons/gradient/BlueDarkGradientButton'
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 type Props = {
@@ -11,15 +13,15 @@ type Props = {
 
 function Competition({comeptitionRemainingTime, competitionLogo, competitionName, membersAmount}: Props) {
   return (
-     <div className='max-w-60 w-full flex flex-col gap-2'>
-      <Image className='w-full h-36' src={competitionLogo} alt={''} width={64} height={64} />
+     <Link href={'/competition/'} className='max-w-xs border-2 border-primary-color w-full rounded-lg flex flex-col gap-2 bg-white'>
+      <Image className='w-full object-cover rounded-t-lg h-36' src={competitionLogo} alt={''} width={64} height={64} />
       <div className="flex flex-col gap-1 px-2 py-1">
             <p>{competitionName}</p>
-            <p>{membersAmount}</p>
+            <p>{membersAmount} Members</p>
         <p>{comeptitionRemainingTime}</p>
-  <BlueDarkGradientButton additionalClasses='self-end'>Show</BlueDarkGradientButton>
+  <BlueButton additionalClasses='self-end mt-2'>Show More</BlueButton>
       </div>
-    </div>
+    </Link>
   )
 }
 
