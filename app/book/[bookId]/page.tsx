@@ -421,12 +421,13 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
         <>
           <div className="flex max-w-7xl justify-around gap-4 mx-auto m-0 w-full xl:p-6">
 
-            <div className="h-72 w-52">
+            <div className="h-72 w-60">
               <Image src={document.photoURL} alt='' className='w-full border-2 border-white object-cover h-full rounded-xl' width={80} height={80}/> 
             </div>
 
             <div className="flex flex-col gap-3">
               <p className="text-white text-3xl">{document.title}</p>
+              <p className="text-white">{document.author}</p>
               <div className="flex gap-6 items-center">
                 <div className="flex items-center gap-2">
                   <button onClick={changeLoveState}> 
@@ -484,7 +485,24 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
 
               </div>
             </div>
-       
+       <div className="mx-auto m-0">
+
+<div className="flex flex-col gap-2 px-2">
+  <p className="text-2xl font-semibold text-white">Description</p>
+<div className="p-2 rounded-lg max-w-2xl w-full text-white line-clamp-6 border-2 border-primary-color bg-dark-gray">
+{document.description}
+</div>
+</div>
+
+<div className="flex w-fit flex-col gap-2 p-2 rounded-lg border-2 border-primary-color bg-dark-gray">
+  <p>Pages: {document.pagesNumber}</p>
+  <p>Category: {document.category}</p>
+  <p>Added By {document.createdBy.displayName}</p>
+  <p>Published by {document.publishingHouse} </p>
+</div>
+
+
+       </div>
             </>
       )}
       {document &&  readers && (
