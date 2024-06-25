@@ -1,44 +1,39 @@
+'use client';
 import { useState } from 'react';
 
 import { httpsCallable } from 'firebase/functions';
-import { BsStars } from 'react-icons/bs';
-import { CgDetailsMore } from 'react-icons/cg';
-import { GiSwordsPower } from 'react-icons/gi';
 import {
   useDispatch,
   useSelector,
 } from 'react-redux';
-import { useNavigate } from 'react-router';
-import CreatableSelect from 'react-select';
 import uniqid from 'uniqid';
 
-import {
-  Alert,
-  Autocomplete,
-  Box,
-  TextField,
-} from '@mui/material';
-import { DateTimePicker } from '@mui/x-date-pickers';
 
-import { functions } from '../../';
-import alertMessages from '../../assets/translations/AlertMessages.json';
-import translations from '../../assets/translations/FormsTranslations.json';
-import FailLoader from '../../components/FailLoader';
-import Loader from '../../components/Loader';
-import { snackbarActions } from '../../context/SnackBarContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import useGetDocument from '../../hooks/useGetDocument';
-import useGetDocuments from '../../hooks/useGetDocuments';
-import { useRealDatabase } from '../../hooks/useRealDatabase';
+import { functions } from '../../firebase';
+import alertMessages from '../../../assets/translations/AlertMessages.json';
+import translations from '../../../assets/translations/FormsTranslations.json';
+import { snackbarActions } from '../../../context/SnackBarContext';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import useGetDocument from '../../../hooks/useGetDocument';
+import useGetDocuments from '../../../hooks/useGetDocuments';
+import { useRealDatabase } from '../../../hooks/useRealDatabase';
+import { useRouter } from 'next/navigation';
+import { User } from 'firebase/auth';
+import BlueDarkGradientButton from 'components/buttons/gradient/BlueDarkGradientButton';
+import LabeledInput from 'components/input/LabeledInput';
+import { Avatar, Chip, DatePicker, Select, SelectItem, Switch, Tooltip } from '@nextui-org/react';
+import { FaInfo } from 'react-icons/fa6';
+import { InputSwitch } from 'primereact/inputswitch';
+import Image from 'next/image';
 
 function CreateCompetition() {
   const { user } = useAuthContext();
   const { addToDataBase, updateDatabase } = useRealDatabase();
   const [attachedUsers, setAttachedUsers] = useState([]);
   const selectedLanguage = useSelector(
-    (state) => state.languageSelection.selectedLangugage
+    (state:any) => state.languageSelection.selectedLangugage
   );
-  const isDarkModed = useSelector((state) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const dispatch=useDispatch();
@@ -70,16 +65,16 @@ function CreateCompetition() {
     { value: "ticket", label: translations.ticket[selectedLanguage] },
   ];
 
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const { documents }=useGetDocuments('users');
-  const {document}=useGetDocument("users", user.uid);
+  const {document}=useGetDocument("users", user ? user.uid : '');
 
 
   let notCurrentUsers = documents
     .filter((doc) => {
-      return (
+      return ( user &&
         doc.id !== user.uid &&
-        !attachedUsers.some((member) => member.value.id === doc.id)
+        !attachedUsers.some((member:any) => member.value.id === doc.id)
       );
     })
     .map((user) => {
@@ -93,7 +88,22 @@ function CreateCompetition() {
       };
     });
 
-  const [competition, setCompetition] = useState({
+  const [competition, setCompetition] = useState<{
+    competitionTitle: string,
+    competitionsName: string,
+    expiresAt: null | Date,
+    description: string,
+    prizeType: null | 'Money' | 'item',
+    chargeId: null | string,
+    prizeHandedIn: false,
+    prize: {
+      moneyPrize?: {
+        amount: number | null,
+        currency: string | null,
+      },
+      itemPrize?: { title: string | null, typeOfPrize: string | null },
+    },
+  }>({
     competitionTitle: "",
     competitionsName: "",
     expiresAt: null,
@@ -115,17 +125,17 @@ function CreateCompetition() {
     addToDataBase("competitions", uniqueId, {
       competitionTitle: competition.competitionTitle,
       competitionsName: competition.competitionsName,
-      expiresAt: new Date(competition.expiresAt).getTime(),
+      expiresAt: new Date((competition.expiresAt as Date)).getTime(),
       description: competition.description,
       prizeHandedIn: false,
       chargeId: competition.chargeId,
       prize: competition.prize,
       createdBy: {
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
+        displayName: (user as User).displayName,
+        email: (user as User).email,
+        photoURL: (user as User).photoURL,
         createdAt: new Date().getTime(),
-        id: user.uid,
+        id: (user as User).uid,
       },
       id: uniqueId,
     });
@@ -137,21 +147,21 @@ function CreateCompetition() {
 
     addToDataBase("communityMembers", uniqueId, {
       users: {
-        [user.uid]: {
-          label: user.displayName,
+        [(user as User).uid]: {
+          label: (user as User).displayName,
           belongsTo: uniqueId,
           value: {
-            nickname: user.displayName,
-            id: user.uid,
-            photoURL: user.photoURL,
+            nickname: (user as User).displayName,
+            id: (user as User).uid,
+            photoURL: (user as User).photoURL,
           },
         },
       },
     });
 
-    attachedUsers.map((member) =>
+    attachedUsers.map((member:any) =>
       addToDataBase("notifications", `${uniqueId}-${new Date().getTime()}`, {
-        notificationContent: `You've been invited by ${user.displayName} to join the ${competition.competitionsName} competition.`,
+        notificationContent: `You've been invited by ${(user as User).displayName} to join the ${competition.competitionsName} competition.`,
         directedTo: member.value.id,
         linkTo: `/competition/${uniqueId}`,
         isRead: false,
@@ -163,7 +173,7 @@ function CreateCompetition() {
 
     setIsPending(false);
     setError(null);
-    navigate("/");
+    navigate.push("/");
   };
 
   const submitForm = async (e) => {
@@ -178,7 +188,7 @@ function CreateCompetition() {
       }
 
       if (
-        competition.prizeType === "Money" &&
+        competition.prizeType === "Money" &&  competition.prize.moneyPrize &&
         competition.prize.moneyPrize.amount === 0
       ) {
         dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.zeroAmount[selectedLanguage]}`, alertType:"error"}));
@@ -188,7 +198,7 @@ function CreateCompetition() {
         return;
       }
 
-      if (competition.prize.moneyPrize.amount > document.creditsAvailable) {
+      if (competition.prize.moneyPrize && competition.prize.moneyPrize.amount && competition.prize.moneyPrize.amount > document.creditsAvailable) {
         dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.notEnoughCredits[selectedLanguage]}`, alertType:"error"}));
         
      
@@ -218,7 +228,7 @@ function CreateCompetition() {
             document.stripeAccountData.default_currency.toUpperCase(),
         });
         
-        const { error, chargeObject } = await payoutObject.data;
+        const { error, chargeObject } = await payoutObject.data as any;
 
         console.log(chargeObject);
 
@@ -228,10 +238,10 @@ function CreateCompetition() {
           return;
         }
 
-        if (chargeObject) {
+        if (chargeObject && user) {
           setCompetition((comp) => {
             comp.chargeId = chargeObject.id;
-            comp.prize.moneyPrize.currency =
+            (comp.prize.moneyPrize as any).currency =
               document.stripeAccountData.default_currency;
             return comp;
           });
@@ -239,7 +249,7 @@ function CreateCompetition() {
             {
               valueInMoney:
                 document.creditsAvailable.valueInMoney -
-                competition.prize.moneyPrize.amount,
+                (competition.prize.moneyPrize.amount as number),
             },
             "users",
             `${user.uid}/creditsAvailable`
@@ -257,271 +267,165 @@ function CreateCompetition() {
 
 
   return (
-    <div className={`min-h-screen h-full w-full flex flex-col  ${!isDarkModed && "pattern-bg"}`}>
-      {isPending && error && <FailLoader />}
-      {isPending && <Loader />}
-      <form onSubmit={submitForm} className={`w-full ${isDarkModed ? "text-white" : "text-black"}`}>
-        <div className="flex flex-wrap items-center justify-center gap-4 py-4 m-2">
-          <GiSwordsPower className="text-6xl font-semibold" />
-          <p className="text-center">
-            {translations.topText.competitions[selectedLanguage]}
-          </p>
-        </div>
+     <div className={`min-h-screen h-full w-full overflow-x-hidden flex flex-col items-center justify-center`}>
+      <div className=" flex flex-col gap-4 p-4 rounded-xl border bg-dark-gray border-primary-color max-w-7xl w-full">
+        <div className="flex p-1 justify-between w-full items-center">
+        <p className='text-white text-2xl font-bold'>Create New Competition !</p>
+          <Tooltip content={<div className="flex flex-col gap-2 max-w-sm w-full">
+            <div className="">
+              <p className='text-sm'>{translations.competitionTypes.first[selectedLanguage]}</p>
+              <p className='text-xs'>
+                Points are calculated as 2 points per book read. Members are ranked by total points.
+              </p>
+            </div>
 
-        <div className="flex w-full flex-col gap-2 p-4">
-          <p className="font-bold text-2xl flex gap-2 sm:text-center md:text-left">
-            {" "}
-            <BsStars /> {translations.essentialInfo[selectedLanguage]} <BsStars />{" "}
-          </p>
-          <div className="flex flex-wrap w-full gap-4">
-            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
-              <span>
-                {translations.bookTitleInput.label[selectedLanguage]}:
-              </span>
-              <input
-                type="text"
-                required
-                className="input border-accColor rounded-md border-2 outline-none w-full py-4 px-1"
-                placeholder={`${translations.bookTitleInput.placeholder[selectedLanguage]}`}
-                onChange={(e) =>
-                  setCompetition((competition) => {
-                    competition.competitionTitle = e.target.value;
-                    return competition;
-                  })
-                }
-              />
-            </label>
+             <div className="">
+              <p className='text-sm'>{translations.competitionTypes.second[selectedLanguage]}</p>
+              <p className='text-xs'>Points are calculated as 1 point per book read and 1 point per valid recommendation. Members are ranked by total points.</p>
+            </div>
 
-            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
-              <span>
-                {translations.expirationDateInput.label[selectedLanguage]}:
-              </span>
+             <div className="">
+              <p className='text-sm'>{translations.competitionTypes.third[selectedLanguage]}</p>
+              <p className='text-xs'>Points are calculated based on pages read, average test results, and number of attempts. Members are ranked by total points.</p>
+            </div>
 
-              <DateTimePicker
-                required
-                label={`${translations.expirationDateInput.label[selectedLanguage]}`}
-                className="myDatePicker w-full"
-                sx={{
-                  color: "#fff",
-                  svg: { color: "#fff" },
-                  input: { color: "#fff" },
-                }}
-                onChange={(newValue) => {
-                  console.log(new Date(newValue.$d));
-                  if (new Date(newValue.$d).getTime() < new Date().getTime()) {
-                    dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.earlyDate[selectedLanguage]}`, alertType:"error"}));
-                     
-                    return;
-                  } else {
-                    setCompetition((competition) => {
-                      competition.expiresAt = new Date(newValue.$d).getTime();
-                      return competition;
-                    });
-                  }
-                }}
-              />
-            </label>
-          </div>
-        </div>
-
-        <div className="flex w-full flex-col gap-2 p-4">
-          <p className="font-bold text-2xl flex gap-2 sm:text-center md:text-left">
-            <CgDetailsMore /> {translations.detailedInfo[selectedLanguage]} <CgDetailsMore />
-          </p>
-          <div className="flex flex-wrap items-center w-full gap-4">
-            <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
-              <Autocomplete
-                sx={{
-                  color: "#fff",
-                  ":-ms-input-placeholder": {
-                    color: "white",
-                  },
-                  listStyle: {
-                    backgroundColor: "red",
-                    color: "yellow",
-                  },
-                  "& + .MuiAutocomplete-popper .MuiAutocomplete-option": {
-                    backgroundColor: "#363636",
-                  },
-                  "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected='true']":
-                    {
-                      backgroundColor: "#4396e6",
-                    },
-                  "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected ='true'] .Mui-focused":
-                    {
-                      backgroundColor: "#3878b4",
-                    },
-                }}
-                multiple
-                id="tags-outlined"
-                options={notCurrentUsers}
-                getOptionLabel={(option) => option.label}
-                renderOption={(props, option) => {
-                  return (
-                    <Box
-                      sx={{
-                        "& > img": { mr: 2, flexShrink: 0 },
-                      }}
-                      component="li"
-                      key={option.value.id}
-                      {...props}
-                      className="bg-accColor cursor-pointer text-white flex gap-4 items-center p-1 cursor-pointer"
-                    >
-                      <img
-                        className="w-10 h-10 rounded-full"
-                        loading="lazy"
-                        src={option.value.photoURL}
-                        srcSet={`${option.value.photoURL} 2x`}
-                        alt={option.value.id}
-                      />
-                      <p>{option.value.nickname}</p>
-                    </Box>
-                  );
-                }}
-                filterSelectedOptions
-                isOptionEqualToValue={(option, value) =>
-                  option.value.id === value.value.id
-                }
-                onChange={(e, value) => {
-                  setAttachedUsers(value);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    className=" text-white"
-                    label={translations.membersInput.label[selectedLanguage]}
-                    placeholder={translations.inviteSomeUsers[selectedLanguage]}
-                  />
-                )}
-              />
-            </label>
-
-            <label className="sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
-              <span>
-                {translations.competitionCategory.label[selectedLanguage]}:
-              </span>
-              <CreatableSelect
-                required
-                className="text-black w-full"
-                options={competitionTypes}
-                onChange={(e) => {
-                  setCompetition((competition) => {
-                    competition.competitionsName = e.value;
-                    return competition;
-                  });
-                }}
-              />
-            </label>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap w-full gap-4 p-4">
-          <label className="sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
-            <span>{translations.competitionsPrize[selectedLanguage]}</span>
-            <CreatableSelect
-              required
-              className="text-black w-full"
-              onChange={(value) => {
-                setCompetition((comp) => {
-                  comp.prizeType = value.value;
-                  return comp;
-                });
-
-                setPrize(value.value);
+          </div>}>
+          <button className='text-white text-sm flex gap-2 items-center'>Competition Types ? <FaInfo className='text-white' /></button>
+          </Tooltip>  
+     </div>
+        <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>General Information</p>
+        <div className="grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+          <LabeledInput label='Competition Name' setValue={(value) => console.log(value)} />
+            <Select isRequired 
+              classNames={{
+             'trigger':'rounded-lg border-2 border-primary-color'
               }}
-              options={prizeTypes}
+      placeholder="Select Category"
+              className='text-white'
+              labelPlacement='outside'
+              label={
+               'Category'  
+              }  
+      >
+              {competitionTypes.map((option) => (
+            
+          <SelectItem key={option.label}>
+            {option.value}
+          </SelectItem>                  
+
+        ))}
+      </Select>
+            <DatePicker 
+              classNames={{
+                input:'rounded-lg border-2 border-primary-color'
+              }}
+             
+              labelPlacement='outside'
+              className='text-white self-end' 
+          label={'Expiration Date'}
+          isRequired
             />
-          </label>
+            <div className="flex self-end flex-col gap-2">
+<p className='text-white'>Is the prize money ?</p>
+           <InputSwitch checked  />
+            </div>
+                   <Select
+              className='self-end'
+      items={notCurrentUsers}
+              label="Invite your friends."
+      selectionMode="multiple"
+      placeholder="Select a user"
+      labelPlacement='inside'
+      classNames={{
+        trigger: "min-h-12 py-2",
+      }}
+      renderValue={(items) => {
+        return (
+          <div className="flex overflow-x-auto gap-4 ">
+            {items.map((item:any, i) => (
+              <div onClick={() => console.log(item)} key={item.data.value.id}>
+                <Image src={item.data.value.photoURL} alt='' width={32} height={32} className='w-6 h-6 rounded-full'/>
+               
+              </div>
+            ))}
+          </div>
+        );
+      }}
+    >
+      {(user) => (
+        <SelectItem key={user.value.id} textValue={user.label}>
+          <div className="flex gap-2 items-center">
+            <Avatar alt={user.label} className="flex-shrink-0" size="sm" src={user.value.photoURL} />
+            <div className="flex flex-col">
+              <span className="text-small text-default-400">{user.value.nickname}</span>
+            </div>
+          </div>
+        </SelectItem>
+      )}
+    </Select>
 
-          {prize === "Money" && (
-            <>
-              <label className="flex flex-col sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
-                <span>{translations.prizeMoneyAmountInYourCurrency[selectedLanguage]}</span>
-                <input
-                  className="input w-full border-accColor outline-none"
-                  type="number"
-                  step={0.5}
-                  min={0}
-                  max={document.creditsAvailable.valueInMoney / 100}
-                  onChange={(e) => {
-                    setCompetition((comp) => {
-                      comp.prize.moneyPrize.amount = +e.target.value * 100;
-                      comp.prize.moneyPrize.currency=document.stripeAccountData.default_currency;
-                      return comp;
-                    });
-                    console.log(competition);
-                  }}
-                />
-              </label>
-            </>
-          )}
+         
+       
+        
+                 <div className="flex flex-col gap-1">
+            <p className='text-white'>Thumbnail</p>
+                      <input
+  type="file"
+  className="file-input max-w-xs w-full bg-primary-color" />
+</div>
+        </div>
+       </div>
+        <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>Prize Details</p>
+          <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-4"> 
+            <LabeledInput label='Prize Amount' type='number' setValue={(value) => console.log(value)} />
+             <Select isRequired 
+              classNames={{
+             'trigger':'rounded-lg border-2 border-primary-color'
+              }}
+      placeholder="Select Category"
+              className='text-white'
+              labelPlacement='outside'
+              label={
+               'Item Prize-Type'  
+              }  
+      >
+              {differentPrize.map((option) => (
+            
+          <SelectItem key={option.label}>
+            {option.value}
+          </SelectItem>                  
 
-          {prize === "item" && (
-            <>
-              <label className="sm:w-full md:max-w-lg lg:max-w-xs xl:max-w-md">
-                <span>{translations.competitionsPrize[selectedLanguage]}</span>
+        ))}
+      </Select>
+            <LabeledInput label='Book Title'  setValue={(value) => console.log(value)} />
+            <LabeledInput label='Book Author' setValue={(value) => console.log(value)} />
+            <LabeledInput label='Book Pages' type='number' setValue={(value) => console.log(value)} />
+            
+              <LabeledInput label='Ticket-Event Name'  setValue={(value) => console.log(value)} />
+            <LabeledInput label='Ticket-Event Link' setValue={(value) => console.log(value)} />
+             <LabeledInput label='Voucher Name' setValue={(value) => console.log(value)} />
 
-                <CreatableSelect
-                  required
-                  className="text-black w-full"
-                  onChange={(value) => {
-                    setCompetition((comp) => {
-                      comp.prize.itemPrize.typeOfPrize = value.value;
-                      return comp;
-                    });
-                  }}
-                  options={differentPrize}
-                />
-              </label>
-
-              <label className="flex flex-col sm:w-full md:max-w-xs xl:max-w-md">
-                <span>{translations.prizeDetails[selectedLanguage]}:</span>
-                <input
-                  className="input border-accColor rounded-md border-2 outline-none w-full px-1"
-                  required
-                  type="text"
-                  onChange={(e) => {
-                    setCompetition((comp) => {
-                      comp.prize.itemPrize.title = e.target.value;
-                      return comp;
-                    });
-                  }}
-                />
-              </label>
-            </>
-          )}
+          </div>
+           
+        </div>
+         <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>Item-Prize Description</p>
+          <textarea name="" id="" className='h-32 p-2 rounded-lg border-2 border-primary-color max-w-xl outline-none w-full resize-none'></textarea>
         </div>
 
-        <label className="flex flex-col p-4">
-          <span className="font-bold text-lg">
-            {translations.descriptionTextarea.label[selectedLanguage]}:
-          </span>
-          <textarea
-            required
-            className="outline-none border-accColor sm:w-full md:max-w-5xl border-2 h-48 resize-none py-1 rounded-lg"
-            placeholder={`${translations.descriptionTextarea.placeholder[selectedLanguage]}`}
-            onChange={(e) =>
-              setCompetition((competition) => {
-                competition.description = e.target.value;
-                return competition;
-              })
-            }
-          ></textarea>
-        </label>
 
-        <div className="flex justify-center items-center my-2 p-2 w-full">
-          <button className="btn sm:w-full md:max-w-lg text-white bg-accColor hover:bg-blue-400">
-            {translations.submit[selectedLanguage]}
-          </button>
+        <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>Description</p>
+          <textarea name="" id="" className='h-48 p-2 rounded-lg border-2 border-primary-color max-w-2xl outline-none w-full resize-none'></textarea>
         </div>
-        {error && (
-          <Alert className="bg-transparent" severity="error">
-            {error}
-          </Alert>
-        )}
-      </form>
 
-      
+
+        <BlueDarkGradientButton isSubmit additionalClasses='self-end px-4 py-2 max-w-36 w-full'>
+          Append
+        </BlueDarkGradientButton>
+  </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ type Props = { children: React.ReactNode, additionalClasses?: string, onClick?: 
 
 function BlueDarkGradientButton({ children, onClick, additionalClasses, isSubmit }: Props) {
   return (
-    <button type={isSubmit ? 'submit' : 'button'} className={`text-white ${additionalClasses} p-2 rounded-lg ${classes['dark-blue-gradiented']}`} onClick={onClick}>
+    <button type={isSubmit ? 'submit' : 'button'} className={`text-white ${additionalClasses} p-2 rounded-lg ${classes['button-blue-dark-gradient']}`} onClick={onClick}>
       {children}
     </button>
   )

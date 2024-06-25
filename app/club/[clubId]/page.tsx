@@ -1,6 +1,5 @@
-import '../stylings/scrollbarStyling.css';
-import '../stylings/backgrounds.css';
-import '../../components/stylings/mui-stylings.css';
+'use client';
+
 
 import { useState } from 'react';
 
@@ -47,15 +46,19 @@ import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
 import { User } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
-function Club() {
+import ClubBar from 'components/left-bar/ClubBar';
+import BlueButton from 'components/buttons/BlueButton';
+
+function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
-  const { id } = useParams();
+  const { clubId:id } = params;
   const dispatch = useDispatch();
   const { user } = useAuthContext();
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
   const { getDocuments } = useRealtimeDocuments();
@@ -91,7 +94,7 @@ function Club() {
     removeFromDataBase("communityChats", id);
     removeFromDataBase("communityMembers", id);
 
-    navigate("/");
+    navigate.push("/");
     dispatch(snackbarActions.showMessage({message:`${ alertTranslations.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
 
   };
@@ -112,7 +115,7 @@ function Club() {
       removeFromDataBase(`communityMembers/${id}/users`, (user as User).uid);
     }
 
-    navigate("/");
+    navigate.push("/");
     setMessage({
       open: true,
       message:
@@ -182,33 +185,24 @@ function Club() {
 
   return (
     <div
-      className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"} `}
+      className={`w-full h-screen flex `}
     >
-      {document &&
-        members.find((member) => {
-          return member.value.id === (user as User).uid && member.belongsTo === id;
-        }) && (
-          <div className="">
-         
-          </div>
-        )}
+      <ClubBar clubId={id} />
+        <div className="w-full h-full">
+       <div className="h-[calc(100vh-4rem)]  w-full overflow-y-auto p-2">
 
-      {document &&
-        !members.find(
-          (member) => member.value.id === (user as User).uid && member.belongsTo === id
-        ) && (
-          <div>
-          </div>
-        )}
+</div>
+<form className="w-full flex items-center justify-around gap-2 max-h-16 h-full p-4 bg-dark-gray border-2 border-primary-color rounded-t-lg">
+<textarea placeholder='Enter message...' name="message" className='sm:max-w-xs xl:max-w-md w-full resize-none max-h-12 outline-none p-2 overflow-y-hidden rounded-lg border-purple border'></textarea>
+<BlueButton additionalClasses='px-6 py-2'>Send</BlueButton>
+</form>
+      </div>
+    
+
+     
 
    
 
-      {document &&
-        members.find((member) => {
-          return member.value.id === (user as User).uid && member.belongsTo === id;
-        }) && (
-          <CompetitionChat collectionName="readersClubs" id={document.id} />
-        )}
     </div>
   );
 }

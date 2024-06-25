@@ -3,7 +3,7 @@ import {
   useRef,
   useState,
 } from 'react';
-
+import '../../../stylings/primereact-custom/stepper.css'
 import {
   getDownloadURL,
   ref,
@@ -24,7 +24,8 @@ import { useNavigate } from 'react-router';
 import  Link  from 'next/link';
 import uniqid from 'uniqid';
 
-
+import { Stepper } from 'primereact/stepper';
+import { StepperPanel } from 'primereact/stepperpanel';
 
 import { storage } from '../../firebase';
 // import { bookCategories } from '../../assets/CreateVariables';
@@ -37,6 +38,15 @@ import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useRealDatabase } from 'hooks/useRealDatabase';
 import useGetDocuments from '../../../hooks/useGetDocuments';
 import { User } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import LabeledInput from 'components/input/LabeledInput';
+import { DatePicker, Select, SelectItem } from '@nextui-org/react';
+import { bookCategories } from 'assets/CreateVariables';
+import BlueButton from 'components/buttons/BlueButton';
+import DarkButton from 'components/buttons/WhiteButton';
+import BlueDarkGradientButton from 'components/buttons/gradient/BlueDarkGradientButton';
+import { FileUpload } from 'primereact/fileupload';
+
 
 function CreateBook() {
   const { user } = useAuthContext();
@@ -45,7 +55,8 @@ function CreateBook() {
   const [isPending, setIsPending] = useState(false);
   const [editCover, setEditCover] = useState<string | null>(null);
   const { addToDataBase } = useRealDatabase();
-  const navigate = useNavigate();
+  const router = useRouter();
+
   const [hasStarted, setHasStarted] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [radius, setRadius] = useState(0);
@@ -53,19 +64,23 @@ function CreateBook() {
   const [selected, setSelected] = useState("");
   const dispatch = useDispatch();
   const { documents: availableBooks } = useGetDocuments("books");
-  const { documents } = useGetDocuments("bookReaders");
-  const bookReaders = documents
-    .map((bookReader) => {
-      return bookReader.readers;
-    })
-    .map((obj) => {
-      const nestedObject = Object.values(obj);
-      return nestedObject;
-    })
-    .flat()
-    .filter((reader:any) => reader.id === (user as User).uid);
+ 
+  
+  
+  const stepperRef = useRef(null);
+  
 
-  const [book, setBook] = useState({
+  const [book, setBook] = useState<{
+    author: string,
+    title: string,
+    pagesNumber: number,
+    category: null | string,
+    bookCover: null | string,
+    description: string,
+    dateOfPublishing: null | number,
+    countryOfRelease: string,
+    publishingHouse: null | string,
+  }>({
     author: "",
     title: "",
     pagesNumber: 1,
@@ -196,13 +211,6 @@ function CreateBook() {
       }
 
 
-      console.log(bookReaders);
-
-      if (bookReaders.find((reader:any) => !reader.hasFinished)) {
-        dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.recentlyStartedReading[selectedLanguage]}`, alertType: "error" }));
-        return;
-      }
-
       const bookElement = {
         ...book,
         author: book.author,
@@ -259,7 +267,7 @@ function CreateBook() {
 
       setIsPending(false);
       setError(null);
-      navigate("/");
+      router.push("/");
     } catch (error) {
       console.log(error);
       setError(error.message);
@@ -299,9 +307,71 @@ function CreateBook() {
     }
   };
 
-  return (
-    <div className={`min-h-screen h-full w-full overflow-x-hidden ${!isDarkModed && "pattern-bg"}`}>
+  
 
+  return (
+    <div className={`min-h-screen h-full w-full overflow-x-hidden flex flex-col items-center justify-center`}>
+      <form action={(formData:FormData)=>console.log(formData)} className=" flex flex-col gap-4 p-4 rounded-xl border bg-dark-gray border-primary-color max-w-7xl w-full">
+       <p className='text-white text-2xl font-bold'>Append New Book !</p>
+        <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>General Information</p>
+        <div className="grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+          <LabeledInput label='Title' setValue={(value) => console.log(value)} />
+          <LabeledInput label='Author' setValue={(value) => console.log(value)} />
+          <LabeledInput type='number' label='Pages' setValue={(value) => console.log(value)} />
+          <Select isRequired 
+      placeholder="Select Category"
+              labelPlacement="outside"
+              className='text-white'
+            label="Category"  
+      >
+          {bookCategories.map((item)=>({key:item, label:item})).map((animal) => (
+          <SelectItem key={animal.key}>
+            {animal.label}
+          </SelectItem>
+        ))}
+      </Select>
+            <DatePicker 
+              className='text-white' 
+         labelPlacement="outside"
+          label="Release Date"
+          isRequired
+        />
+        </div>
+       </div>
+        <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>Detailed Information</p>
+          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          <LabeledInput label='ISBN' setValue={(value) => console.log(value)} />
+          <LabeledInput label='Publishing House' setValue={(value) => console.log(value)} />
+          <div className="flex flex-col gap-1">
+            <p className='text-white'>Release Country</p>
+              <ReactFlagsSelect selectButtonClassName=' rounded-lg border-2 border-primary-color text-white h-fit' showSelectedLabel  selected={book.countryOfRelease} onSelect={(countryCode:string)=>setBook({...book, countryOfRelease:countryCode})}/>
+          </div>
+          <div className="flex gap-6 items-center">
+                 <div className="flex flex-col gap-1">
+            <p className='text-white'>Book Cover</p>
+                      <input
+  type="file"
+  className="file-input max-w-xs w-full bg-primary-color" />
+</div>
+     </div>
+       
+      
+         
+        </div>
+</div>
+
+        <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>Description</p>
+          <textarea name="" id="" className='h-48 p-2 rounded-lg border-2 border-primary-color max-w-2xl outline-none w-full resize-none'></textarea>
+        </div>
+
+
+        <BlueDarkGradientButton isSubmit additionalClasses='self-end px-4 py-2 max-w-36 w-full'>
+          Append
+        </BlueDarkGradientButton>
+  </form>
     </div>
   );
 }

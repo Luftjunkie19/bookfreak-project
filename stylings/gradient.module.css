@@ -12,3 +12,7 @@
 .dark-white-gradient {
     background: linear-gradient(119.609deg, rgba(39, 39, 39, 0.35) 0%, #FCFCFC 100%);
 }
+
+.button-blue-dark-gradient{
+    background: linear-gradient(118.471deg, #272727 0%, #4777FF 100%);
+}

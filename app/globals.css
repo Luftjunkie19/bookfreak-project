@@ -79,3 +79,7 @@ body {
     }
   }
 
+
+  div::-webkit-scrollbar{
+    display: none;
+  }

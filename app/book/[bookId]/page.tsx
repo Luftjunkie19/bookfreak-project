@@ -13,7 +13,7 @@ import {
   FaShare,
   FaTrash,
 } from 'react-icons/fa';
-import { MdCancel, MdLibraryBooks, MdRecommend } from 'react-icons/md';
+import { MdBookmarkAdd, MdBookmarkRemove } from 'react-icons/md';
 import {
   useDispatch,
   useSelector,
@@ -49,13 +49,18 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import BlueButton from 'components/buttons/BlueButton';
 import toast from 'react-hot-toast';
-import { Chip, Tab, Tabs } from '@nextui-org/react';
-import { IoChatbubbleSharp } from 'react-icons/io5';
-import { FaBookBookmark, FaStar } from 'react-icons/fa6';
+import { Chip, Modal, ModalBody, ModalContent, ModalHeader, Tab, Tabs } from '@nextui-org/react';
+import { IoMdBookmarks } from 'react-icons/io';
+import { IoBook, IoChatbubbleSharp } from 'react-icons/io5';
+import { FaBookBookmark, FaStar, FaStarOfLife } from 'react-icons/fa6';
 import { Separator } from '@/components/ui/separator';
 import { GrUpdate } from 'react-icons/gr';
 import DarkButton from 'components/buttons/WhiteButton';
 import RemoveBtn from 'components/buttons/RemoveBtn';
+import { Rating } from 'primereact/rating';
+import { GoStar, GoStarFill } from 'react-icons/go';
+import { GiWhiteBook } from 'react-icons/gi';
+import { BsBookmarkHeartFill } from 'react-icons/bs';
 
 function Book({ params }: { params: { bookId: string } }) {
   const { bookId: id } = params;
@@ -69,14 +74,9 @@ function Book({ params }: { params: { bookId: string } }) {
   const { removeFromDataBase, addToDataBase, updateDatabase } =
     useRealDatabase();
   const [isLiked, setIsLiked] = useState(false);
-  const [bookReaderForm, setBookReaderForm] = useState(false);
-  const [updateReaderStatus, setUpdateReaderStatus] = useState(false);
   const [showLikers, setShowLikers] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+  const [addShelf, setAddShelf] = useState(false);
 
-  const handleOpenAccord = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
   const showAllLikers = () => {
     setShowLikers(true);
   };
@@ -128,9 +128,9 @@ const {document}=useGetDocument('books', id);
   }).flat();
 
  
-  const publishRecension = (recension, bookRate) => {
+  const publishRecension = (recension:string, bookRate:number) => {
     if (user) {
-      if (recension.trim("").length < 10) {
+      if (recension.trim().length < 10) {
         dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.recensionLonger[selectedLanguage]}`, alertType:"error"}));
         return;
       }
@@ -271,22 +271,6 @@ dispatch(snackbarActions.showMessage({message:`${  alertMessages.notifications.s
     dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.copied[selectedLanguage]}`, alertType:"success"}));
   };
 
-  const openBookReaderForm = () => {
-    setBookReaderForm(true);
-  };
-
-  const openUpdateReaderForm = () => {
-    setUpdateReaderStatus(true);
-  };
-
-  const closeBookReaderForm = () => {
-    setBookReaderForm(false);
-  };
-
-  const closeUpdateReaderForm = () => {
-    setUpdateReaderStatus(false);
-  };
-
   const removeFromShelf = () => {
     if (user) {
       if(readers.filter((doc:any)=>doc.bookReadingId===id).length === 1){
@@ -415,17 +399,16 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
 
   return (
     <div className={`min-h-screen h-full overflow-x-hidden`}>
-      {/* {isOpened && <EditBook id={id} />} */}
 
       {document && (
         <>
-          <div className="flex max-w-7xl justify-around gap-4 mx-auto m-0 w-full xl:p-6">
+          <div className="flex sm:flex-col lg:flex-row max-w-7xl justify-around gap-4 mx-auto m-0 w-full xl:p-6">
 
-            <div className="h-72 w-60">
+            <div className="h-64 w-52">
               <Image src={document.photoURL} alt='' className='w-full border-2 border-white object-cover h-full rounded-xl' width={80} height={80}/> 
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               <p className="text-white text-3xl">{document.title}</p>
               <p className="text-white">{document.author}</p>
               <div className="flex gap-6 items-center">
@@ -433,7 +416,7 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
                   <button onClick={changeLoveState}> 
                     <FaHeart className={`transition-all duration-400 ${isLiked ? 'text-red-400' : 'text-white'}`} size={24}/>
                   </button>
-                  {likers && likers.length > 0 && <p className="text-white">{(likers.filter((item) => item.lovedBookId === id)[0].displayName)} and other {(likers.filter((item) => item.lovedBookId === id).length - 1)} loves it</p>}
+                  {likers && likers.filter((item) => item.lovedBookId === id).length > 0 && <p className="text-white">{(likers.filter((item) => item.lovedBookId === id)[0].displayName)} and other {(likers.filter((item) => item.lovedBookId === id).length - 1)} loves it</p>}
 </div>
 
                 <BlueButton additionalClasses='flex items-center gap-2' onClick={copyPathName}>
@@ -443,25 +426,22 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
               </div>
               <div className="flex gap-6 items-center text-white">
                  <div className="flex items-center space-x-2">
-              <IoChatbubbleSharp />
-              <span>Recensions</span>
+              <IoChatbubbleSharp className='text-2xl'/>
               <Chip classNames={{
                     base: " bg-primary-color border border-white",
                 content:"text-white"
-                  }} size='lg' variant="faded">{recensions.length}</Chip>
+                  }} size='lg' variant="faded">{recensions.filter((item)=>item.recensionedBook === id).length}</Chip>
             </div>
               
              <div className="flex items-center space-x-2">
-              <FaStar className=' text-yellow-700'/>
-              <span>Rate</span>
+              <FaStar className='text-yellow-700 text-2xl'/>
               <Chip classNames={{
                 base:" bg-yellow-700 border border-black"
-                  }} size='lg' variant="flat">{(recensions.reduce((prev, cur)=> prev + cur.bookRate, 0) / recensions.length).toFixed(2)}</Chip>
+                  }} size='lg' variant="flat">{ recensions.length > 0 ? ( recensions.reduce((prev, cur)=> prev + cur.bookRate, 0) / recensions.length).toFixed(2) : 0.00}</Chip>
             </div>
 
                  <div className="flex items-center space-x-2">
-              <FaBookBookmark/>
-              <span>Read By</span>
+              <FaBookBookmark className='text-2xl'/>
               <Chip classNames={{
                     base: " bg-primary-color border border-white",
                 content:"text-white"
@@ -469,59 +449,124 @@ dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.suc
             </div>
               </div>
               
-              <div className="flex gap-4 item-center">
+              <div className="flex gap-4 item-center overflow-x-auto">
                 <BlueButton additionalClasses='flex items-center gap-4'>
                   Update
-                  <GrUpdate size={20} />
+                  <GiWhiteBook  size={24} />
                 </BlueButton>
                 <RemoveBtn additionalClasses='flex items-center gap-4'>
                   Remove
-                  <MdCancel size={20} />
+                  <MdBookmarkRemove  size={24} />
                 </RemoveBtn>
-                <DarkButton additionalClasses='flex gap-4 items-center'>
-                  Add To Shelf <MdLibraryBooks size={20}  />
+                <DarkButton onClick={()=>setAddShelf(true)} additionalClasses='flex gap-4 items-center'>
+                  Add To Shelf <MdBookmarkAdd  size={24}  />
                 </DarkButton>
            </div>
+              <Modal size='lg' backdrop='blur' classNames={{
+              'base':'bg-dark-gray rounded-lg border-primary-color border-2'
+              }} onClose={()=>setAddShelf(false)} isOpen={addShelf}>
+                <ModalContent>
+                  <ModalHeader className='text-white'>Insert Book To Shelf</ModalHeader>
+                  <ModalBody>
+                    <div className="flex items-center justify-center gap-4">
+                      <button className='p-4 lg:max-w-32 sm:w-fit w-full rounded-lg bg-primary-color flex flex-col items-center gap-2 text-xs text-white'>
+                        <IoBook size={36} />
+                        <p className='sm:hidden lg:block'>
+                        Now Reading
+                        </p>
+                      </button>
+                      <button className='p-4 lg:max-w-32 sm:w-fit w-full rounded-lg bg-primary-color flex flex-col gap-2 items-center text-xs text-white'>
+                        <IoMdBookmarks size={36} />
+                        <p className='sm:hidden lg:block'>  
+                        Already Read
+                       </p>
+                      </button>
+                      <button className='p-4 lg:max-w-32 sm:w-fit w-full rounded-lg bg-primary-color flex flex-col gap-2 items-center text-xs text-white'>
+                        <BsBookmarkHeartFill size={36} />
+                        <p className='sm:hidden lg:block'>
+                        Wish To Read
+                        </p>  
+                      </button>
+                    </div>
+                       <button className='text-white'>Other Shelf</button>
+              </ModalBody>
 
-              </div>
+                </ModalContent>
+              </Modal>
             </div>
-       <div className="mx-auto m-0">
+            
+            </div>
+       <div className="mx-auto m-0 max-w-screen-2xl w-full flex gap-4">
+            <div className="flex flex-col gap-2 max-w-md w-full text-white">
+    <p className="text-2xl font-semibold">Book Details</p>        
 
-<div className="flex flex-col gap-2 px-2">
+              <div className="flex flex-col gap-2 p-4 rounded-lg border-2 border-primary-color bg-dark-gray">
+  <p>Pages: {document.pagesNumber}</p>
+  <p>Category: {document.category}</p>
+  <p>Added By {document.createdBy.displayName}</p>
+              <p>Published by {document.publishingHouse} in {document.dateOfPublishing} </p>
+              <p>Released in {new Intl.DisplayNames([selectedLanguage], {
+                type:'region'
+              }).of(document.countryOfRelease)}</p>
+</div>
+            </div>
+            
+
+          </div>
+          
+          
+<div className="flex flex-col gap-2 p-4 max-w-4xl w-full">
   <p className="text-2xl font-semibold text-white">Description</p>
-<div className="p-2 rounded-lg max-w-2xl w-full text-white line-clamp-6 border-2 border-primary-color bg-dark-gray">
+<div className="p-2 h-52 overflow-y-auto rounded-lg  text-white line-clamp-6 border-2 border-primary-color bg-dark-gray">
 {document.description}
 </div>
 </div>
 
-<div className="flex w-fit flex-col gap-2 p-2 rounded-lg border-2 border-primary-color bg-dark-gray">
-  <p>Pages: {document.pagesNumber}</p>
-  <p>Category: {document.category}</p>
-  <p>Added By {document.createdBy.displayName}</p>
-  <p>Published by {document.publishingHouse} </p>
-</div>
-
-
-       </div>
+          <div className="flex gap-2 flex-col p-4">
+            <p className='text-2xl text-white'>Average Rate: <span className='text-primary-color font-bold'>{recensions.length > 0 ? Math.floor(recensions.reduce((prev, cur)=> prev + cur.bookRate, 0) / recensions.length).toFixed(2) : 0.00}</span></p>
+              <Rating readOnly offIcon={<GoStar className='sm:text-lg 2xl:text-4xl lg:text-2xl text-primary-color'/>} onIcon={<GoStarFill className='sm:text-lg 2xl:text-4xl lg:text-2xl text-primary-color' />} value={Math.floor(recensions.reduce((prev, cur)=> prev + (+cur.bookRate), 0) / recensions.length).toFixed(2)} className='gap-2' cancel={false}   stars={10} />
+            </div>
             </>
       )}
-      {document &&  readers && (
-         <>
+      {document &&  readers && user && (
+        <>
+          <RecensionsForBook
+         bookPages={document.pagesNumber}
+          readPages={
+            readers &&
+            readers.find(
+              (reader) => reader.id === user.uid && reader.bookReadingId === id
+            )?.pagesRead
+          }
+          title={document.title}
+          hasReadBook={
+            readers &&
+            readers.find(
+              (reader) => reader.id === user.uid && reader.bookReadingId === id
+            )?.hasFinished
+          }
+          hasRecension={
+            recensions &&
+            recensions
+              .find(
+                (reader) =>
+                  reader.id === user.uid && reader.recension.trim() !== ""
+              )
+          }
+          publishRecension={publishRecension}
+          recensions={
+            recensions && recensions.length > 0
+              ? recensions.filter(
+                  (recension) => recension.recensionedBook === id
+                )
+              : []
+          }
+        />
      
             </>
       )}
 
-      {bookReaderForm && document && user && (
-       <>
-     
-            </>
-      )}
-
-      {updateReaderStatus && document && (
-     <>
-     
-            </>
-      )}
+  
 
       {showLikers && (
         <>

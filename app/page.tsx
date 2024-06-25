@@ -4,7 +4,7 @@ import classes from '../stylings/gradient.module.css'
 import BookSwiper from 'components/home/swipers/BookSwiper';
 import CompetitionSwiper from 'components/home/swipers/CompetitionSwiper';
 import ClubSwiper from 'components/home/swipers/ClubSwiper';
-import SearchTabs from 'components/home/SearchTabs';
+
 import Subscriptions from 'components/home/Subscriptions';
 
 
@@ -14,7 +14,6 @@ export default function Home() {
     <div className={`min-h-screen w-full `}>
       <HeroSection />
       <BookSwiper />
-      <SearchTabs/>
       <CompetitionSwiper />
       <ClubSwiper />
       <Subscriptions/>

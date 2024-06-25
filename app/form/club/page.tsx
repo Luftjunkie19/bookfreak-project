@@ -36,6 +36,14 @@ import { useAuthContext } from '../../../hooks/useAuthContext';
 import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import { User } from 'firebase/auth';
+import LabeledInput from 'components/input/LabeledInput';
+import { Avatar, DatePicker, Select, SelectItem } from '@nextui-org/react';
+import { bookCategories } from 'assets/CreateVariables';
+import ReactFlagsSelect from 'react-flags-select/build/components/ReactFlagsSelect';
+import BlueDarkGradientButton from 'components/buttons/gradient/BlueDarkGradientButton';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { InputSwitch } from 'primereact/inputswitch';
 
 function CreateClub() {
   const [error, setError] = useState(null);
@@ -52,7 +60,7 @@ function CreateClub() {
     description: "",
     requiredPagesRead: 0,
   });
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
@@ -161,7 +169,7 @@ function CreateClub() {
     setIsPending(false);
     dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.successfull.create[selectedLanguage]}` }));
     setError(null);
-    navigate("/");
+    navigate.push("/");
   };
 
   const handleSelect = (e) => {
@@ -238,9 +246,81 @@ function CreateClub() {
   };
 
   return (
-    <div className={`min-h-screen w-full`}>
-  
+   <div className={`min-h-screen h-full w-full overflow-x-hidden flex flex-col items-center justify-center`}>
+      <form action={(formData:FormData)=>console.log(formData)} className=" flex flex-col gap-4 p-4 rounded-xl border bg-dark-gray border-primary-color max-w-7xl w-full">
+       <p className='text-white text-2xl font-bold'>Found New Club !</p>
+        <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>General Information</p>
+        <div className="grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+          <LabeledInput label='Club Name' setValue={(value) => console.log(value)} />
+          <div className="flex flex-col gap-1">
+            <p className='text-white'>Club Logo</p>
+                      <input
+  type="file"
+  className="file-input max-w-xs w-full bg-primary-color" />
+</div>
+            
+            <div className="flex self-end flex-col gap-2">
+<p className='text-white'>Is Your Club Free To Join ?</p>
+           <InputSwitch checked  />
+            </div>
+          <LabeledInput type='number' label='Required Read Pages' setValue={(value) => console.log(value)} />
+      
+           
+        </div>
+       </div>
+        <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>Invite your friends</p>
+          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                   <Select
+              className='self-end'
+      items={notCurrentUsers}
+      selectionMode="multiple"
+      placeholder="Select a user"
+      labelPlacement='inside'
+      classNames={{
+        trigger: "min-h-12 py-2",
+      }}
+      renderValue={(items) => {
+        return (
+          <div className="flex overflow-x-auto gap-4 ">
+            {items.map((item:any, i) => (
+              <div onClick={() => console.log(item)} key={item.data.value.id}>
+                <Image src={item.data.value.photoURL} alt='' width={32} height={32} className='w-6 h-6 rounded-full'/>
+               
+              </div>
+            ))}
+          </div>
+        );
+      }}
+    >
+      {(user) => (
+        <SelectItem key={user.value.id} textValue={user.label}>
+          <div className="flex gap-2 items-center">
+            <Avatar alt={user.label} className="flex-shrink-0" size="sm" src={user.value.photoURL} />
+            <div className="flex flex-col">
+              <span className="text-small text-default-400">{user.value.nickname}</span>
+            </div>
+          </div>
+        </SelectItem>
+      )}
+    </Select>
+    
+    
+         
+        </div>
+</div>
 
+        <div className="flex flex-col gap-2">
+          <p className='text-white text-lg font-medium'>Description</p>
+          <textarea placeholder='Type additional requirements or anything about this club...' name="" id="" className='h-48 p-2 rounded-lg border-2 border-primary-color max-w-2xl outline-none w-full resize-none'></textarea>
+        </div>
+
+
+        <BlueDarkGradientButton isSubmit additionalClasses='self-end px-4 py-2 max-w-36 w-full'>
+          Create
+        </BlueDarkGradientButton>
+  </form>
     </div>
   );
 }

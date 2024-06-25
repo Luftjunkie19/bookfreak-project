@@ -1,10 +1,12 @@
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@nextui-org/react";
+import Link from "next/link";
 
 type Props = {
-    userObject: any
+  userObject: any,
+  userId:string
 }
 
-const UserDropDown = ({userObject}:Props) => {
+const UserDropDown = ({userObject, userId}:Props) => {
     return (
          <Dropdown placement="bottom-start">
         <DropdownTrigger>
@@ -19,8 +21,10 @@ const UserDropDown = ({userObject}:Props) => {
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">
-           <DropdownItem key="settings">
+          <DropdownItem key="profile">
+            <Link href={`/profile/${userId}`}>
             Profile
+            </Link>
           </DropdownItem>
           <DropdownItem key="settings">
             My Settings

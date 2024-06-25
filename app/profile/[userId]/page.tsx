@@ -1,5 +1,4 @@
-import '../stylings/scrollbarStyling.css';
-import '../stylings/backgrounds.css';
+'use client';
 
 import { deleteUser, User } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
@@ -37,6 +36,8 @@ import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useLogout } from '../../../hooks/useLogout';
 import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../../hooks/useRealtimeDocument';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 function Profile({params}:{params:{userId:string}}) {
   const { userId:id } = params;
@@ -63,7 +64,7 @@ const readerObjects=readers.map((bookReader) => {
   return nestedObject;
 }).flat();
 
-  const navigate = useNavigate();
+  const navigate = useRouter();
 
   const { user } = useAuthContext();
 
@@ -91,12 +92,12 @@ const providedIdPartTwo=providedId.split("-")[1];
     const secondOption= await getDocument("usersChats", `${providedIdPartTwo}-${providedIdPartOne}`);
 
     if(optionOne){
-      navigate(`/message-to/${providedId}`);
+      navigate.push(`/message-to/${providedId}`);
     }
     if(secondOption){
-      navigate(`/message-to/${providedIdPartTwo}-${providedIdPartOne}`);
+      navigate.push(`/message-to/${providedIdPartTwo}-${providedIdPartOne}`);
     }else{
-      navigate(`/message-to/${providedId}`);
+      navigate.push(`/message-to/${providedId}`);
     }
 
 
@@ -112,9 +113,17 @@ const providedIdPartTwo=providedId.split("-")[1];
 
 
   return (
-    <div className={`min-h-screen h-full`}>
-      {document && (
-     <div></div>
+    <div className={`min-h-screen w-full h-full`}>
+      {document && (<>
+        <div className='max-w-7xl mx-auto m-0 w-full'>
+<Image src={''} alt='' width={50} height={50} className='w-full h-52 rounded-lg my-3'/>
+          
+          <div className="flex gap-4 w-full"></div>
+          
+        </div>
+
+        
+      </>
       )}
     </div>
   );

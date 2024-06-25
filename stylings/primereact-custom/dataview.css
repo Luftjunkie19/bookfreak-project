@@ -1,0 +1,20 @@
+.p-dataview-list, .p-dataview-grid, .p-dataview-footer, .p-dataview-content, .p-datascroller-content{
+    background: none;
+}
+
+.p-dataview-footer{
+    color: white;
+}
+
+.p-paginator{
+    background: none;
+    background-color: #4777FF;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.grid{
+    gap: 1rem !important;
+    grid-auto-flow: row !important;
+}
+

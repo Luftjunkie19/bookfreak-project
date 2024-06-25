@@ -20,6 +20,9 @@ module.exports = withMT({
       "2xl": "1560px",
     },
     extend: {
+      fontFamily: {
+        'poppins':['Poppins']
+      },
          colors: {
           'primary-color': "#4777FF",
         'secondary-color': "#272727", 
@@ -76,6 +79,11 @@ module.exports = withMT({
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        
+         "caret-blink": {
+          "0%,70%,100%": { opacity: "1" },
+          "20%,50%": { opacity: "0" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -135,12 +143,13 @@ module.exports = withMT({
         fourth: "moveHorizontal 40s ease infinite",
         fifth: "moveInCircle 20s ease infinite",
         "meteor-effect": "meteor 5s linear infinite",
+        "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
     
     },
   },
   
   plugins: [require("daisyui"), nextui(), require("tailwindcss-animate")],
- 
+ darkMode: "class",
   important: true,
 });

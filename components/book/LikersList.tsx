@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import translations from '../../assets/translations/BookPageTranslations.json';
 import reuseableTranslations
   from '../../assets/translations/ReusableTranslations.json';
+import Image from 'next/image';
 
 function LikersList({ likers, likesAmount, closeList }) {
   const selectedLanguage = useSelector(
@@ -37,7 +38,9 @@ function LikersList({ likers, likesAmount, closeList }) {
           likers.map((liker) => (
             <Link key={liker.lovedBy} to={`/profile/${liker.lovedBy}`}>
               <div className="flex gap-2 items-center text-white">
-                <img
+                <Image
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-full object-cover"
                   src={liker.photoURL}
                   alt={liker.lovedBy}

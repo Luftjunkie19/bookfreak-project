@@ -8,12 +8,13 @@ type Props = {
     competitionLogo: string,
     competitionName: string,
     membersAmount: number,
-    comeptitionRemainingTime: string,
+  comeptitionRemainingTime: string,
+    competitionId:string,
 }
 
-function Competition({comeptitionRemainingTime, competitionLogo, competitionName, membersAmount}: Props) {
+function Competition({comeptitionRemainingTime, competitionLogo, competitionName, membersAmount, competitionId}: Props) {
   return (
-     <Link href={'/competition/'} className='max-w-xs border-2 border-primary-color w-full rounded-lg flex flex-col gap-2 bg-white'>
+     <Link href={`/competition/${competitionId}`} className='max-w-xs border-2 border-primary-color w-full rounded-lg flex flex-col gap-2 bg-white'>
       <Image className='w-full object-cover rounded-t-lg h-36' src={competitionLogo} alt={''} width={64} height={64} />
       <div className="flex flex-col gap-1 px-2 py-1">
             <p>{competitionName}</p>

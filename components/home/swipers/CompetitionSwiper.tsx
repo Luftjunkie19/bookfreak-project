@@ -21,7 +21,7 @@ function CompetitionSwiper({ }: Props) {
     <BaseSwiper slidesOn2XlScreen={7}>
     {documents && documents.map((item, i )=>(
         <SwiperSlide key={i}>
-        <Competition competitionLogo={'https://img.freepik.com/free-vector/business-competition-concept-two-businessman-tug-snatching-trophies_1150-64060.jpg?size=626&ext=jpg&ga=GA1.1.2116175301.1718755200&semt=ais_user'} competitionName={item.competitionTitle} membersAmount={0} comeptitionRemainingTime={`${expiresIn(item.expiresAt)}`}  />
+        <Competition competitionId={item.id} competitionLogo={'https://img.freepik.com/free-vector/business-competition-concept-two-businessman-tug-snatching-trophies_1150-64060.jpg?size=626&ext=jpg&ga=GA1.1.2116175301.1718755200&semt=ais_user'} competitionName={item.competitionTitle} membersAmount={0} comeptitionRemainingTime={`${expiresIn(item.expiresAt)}`}  />
     </SwiperSlide>     
        ))}
   
