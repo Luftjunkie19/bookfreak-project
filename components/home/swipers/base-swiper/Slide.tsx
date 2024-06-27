@@ -13,9 +13,7 @@ type Props = {
     children: React.ReactNode
 }
 
-function Slide({children}: Props) {
-    const swiperSlide= useSwiperSlide();
-    
+function Slide({children}: Props) {    
   return (
     <SwiperSlide>
         {children}

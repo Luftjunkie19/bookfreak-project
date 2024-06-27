@@ -1,6 +1,3 @@
-import '../../components/stylings/mui-stylings.css';
-import '../stylings/backgrounds.css';
-
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   useEffect,

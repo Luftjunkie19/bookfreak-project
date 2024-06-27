@@ -126,9 +126,7 @@ const providedIdPartTwo=providedId.split("-")[1];
         <div className="flex sm:flex-col lg:flex-row sm:p-2 lg:p-6 mx-auto m-0 max-w-screen-2xl gap-4 w-full justify-between">
           <div className="flex sm:flex-col lg:flex-row lg:items-center gap-6">
           <Image src={document.photoURL} alt='' className='sm:w-24 sm:h-24 lg:w-48 lg:h-48 rounded-full' width={70} height={70} />
-           
-          
-           
+            
             <div className="flex flex-col gap-2">
               <p className='text-2xl font-semibold text-white'>{document.nickname}</p>
               <p className='text-white'>0 Friends</p>
@@ -136,33 +134,29 @@ const providedIdPartTwo=providedId.split("-")[1];
                 <Link href={`/profile/${id}/dashboard`} className='flex gap-2 text-white items-center'>Dashboard <MdSpaceDashboard size={24} /> </Link>
                 <Link href={`/profile/${id}/settings`} className='flex gap-2 text-white items-center'>Settings <FaUserGear size={24} /></Link>
               </div>
-            </div>      
-            
-               <div className="stats sm:stats-vertical lg:stats-horizontal sm:w-full lg:w-fit lg:self-end h-fit bg-primary-color text-white">
-  <div className="stat items-center">
-    <div className="stat-figure text-secondary">
- <IoMdBookmarks size={36} />
-    </div>
-    <div className="stat-title text-white">Inserted</div>
-              <div className="stat-value">{books.filter((item)=>item.createdBy.id === id).length}</div>
+               <div className="flex gap-4 items-center ">
+  <div className="flex gap-2 items-center">
+    
+ <IoMdBookmarks className="text-white" size={24} />
+    
+    <div className=" text-white">Inserted {books.filter((item)=>item.createdBy.id === id).length}</div>
+
   </div>
 
-  <div className="stat">
-    <div className="stat-figure text-secondary">
-        <FaBook size={36}/>
-    </div>
-    <div className="stat-title text-white">Read</div>
-    <div className="stat-value">{yourFinishedBooks.length}</div>
+  <div className="flex gap-2 items-center">
+   
+        <FaBook className="text-white" size={24}/>
+
+    <div className="text-white">Read {yourFinishedBooks.length}</div>
   </div>
 
-  <div className="stat">
-    <div className="stat-figure text-secondary">
-   <FaHeart size={36} className='text-red-400'/>
-    </div>
-    <div className="stat-title text-white">Liked</div>
-              <div className="stat-value">{lovedBooks.length}</div>
+  <div className="flex gap-2 items-center">
+   <FaHeart size={24} className='text-red-400'/>
+    <p className=" text-white">Liked {lovedBooks.length}</p>
   </div>
           </div>
+            </div>      
+            
 </div>
           <div className="flex gap-4 lg:self-end lg:items-center">
             <BlueButton additionalClasses='flex gap-2 text-sm items-center'>Send Request <BsFillPersonPlusFill /> </BlueButton>
@@ -185,7 +179,7 @@ const providedIdPartTwo=providedId.split("-")[1];
         {lovedBooks.length === 0 && <div>
             <p className='text-gray-500'>No Loved Books yet</p>
             </div>}
-          <BaseSwiper additionalClasses='w-full p-0'>
+          <BaseSwiper  additionalClasses='w-full p-0'>
           {lovedBooks.map((item) => (<Slide key={item.id}>
           <Book bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} />
         </Slide>))}

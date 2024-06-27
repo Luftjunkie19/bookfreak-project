@@ -24,7 +24,7 @@ const UserDropDown = ({userObject, userId}:Props) => {
               src: userObject.photoURL,
             }}
             className="transition-transform"
-                    description={<p className=" uppercase text-green-300">{userObject.creditsAvailable.valueInMoney} {userObject.creditsAvailable.currency}</p>}
+                    description={<p className=" uppercase text-green-300">{userObject.creditsAvailable && userObject.creditsAvailable.valueInMoney} {userObject.creditsAvailable && userObject.creditsAvailable.currency}</p>}
                     name={<p className=" text-white line-clamp-1">{userObject.nickname}</p>}
           />
         </DropdownTrigger>
