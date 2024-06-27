@@ -17,13 +17,14 @@ type Props = {
   slidesOnLargeScreen?: number,
   slidesOnLargeScreen2?: number,
   slidesOnXlScreen?: number,
-    slidesOn2XlScreen?: number,
+  slidesOn2XlScreen?: number,
+    additionalClasses?:string,
 
 }
 
-function BaseSwiper({children, slidesOn2XlScreen, slidesOnLargeScreen2, slidesOnLargeScreen, slidesOnSmallScreen, slidesOnXlScreen}: Props) {
+function BaseSwiper({children,additionalClasses, slidesOn2XlScreen, slidesOnLargeScreen2, slidesOnLargeScreen, slidesOnSmallScreen, slidesOnXlScreen}: Props) {
   return (
-    <Swiper modules={[Pagination]} className='p-4' spaceBetween={8} breakpoints={{
+    <Swiper modules={[Pagination]} className={`p-4 ${additionalClasses}`} spaceBetween={8} breakpoints={{
       0: {
         slidesPerView: slidesOnSmallScreen ?? 1,
       },

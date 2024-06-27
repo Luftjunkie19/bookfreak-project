@@ -1,5 +1,7 @@
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@nextui-org/react";
+import { useLogout } from "hooks/useLogout";
 import Link from "next/link";
+import { PiSignOutBold } from "react-icons/pi";
 
 type Props = {
   userObject: any,
@@ -7,9 +9,15 @@ type Props = {
 }
 
 const UserDropDown = ({userObject, userId}:Props) => {
+ const { logout } = useLogout();
+
+  const signout = async () => {
+    await logout();
+  }
+
     return (
-         <Dropdown placement="bottom-start">
-        <DropdownTrigger>
+         <Dropdown className="sm:hidden lg:block" placement="bottom-start">
+        <DropdownTrigger className="sm:hidden lg:flex">
                 <User
                     as='button'
             avatarProps={{
@@ -21,22 +29,21 @@ const UserDropDown = ({userObject, userId}:Props) => {
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">
-          <DropdownItem key="profile">
-            <Link href={`/profile/${userId}`}>
+          <DropdownItem as={'a'} href={`/profile/${userId}`} key="profile">
             Profile
-            </Link>
           </DropdownItem>
-          <DropdownItem key="settings">
+          <DropdownItem as={'a'} href={`/profile/${userId}/settings`} key="settings">
             My Settings
           </DropdownItem>
-          <DropdownItem key="dashboard">
+          <DropdownItem as={'a'} href={`/profile/${userId}/dashboard`} key="dashboard">
             Dashboard
           </DropdownItem>
-          <DropdownItem key="help_and_feedback">
+          <DropdownItem as={'a'} href={`/profile/${userId}/about`} key="help_and_feedback">
             Help & Feedback
           </DropdownItem>
-          <DropdownItem key="logout" color="danger">
-            Log Out
+          <DropdownItem onClick={signout} key="logout" color="danger">
+           
+            Sign Out
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>

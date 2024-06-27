@@ -111,10 +111,9 @@ function SignUp() {
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
 
   return (
-    <div className={`min-h-screen h-full w-full relative top-0 left-0 flex flex-wrap items-center justify-center bg-secondary-color`}>
-      <div className={`fixed top-0 left-1/2  opacity-20 -translate-x-1/2 blur-[8rem] bg-primary-color swap-flip w-[28rem] h-[28rem] rounded-full`}></div>
-      <div className="max-w-5xl flex gap-6 justify-between items-center w-full">
-        <Lottie animationData={Animation} className="max-w-xs w-full" />
+    <div className={`min-h-screen h-full w-full relative top-0 left-0 flex flex-wrap items-center justify-center `}>
+      <div className="max-w-5xl flex sm:flex-col lg:flex-row gap-6 justify-between items-center w-full">
+        <Lottie animationData={Animation} className="sm:max-w-60 lg:max-w-xs w-full" />
         <form
           className=' bg-dark-gray rounded-3xl p-4 sm:max-w-sm lg:max-w-md xl:max-w-lg w-full z-10 border-2 border-primary-color flex flex-col gap-3'
           onSubmit={handleSubmit}

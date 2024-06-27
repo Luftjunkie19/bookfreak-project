@@ -12,7 +12,7 @@ import Subscriptions from 'components/home/Subscriptions';
 export default function Home() {
   return (
     <div className={`min-h-screen w-full `}>
-      <HeroSection />
+
       <BookSwiper />
       <CompetitionSwiper />
       <ClubSwiper />

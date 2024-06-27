@@ -45,11 +45,7 @@ function NotificationViewer() {
       `${notification.notificationId}-${notification.notificationTime}`
     );
   };
-  const { logout } = useLogout();
-
-  const signout = async () => {
-    await logout();
-  }
+ 
 
   return (
     <button>

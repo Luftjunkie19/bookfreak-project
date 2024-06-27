@@ -1,8 +1,0 @@
-{
-  "/form/test/page": "app/form/test/page.js",
-  "/search/tests/page": "app/search/tests/page.js",
-  "/test/[testId]/page": "app/test/[testId]/page.js",
-  "/page": "app/page.js",
-  "/profile/[userId]/page": "app/profile/[userId]/page.js",
-  "/(chat)/[chatId]/page": "app/(chat)/[chatId]/page.js"
-}

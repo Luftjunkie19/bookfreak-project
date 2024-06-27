@@ -24,6 +24,7 @@ import UserDropDown from './User-Dropdown/UserDropDown';
 import Link from 'next/link';
 import { Input } from '@nextui-org/react';
 import { FaSearch } from 'react-icons/fa';
+import MobileDrawer from './Drawer/Drawer';
 
 function Navbar() {
   const translations = navBarTranslation;
@@ -52,7 +53,7 @@ function Navbar() {
     <div className="flex sticky top-0 left-0 z-50 bg-primary-color justify-between px-4 py-2 items-center w-full">
       <div className="flex gap-2 items-center sticky top-0 left-0">
         <Link href={'/'} className=' text-white text-xl'><span className='text-secondary-color text-2xl font-bold'>B</span>ook<span className='text-secondary-color text-2xl font-bold'>F</span>reak</Link>
-        <Input isClearable className='text-white sm:hidden lg:block' classNames={{
+        <Input isClearable className='text-white sm:hidden xl:block' classNames={{
           'input': 'bg-dark-gray',
           'innerWrapper': "bg-dark-gray focus:bg-dark-gray active:bg-dark-gray ",
           'inputWrapper':'bg-dark-gray focus:bg-dark-gray active:bg-dark-gray border border-white',
@@ -66,6 +67,8 @@ function Navbar() {
           }
           <NotificationViewer />
           <LanguageSelect />
+          <MobileDrawer/>
+  
         </div> : <div className="flex items-center gap-5">
           <SignInBtn />
           <SignUpBtn />
