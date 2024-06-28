@@ -10,6 +10,8 @@ import Lottie from 'lottie-react';
 import {
   FaGamepad,
   FaPencil,
+  FaPlay,
+  FaTrash,
   FaTrashCan,
 } from 'react-icons/fa6';
 import { useSelector } from 'react-redux';
@@ -27,6 +29,10 @@ import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../../hooks/useRealtimeDocument';
 import useGetDocument from 'hooks/useGetDocument';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import BlueButton from 'components/buttons/BlueButton';
+import RemoveBtn from 'components/buttons/RemoveBtn';
+import TestTable from 'components/test/TestTable';
 
 function TestMainPage({ params }:{params:{testId:string}}) {
   const { user } = useAuthContext();
@@ -54,7 +60,20 @@ function TestMainPage({ params }:{params:{testId:string}}) {
 
   return (
     <div className={`min-h-screen h-full w-full`}>
-      <p>{testId}</p>
+      {document && <>
+        <div className="p-4 flex gap-1 flex-col text-white">
+          <Image src={document.refersToBook.photoURL} alt='' width={60} height={60} className='h-80 w-60 rounded-lg'/>
+          <p className='text-lg'>{document.testName}</p>
+        <p>{Object.values(document.queries).length} Queries</p>
+          <div className="flex gap-2 items-center">
+            <BlueButton additionalClasses='flex items-center gap-4'>Play <FaPlay /> </BlueButton>
+            <RemoveBtn additionalClasses='flex items-center gap-4'>Delete <FaTrash /> </RemoveBtn>
+          </div>
+        </div>
+
+          <TestTable/>
+
+      </>}
     </div>
   );
 }

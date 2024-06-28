@@ -31,7 +31,8 @@ function SearchBtn() {
       </DropdownTrigger>
       <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
         <DropdownItem
-          onClick={() => navigateToForm('/search/books')}
+          as={'a'}
+          href='/search/books'
           key="book"
           description="Find an inspriring Book !"
           startContent={<FaBook className='' />}
@@ -40,7 +41,8 @@ function SearchBtn() {
         </DropdownItem>
 
         <DropdownItem
-          onClick={() => navigateToForm('/search/competitions')}
+          as={'a'}
+          href='/search/competitions'
           key="competition"
           description="Search, Find, Compete and win !"
           startContent={<PiRankingFill className='' />}
@@ -48,7 +50,8 @@ function SearchBtn() {
           Competition
         </DropdownItem>
         <DropdownItem
-          onClick={() => navigateToForm('/search/clubs')}
+         as={'a'}
+          href='/search/clubs'
           key="club"
           showDivider
           description="Find, Socialize, Enjoy !"
@@ -60,7 +63,8 @@ function SearchBtn() {
         </DropdownItem>
         <DropdownItem
           key="test"
-          onClick={() => navigateToForm('/search/tests')}
+         as={'a'}
+          href='/search/tests'
           description="Find, Test, Deduct !"
           startContent={<PiExamFill className='' />}
         >

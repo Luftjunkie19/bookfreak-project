@@ -46,6 +46,7 @@ import { MdSpaceDashboard } from 'react-icons/md';
 import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
 import Slide from 'components/home/swipers/base-swiper/Slide';
 import Book from 'components/elements/Book';
+import { SwiperSlide } from 'swiper/react';
 
 function Profile({params}:{params:{userId:string}}) {
   const { userId:id } = params;
@@ -130,10 +131,12 @@ const providedIdPartTwo=providedId.split("-")[1];
             <div className="flex flex-col gap-2">
               <p className='text-2xl font-semibold text-white'>{document.nickname}</p>
               <p className='text-white'>0 Friends</p>
+              {user && user.uid === id &&
               <div className="flex gap-4 items-center">
                 <Link href={`/profile/${id}/dashboard`} className='flex gap-2 text-white items-center'>Dashboard <MdSpaceDashboard size={24} /> </Link>
                 <Link href={`/profile/${id}/settings`} className='flex gap-2 text-white items-center'>Settings <FaUserGear size={24} /></Link>
               </div>
+              }
                <div className="flex gap-4 items-center ">
   <div className="flex gap-2 items-center">
     
@@ -159,8 +162,8 @@ const providedIdPartTwo=providedId.split("-")[1];
             
 </div>
           <div className="flex gap-4 lg:self-end lg:items-center">
-            <BlueButton additionalClasses='flex gap-2 text-sm items-center'>Send Request <BsFillPersonPlusFill /> </BlueButton>
-              <DarkButton additionalClasses='flex gap-2 text-sm items-center'>Message <IoIosChatbubbles  /> </DarkButton>
+            <BlueButton additionalClasses='flex gap-2 sm:text-sm xl:text-base items-center'>Send Request <BsFillPersonPlusFill /> </BlueButton>
+              <DarkButton additionalClasses='flex gap-2 sm:text-sm xl:text-base items-center'>Message <IoIosChatbubbles  /> </DarkButton>
 </div>
           </div>
           
@@ -179,7 +182,7 @@ const providedIdPartTwo=providedId.split("-")[1];
         {lovedBooks.length === 0 && <div>
             <p className='text-gray-500'>No Loved Books yet</p>
             </div>}
-          <BaseSwiper  additionalClasses='w-full p-0'>
+          <BaseSwiper slidesOn2XlScreen={6} additionalClasses='w-full'>
           {lovedBooks.map((item) => (<Slide key={item.id}>
           <Book bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} />
         </Slide>))}
@@ -191,7 +194,7 @@ const providedIdPartTwo=providedId.split("-")[1];
         {yourFinishedBooks.length === 0 && <div>
             <p className='text-gray-500'>No Read Books yet</p>
             </div>}
-          <BaseSwiper additionalClasses='w-full'>
+          <BaseSwiper slidesOn2XlScreen={6} additionalClasses='w-full'>
           {yourFinishedBooks.map((item) => (<Slide key={item.id}>
           <Book bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} />
         </Slide>))}
@@ -204,10 +207,10 @@ const providedIdPartTwo=providedId.split("-")[1];
         {books.filter((item)=>item.createdBy.id === id).length === 0 && <div>
             <p className='text-gray-500'>No Inserted Books yet</p>
             </div>}
-          <BaseSwiper additionalClasses='w-full'>
-          {books.filter((item)=>item.createdBy.id === id).map((item) => (<Slide key={item.id}>
+          <BaseSwiper slidesOn2XlScreen={6} additionalClasses='w-full'>
+          {books.filter((item)=>item.createdBy.id === id).map((item) => (<SwiperSlide key={item.id}>
           <Book bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} />
-        </Slide>))}
+        </SwiperSlide>))}
         </BaseSwiper>
 </div>
         
