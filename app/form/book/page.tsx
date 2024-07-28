@@ -33,7 +33,6 @@ import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
-import { snackbarActions } from '../../../context/SnackBarContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useRealDatabase } from 'hooks/useRealDatabase';
 import useGetDocuments from '../../../hooks/useGetDocuments';
@@ -42,9 +41,6 @@ import { useRouter } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
 import { DatePicker, Select, SelectItem } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
-import BlueButton from 'components/buttons/BlueButton';
-import DarkButton from 'components/buttons/WhiteButton';
-import BlueDarkGradientButton from 'components/buttons/gradient/BlueDarkGradientButton';
 import { FileUpload } from 'primereact/fileupload';
 
 
@@ -114,13 +110,13 @@ function CreateBook() {
     }
 
     if (!selected.type.includes("image")) {
-      dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]}`, alertType: "error" }));
+      //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]}`, alertType: "error" }));
       setEditCover(null);
       return;
     }
 
     if (selected === null) {
-      dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.selectAnything[selectedLanguage]}`, alertType: "error" }));
+      //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.selectAnything[selectedLanguage]}`, alertType: "error" }));
       setError(
         alertMessages.notifications.wrong.selectAnything[selectedLanguage]
       );
@@ -152,7 +148,7 @@ function CreateBook() {
         setError(
           alertMessages.notifications.wrong.emptyMessage[selectedLanguage]
         );
-        dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.emptyMessage[selectedLanguage]}`, alertType: "error" }));
+        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.emptyMessage[selectedLanguage]}`, alertType: "error" }));
         setIsPending(false);
 
         return;
@@ -162,7 +158,7 @@ function CreateBook() {
         setError(
           alertMessages.notifications.wrong.outOfSpaceReading[selectedLanguage]
         );
-        dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.outOfSpaceReading[selectedLanguage]}`, alertType: "error" }));
+        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.outOfSpaceReading[selectedLanguage]}`, alertType: "error" }));
         return;
       }
 
@@ -174,7 +170,7 @@ function CreateBook() {
             doc.countryOfRelease.toLowerCase().includes(book.countryOfRelease.toLowerCase())
         )
       ) {
-        dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.existsBook[selectedLanguage]}`, alertType: "error" }));
+        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.existsBook[selectedLanguage]}`, alertType: "error" }));
         setError(alertMessages.notifications.wrong.existsBook[selectedLanguage]);
         setLink(
           availableBooks.find(
@@ -188,25 +184,25 @@ function CreateBook() {
       }
 
       if (book.description.trim().length < 20) {
-        dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.writeLonger[selectedLanguage]}`, alertType: "error" }));
+        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.writeLonger[selectedLanguage]}`, alertType: "error" }));
         setError(alertMessages.notifications.wrong.writeLonger[selectedLanguage]);
         return
       }
 
       if (book.countryOfRelease.trim().length === 0 || !book.dateOfPublishing || !book.publishingHouse) {
-        dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.someFieldsEmpty[selectedLanguage]}`, alertType: "error" }));
+        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.someFieldsEmpty[selectedLanguage]}`, alertType: "error" }));
         return
       }
 
       if (!book.bookCover) {
-        dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.bookCoverReq[selectedLanguage]}`, alertType: "error" }));
+        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.bookCoverReq[selectedLanguage]}`, alertType: "error" }));
         return
       }
 
 
 
       if (book.dateOfPublishing > new Date().getFullYear()) {
-        dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.timeTraveler[selectedLanguage]}`, alertType: "error" }));
+        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.timeTraveler[selectedLanguage]}`, alertType: "error" }));
         return
       }
 
@@ -261,7 +257,7 @@ function CreateBook() {
       });
 
 
-      dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType: "success" }));
+      //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType: "success" }));
 
 
 
@@ -310,68 +306,8 @@ function CreateBook() {
   
 
   return (
-    <div className={`min-h-screen h-full w-full overflow-x-hidden flex flex-col items-center justify-center`}>
-      <form action={(formData:FormData)=>console.log(formData)} className=" flex flex-col gap-4 p-4 rounded-xl border bg-dark-gray border-primary-color max-w-7xl w-full">
-       <p className='text-white text-2xl font-bold'>Append New Book !</p>
-        <div className="flex flex-col gap-2">
-          <p className='text-white text-lg font-medium'>General Information</p>
-        <div className="grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-          <LabeledInput label='Title' setValue={(value) => console.log(value)} />
-          <LabeledInput label='Author' setValue={(value) => console.log(value)} />
-          <LabeledInput type='number' label='Pages' setValue={(value) => console.log(value)} />
-          <Select isRequired 
-      placeholder="Select Category"
-              labelPlacement="outside"
-              className='text-white'
-            label="Category"  
-      >
-          {bookCategories.map((item)=>({key:item, label:item})).map((animal) => (
-          <SelectItem key={animal.key}>
-            {animal.label}
-          </SelectItem>
-        ))}
-      </Select>
-            <DatePicker 
-              className='text-white' 
-         labelPlacement="outside"
-          label="Release Date"
-          isRequired
-        />
-        </div>
-       </div>
-        <div className="flex flex-col gap-2">
-          <p className='text-white text-lg font-medium'>Detailed Information</p>
-          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
-          <LabeledInput label='ISBN' setValue={(value) => console.log(value)} />
-          <LabeledInput label='Publishing House' setValue={(value) => console.log(value)} />
-          <div className="flex flex-col gap-1">
-            <p className='text-white'>Release Country</p>
-              <ReactFlagsSelect selectButtonClassName=' rounded-lg border-2 border-primary-color text-white h-fit' showSelectedLabel  selected={book.countryOfRelease} onSelect={(countryCode:string)=>setBook({...book, countryOfRelease:countryCode})}/>
-          </div>
-          <div className="flex gap-6 items-center">
-                 <div className="flex flex-col gap-1">
-            <p className='text-white'>Book Cover</p>
-                      <input
-  type="file"
-  className="file-input max-w-xs w-full bg-primary-color" />
-</div>
-     </div>
-       
-      
-         
-        </div>
-</div>
-
-        <div className="flex flex-col gap-2">
-          <p className='text-white text-lg font-medium'>Description</p>
-          <textarea name="" id="" className='h-48 p-2 rounded-lg border-2 border-primary-color max-w-2xl outline-none w-full resize-none'></textarea>
-        </div>
-
-
-        <BlueDarkGradientButton isSubmit additionalClasses='self-end px-4 py-2 max-w-36 w-full'>
-          Append
-        </BlueDarkGradientButton>
-  </form>
+    <div className={`min-h-screen h-full w-full overflow-x-hidden flex`}>
+     
     </div>
   );
 }

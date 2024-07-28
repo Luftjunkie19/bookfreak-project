@@ -30,7 +30,7 @@ function Footer() {
       </nav>
       <nav>
         <header className={`footer-title ${isDarkModed ? "text-primeColor" : "text-accColor"}`}>Social</header>
-        <div className="grid grid-flow-col gap-4">
+        <div className="flex items-center gap-4">
           <Link
             href="https://twitter.com/BookFreak_ofc"
             target="_blank"

@@ -48,8 +48,7 @@ import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
 import { User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 
-import ClubBar from 'components/left-bar/ClubBar';
-import BlueButton from 'components/buttons/BlueButton';
+import ClubBar from 'components/Sidebars/ClubBar';
 
 function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
@@ -187,20 +186,7 @@ function Club({params}:{params:{clubId:string}}) {
     <div
       className={`w-full h-screen flex `}
     >
-      <ClubBar clubId={id} />
-        <div className="w-full h-full">
-       <div className="h-[calc(100vh-4rem)]  w-full overflow-y-auto p-2">
-
-</div>
-<form className="w-full flex items-center justify-around gap-2 max-h-16 h-full p-4 bg-dark-gray border-2 border-primary-color rounded-t-lg">
-<textarea placeholder='Enter message...' name="message" className='sm:max-w-xs xl:max-w-md w-full resize-none max-h-12 outline-none p-2 overflow-y-hidden rounded-lg border-purple border'></textarea>
-<BlueButton additionalClasses='px-6 py-2'>Send</BlueButton>
-</form>
-      </div>
-    
-
-     
-
+   
    
 
     </div>

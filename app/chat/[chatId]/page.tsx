@@ -7,7 +7,7 @@ const {chatId}=params;
   return (
       <div>
       
-      <div className="max-h-12 h-full bg-light-blue-gradient w-full">
+      <div className="max-h-12 h-full w-full">
         {chatId}
       </div>
     </div>

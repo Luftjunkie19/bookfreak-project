@@ -23,8 +23,10 @@ import SignUpBtn from './Sign-Buttons/SignUpBtn';
 import UserDropDown from './User-Dropdown/UserDropDown';
 import Link from 'next/link';
 import { Input } from '@nextui-org/react';
-import { FaSearch } from 'react-icons/fa';
+import { FaHome, FaSearch } from 'react-icons/fa';
 import MobileDrawer from './Drawer/Drawer';
+import CreateBtn from 'components/buttons/CreateBtn';
+import { PiChatsCircleFill } from 'react-icons/pi';
 
 function Navbar() {
   const translations = navBarTranslation;
@@ -53,19 +55,17 @@ function Navbar() {
     <div className="flex sticky top-0 left-0 z-50 bg-primary-color justify-between px-4 py-2 items-center w-full">
       <div className="flex gap-2 items-center sticky top-0 left-0">
         <Link href={'/'} className=' text-white text-xl'><span className='text-secondary-color text-2xl font-bold'>B</span>ook<span className='text-secondary-color text-2xl font-bold'>F</span>reak</Link>
-        <Input isClearable className='text-white sm:hidden xl:block' classNames={{
-          'input': 'bg-dark-gray',
-          'innerWrapper': "bg-dark-gray focus:bg-dark-gray active:bg-dark-gray ",
-          'inputWrapper':'bg-dark-gray focus:bg-dark-gray active:bg-dark-gray border border-white',
-          
-        }} startContent={<FaSearch className='text-white text-lg'/>} />
+        
       </div>
       {user ?
         <div className="flex items-center gap-6">
+          <Link href={'/'}><FaHome className='text-2xl' /></Link>
+          <CreateBtn/>
+          <NotificationViewer />
+                    <Link href={'/'}><PiChatsCircleFill  className='text-2xl text-white' /></Link>
           {documentBase && 
           <UserDropDown userId={user.uid} userObject={documentBase}/>
           }
-          <NotificationViewer />
           <LanguageSelect />
           <MobileDrawer/>
   

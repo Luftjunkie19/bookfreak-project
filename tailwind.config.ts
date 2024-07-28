@@ -24,8 +24,8 @@ module.exports = withMT({
         'poppins':['Poppins']
       },
          colors: {
-          'primary-color': "#4777FF",
-        'secondary-color': "#272727", 
+        'primary-color': "#4777FF",
+        'secondary-color': "#232323", 
         "dark-gray": '#2E2D2D',
         'bg-color': "#800000",
         imgCover: "rgba(0, 0, 0, 0.55)",

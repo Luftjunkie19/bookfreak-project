@@ -30,7 +30,6 @@ import useRealtimeDocument from '../../../hooks/useRealtimeDocument';
 import useGetDocument from 'hooks/useGetDocument';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import BlueButton from 'components/buttons/BlueButton';
 import RemoveBtn from 'components/buttons/RemoveBtn';
 import TestTable from 'components/test/TestTable';
 
@@ -66,7 +65,6 @@ function TestMainPage({ params }:{params:{testId:string}}) {
           <p className='text-lg'>{document.testName}</p>
         <p>{Object.values(document.queries).length} Queries</p>
           <div className="flex gap-2 items-center">
-            <BlueButton additionalClasses='flex items-center gap-4'>Play <FaPlay /> </BlueButton>
             <RemoveBtn additionalClasses='flex items-center gap-4'>Delete <FaTrash /> </RemoveBtn>
           </div>
         </div>

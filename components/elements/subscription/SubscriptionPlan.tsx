@@ -3,11 +3,7 @@ import React from 'react'
 import classes from '../../../stylings/gradient.module.css'
 import { MdWorkspacePremium } from 'react-icons/md'
 import { RiRobot3Fill } from 'react-icons/ri'
-import DarkButton from 'components/buttons/DarkButton'
 import { SparklesCore } from 'components/ui/Sparkles'
-import BlueDarkGradientButton from 'components/buttons/gradient/BlueDarkGradientButton'
-import LightGradientButton from 'components/buttons/gradient/LightGradientButton'
-import BlueButton from 'components/buttons/BlueButton'
 import { Meteors } from 'components/ui/Meteors'
 
 type Props = {gradientName:string, isMonth:boolean, price:number, stripePriceId?:string, offerName:string}
@@ -40,7 +36,7 @@ function SubscriptionPlan({ gradientName, isMonth, offerName, price}: Props) {
                     <div className="flex items-center justify-between p-4">
                         <p className='text-white'> <span className=' text-green-600 font-semibold'> {price} $</span> / Week</p>
 
-                        { isMonth ? <DarkButton additionalClasses='border-2 border-white'>Purchase</DarkButton> : <BlueButton additionalClasses='border-2 border-white'>Purchase</BlueButton> }
+                       
 
                     </div>
               </CardBody>

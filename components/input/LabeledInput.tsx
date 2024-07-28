@@ -1,19 +1,19 @@
 import React from 'react';
 
 type Props = {
-  label: string,
+  label?: string,
   name?: string,
   id?: string,
-  type?: string,
-  additionalClasses?:string,
+  additionalClasses?: string,
+  type: 'dark' | 'light' | 'blue' | 'transparent',
     setValue: (value:string)=>void
 }
 
 function LabeledInput({label, setValue, name, type, additionalClasses}: Props) {
   return (
 <div className="flex gap-1 flex-col">
-          <p className='text-white'>{label}</p>
-            <input type={type ?? 'text'} name={name} onChange={(e)=>setValue(e.target.value)} className={`${additionalClasses} text-secondary-color outline-none p-2 rounded-lg border-2 border-primary-color`}/>
+{label &&          <p className='text-white'>{label}</p>}
+            <input type={type ?? 'text'} name={name} onChange={(e)=>setValue(e.target.value)} className={`${additionalClasses} outline-none p-2 rounded-lg  ${type === 'transparent' ? ' bg-transparent text-white' : type === 'dark' ? 'bg-dark-gray border-2 border-primary-color text-white' : type ==='blue' ? 'bg-primary-color text-white border-2 border-white' : 'bg-white text-dark-gray'}`}/>
           </div>
   )
 }

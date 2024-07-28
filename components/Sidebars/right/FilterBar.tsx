@@ -1,7 +1,7 @@
 'use client';
-import CreateBtn from './CreateBtn'
+import CreateBtn from '../../buttons/CreateBtn'
 import React from 'react'
-import SearchBtn from './SearchBtn'
+import SearchBtn from '../../buttons/SearchBtn'
 import { Button, Tooltip } from '@nextui-org/react'
 import { GiPayMoney } from 'react-icons/gi'
 import { RiRobot3Fill } from 'react-icons/ri'

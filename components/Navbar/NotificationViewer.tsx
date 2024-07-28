@@ -49,7 +49,7 @@ function NotificationViewer() {
 
   return (
     <button>
-      <FaBell size={24} className="text-yellow-400" />
+      <FaBell size={24} className="text-white" />
     </button>
   );
 }

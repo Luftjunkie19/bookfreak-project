@@ -37,11 +37,7 @@ import aboutUsTranslations
   from '../../assets/translations/aboutUsTranslations.json';
 import Image from 'next/image';
 import HeroSection from 'components/home/HeroSection';
-import WhatIsSection from 'components/about/WhatIsSection';
-import SolutionSection from 'components/about/SolutionSection';
-import ExcelSection from 'components/about/ExcelSection';
-import AccordionSection from 'components/about/AccordionSection';
-import SliderSection from 'components/about/SliderSection';
+
 
 function AboutUs() {
   const { next, prev, current, total } = useSteps();
@@ -104,13 +100,7 @@ function AboutUs() {
 ;
   return (
     <div className={`min-h-screen flex flex-col gap-6 h-full w-full p-6 ${isDarkModed ? "text-white" : "text-black"}`}>
-      <HeroSection />
-      <WhatIsSection />
-      <SolutionSection />
-      <ExcelSection />
-      <AccordionSection />
-
-      <SliderSection/>
+ 
  
     </div>
   );

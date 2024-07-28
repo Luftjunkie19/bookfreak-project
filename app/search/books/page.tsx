@@ -24,7 +24,6 @@ import typesTranslation from '../../../assets/translations/TypesTranslations.jso
 import Book from '../../../components/elements/Book';
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
 import useGetDocuments from '../../../hooks/useGetDocuments';
-import FilterBar from '../../../components/left-bar/FilterBar';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import { DataView } from 'primereact/dataview';
@@ -245,58 +244,7 @@ function Books() {
 
   return (
     <div className={`min-h-screen h-full w-full flex`}>
-      <FilterBar filterBarContent={
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-             <CheckboxGroup
-              label="Filters"
-              onValueChange={(value:string[]) => {
-                applyFilters(value);
-              }}
-              orientation="horizontal"
-              classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
-            >
-              {categoryTypes.map((filter) => (
-                <Checkbox key={filter.label} value={filter.label} classNames={{label:'text-xs text-white'}}>{filter.label}</Checkbox>
-              ))}
-    </CheckboxGroup>
-          </div>
-          
-      <div className="flex flex-col gap-2">
-            <RadioGroup
-              onValueChange={(value)=>applySort(value)}
-      label="Sorting"
-              orientation="horizontal"
-              classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
-            >
-              {sortTypes.map((sort) => (
-                <Radio key={sort.label} value={sort.label} classNames={{label:'text-xs text-white'}}>{sort.label}</Radio>
-              ))}
-    </RadioGroup>
-        </div>
-          
-</div>} />
-      
 
-      <div className="w-full h-full flex flex-col gap-6">
-    <Autocomplete
-          defaultItems={books}
-          onValueChange={(value)=>setSearchInputValue(value)}
-          label="Book Title"
-          labelPlacement='outside'
-      placeholder="Search a Book"
-      className="max-w-sm w-full self-center p-2"
-    >
-      {(book:any) => <AutocompleteItem key={book.id}>{book.title}</AutocompleteItem>}
-        </Autocomplete>
-        <div className="flex flex-col gap-2">
-          <p className='mx-4 text-white text-2xl'>Results for {searchInputValue}</p>
-        <div className="grid sm:grid-cols-1 gap-2 mx-4 my-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-7">
-      {sortedArray.map((book:any)=>(<Book bookCover={book.photoURL} pages={book.pagesNumber} author={book.author} bookId={book.id} title={book.title} bookCategory={book.category} key={book.id}/>))}
-        </div>
-        </div>
-   
-      </div>
     </div>
   );
 }

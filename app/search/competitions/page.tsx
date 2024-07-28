@@ -27,7 +27,7 @@ import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
 import useGetDocuments from '../../../hooks/useGetDocuments';
-import FilterBar from '../../../components/left-bar/FilterBar';
+import FilterBar from '../../../components/Sidebars/right/FilterBar';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Radio, RadioGroup } from '@nextui-org/react';
 import Competition from 'components/elements/Competition';
 
@@ -216,7 +216,7 @@ function Competitions() {
           
         </div>} />
 
-      
+{/*       
       <div className="w-full h-full flex flex-col gap-6">
              <Autocomplete
           defaultItems={sortedClubs}
@@ -232,7 +232,7 @@ function Competitions() {
         <div className="grid sm:grid-cols-1 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">  
         {sortedClubs.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={''} competitionName={item.competitionTitle} membersAmount={0} comeptitionRemainingTime={item.expiresAt}/>))}
          </div>
-      </div>
+      </div> */}
       
     </div>
   );

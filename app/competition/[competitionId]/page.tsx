@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import CompetitionBar from 'components/left-bar/CompetitionBar';
+import CompetitionBar from 'components/Sidebars/left/CompetitionBar';
 import { increment } from 'firebase/database';
 import { httpsCallable } from 'firebase/functions';
 import { BsFillDoorOpenFill } from 'react-icons/bs';
@@ -48,7 +48,6 @@ import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import useRealtimeDocument from '../../../hooks/useRealtimeDocument';
 import { User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import BlueButton from 'components/buttons/BlueButton';
 
 function Competition({params}:{params:{competitionId:string}}) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -217,16 +216,7 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
     <div
       className={`max-h-screen h-full overflow-y-hidden w-full flex`}
     >
-      <CompetitionBar competitionId={id} />
-      <div className="w-full">
-       <div className="h-[calc(100vh-4rem)]  w-full overflow-y-auto p-2">
-
-</div>
-<form className="w-full flex items-center justify-around gap-2 max-h-16 h-full p-4 bg-dark-gray border-2 border-primary-color rounded-t-lg">
-<textarea placeholder='Enter message...' name="message" className='sm:max-w-xs xl:max-w-md w-full resize-none max-h-12 outline-none p-2 overflow-y-hidden rounded-lg border-purple border'></textarea>
-<BlueButton additionalClasses='px-6 py-2'>Send</BlueButton>
-</form>
-      </div>
+ 
     </div>
   )
 }

@@ -277,17 +277,12 @@ function EditProfile() {
   };
   return (
     <motion.div
-      className={`min-h-screen h-full ${!isDarkModed && "pattern-bg"}`}
+      className={`min-h-screen h-full`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {editProfileImg && (
-       <div></div>
-      )}
-      {document && (
-     <div></div>
-      )}
+   
    
 
       {isPending && <Loader />}

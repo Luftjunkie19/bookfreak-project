@@ -15,7 +15,8 @@ import { Toaster } from 'react-hot-toast';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from 'components/Footer';
 import { PrimeReact } from 'lib/PrimeReact';
-import LeftBar from '../components/left-bar/LeftBar';
+import LeftBar from '../components/Sidebars/left/LeftBar';
+import DefaultRightBar from 'components/Sidebars/right/DefaultRightBar';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`bg-secondary-color overflow-y-hidden w-full min-h-screen ${classes['dark-blue-gradiented']}`}>
+      <body className={`bg-secondary-color overflow-y-hidden w-full `}>
         <link rel="icon" href="/Logo.png" sizes="any" />
         <AuthContextProvider>
           <ReduxProvider>
@@ -43,12 +44,11 @@ export default function RootLayout({
                 <Navbar />
                 <div className="flex h-full">
                   <LeftBar />
-          
                   <div className="w-full overflow-y-auto max-h-screen h-full">
               {children}
                 <Footer />
    </div>
-        
+                <DefaultRightBar/>
                 </div>
                 </PrimeReact>
             </Providers>

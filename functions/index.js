@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable max-len */
 /* eslint-disable new-cap */
@@ -55,11 +56,9 @@ exports.createStripeCheckout=functions.https.onCall(async (req)=>{
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
       mode: "payment",
+      // eslint-disable-next-line linebreak-style
       line_items: [{price, quantity}],
       customer: createdCustomer.id,
-      invoice_creation: {
-        enabled: true,
-      },
       return_url: "https://bookfreak.org",
       payment_method_configuration: "pmc_1OH8UDL8z1e5mvb6pg8zlaau",
       payment_intent_data: {

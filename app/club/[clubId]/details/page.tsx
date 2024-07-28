@@ -41,7 +41,7 @@ import { useRealDatabase } from '../../../../hooks/useRealDatabase';
 import { User } from 'firebase/auth';
 import Image from 'next/image';
 
-function OverallClub() {
+function OverallClub({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
@@ -67,15 +67,15 @@ function OverallClub() {
 
   const open = Boolean(anchorEl);
   const openMangement = Boolean(managmentEl);
-  const { id } = useParams();
+  const { clubId } = params;
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { removeFromDataBase } = useRealDatabase();
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-const {document}=useGetDocument("readersClubs", id); 
-const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
+const {document}=useGetDocument("readersClubs", clubId); 
+const {documents: members}=useGetDocuments(`communityMembers/${clubId}/users`);
 
   const leaveClub = async () => {
     const arrayWithoutYou = members.filter((doc) => doc.value.id !== (user as User).uid);

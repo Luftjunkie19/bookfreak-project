@@ -29,14 +29,11 @@ import {
 import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/BookPageTranslations.json';
 import formTranslations from '../../../assets/translations/FormsTranslations.json';
-import { snackbarActions } from '../../../context/SnackBarContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import { useRouter } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
-import BlueButton from 'components/buttons/BlueButton';
-import DarkButton from 'components/buttons/WhiteButton';
 import { MdNoteAdd } from 'react-icons/md';
 import Question from 'components/elements/question/Question';
 import { DataView } from 'primereact/dataview';
@@ -142,7 +139,6 @@ const dispatch=useDispatch();
         )
       );
   
-      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
       navigate.push('/');
       
     }
@@ -151,28 +147,7 @@ const dispatch=useDispatch();
 
   return (
     <div className={`min-h-screen h-full`}>
-      <div className="flex flex-col m-4 gap-4 bg-dark-gray p-4 rounded-lg border-2 border-primary-color max-w-2xl w-full">
-        <p className='text-white text-2xl font-semibold'>Create New Test</p>
-        <LabeledInput additionalClasses='max-w-sm w-full' setValue={(value)=>console.log(value)} label='Test name'/>
-      <div className="flex gap-4 items-center">
-        <BlueButton additionalClasses='flex gap-2 items-center'>
-            New Question
-            <FaQuestionCircle />
-          </BlueButton>
-          <DarkButton additionalClasses='flex gap-2 items-center'>
-            Create Test
-            <MdNoteAdd />
-          </DarkButton>
-          </div>
-      </div>
-
-      <div className="flex flex-col mx-4 gap-4 p-4 rounded-lg">
-        <p className='text-white text-2xl font-semibold'>Questions</p>
-        <div className="grid w-full sm:max-h-[28rem] lg:max-h-fit h-full overflow-y-auto  lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-        {[{item:'item21'}, {item:'item5'}, {item:'item14'}, {item:'item2'}, {item:'item231'}, {item:'item55'}, {item:'item114'}, {item:'item3572'}, {item:'item201'}, {item:'item58'}, {item:'item142'}, {item:'item92'} ].map((item)=>(<Question key={item.item}/>))}
-        </div>
-        <Pagination className='self-center' total={10} initialPage={1} />
-</div>
+    
 
     </div>
   );

@@ -1,22 +1,27 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import image from '../../assets/Logo.png'
+import { FaStar } from 'react-icons/fa6';
+type Props = {
+  bookCover: string, pages: number, author: string, bookId: string, title: string, bookCategory: string, type: 'transparent' | 'blue' | 'black' | 'dark' | 'white'
+ }
 
-type Props = { bookCover: string, pages: number, author: string, bookId:string,  title: string, bookCategory: string }
-
-function Book({ bookCover, pages, author, title, bookCategory, bookId }: Props) {
+function Book({ bookCover, pages, author, title, bookCategory, bookId, type }: Props) {
   return (
-    <Link href={`/book/${bookId}`}>
-    <div className='max-w-52 w-full rounded-lg bg-primary-color h-60'>
-      <Image src={bookCover} alt='' width={24} height={24} className='h-32 rounded-t-lg object-cover w-full' />
-      <div className="flex flex-col gap-1 text-sm py-1 px-2">
-        <p className="text-lg font-bold text-white line-clamp-1">{title}</p>
-        <p className="text-white">{author}</p>
-        <p className="text-white">{pages} Pages</p>
-        <p className="text-white line-clamp-1">{bookCategory}</p>
-      </div>
+    <Link href={`/book/${bookId}`} className={`max-w-56 rounded-lg flex flex-col gap-1 w-full border-dark-gray border ${type === 'transparent' ? 'bg-transparent text-white' : type === 'blue' ? 'bg-primary-color text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-transparent text-dark-gray' : 'bg-white text-dark-gray'}`}>
+      <Image src={bookCover} alt='' className='w-full max-h-44 h-full rounded-t-lg object-cover' />
 
-    </div>
+        <div className="flex flex-col gap-1 p-2">
+          <p className='text-xl line-clamp-1 font-bold'>{title}</p>
+          <p className='line-clamp-1'>{author}</p>
+        <p className='line-clamp-1 text-sm font-light'>{bookCategory}</p>
+        <div className="flex text-lg gap-2 items-center">
+          <FaStar className={`${type === 'blue' ? ' text-orange-200' : 'text-primary-color'} text-2xl`}/>
+          <p>9.5</p>
+        </div>
+        </div>
+   
     </Link>
   )
 }

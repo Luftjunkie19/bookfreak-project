@@ -23,25 +23,27 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 
-import { storage } from '../../../firebase';
-import alertMessages from '../../../../assets/translations/AlertMessages.json';
-import translations from '../../../../assets/translations/FormsTranslations.json';
+import { storage } from '../../../../firebase';
+import alertMessages from '../../../../../assets/translations/AlertMessages.json';
+import translations from '../../../../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
-  from '../../../../assets/translations/ReusableTranslations.json';
-import Loader from '../../../../components/Loader';
-import { modalActions } from '../../../../context/ModalContext';
-import { snackbarActions } from '../../../../context/SnackBarContext';
-import { useAuthContext } from '../../../../hooks/useAuthContext';
-import { useFormRealData } from '../../../../hooks/useFormRealData';
-import { useRealDatabase } from '../../../../hooks/useRealDatabase';
+  from '../../../../../assets/translations/ReusableTranslations.json';
+import Loader from '../../../../../components/Loader';
+import { modalActions } from '../../../../../context/ModalContext';
+import { snackbarActions } from '../../../../../context/SnackBarContext';
+import { useAuthContext } from '../../../../../hooks/useAuthContext';
+import { useFormRealData } from '../../../../../hooks/useFormRealData';
+import { useRealDatabase } from '../../../../../hooks/useRealDatabase';
 import { User } from 'firebase/auth';
 
-function EditBook() {
+function EditBook({ params }: { params:{bookId:string}}) {
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
   
-  const { document } = useFormRealData("books", id);
+  const {bookId}=params
+
+  const { document } = useFormRealData("books", bookId);
   const { updateDatabase } = useRealDatabase();
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -106,28 +108,30 @@ function EditBook() {
   };
 
   const handleSaveAvatar = async () => {
-    const editorImg = editorRef.current
-      .getImageScaledToCanvas()
-      .toDataURL("image/jpg");
-
-    const byteCharacters = atob(editorImg.split(",")[1]);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    if (editorRef.current) {
+      const editorImg = editorRef.current
+        .getImageScaledToCanvas()
+        .toDataURL("image/jpg");
+  
+      const byteCharacters = atob(editorImg.split(",")[1]);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+  
+      const byteArray = new Uint8Array(byteNumbers);
+  
+      const storageRef = ref(
+        storage,
+        `profileImg/uid${(user as User).uid}/${(user as User).displayName}.jpg`
+      );
+      await uploadBytes(storageRef, byteArray);
+      const url = await getDownloadURL(storageRef);
+      console.log(url);
+  
+      setPhotoImg(url);
+      setEditPhotoImg(null);
     }
-
-    const byteArray = new Uint8Array(byteNumbers);
-
-    const storageRef = ref(
-      storage,
-      `profileImg/uid${(user as User).uid}/${(user as User).displayName}.jpg`
-    );
-    await uploadBytes(storageRef, byteArray);
-    const url = await getDownloadURL(storageRef);
-    console.log(url);
-
-    setPhotoImg(url);
-    setEditPhotoImg(null);
   };
 
   const handleUpdate = () => {
@@ -136,7 +140,7 @@ function EditBook() {
     try {
       setError(null);
       setIsPending(false);
-      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.update[selectedLanguage]}`, alertType:"success"}))
+      // dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.update[selectedLanguage]}`, alertType:"success"}))
       
 
       updateDatabase(
@@ -148,7 +152,7 @@ function EditBook() {
           photoURL: photoImg,
         },
         "books",
-        id
+        bookId
       );
 
     } catch (error) {

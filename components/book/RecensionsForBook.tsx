@@ -283,16 +283,7 @@ function RecensionsForBook({
       />
       
 
-      {sortedArray && sortedArray.length > 0 ? (
-       <DataView lazy paginatorClassName="bg-transparent"  paginator className=' max-w-4xl w-full ' value={sortedArray} itemTemplate={(item) => (<Recension rate={item.bookRate} key={item.id} content={item.recension} userImg={item.photoURL} username={item.displayName} />)} rows={10}/>
-      ) : (
-        <div className="flex flex-col gap-1 w-fit">
-          <p className="text-white font-bold sm:text-lg lg:text-2xl">
-            {translations.noRecensionYet[selectedLanguage]}
-          </p>
-          <Lottie className=" w-full self-center max-w-md" animationData={guyAnimation} />
-        </div>
-      )}
+
 
 
       {/* <div className="flex gap-4">

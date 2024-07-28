@@ -19,10 +19,9 @@ import { Link } from 'react-router-dom';
 import Loader from 'components/Loader';
 import Animation from '../../../assets/lottieAnimations/Reading-Woman.json'
 import LabeledInput from 'components/input/LabeledInput';
-import DarkWhiteGradientButton from 'components/buttons/gradient/DarkWhiteButton';
-import WhiteButton from 'components/buttons/WhiteButton';
-import BlueButton from 'components/buttons/BlueButton';
+
 import { FcGoogle } from 'react-icons/fc';
+import Button from 'components/buttons/Button';
 
 function SignUp() {
   const {
@@ -111,36 +110,8 @@ function SignUp() {
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
 
   return (
-    <div className={`min-h-screen h-full w-full relative top-0 left-0 flex flex-wrap items-center justify-center `}>
-      <div className="max-w-5xl flex sm:flex-col lg:flex-row gap-6 justify-between items-center w-full">
-        <Lottie animationData={Animation} className="sm:max-w-60 lg:max-w-xs w-full" />
-        <form
-          className=' bg-dark-gray rounded-3xl p-4 sm:max-w-sm lg:max-w-md xl:max-w-lg w-full z-10 border-2 border-primary-color flex flex-col gap-3'
-          onSubmit={handleSubmit}
-        >
-          <p className='text-white text-xl text-center font-semibold'>Sign Up And Enjoy Your Time !</p>
-          <LabeledInput label='Nickname' setValue={setDisplayName} />
-          <LabeledInput label='Email' setValue={setEmail} />
-          <LabeledInput label='Password' setValue={setPassword} />
-
-          <BlueButton additionalClasses='max-w-60 w-full self-center' onClick={() => console.log('Log')}>
-            Sign Up
-          </BlueButton>
-
-          <div className=" justify-between self-center max-w-xs w-full flex gap-2 items-center">
-            <button onClick={signInWithGoogle}>
-              <FcGoogle size={42} />
-            </button>
-            <button onClick={signInWithFacebook}>
-              <FaFacebook size={42} className="text-white text-lg" />
-            </button>
-            <button onClick={signInWithGithub}>
-              <FaGithub size={42} className="text-white text-lg" />
-            </button>
-          </div>
-
-        </form>
-      </div>
+    <div className={`min-h-screen h-full w-full flex `}>
+   <Button type='blue' onClick={signInWithGoogle} additionalClasses='px-4 h-fit m-2'>Sign In</Button>
     </div>
   );
 }

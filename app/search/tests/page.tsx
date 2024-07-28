@@ -25,7 +25,7 @@ import ManagementBar from '../../../components/managment-bar/ManagementBar';
 import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import FilterBar from 'components/left-bar/FilterBar';
+import FilterBar from 'components/Sidebars/right/FilterBar';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Radio, RadioGroup } from '@nextui-org/react';
 import Test from 'components/elements/Test';
 import useGetDocuments from 'hooks/useGetDocuments';
@@ -127,7 +127,7 @@ function Tests() {
 </div>} />
       
 
-      <div className="w-full h-full flex flex-col gap-6">
+      {/* <div className="w-full h-full flex flex-col gap-6">
         {sortedTests && sortedTests.length > 0 &&     
     <Autocomplete
           defaultItems={sortedTests}
@@ -147,7 +147,7 @@ function Tests() {
         </div>
         </div>
    
-      </div>
+      </div> */}
     </div>
   );
 }
