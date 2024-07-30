@@ -21,7 +21,7 @@ function DefaultLeftBar({ }: Props) {
   const {user } = useAuthContext();
   const location = usePathname();
   return (
-    <div className={`h-screen w-fit ${location.includes('search') || location.includes('/competition/') || location.includes('club') || location.includes('signup') || location.includes('login') ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2 max-w-64 w-full  border-r-dark-gray  flex-col gap-2 rounded-r-xl border-r-2 `}>          
+    <div className={`h-screen overflow-y-auto ${location.includes('search') || location.includes('/competition/') || location.includes('club') || location.includes('signup') || location.includes('login') ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2 lg:w-fit xl:max-w-56 2xl:max-w-64 w-full  border-r-dark-gray  flex-col gap-2 rounded-r-xl border-r-2 `}>          
     
       <SearchBtn />
       <div className="flex flex-col gap-2">
@@ -58,15 +58,15 @@ function DefaultLeftBar({ }: Props) {
       </div>
       
       <p className='text-white flex gap-4 text-lg items-center'>Premium Features <WiStars className=' text-primary-color text-2xl'/> </p>
-      <div className="flex gap-2 flex-col">
+      <div className="flex text-sm gap-2 flex-col">
           <Link href={'/aissistant'}>   
         <Button type='transparent' additionalClasses=' flex gap-2 items-center font-medium'>
-              <RiRobot3Fill className='text-2xl text-gray-600'/> <p className=' text-gray-600'><span className=' text-primary-color'>B</span>ook<span className=' text-primary-color'>F</span>reak AIssistant</p>
+              <RiRobot3Fill className='text-2xl text-gray-600'/> <p className=' text-gray-600'><span className=' text-primary-color'> AIssistant </span></p>
           </Button>
         </Link>
           <Link href={'/ai-test-creator'}>   
         <Button type='transparent' additionalClasses=' flex gap-2 items-center font-medium'>
-              <GrDocumentPerformance className='text-2xl text-gray-600'/> <p className=' text-gray-600'>AI-Test Creator</p>
+              <GrDocumentPerformance className='text-2xl text-gray-600 xl:'/> <p className=' text-gray-600'>AI-Test Creator</p>
           </Button>
         </Link>
           <Link href={'/aissistant'}>   
