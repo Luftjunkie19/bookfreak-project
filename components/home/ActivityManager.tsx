@@ -9,10 +9,10 @@ import LabeledInput from 'components/input/LabeledInput'
 
 type Props = {}
 
-function AcitivityManager({ }: Props) {
+function ActivityManager({ }: Props) {
     const [state, setState] = useState<string>();
   return (
-      <div className='sm:max-w-xl 2xl:max-w-3xl w-full bg-white rounded-xl shadow-md'>
+      <div className=' xl:max-w-xl 2xl:max-w-3xl self-center w-full bg-white rounded-xl shadow-md'>
           <div className="w-full shadow-xl px-2 py-1 border-b border-primary-color">
               <div className="flex gap-2 items-center">
                   <Image src={img} className='w-8 h-8 rounded-full ' alt='' />
@@ -21,7 +21,7 @@ function AcitivityManager({ }: Props) {
           </div>
           
           <div className="flex flex-col gap-2 w-full">
-              <textarea className='border-none outline-none p-1 min-h-44 max-h-56 h-full resize-none' placeholder={`What's bookin', my friend ? Describe what you've been doing recently...`}></textarea>
+              <textarea className='border-none text-sm outline-none p-1 min-h-44 max-h-56 h-full resize-none' placeholder={`What's bookin', my friend ? Describe what you've been doing recently...`}></textarea>
               <div className="flex gap-4 items-center"></div>
           </div>
           
@@ -37,4 +37,4 @@ function AcitivityManager({ }: Props) {
   )
 }
 
-export default AcitivityManager
+export default ActivityManager

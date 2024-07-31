@@ -14,7 +14,7 @@ import Test from 'components/elements/Test';
 import Post from 'components/elements/activity/Post';
 import Recension from 'components/elements/recension/Recension';
 import LabeledInput from 'components/input/LabeledInput';
-import AcitivityManager from 'components/home/AcitivityManager';
+import ActivityManager from 'components/home/ActivityManager';
 
 
 //error.tsx - Handles all errors from try catch
@@ -25,8 +25,8 @@ import AcitivityManager from 'components/home/AcitivityManager';
 export default function Home() {
 
   return (
-    <div className={`min-h-screen p-2`}>
-      <AcitivityManager/>
+    <div className={`min-h-screen flex flex-col p-2`}>
+      <ActivityManager/>
 
        
     </div>
