@@ -12,7 +12,7 @@ type Props = {}
 function AcitivityManager({ }: Props) {
     const [state, setState] = useState<string>();
   return (
-      <div className='max-w-3xl w-full bg-white rounded-xl shadow-md'>
+      <div className='sm:max-w-xl 2xl:max-w-3xl w-full bg-white rounded-xl shadow-md'>
           <div className="w-full shadow-xl px-2 py-1 border-b border-primary-color">
               <div className="flex gap-2 items-center">
                   <Image src={img} className='w-8 h-8 rounded-full ' alt='' />

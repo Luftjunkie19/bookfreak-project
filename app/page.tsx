@@ -17,6 +17,9 @@ import LabeledInput from 'components/input/LabeledInput';
 import AcitivityManager from 'components/home/AcitivityManager';
 
 
+//error.tsx - Handles all errors from try catch
+//not-found.tsx - It defines itself
+//useActionState- (what should perform, initial state). Kind of like the useReducer does.
 
 
 export default function Home() {
