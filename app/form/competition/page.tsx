@@ -24,6 +24,8 @@ import { Avatar, Chip, DatePicker, Select, SelectItem, Switch, Tooltip } from '@
 import { FaInfo } from 'react-icons/fa6';
 import { InputSwitch } from 'primereact/inputswitch';
 import Image from 'next/image';
+import { HiOutlineUpload } from 'react-icons/hi';
+import Button from 'components/buttons/Button';
 
 function CreateCompetition() {
   const { user } = useAuthContext();
@@ -266,8 +268,77 @@ function CreateCompetition() {
 
 
   return (
-     <div className={`min-h-screen h-full w-full overflow-x-hidden `}>
+     <div className={`min-h-screen h-full w-full overflow-x-hidden p-4`}>
+      <div className="flex flex-col gap-1 max-w-2xl w-full">
+        <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
+        <p className='text-white'>Are you an author, a book company or someone who wants to compete with other people ? Create the competition now and Read !</p>
+     </div>
       
+      
+      <div className="flex py-4  gap-12">
+
+        <div className="w-56 cursor-pointer h-56 rounded-lg bg-white justify-center items-center flex">
+          <input  type="file" name="" className="hidden" id="" />
+          <div className="flex w-full flex-col items-center gap-2">
+<HiOutlineUpload className="text-5xl text-primary-color" />
+          <p className='text-xs text-dark-gray'>Upload Competition&apos;s Logo</p>
+          </div>
+        </div>
+
+        
+<div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
+            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                       
+</div>
+      
+
+
+      </div>
+
+      <div className="flex gap-2 flex-col pb-2">
+        <p className='text-xl text-white font-semibold'>Detailed Prize</p>
+
+
+        <div className="grid xl:grid-cols-2 2xl:grid-cols-3 gap-2 max-w-6xl">
+          <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+          }} />
+            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+          }} />
+          
+        </div> 
+      </div>
+
+         <label className="flex flex-col gap-3">
+          <span className="text-xl text-white font-semibold">Book Description</span>
+      <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
+      </label>
+
+      <Button type='blue' additionalClasses="w-fit px-8 py-2 text-lg my-4">
+        Insert
+      </Button>
+
     </div>
   );
 }

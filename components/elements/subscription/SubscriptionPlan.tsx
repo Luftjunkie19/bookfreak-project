@@ -5,40 +5,37 @@ import { MdWorkspacePremium } from 'react-icons/md'
 import { RiRobot3Fill } from 'react-icons/ri'
 import { SparklesCore } from 'components/ui/Sparkles'
 import { Meteors } from 'components/ui/Meteors'
+import Button from 'components/buttons/Button'
+import { BiSolidHappyHeartEyes } from 'react-icons/bi'
+import { FaUpload } from 'react-icons/fa6'
+import { BsStars } from 'react-icons/bs'
+import { GiBrainFreeze } from 'react-icons/gi'
 
-type Props = {gradientName:string, isMonth:boolean, price:number, stripePriceId?:string, offerName:string}
+type Props = { bgType: 'blue' | 'white' | 'dark', subscriptionPeriod: 'week' | 'month' | 'year', isMonth:boolean, price:number, stripePriceId?:string, offerName:string}
 
-function SubscriptionPlan({ gradientName, isMonth, offerName, price}: Props) {
+function SubscriptionPlan({ bgType, isMonth, offerName, price, subscriptionPeriod}: Props) {
     return (
-        <CardContainer containerClassName='max-w-xs' className={`${classes[gradientName]} border-2 border-white w-full rounded-lg`}>
-            <CardBody className='flex flex-col justify-between gap-4'>
-  <Meteors />
-                <CardItem className='w-full p-1'>
-                  <div className="flex p-2 justify-between items-center relative top-0 left-0 before:absolute before:w-4/5 before:h-[2px] before:bottom-0 before:left-0 before:rounded-lg before:ml-1 before:mt-2 before:bg-white  ">
+        <CardContainer containerClassName='max-w-xs' className={`w-full h-[32rem]  ${bgType === 'blue' ? 'bg-primary-color border-2 border-white': bgType === 'white' ? 'bg-white border-2 border-primary-color' : 'bg-dark-gray border-2 border-primary-color'} ${bgType=== 'white' ? 'text-dark-gray' : 'text-white'}  shadow-white  shadow-small  rounded-lg`}>
+            <CardBody className={`flex flex-col h-full justify-between gap-6`}>
+                <CardItem className='w-full flex flex-col gap-4 px-2 py-1'>
+                    <p className='text-xl font-semibold'>{offerName}</p>
+
+                    <p className={`text-sm text-center ${bgType === 'white' ? 'text-primary-color' : 'text-white'}`}><span className={`text-5xl font-bold ${bgType === 'white' || bgType === 'blue' ? 'text-dark-gray' : 'text-primary-color'} `}>{price}$</span>/{subscriptionPeriod}</p>
                     
-                    <p className='text-white text-2xl'>{offerName}</p>
-                    <MdWorkspacePremium size={24} className='text-white' />
-                </div>
-                
-                <div className="flex flex-col gap-2 p-1">
-                    <p className='text-xl font-semibold text-white'>Benefits</p>
-                    <div className='px-1 text-white flex flex-col gap-2'>
-                        <p>No Advertisements</p>
-                        <p className='flex gap-1 items-center justify-between max-w-[75%] w-fdivl'>Access To Our AIssistant <RiRobot3Fill /></p>
-                        <p>Book Summarizer</p>
-                        <p>Ability To Generate Covers</p>
-                        <p>Possibility To Add 3D Book Cover</p>
-                        {isMonth &&  <p>1 Week Free Trial-Period</p>}
-                       
+                    <div className="flex flex-col gap-2 mt-2">
+                        <p className='text-lg font-semibold'>What do you get ?</p>
+                        <ul className='flex flex-col gap-2'>
+                            <li className='flex items-center gap-2'><BsStars /> AI Features</li>
+                            <li className='flex items-center gap-2'><BiSolidHappyHeartEyes /> No Advertisements</li>
+                            <li className='flex items-center gap-2'><GiBrainFreeze /> AI Test Creator</li>
+                            <li className='flex items-center gap-2'><FaUpload /> Upload 1GB File</li>
+</ul>
+
                     </div>
-                </div>
+
                 </CardItem>
-                    <div className="flex items-center justify-between p-4">
-                        <p className='text-white'> <span className=' text-green-600 font-semibold'> {price} $</span> / Week</p>
-
-                       
-
-                    </div>
+                <Button additionalClasses='text-lg max-w-72 w-full self-center font-semibold m-3' type={`${bgType === 'blue' ? 'dark-blue' : bgType === 'white' ? 'blue' : 'white-blue'}`}>Get Started</Button>
+              
               </CardBody>
           </CardContainer>
   )

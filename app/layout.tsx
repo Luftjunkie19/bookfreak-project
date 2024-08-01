@@ -17,6 +17,8 @@ import Footer from 'components/Footer';
 import { PrimeReact } from 'lib/PrimeReact';
 import LeftBar from '../components/Sidebars/left/LeftBar';
 import DefaultRightBar from 'components/Sidebars/right/DefaultRightBar';
+import Script from 'next/script';
+import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,6 +36,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+         <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID}`}
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
+        <Script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID}`}
+          strategy="afterInteractive"
+          crossOrigin="anonymous" />
+      </head>
       <body className={`bg-secondary-color overflow-y-hidden w-full `}>
         <link rel="icon" href="/Logo.png" sizes="any" />
         <AuthContextProvider>
@@ -48,7 +61,8 @@ export default function RootLayout({
               {children}
                 <Footer />
    </div>
-                <DefaultRightBar/>
+                  <DefaultRightBar />
+                  <AdvertisementBar/>
                 </div>
                 </PrimeReact>
             </Providers>

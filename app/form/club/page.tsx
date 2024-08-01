@@ -37,12 +37,14 @@ import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import { User } from 'firebase/auth';
 import LabeledInput from 'components/input/LabeledInput';
-import { Avatar, DatePicker, Select, SelectItem } from '@nextui-org/react';
+import { Avatar, Checkbox, DatePicker, Select, SelectItem, Switch } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import ReactFlagsSelect from 'react-flags-select/build/components/ReactFlagsSelect';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { InputSwitch } from 'primereact/inputswitch';
+import Button from 'components/buttons/Button';
+import { HiOutlineUpload } from 'react-icons/hi';
 
 function CreateClub() {
   const [error, setError] = useState(null);
@@ -245,8 +247,80 @@ function CreateClub() {
   };
 
   return (
-   <div className={`min-h-screen h-full w-full `}>
+   <div className={`min-h-screen h-full w-full p-4`}>
+      <div className="flex flex-col gap-1 max-w-2xl w-full">
+        <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
+        <p className='text-white'>Are you an author, a book company or someone who wants to compete with other people ? Create the competition now and Read !</p>
+     </div>
+      
+      
+      <div className="flex py-4  gap-12">
+
+        <div className="w-56 cursor-pointer h-56 rounded-lg bg-white justify-center items-center flex">
+          <input  type="file" name="" className="hidden" id="" />
+          <div className="flex w-full flex-col items-center gap-2">
+<HiOutlineUpload className="text-5xl text-primary-color" />
+          <p className='text-xs text-dark-gray'>Upload Competition&apos;s Logo</p>
+          </div>
+        </div>
+
+        
+<div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
+            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+              <div className="flex gap-2 items-center">
+            <Checkbox />
+            <p className='text-white'>Do you want to have special requirements to join ?</p>
+</div>             
+          
+          
+          <div className="flex gap-2 flex-col ">
+            <p className='text-white'>Is your club free to join?</p>
+            <Switch defaultSelected aria-label="Automatic updates"/>
+          </div>
+          
+</div>
      
+      
+
+
+      </div>
+
+      <div className="flex max-w-6xl w-full gap-2 flex-col pb-2">
+        <p className='text-xl text-white font-semibold'>Club Requirements</p>
+
+
+        <div className="grid xl:grid-cols-2 2xl:grid-cols-3 gap-2 max-w-6xl w-full">
+          <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                     
+          
+        </div> 
+
+        <div className="max-w-3xl p-1 min-h-96 max-h-96 h-full w-full bg-dark-gray rounded-lg border-primary-color border-2">
+          <p className='text-lg font-semibold text-white'>Requirements</p>
+          </div>
+
+      </div>
+      
+
+         <label className="flex flex-col gap-3">
+          <span className="text-xl text-white font-semibold">Description</span>
+      <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
+      </label>
+
+      <Button type='blue' additionalClasses="w-fit px-8 py-2 text-lg my-4">
+        Insert
+      </Button>
+
     </div>
   );
 }

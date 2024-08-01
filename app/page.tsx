@@ -15,6 +15,9 @@ import Post from 'components/elements/activity/Post';
 import Recension from 'components/elements/recension/Recension';
 import LabeledInput from 'components/input/LabeledInput';
 import ActivityManager from 'components/home/ActivityManager';
+import AdBanner from 'components/advertisements/AdBanner';
+import SubscriptionPlan from 'components/elements/subscription/SubscriptionPlan';
+import SubscriptionRow from 'components/elements/subscription/SubscriptionRow';
 
 
 //error.tsx - Handles all errors from try catch
@@ -26,9 +29,16 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen flex flex-col p-2`}>
-      <ActivityManager/>
-
-       
+      <ActivityManager />
+      <AdBanner  data-ad-client={process.env.NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID}
+     data-ad-slot="3495164206"
+     data-ad-format="auto"
+     data-full-width-responsive="true"/>
+      
+      <BookSwiper />
+      <CompetitionSwiper />
+      <ClubSwiper/>
+    <SubscriptionRow/>
     </div>
   );
 }

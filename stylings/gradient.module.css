@@ -16,3 +16,20 @@
 .button-blue-dark-gradient{
     background: linear-gradient(118.471deg, #272727 0%, #4777FF 100%);
 }
+
+.header-gradient{
+ -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+   text-fill-color: transparent;
+    background-size: 500% auto;
+    animation: textShine 5s ease-in-out infinite alternate;
+}
+
+@keyframes textShine {
+    0% {
+        background-position: 0% 20%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}

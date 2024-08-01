@@ -14,10 +14,10 @@ function BookSwiper({}: Props) {
     const {documents}=useGetDocuments('readersClubs');
   return (<>
   <p className='text-white text-2xl px-2 py-1'>Books, that might interest you</p>
-    <BaseSwiper slidesOn2XlScreen={6}>
+    <BaseSwiper additionalClasses='w-full' slidesOnSmallScreen={2} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5}>
     {documents && documents.map((item, i )=>(
         <SwiperSlide key={i}>
-        <Club requiredPages={item.requiredPagesRead} clubLogo={item.clubLogo} clubName={item.clubsName} membersAmount={0} clubData={item}  />
+        <Club  clubLogo={item.clubLogo} clubName={item.clubsName} membersAmount={0} clubData={item} hasRequirements={false} type={'white'}  />
     </SwiperSlide>     
        ))}
   

@@ -1,4 +1,7 @@
 'use client';
+import { HiOutlineUpload } from "react-icons/hi";
+import { RiBook2Fill } from "react-icons/ri";
+
 import {
   useRef,
   useState,
@@ -42,6 +45,8 @@ import LabeledInput from 'components/input/LabeledInput';
 import { DatePicker, Select, SelectItem } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import { FileUpload } from 'primereact/fileupload';
+import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
+import Button from "components/buttons/Button";
 
 
 function CreateBook() {
@@ -302,12 +307,112 @@ function CreateBook() {
       setEditCover(null);
     }
   };
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const triggerInputFile = () => {
+    fileInputRef.current?.click();
+  }
 
   
 
   return (
-    <div className={`min-h-screen h-full w-full overflow-x-hidden flex`}>
-     
+    <div className={`min-h-screen px-6 py-4 h-full  overflow-x-hidden `}>
+      <div className="text-white">
+      <p className='text-2xl font-bold'>Expand Our Bookish Database !</p>
+      <p>Do we lack any book in our Database ? Insert it and help others finding this one !</p>
+     </div>
+
+      <div className="flex py-2 items-center gap-12">
+
+        <div onClick={triggerInputFile} className="w-52 cursor-pointer h-72 rounded-lg bg-white justify-center items-center flex">
+          <input ref={fileInputRef} type="file" name="" className="hidden" id="" />
+          <div className="flex w-full flex-col items-center gap-2">
+<HiOutlineUpload className="text-5xl text-primary-color" />
+          <p className='text-xs text-dark-gray'>Upload Image</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4 max-w-2xl w-full">
+<p className="text-2xl text-white font-semibold flex gap-2 items-center"><RiBook2Fill className="text-4xl"/>  <span>General Book Information</span></p>
+<div className="grid gap-4 grid-flow-dense xl:grid-cols-2">
+            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+}}/>      
+</div>
+        </div>
+
+
+      </div>
+
+
+        <div className="flex w-full flex-col gap-2">
+          <p className="text-xl text-white font-semibold">Detailed Book Information</p>
+          <div className="grid xl:grid-cols-2 2xl:grid-cols-3 max-w-6xl w-full gap-4">
+            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+}}/>  </div>
+      </div>
+
+           <label className="flex flex-col gap-3">
+          <span className="text-xl text-white font-semibold">Book Description</span>
+      <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
+      </label>
+  
+
+      
+
+         <div className="flex w-full flex-col gap-2">
+          <p className="text-2xl text-white font-bold">Detailed Book Information</p>
+          <div className="grid xl:grid-cols-2 2xl:grid-cols-3 max-w-6xl w-full gap-2">
+            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+          }} />
+
+                                  <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+          }} />
+          
+                                  <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+              console.log(value);
+          }} />
+          
+ 
+
+
+        </div>
+      </div>
+
+      <Button type='blue' additionalClasses="w-fit px-6 py-2 text-lg my-4">
+        Insert
+      </Button>
+
     </div>
   );
 }
