@@ -1,5 +1,5 @@
 import React from 'react'
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button} from "@nextui-org/react";
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Select} from "@nextui-org/react";
 import { IoIosArrowDown } from 'react-icons/io';
 
 type Props = {
@@ -19,27 +19,24 @@ function MultipleDropDown({children, selectedArray, label }: Props) {
     
 
 
-    return (
-      <div className="flex gap-1 flex-col">
-        {label && <p className="text-white">{label}</p>}     
-   <Dropdown>
-      <DropdownTrigger>
-         <div  className="max-w-xs h-fit text-white w-full flex justify-between items-center p-2 bg-dark-gray border-2 rounded-lg border-primary-color">
-                  <p>Select {label}</p>
-                     <IoIosArrowDown />
-                  </div>
-      </DropdownTrigger>
-      <DropdownMenu 
-        aria-label="Multiple selection example"
-        variant="flat"
-        closeOnSelect={false}
-        disallowEmptySelection
-        selectionMode="multiple"
-      >
-       {children}
-      </DropdownMenu>
-            </Dropdown>
-            </div>
+  return (
+    <Select
+      label={<p className='text-white'>{label}</p>}
+      placeholder={`Select ${label}`}
+      selectionMode="multiple"
+      className="max-w-xs w-full"
+      labelPlacement='outside'
+      classNames={{
+        'trigger': 'bg-dark-gray text-white border-2 rounded-lg border-primary-color hover:bg-dark-gray focus:bg-dark-gray py-2', 
+        'label': 'text-white text-sm',
+        'value': 'text-sm text-white',
+        'mainWrapper': 'outline-none',
+                'listbox': 'outline-none',
+        'popoverContent': 'bg-dark-gray text-white border-2 rounded-lg border-primary-color',
+      }}
+    >
+   {children}
+    </Select>
   )
 }
 

@@ -20,12 +20,14 @@ import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import LabeledInput from 'components/input/LabeledInput';
-import { Avatar, Chip, DatePicker, Select, SelectItem, Switch, Tooltip } from '@nextui-org/react';
+import { Avatar, Chip, DatePicker, Dropdown, DropdownItem, DropdownSection, DropdownTrigger, Select, SelectItem, Switch, Tooltip } from '@nextui-org/react';
 import { FaInfo } from 'react-icons/fa6';
 import { InputSwitch } from 'primereact/inputswitch';
 import Image from 'next/image';
 import { HiOutlineUpload } from 'react-icons/hi';
 import Button from 'components/buttons/Button';
+import SingleDropDown from 'components/drowdown/SingleDropDown';
+import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 
 function CreateCompetition() {
   const { user } = useAuthContext();
@@ -287,15 +289,18 @@ function CreateCompetition() {
 
         
 <div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+            <LabeledInput additionalClasses="max-w-xs w-full" label="Competition Name" type={"dark"} setValue={(value) => {
               console.log(value);
-            }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
+          }} />
+          
+          <SingleDropDown label='Competition Rules' selectedArray={[]}>
+            <SelectItem key={'rule1'}>Rule 1</SelectItem>
+             <SelectItem key={'rule2'}>Rule 2</SelectItem>
+              <SelectItem key={'rule3'}>Rule 3</SelectItem>
+     </SingleDropDown>
+
+        
+          <DatePicker labelPlacement='outside'  label={<p className='text-white'>Expiration Date</p>} />
                        
 </div>
       
@@ -305,6 +310,13 @@ function CreateCompetition() {
 
       <div className="flex gap-2 flex-col pb-2">
         <p className='text-xl text-white font-semibold'>Detailed Prize</p>
+         <SingleDropDown label='Winner Prize' selectedArray={[]}>
+            <SelectItem key={'book'}>Book</SelectItem>
+             <SelectItem key={'ticket'}>Ticket</SelectItem>
+           <SelectItem key={'voucher'}>Voucher</SelectItem>
+          <SelectItem key={'money'}>Money</SelectItem>
+               <SelectItem key={'money'}>Others</SelectItem>
+     </SingleDropDown>
 
 
         <div className="grid xl:grid-cols-2 2xl:grid-cols-3 gap-2 max-w-6xl">
@@ -331,7 +343,7 @@ function CreateCompetition() {
       </div>
 
          <label className="flex flex-col gap-3">
-          <span className="text-xl text-white font-semibold">Book Description</span>
+          <span className="text-xl text-white font-semibold">Description</span>
       <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
       </label>
 

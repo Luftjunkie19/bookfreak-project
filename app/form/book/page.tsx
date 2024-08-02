@@ -350,7 +350,7 @@ function CreateBook() {
               console.log(value);
             }} />
             <SingleDropDown selectedArray={bookCategories} label="Genre">
-              {bookCategories.map((item) => (<DropdownItem key={item}>{item}</DropdownItem>
+              {bookCategories.map((item) => (<SelectItem key={item}>{item}</SelectItem>
 ))}
             </SingleDropDown>   
 </div>
@@ -364,7 +364,7 @@ function CreateBook() {
           <p className="text-xl text-white font-semibold">Detailed Book Information</p>
           <div className="grid xl:grid-cols-2 2xl:grid-cols-3 lg:max-w-2xl 2xl:max-w-6xl w-full gap-4">
           <div className="flex flex-col gap-1">
-<p className="text-white">Release Country</p>
+<p className="text-white">Version Language</p>
             <ReactFlagsSelect searchable showOptionLabel selectButtonClassName='bg-dark-gray text-white border-primary-color font-inherit max-w-xs w-full' selected={"PL"}  onSelect={function (countryCode: string): void {
               console.log(countryCode)
             } }/>
@@ -373,42 +373,31 @@ function CreateBook() {
               console.log(value);
             }} />
                    <DatePicker
-        label="Date Of Release"
+       label={<p className='text-white'>Date of Release</p>}
             className="max-w-xs w-full text-white"
             classNames={{
-              'helperWrapper':'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
-                input: 'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
-              'innerWrapper': "bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white",
-              'segment': 'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
-              'description':'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
-              label:'text-white',
-              'inputWrapper':'border-2 border-primary-color bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white rounded-lg'
+              'innerWrapper': 'border-2 border-primary-color rounded-lg bg-dark-gray text-white',
+              'inputWrapper':'bg-dark-gray text-white',
+              'input':'border-2 border-primary-color rounded-lg bg-dark-gray text-white',
+              label: 'text-lg text-white',
+              'calendar': 'bg-dark-gray text-white',
+              'popoverContent':'bg-dark-gray text-white'
             }}
-            dateInputClassNames={{
-                 'helperWrapper':'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
-              input: 'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
-              'innerWrapper': "bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white",
-              'segment': 'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
-              'description':'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
-              label:'text-white',
-              'inputWrapper':'border-2 border-primary-color bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white rounded-lg'
-            }}
+     
         defaultValue={parseZonedDateTime("2022-11-07T00:45[America/Los_Angeles]")}
         labelPlacement="outside"
       />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
-              console.log(value);
-          }} />
+  
 
 
-                                <LabeledInput additionalClasses="max-w-xs w-full" label="Pages" type={"dark"} setValue={(value) => {
+                                <LabeledInput minNumber={1} inputType='number' additionalClasses="max-w-xs w-full" label="Pages" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
           
           <MultipleDropDown label="Accessible Book Types" selectedArray={[]}>
-            <DropdownItem key={'book'}>Book</DropdownItem>
-            <DropdownItem key={'ebook'}>Ebook</DropdownItem>
-              <DropdownItem key={'audiobook'}>Audiobook</DropdownItem>
+            <SelectItem key={'book'}>Book</SelectItem>
+            <SelectItem key={'ebook'}>Ebook</SelectItem>
+              <SelectItem key={'audiobook'}>Audiobook</SelectItem>
           </MultipleDropDown>
           
 
@@ -426,26 +415,24 @@ function CreateBook() {
          <div className="flex w-full flex-col gap-1">
           <p className="text-2xl text-white font-bold">Detailed Book Information</p>
           <div className="grid xl:grid-cols-2 2xl:grid-cols-3 max-w-6xl w-full gap-2">
-            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+            <LabeledInput inputType="number" minNumber={0} additionalClasses="max-w-xs w-full" label="ISBN" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Publishing Cycle" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Serie" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Volume" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
 
-                                  <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+                                  <LabeledInput additionalClasses="max-w-xs w-full" label="Volume Number" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
           
-                                  <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
-              console.log(value);
-          }} />
+                        
           
  
 
