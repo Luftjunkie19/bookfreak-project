@@ -147,7 +147,7 @@ const dispatch=useDispatch();
 
   return (
     <div className={`min-h-screen h-full flex`}>
-      <div className='xl:bg-dark-gray flex flex-col gap-2 p-2 xl:h-screen max-w-sm w-full'>
+      <div className='xl:bg-dark-gray flex flex-col gap-2 p-2 xl:h-screen max-w-xs w-full'>
         <p className='text-xl font-semibold text-white'>Test Creator</p>
         <LabeledInput label='Question' type={'light'} setValue={function (value: string): void {
           

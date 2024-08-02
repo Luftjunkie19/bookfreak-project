@@ -42,11 +42,16 @@ import useGetDocuments from '../../../hooks/useGetDocuments';
 import { User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
-import { DatePicker, Select, SelectItem } from '@nextui-org/react';
+import { DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Select, SelectItem } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import { FileUpload } from 'primereact/fileupload';
 import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
 import Button from "components/buttons/Button";
+import { FaArrowDown } from "react-icons/fa6";
+import { IoIosArrowDown } from "react-icons/io";
+import SingleDropDown from "components/drowdown/SingleDropDown";
+import { parseZonedDateTime } from "@internationalized/date";
+import MultipleDropDown from "components/drowdown/MultipleDropDown";
 
 
 function CreateBook() {
@@ -316,7 +321,7 @@ function CreateBook() {
   
 
   return (
-    <div className={`min-h-screen px-6 py-4 h-full  overflow-x-hidden `}>
+    <div className={`min-h-screen px-6 py-4 h-full overflow-x-hidden flex flex-col gap-2 w-full `}>
       <div className="text-white">
       <p className='text-2xl font-bold'>Expand Our Bookish Database !</p>
       <p>Do we lack any book in our Database ? Insert it and help others finding this one !</p>
@@ -332,21 +337,22 @@ function CreateBook() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 max-w-2xl w-full">
+        <div className="flex flex-col gap-2 max-w-2xl w-full">
 <p className="text-2xl text-white font-semibold flex gap-2 items-center"><RiBook2Fill className="text-4xl"/>  <span>General Book Information</span></p>
 <div className="grid gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+            <LabeledInput additionalClasses="max-w-xs w-full" label="Book Title" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Original Book Title" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Author" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
-              console.log(value);
-}}/>      
+            <SingleDropDown selectedArray={bookCategories} label="Genre">
+              {bookCategories.map((item) => (<DropdownItem key={item}>{item}</DropdownItem>
+))}
+            </SingleDropDown>   
 </div>
         </div>
 
@@ -356,22 +362,60 @@ function CreateBook() {
 
         <div className="flex w-full flex-col gap-2">
           <p className="text-xl text-white font-semibold">Detailed Book Information</p>
-          <div className="grid xl:grid-cols-2 2xl:grid-cols-3 max-w-6xl w-full gap-4">
-            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+          <div className="grid xl:grid-cols-2 2xl:grid-cols-3 lg:max-w-2xl 2xl:max-w-6xl w-full gap-4">
+          <div className="flex flex-col gap-1">
+<p className="text-white">Release Country</p>
+            <ReactFlagsSelect searchable showOptionLabel selectButtonClassName='bg-dark-gray text-white border-primary-color font-inherit max-w-xs w-full' selected={"PL"}  onSelect={function (countryCode: string): void {
+              console.log(countryCode)
+            } }/>
+          </div>
+                        <LabeledInput additionalClasses="max-w-xs w-full" label="Publishing House" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
+                   <DatePicker
+        label="Date Of Release"
+            className="max-w-xs w-full text-white"
+            classNames={{
+              'helperWrapper':'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
+                input: 'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
+              'innerWrapper': "bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white",
+              'segment': 'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
+              'description':'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
+              label:'text-white',
+              'inputWrapper':'border-2 border-primary-color bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white rounded-lg'
+            }}
+            dateInputClassNames={{
+                 'helperWrapper':'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
+              input: 'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
+              'innerWrapper': "bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white",
+              'segment': 'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
+              'description':'bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white',
+              label:'text-white',
+              'inputWrapper':'border-2 border-primary-color bg-dark-gray active:bg-dark-gray focus:bg-dark-gray hover:bg-dark-gray text-white rounded-lg'
+            }}
+        defaultValue={parseZonedDateTime("2022-11-07T00:45[America/Los_Angeles]")}
+        labelPlacement="outside"
+      />
                         <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
               console.log(value);
-            }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+          }} />
+
+
+                                <LabeledInput additionalClasses="max-w-xs w-full" label="Pages" type={"dark"} setValue={(value) => {
               console.log(value);
-            }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
-              console.log(value);
-}}/>  </div>
+          }} />
+          
+          <MultipleDropDown label="Accessible Book Types" selectedArray={[]}>
+            <DropdownItem key={'book'}>Book</DropdownItem>
+            <DropdownItem key={'ebook'}>Ebook</DropdownItem>
+              <DropdownItem key={'audiobook'}>Audiobook</DropdownItem>
+          </MultipleDropDown>
+          
+
+        </div>
       </div>
 
-           <label className="flex flex-col gap-3">
+           <label className="flex flex-col gap-1">
           <span className="text-xl text-white font-semibold">Book Description</span>
       <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
       </label>
@@ -379,7 +423,7 @@ function CreateBook() {
 
       
 
-         <div className="flex w-full flex-col gap-2">
+         <div className="flex w-full flex-col gap-1">
           <p className="text-2xl text-white font-bold">Detailed Book Information</p>
           <div className="grid xl:grid-cols-2 2xl:grid-cols-3 max-w-6xl w-full gap-2">
             <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
