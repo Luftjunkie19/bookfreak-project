@@ -32,10 +32,10 @@ const UserDropDown = ({userObject, userId}:Props) => {
           <DropdownItem as={'a'} href={`/profile/${userId}`} key="profile">
             Profile
           </DropdownItem>
-          <DropdownItem as={'a'} href={`/profile/${userId}/settings`} key="settings">
+          <DropdownItem as={'a'} href={`/profile/settings`} key="settings">
             My Settings
           </DropdownItem>
-          <DropdownItem as={'a'} href={`/profile/${userId}/dashboard`} key="dashboard">
+          <DropdownItem as={'a'} href={`/profile/dashboard`} key="dashboard">
             Dashboard
           </DropdownItem>
           <DropdownItem as={'a'} href={`/profile/${userId}/about`} key="help_and_feedback">

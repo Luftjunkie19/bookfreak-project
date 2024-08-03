@@ -1,10 +1,22 @@
-import React from 'react';
+
+
+import { useAuthContext } from 'hooks/useAuthContext';
+import useRealtimeDocument from 'hooks/useRealtimeDocument';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 type Props = {}
 
-function Page({}: Props) {
+function Page({ }: Props) {
+
+
   return (
-    <div>Page</div>
+ 
+      <div className='flex flex-col gap-2'>
+       
+      
+    </div>
+    
+ 
   )
 }
 

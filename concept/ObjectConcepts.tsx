@@ -32,7 +32,7 @@
 // description:string,
 // premiumMember:boolean,
 // premiumAccount?:{
-// threadId:string,
+// threadId:string | null,
 // ...subscriptionDetails,
 // id:string,
 // customerId:string,
