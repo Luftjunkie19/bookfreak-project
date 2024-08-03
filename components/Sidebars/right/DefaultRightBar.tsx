@@ -11,8 +11,8 @@ type Props = {}
 function DefaultRightBar({ }: Props) {
     const location = usePathname();
     const { user } = useAuthContext();
-  return (
-      <div className={` ${ !user || location.includes('/search') || location.includes('/competition/') || location.includes('/club') || location.includes('/signup') || location.includes('/login') || location.includes('form/') ? 'hidden': 'sm:hidden lg:flex'} h-screen min-w-32 lg:max-w-48 2xl:max-w-64 w-full flex flex-col gap-2 border-l-2 border-dark-gray`}>
+    return (
+        <div className={` ${!user || location.includes('/search') || location.includes('/competition/') || location.includes('/club') || location.includes('/signup') || location.includes('/login') || location.includes('form/') ? 'hidden' : 'sm:hidden lg:flex'} h-screen ${location.includes('/profile/') && 'sm:hidden xl:flex'} min-w-32 lg:max-w-48 2xl:max-w-64 w-full flex flex-col gap-2 border-l-2 border-dark-gray`}>
           <p className='text-xl p-2 text-white flex items-center gap-2'>Friends <FaUsers className='text-2xl' /></p>
           
           <div className="flex flex-col gap-4 px-2">

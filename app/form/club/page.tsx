@@ -4,6 +4,8 @@ import React, {
   useState,
 } from 'react';
 
+import emptyImg from '../../../assets/emptyBox.png'
+
 import {
   getDownloadURL,
   ref,
@@ -37,7 +39,7 @@ import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import { User } from 'firebase/auth';
 import LabeledInput from 'components/input/LabeledInput';
-import { Avatar, Checkbox, DatePicker, Select, SelectItem, Switch } from '@nextui-org/react';
+import { Avatar, Checkbox, Chip, DatePicker, Select, SelectItem, Switch } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import ReactFlagsSelect from 'react-flags-select/build/components/ReactFlagsSelect';
 import { useRouter } from 'next/navigation';
@@ -45,6 +47,8 @@ import Image from 'next/image';
 import { InputSwitch } from 'primereact/inputswitch';
 import Button from 'components/buttons/Button';
 import { HiOutlineUpload } from 'react-icons/hi';
+import SingleDropDown from 'components/drowdown/SingleDropDown';
+import MultipleDropDown from 'components/drowdown/MultipleDropDown';
 
 function CreateClub() {
   const [error, setError] = useState(null);
@@ -266,26 +270,271 @@ function CreateClub() {
 
         
 <div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+            <LabeledInput additionalClasses="max-w-xs w-full" label="Club name" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-              <div className="flex gap-2 items-center">
+               
+          
+  <Select
+      items={[
+  {
+    id: 1,
+    name: "Tony Reichert",
+    role: "CEO",
+    team: "Management",
+    status: "active",
+    age: "29",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/1.png",
+    email: "tony.reichert@example.com",
+  },
+  {
+    id: 2,
+    name: "Zoey Lang",
+    role: "Tech Lead",
+    team: "Development",
+    status: "paused",
+    age: "25",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/1.png",
+    email: "zoey.lang@example.com",
+  },
+  {
+    id: 3,
+    name: "Jane Fisher",
+    role: "Sr. Dev",
+    team: "Development",
+    status: "active",
+    age: "22",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/2.png",
+    email: "jane.fisher@example.com",
+  },
+  {
+    id: 4,
+    name: "William Howard",
+    role: "C.M.",
+    team: "Marketing",
+    status: "vacation",
+    age: "28",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/2.png",
+    email: "william.howard@example.com",
+  },
+  {
+    id: 5,
+    name: "Kristen Copper",
+    role: "S. Manager",
+    team: "Sales",
+    status: "active",
+    age: "24",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/3.png",
+    email: "kristen.cooper@example.com",
+  },
+  {
+    id: 6,
+    name: "Brian Kim",
+    role: "P. Manager",
+    team: "Management",
+    age: "29",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/3.png",
+    email: "brian.kim@example.com",
+    status: "active",
+  },
+  {
+    id: 7,
+    name: "Michael Hunt",
+    role: "Designer",
+    team: "Design",
+    status: "paused",
+    age: "27",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/4.png",
+    email: "michael.hunt@example.com",
+  },
+  {
+    id: 8,
+    name: "Samantha Brooks",
+    role: "HR Manager",
+    team: "HR",
+    status: "active",
+    age: "31",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/4.png",
+    email: "samantha.brooks@example.com",
+  },
+  {
+    id: 9,
+    name: "Frank Harrison",
+    role: "F. Manager",
+    team: "Finance",
+    status: "vacation",
+    age: "33",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/5.png",
+    email: "frank.harrison@example.com",
+  },
+  {
+    id: 10,
+    name: "Emma Adams",
+    role: "Ops Manager",
+    team: "Operations",
+    status: "active",
+    age: "35",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/5.png",
+    email: "emma.adams@example.com",
+  },
+  {
+    id: 11,
+    name: "Brandon Stevens",
+    role: "Jr. Dev",
+    team: "Development",
+    status: "active",
+    age: "22",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/7.png",
+    email: "brandon.stevens@example.com",
+  },
+  {
+    id: 12,
+    name: "Megan Richards",
+    role: "P. Manager",
+    team: "Product",
+    status: "paused",
+    age: "28",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/7.png",
+    email: "megan.richards@example.com",
+  },
+  {
+    id: 13,
+    name: "Oliver Scott",
+    role: "S. Manager",
+    team: "Security",
+    status: "active",
+    age: "37",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/8.png",
+    email: "oliver.scott@example.com",
+  },
+  {
+    id: 14,
+    name: "Grace Allen",
+    role: "M. Specialist",
+    team: "Marketing",
+    status: "active",
+    age: "30",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/8.png",
+    email: "grace.allen@example.com",
+  },
+  {
+    id: 15,
+    name: "Noah Carter",
+    role: "IT Specialist",
+    team: "I. Technology",
+    status: "paused",
+    age: "31",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/9.png",
+    email: "noah.carter@example.com",
+  },
+  {
+    id: 16,
+    name: "Ava Perez",
+    role: "Manager",
+    team: "Sales",
+    status: "active",
+    age: "29",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/9.png",
+    email: "ava.perez@example.com",
+  },
+  {
+    id: 17,
+    name: "Liam Johnson",
+    role: "Data Analyst",
+    team: "Analysis",
+    status: "active",
+    age: "28",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/11.png",
+    email: "liam.johnson@example.com",
+  },
+  {
+    id: 18,
+    name: "Sophia Taylor",
+    role: "QA Analyst",
+    team: "Testing",
+    status: "active",
+    age: "27",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/11.png",
+    email: "sophia.taylor@example.com",
+  },
+  {
+    id: 19,
+    name: "Lucas Harris",
+    role: "Administrator",
+    team: "Information Technology",
+    status: "paused",
+    age: "32",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/12.png",
+    email: "lucas.harris@example.com",
+  },
+  {
+    id: 20,
+    name: "Mia Robinson",
+    role: "Coordinator",
+    team: "Operations",
+    status: "active",
+    age: "26",
+    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/12.png",
+    email: "mia.robinson@example.com",
+  },
+]}
+      label={<p className='text-white'>Invite Friends</p>}
+      selectionMode="multiple"
+      placeholder="Select a user"
+      labelPlacement='outside'
+            classNames={{
+              'innerWrapper': 'bg-dark-gray text-white focus:bg-dark-gray active:bg-dark-gray hover:bg-dark-gray',
+              'trigger':'bg-dark-gray text-white focus:bg-dark-gray active:bg-dark-gray hover:bg-dark-gray border-2 border-primary-color',
+              'popoverContent':'bg-dark-gray border-2 border-primary-color text-white'
+      }}
+      renderValue={(items) => {
+        return (
+          <div className="flex items-center overflow-auto w-fit gap-2">
+            {items.map((item) => (
+              <Chip key={item.key} classNames={{'content':'flex items-center gap-2'}}>
+                <Image src={item.data!.avatar} alt='' width={40} height={40} className='w-6 h-6 rounded-full' />
+                <p>{item.data!.name}</p>
+              </Chip>
+            ))}
+          </div>
+        );
+      }}
+    >
+      {(user) => (
+        <SelectItem key={user.id} textValue={user.name}>
+          <div className="flex gap-2 items-center">
+            <Avatar alt={user.name} className="flex-shrink-0" size="sm" src={user.avatar} />
+            <div className="flex flex-col">
+              <span className="text-small">{user.name}</span>
+              <span className="text-tiny text-default-400">{user.email}</span>
+            </div>
+          </div>
+        </SelectItem>
+      )}
+    </Select>
+</div>
+  
+  </div>
+
+      
+      <div className="flex items-center gap-6 py-3">
+        <div className="flex flex-col gap-2">
+          <p className='text-white'>Do you want to have special requirements to join ?</p>
+             <div className="flex gap-2 items-center">
             <Checkbox />
-            <p className='text-white'>Do you want to have special requirements to join ?</p>
+            <p className='text-white text-sm'>Yes, I want to have special requirements.</p>
+        </div>
 </div>             
           
           
-          <div className="flex gap-2 flex-col ">
+        <div className="flex flex-col gap-2">
             <p className='text-white'>Is your club free to join?</p>
-            <Switch defaultSelected aria-label="Automatic updates"/>
+          <div className="flex gap-2 items-center">
+          <Checkbox />
+               <p className='text-white text-sm'>Yes, my club is free to join</p>
           </div>
+        </div>
           
-</div>
-     
-      
 
 
       </div>
@@ -294,19 +543,24 @@ function CreateClub() {
         <p className='text-xl text-white font-semibold'>Club Requirements</p>
 
 
-        <div className="grid xl:grid-cols-2 2xl:grid-cols-3 gap-2 max-w-6xl w-full">
-          <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+        <div className="flex gap-6 items-center pb-2 w-full">
+          <MultipleDropDown label='Requirement Types' selectedArray={[]}>
+            <SelectItem key={'minPagesRead'}>Minimum Pages Read</SelectItem>
+            <SelectItem key={'minSGBRead'}>Minimum Specific Genre Book/s Read</SelectItem>
+            <SelectItem key={'minSGPRead'}>Minimum Specific Genre Pages Read</SelectItem>
+            <SelectItem key={'manual'}>Manual Requirement</SelectItem>
+                </MultipleDropDown>
+         
+                 <LabeledInput additionalClasses="max-w-xs w-full" label="Pages Amount" type={"dark"} setValue={(value) => {
               console.log(value);
-            }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                     
-          
+            }} />  
         </div> 
 
-        <div className="max-w-3xl p-1 min-h-96 max-h-96 h-full w-full bg-dark-gray rounded-lg border-primary-color border-2">
-          <p className='text-lg font-semibold text-white'>Requirements</p>
+          <p className='text-xl font-semibold text-white'>Requirements</p>
+        <div className="max-w-2xl p-1 min-h-96 max-h-96 h-full w-full flex flex-col gap-6  items-center justify-center bg-dark-gray rounded-lg border-primary-color border-2">
+          <p className='text-3xl text-white font-semibold text-center opacity-75'>No Requirements yet !</p>
+          <Image src={emptyImg} className='w-48 h-48' alt="" width={60} height={60} />
+          <p className='text-center text-sm font-light opacity-40 text-white'>You haven&lsquo;t set any requirements yet. If you want to set requirements, click the dropdown above.</p>
           </div>
 
       </div>

@@ -4,16 +4,16 @@ import React from 'react'
 import { BsThreeDots } from 'react-icons/bs'
 import image from '../../../assets/Logo.png'
 import { FaComment, FaHeart } from 'react-icons/fa6'
-type Props = { type: 'dark-blue' | 'dark-white' | 'white-dark' | 'white' | 'white-blue', userImg: string, username:string, isOwner:boolean, timePassed:string | number, content:string, images:string[], postData:any}
+type Props = { type: 'dark-blue' | 'dark-white' | 'white-dark' | 'white' | 'white-blue',addClasses?:string, userImg: string, username:string, isOwner:boolean, timePassed:string | number, content:string, images:string[], postData:any}
 
-function Post({type, userImg, username, isOwner, content, timePassed, images, postData}: Props) {
+function Post({type, userImg, username, isOwner, content, timePassed, images, postData, addClasses}: Props) {
     return (
-        <div className={`flex max-w-3xl w-full flex-col gap-2 ${type === 'dark-blue' || type === 'dark-white' ? 'bg-dark-gray text-white'  :  'bg-white text-dark-gray'} rounded-lg `}>
+        <div className={`flex max-w-3xl w-full flex-col gap-2 ${addClasses} ${type === 'dark-blue' || type === 'dark-white' ? 'bg-dark-gray text-white'  :  'bg-white text-dark-gray'} rounded-lg `}>
           <div className={`${type === 'dark-blue' ? 'bg-primary-color text-white' : type === 'dark-white' ? 'bg-white text-primary-color' : type === 'white-dark' ? 'bg-dark-gray text-white' : type === 'white-blue' ? 'bg-primary-color text-white': 'bg-white text-primary-color'} shadow-lg w-full rounded-t-lg flex justify-between items-center px-2 py-1`}>
                  <div className="flex gap-3 items-end w-full">
                   <Image className=' w-12 h-12 rounded-full' src={userImg} alt='' width={40} height={40} />
                   <div className="flex flex-col gap-1">    
-                        <p className='line-clamp-1 text-sm  '>{username} </p>
+                        <p className='line-clamp-1 text-sm'>{username} </p>
                         <p className=' line-clamp-1 text-xs'>{timePassed}</p>
                   </div>
               </div>
