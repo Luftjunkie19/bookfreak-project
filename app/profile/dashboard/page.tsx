@@ -110,7 +110,7 @@ function Page({ }: Props) {
 
             />
             <p className='text-white'>80% Done</p>
-            <Button type={'blue'} additionalClasses='flex  items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
+            <Button type={'blue'} additionalClasses='flex items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
 </div>
         </div>
 

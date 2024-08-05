@@ -27,8 +27,8 @@ function ActivityManager({ }: Props) {
   const loadUserObj = useCallback(async () => {
     if (user) {
       const obj = await getDocument('users', user.uid);
-      console.log('hello');
       setUserDocument(obj);
+      console.log(obj);
     }
   }, [user]);
 
@@ -43,6 +43,13 @@ function ActivityManager({ }: Props) {
   useEffect(() => {
     loadUserObj();
   },[loadUserObj])
+
+
+
+  const triggerWrite = async () => {
+
+  }
+
 
   return (
       <div className=' xl:max-w-xl 2xl:max-w-3xl  self-center w-full bg-white rounded-xl shadow-md'>
@@ -69,7 +76,7 @@ function ActivityManager({ }: Props) {
               </Button>
             <Button type='transparent' additionalClasses='text-dark-gray'><FaBookmark className='text-2xl'/></Button>
               </div>
-              <Button type='blue' additionalClasses='px-6 py-[0.375rem]'>Publish</Button>
+              <Button type='blue' additionalClasses='px-6 py-[0.375rem]' onClick={triggerWrite}>Publish</Button>
         </div>
     </div>
   )

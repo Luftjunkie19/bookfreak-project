@@ -1,7 +1,11 @@
 
 .env
 .next
-
+google-service-key.json
+firestore.indexes.json
+database.rules.json
+components.json
+.firebaserc
 # dependencies
 /node_modules
 /.pnp

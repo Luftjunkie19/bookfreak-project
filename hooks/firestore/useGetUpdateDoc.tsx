@@ -1,30 +1,43 @@
-import { firestore } from 'app/firebase'
-import { doc, DocumentData, onSnapshot } from 'firebase/firestore'
-import React, { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-type Props = {col:string, id:string}
+import {
+  doc,
+  DocumentData,
+  DocumentSnapshot,
+  FirestoreError,
+  getFirestore,
+  onSnapshot,
+  QueryDocumentSnapshot,
+} from 'firebase/firestore';
 
-function useGetUpdateDoc({ col, id}: Props) {
-    
-    const [document, setDoc] = useState<DocumentData | null>(null);
+export function useFormData(col:string, id:string) {
+  const [document, setDocument] = useState<DocumentData | null>(null);
+    const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true); 
 
-    useEffect(() => {
-        const unsubscribe = onSnapshot(doc(firestore, col, id), (snapshot) => {
-            if (snapshot.exists()) {
-                setDoc(snapshot.data());
-            }
-        }, () => {
-            setDoc(null);
-        });
+  const firestore = getFirestore();
 
-        return () => unsubscribe();
-    },[col, id])
+  useEffect(() => {
+    const ref = doc(firestore, col, id);
+    const unsub = onSnapshot(
+      ref,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setDocument({ ...snapshot.data(), id: snapshot.id });
+          setLoading(false); 
+        }
+      },
+      (error) => {
+        setError(error.message);
+        setLoading(false); 
+      }
+    );
 
+    return () => unsub();
+  }, [col, firestore, id]);
 
-
-  return (
-document
-  )
+  return { document, error, loading }; // Zwracamy stan loading
 }
-
-export default useGetUpdateDoc

@@ -6,7 +6,8 @@ type Props = {col:string}
 
 function useGetCollection({ col}: Props) {
     
-    const [documents, setDocs] = useState< DocumentData[] | []>([]);
+  const [documents, setDocs] = useState<DocumentData[] | []>([]);
+  const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(firestore, col), (snapshot) => {
@@ -15,7 +16,8 @@ function useGetCollection({ col}: Props) {
             array.push(doc.data());
           })
           setDocs(array);
-        }, () => {
+        }, (err) => {
+          setError(err.message);
             setDocs([]);
         });
 

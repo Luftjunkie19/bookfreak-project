@@ -30,6 +30,8 @@ export default function Home() {
   return (
     <div className={`min-h-screen flex flex-col p-2`}>
       <ActivityManager />
+
+      
       <AdBanner  data-ad-client={process.env.NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID}
      data-ad-slot="3495164206"
      data-ad-format="auto"

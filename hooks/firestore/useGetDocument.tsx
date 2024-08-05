@@ -5,7 +5,6 @@ import React from 'react'
 
 
 function useGetDocument() {
- 
     const getDocument = async (col:string, id:string) => {      
         const docRef = doc(firestore, col, id);
         
