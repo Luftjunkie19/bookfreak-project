@@ -12,8 +12,8 @@ function SubscriptionRow({}: Props) {
 
           <div className="w-full flex max-w-6xl justify-between gap-4  items-center">
               <SubscriptionPlan subscriptionPeriod='week' bgType='blue' isMonth={false} price={5.99} offerName={'WeekyFreaky Plan'} />
-              <SubscriptionPlan subscriptionPeriod='month' bgType='dark' isMonth={false} price={14.99} offerName={'FOTM Plan'} />
-                        <SubscriptionPlan subscriptionPeriod='year' bgType='white' isMonth={false} price={149.99} offerName={'FOTY Plan'}/>
+              <SubscriptionPlan subscriptionPeriod='month' bgType='dark' isMonth={false} price={9.99} offerName={'FOTM Plan'} />
+                        <SubscriptionPlan subscriptionPeriod='year' bgType='white' isMonth={false} price={99.99} offerName={'FOTY Plan'}/>
 </div>
     </div>
   )

@@ -13,6 +13,7 @@
 body {
   overflow-x: hidden;
   font-family: 'Poppins', sans-serif;
+  font-weight: 400;
 }
 
   @layer base {
