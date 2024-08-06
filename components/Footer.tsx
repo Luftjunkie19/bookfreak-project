@@ -8,12 +8,13 @@ import {
 } from 'react-icons/fa6';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 function Footer() {
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
-
+  const pathname = usePathname();
   return (
-    <footer className={`footer p-10 ${isDarkModed ? " bg-primary-color" : "bg-secondary-color"} text-white`}>
+    <footer className={`footer p-10 ${pathname.includes('/chat/') && 'hidden'} ${isDarkModed ? " bg-primary-color" : "bg-secondary-color"} text-white`}>
       <nav>
         <header className={`footer-title ${isDarkModed ? "text-primeColor" : "text-accColor"}`}>Services</header>
         <Link href={''} className="link link-hover">Advertisement</Link>
