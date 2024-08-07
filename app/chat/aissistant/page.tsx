@@ -16,7 +16,13 @@ type Props = {}
 
 function Page({ }: Props) {
 
-    const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
+    const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+        async onToolCall ({toolCall}) {
+            if (toolCall.toolName === 'getCurrentTime') {
+                return new Date().toDateString();
+            }
+        }
+    });
 
     
 
@@ -27,7 +33,7 @@ function Page({ }: Props) {
                   {messages.map(message => (
                       <AIChatBubble message={message}/>
                     ))}
-                    {isLoading && <p>Loading....</p>}
+                    {isLoading && <p className="text-white">Loading....</p>}
           </div>
           <div className='h-16 flex items-center justify-between p-2 bg-primary-color w-full'>
               <div className="flex gap-3 items-center">

@@ -22,8 +22,9 @@ function AIChatBubble({ message }: Props) {
     {message.name}
   </div>
           <div className="chat-bubble bg-primary-color text-white max-w-2xl h-fit w-fit">
-              <ReactMarkdown className={'text-sm'}>          
+        <ReactMarkdown className={'text-sm w-full'}>     
               {message.content}
+              
               </ReactMarkdown>
           </div>
 </div>

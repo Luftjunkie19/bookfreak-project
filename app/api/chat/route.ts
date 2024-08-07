@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createOpenAI as createGroq } from '@ai-sdk/openai';
 
-import { convertToCoreMessages, generateText, streamText } from 'ai';
+import { convertToCoreMessages, generateText, streamText, tool } from 'ai';
+import { z } from 'zod';
 
 
 export async function POST(req: NextRequest) {
@@ -15,9 +16,22 @@ const groq = createGroq({
 
   const result = await streamText({
     model: groq('llama-3.1-70b-versatile'),
+    tools: {
+        getCurrentTime: tool({
+      description: 'gets current time',
+      parameters: z.object({
+        param1: z.string().describe('A word time')
+      }),
+    execute: async ({ param1 }) => {
+        return new Date().toISOString();
+    },  
+  })
+    },
+     toolChoice: 'auto',
     system: 'You are a helpful assistant.',
     messages: convertToCoreMessages(messages),
   });
+    
 
 
 
