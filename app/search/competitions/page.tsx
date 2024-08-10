@@ -184,7 +184,26 @@ function Competitions() {
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   return (
     <div className={`min-h-screen h-full flex `}>
-   <FilterBar filterBarContent={
+
+
+      
+      <div className="w-full h-full flex flex-col gap-6">
+             <Autocomplete
+          defaultItems={sortedClubs}
+          onValueChange={(value)=>setSearchInputValue(value)}
+          label="Club Name"
+          labelPlacement='outside'
+      placeholder="Search a Club"
+      className="max-w-sm w-full self-center p-2"
+    >
+      {(book:any) => (<AutocompleteItem key={book.id}>{book.competitionTitle}</AutocompleteItem>)}
+        </Autocomplete>
+
+        <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">  
+        {sortedClubs.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={''} competitionName={item.competitionTitle} membersAmount={0} comeptitionRemainingTime={item.expiresAt} type={'dark'}/>))}
+         </div>
+      </div>
+         <FilterBar filterBarContent={
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
              <CheckboxGroup
@@ -215,25 +234,6 @@ function Competitions() {
         </div>
           
         </div>} />
-
-{/*       
-      <div className="w-full h-full flex flex-col gap-6">
-             <Autocomplete
-          defaultItems={sortedClubs}
-          onValueChange={(value)=>setSearchInputValue(value)}
-          label="Club Name"
-          labelPlacement='outside'
-      placeholder="Search a Club"
-      className="max-w-sm w-full self-center p-2"
-    >
-      {(book:any) => (<AutocompleteItem key={book.id}>{book.competitionTitle}</AutocompleteItem>)}
-        </Autocomplete>
-
-        <div className="grid sm:grid-cols-1 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">  
-        {sortedClubs.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={''} competitionName={item.competitionTitle} membersAmount={0} comeptitionRemainingTime={item.expiresAt}/>))}
-         </div>
-      </div> */}
-      
     </div>
   );
 }

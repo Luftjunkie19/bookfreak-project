@@ -173,11 +173,36 @@ function Clubs() {
   
   return (
     <div className={`min-h-screen h-full flex`}>
-      <FilterBar filterBarContent={
-        <div className="flex flex-col gap-4">
+   
+      <div className="w-full h-full flex flex-col gap-6">
+            <Autocomplete
+          defaultItems={sortedClubs}
+          onValueChange={(value)=>setSearchInputValue(value)}
+          label="Club Name"
+          labelPlacement='outside'
+      placeholder="Search a Club"
+      className="max-w-sm w-full self-center p-2"
+    >
+      {(book:any) => <AutocompleteItem key={book.id}>{book.clubsName}</AutocompleteItem>}
+        </Autocomplete>
+        <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
+        {sortedClubs.map((club, i)=>(<Club key={club.id} clubLogo={club.clubLogo} clubName={club.clubsName} membersAmount={0} clubData={club} hasRequirements={false} type={'dark'}  />))}
+        </div>
+      </div>
+         <FilterBar sortingBarContent={   <div className="flex flex-col gap-2">
+            <RadioGroup
+              onValueChange={(value)=>applySort(value)}
+      label="Sorting"
+              orientation="horizontal"
+              classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
+            >
+              {sortOptions.map((sort) => (
+                <Radio key={sort.label} value={sort.label} classNames={{label:'text-xs text-white'}}>{sort.label}</Radio>
+              ))}
+    </RadioGroup>
+        </div>} filterBarContent={
           <div className="flex flex-col gap-2">
              <CheckboxGroup
-              label="Filters"
               onValueChange={(value:string[]) => {
                 applyFilters(value);
               }}
@@ -190,35 +215,7 @@ function Clubs() {
     </CheckboxGroup>
           </div>
           
-      <div className="flex flex-col gap-2">
-            <RadioGroup
-              onValueChange={(value)=>applySort(value)}
-      label="Sorting"
-              orientation="horizontal"
-              classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
-            >
-              {sortOptions.map((sort) => (
-                <Radio key={sort.label} value={sort.label} classNames={{label:'text-xs text-white'}}>{sort.label}</Radio>
-              ))}
-    </RadioGroup>
-        </div>
-          
-        </div>} />
-      {/* <div className="w-full h-full flex flex-col gap-6">
-            <Autocomplete
-          defaultItems={sortedClubs}
-          onValueChange={(value)=>setSearchInputValue(value)}
-          label="Club Name"
-          labelPlacement='outside'
-      placeholder="Search a Club"
-      className="max-w-sm w-full self-center p-2"
-    >
-      {(book:any) => <AutocompleteItem key={book.id}>{book.clubsName}</AutocompleteItem>}
-        </Autocomplete>
-        <div className="grid sm:grid-cols-1 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-        {sortedClubs.map((club, i)=>(<Club key={club.id} clubLogo={club.clubLogo} clubName={club.clubsName} membersAmount={0} clubData={club}  />))}
-        </div>
-      </div> */}
+   } />
     </div>
   );
 }

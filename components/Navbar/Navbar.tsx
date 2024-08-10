@@ -59,14 +59,14 @@ function Navbar() {
       </div>
       {user ?
         <div className="flex items-center gap-6">
-          <Link href={'/'}><FaHome className='text-2xl' /></Link>
+          <Link className='sm:hidden lg:block' href={'/'}><FaHome className='text-2xl' /></Link>
           <CreateBtn/>
           <NotificationViewer />
-                    <Link href={'/'}><PiChatsCircleFill  className='text-2xl text-white' /></Link>
+                    <Link href={'/chats'} className='sm:hidden lg:block'><PiChatsCircleFill  className='text-2xl text-white' /></Link>
           {documentBase && 
           <UserDropDown userId={user.uid} userObject={documentBase}/>
           }
-          <LanguageSelect />
+          <LanguageSelect  />
           <MobileDrawer/>
   
         </div> : <div className="flex items-center gap-5">

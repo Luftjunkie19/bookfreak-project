@@ -7,17 +7,18 @@ import { SwiperSlide } from 'swiper/react';
 
 import BaseSwiper from './base-swiper/BaseSwiper';
 import Club from 'components/elements/Club';
+import useGetCollection from 'hooks/firestore/useGetCollection';
 
 type Props = {}
 
 function BookSwiper({}: Props) {
-    const {documents}=useGetDocuments('readersClubs');
+    const {documents}=useGetCollection('clubs');
   return (<>
-  <p className='text-white text-2xl px-2 py-1'>Books, that might interest you</p>
-    <BaseSwiper additionalClasses='w-full' slidesOnSmallScreen={2} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5}>
+  <p className='text-white text-2xl px-2 py-1'>Clubs, that are waiting for you</p>
+    <BaseSwiper additionalClasses='w-full' slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5}>
     {documents && documents.map((item, i )=>(
         <SwiperSlide key={i}>
-        <Club  clubLogo={item.clubLogo} clubName={item.clubsName} membersAmount={0} clubData={item} hasRequirements={false} type={'white'}  />
+        <Club  clubLogo={item.clubLogo} clubName={item.clubName} membersAmount={item.members.length} clubData={item} hasRequirements={item.requirements.length > 0} type={'white'}  />
     </SwiperSlide>     
        ))}
   

@@ -12,24 +12,37 @@ export async function POST(req: NextRequest) {
   const { messages } = await req.json();
 const groq = createGroq({
   baseURL: 'https://api.groq.com/openai/v1',
-  apiKey: process.env.NEXT_PUBLIC_GROQ_KEY,
+  apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY,
 });
 
 
 
-  const result =  await streamText({
-    model: groq('llama-3.1-70b-versatile'),
-    tools: {
-      weather: tool({
-        description: 'Get the weather in a location',
-        parameters: z.object({
-          location: z.string().describe('The location to get the weather for'),
+    const result = await streamText({
+      model: groq('llama-3.1-70b-versatile'),
+      tools: {
+        weather: tool({
+          description: 'Get the weather in a location',
+          parameters: z.object({
+            location: z.string().describe('The location to get the weather for'),
+          }),
+          execute: async ({ location }) => {
+            return `In ${location} it is sunny !`
+          }
         }),
-        execute: async ({ location }) => {
-          return `In ${location} it is sunny !`
-        },
-      }),
-    },
+       
+        time: tool({
+          description: 'Tells the time now',
+          parameters: z.object({
+            timezone: z.string().describe('Any word from sentence'),
+          }),
+          execute: async ({timezone}) => {
+             return new Date().toLocaleTimeString();
+          }
+        })
+      },
+      system: 'You are an helper for book related things.',
+      experimental_toolCallStreaming: true,
+    toolChoice:'auto',
     messages
   });
     

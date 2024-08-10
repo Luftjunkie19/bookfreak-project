@@ -23,9 +23,9 @@ function CreateBtn() {
 
 
   return (
-    <Dropdown>
+    <Dropdown className='sm:hidden lg:block'>
       <DropdownTrigger>
-        <button className="outline-none border-none bg-none">
+        <button className="outline-none border-none bg-none sm:hidden lg:block">
           <FaPlusCircle size={24} className="text-white " />
         </button>
       </DropdownTrigger>

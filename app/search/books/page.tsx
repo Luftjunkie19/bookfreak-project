@@ -27,6 +27,8 @@ import useGetDocuments from '../../../hooks/useGetDocuments';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import { DataView } from 'primereact/dataview';
+import LabeledInput from 'components/input/LabeledInput';
+import FilterBar from 'components/Sidebars/right/FilterBar';
 
 function Books() {
   const { documents: orderedDocuments } = useGetDocuments('books');
@@ -243,8 +245,18 @@ function Books() {
 
 
   return (
-    <div className={`min-h-screen h-full w-full flex`}>
+    <div className='flex'>
+    <div className={`h-screen flex flex-col gap-6 p-2`}>
+      <LabeledInput type={'dark'} additionalClasses='max-w-sm mx-auto w-full p-2' setValue={(value: string)=> {
+        console.log(value);
+      } } />
+      <div className="grid mx-auto  p-2 gap-4 w-full sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        {sortedArray && sortedArray.map((item)=>(<Book bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} type={'transparent'}/>))}
+      </div>
 
+
+    </div>
+        <FilterBar/>
     </div>
   );
 }

@@ -47,7 +47,7 @@ import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Chip, Modal, ModalBody, ModalContent, ModalHeader, Tab, Tabs } from '@nextui-org/react';
+import { Chip, DropdownItem, Modal, ModalBody, ModalContent, ModalHeader, SelectItem, Tab, Tabs } from '@nextui-org/react';
 import { IoMdBookmarks } from 'react-icons/io';
 import { IoBook, IoChatbubbleSharp } from 'react-icons/io5';
 import { FaBookBookmark, FaStar, FaStarOfLife } from 'react-icons/fa6';
@@ -58,6 +58,13 @@ import { Rating } from 'primereact/rating';
 import { GoStar, GoStarFill } from 'react-icons/go';
 import { GiWhiteBook } from 'react-icons/gi';
 import { BsBookmarkHeartFill } from 'react-icons/bs';
+import { useRealDocument } from 'hooks/firestore/useGetRealDocument';
+import Button from 'components/buttons/Button';
+import MultipleDropDown from 'components/drowdown/MultipleDropDown';
+import BookAd from 'components/advertisements/BookAd';
+import LabeledInput from 'components/input/LabeledInput';
+import Recension from 'components/elements/recension/Recension';
+import SingleDropDown from 'components/drowdown/SingleDropDown';
 
 function Book({ params }: { params: { bookId: string } }) {
   const { bookId: id } = params;
@@ -112,7 +119,7 @@ const recensions: any[] = recensionObjects.map((bookReader) => {
     }
   }, [getDocument, id, user]);
 
-const {document}=useGetDocument('books', id);
+const {document}=useRealDocument('books', id);
   const {documents:readersObjects}=useGetDocuments("bookReaders");
 
   const readers=readersObjects.map((bookReader:any) => {
@@ -392,7 +399,113 @@ const {document}=useGetDocument('books', id);
   };
 
   return (
-    <div className={`min-h-screen h-full overflow-x-hidden`}>
+    <div className={`min-h-screen h-full overflow-x-hidden w-full p-2`}>
+      {document && <>
+        <div className="flex justify-center items-center p-2">
+        <div className="flex justify-between max-w-5xl w-full items-center ">
+          <Image src={document.coverImg} className='w-52 h-72 rounded-lg object-cover' width={35} height={59} alt='' />
+          <div className="text-white flex flex-col w-full max-w-xl gap-2">
+            <p className='text-4xl font-black'>{document.title}</p>
+            <p className='text-lg'>{document.author.nickname}</p>
+            <p className='font-light'>{document.genre}</p>
+            <div className="">
+              <div className="flex items-center gap-12">
+                <Button type='transparent' additionalClasses='flex gap-2'>
+                  <FaHeart className='text-3xl text-white' />
+                  <p className='text-xs self-end font-light'>Nobody has liked this book yet.</p>
+                </Button>
+
+                <Button type='blue' additionalClasses='flex gap-4 items-center'>
+                  Share <FaShare/>
+                </Button>
+              </div>
+            </div>
+            <div className="flex gap-1 ">
+              <div className="flex gap-1 items-center">
+              <FaStar className='text-4xl text-primary-color'/>
+              <p className='text-primary-color font-semibold text-4xl'>9.5</p>
+              </div>
+              <p className='text-gray-400 font-light self-end text-sm'>out of 50 reviews</p>
+            </div>
+            <div className='flex gap-4'>
+              <Button type='blue' additionalClasses='flex gap-4 self-end items-center px-12 h-fit py-2 '>
+                  Read it 
+              </Button>
+              <MultipleDropDown label='Insert to shelf' selectedArray={[]}>
+                <DropdownItem>
+                  Loved
+                </DropdownItem>
+                  <DropdownItem>
+                  Loved
+                </DropdownItem>
+                  <DropdownItem>
+                  Loved
+                </DropdownItem>
+                  <DropdownItem>
+                  Loved
+                </DropdownItem>
+              </MultipleDropDown>
+            </div>
+          </div>
+        </div>
+      </div>
+        
+        <div className="flex gap-6 items-center py-4 w-full">
+          <div className="flex flex-col gap-1">
+            <p className='text-white text-lg font-semibold'>Description</p>
+            <div className="overflow-y-auto min-h-56 max-h-56 h-full bg-dark-gray text-white rounded-lg p-2 max-w-lg w-full">
+              {document.description}
+            </div>
+       </div>
+            
+          <div className=""> 
+            
+<p className='text-white text-lg font-semibold'>Book Details</p>
+            <div className="overflow-y-auto text-white min-h-56 max-h-56 h-full bg-dark-gray rounded-lg p-2 max-w-sm w-full">
+              <p>Genre: {document.genre}</p>
+              <p>Pages: {document.pages}</p>
+              <p>Release year: 2020 {document.releaseDate}</p>
+            </div>
+    </div>
+  
+
+          
+         <BookAd/>
+    
+
+        </div>
+        
+        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col">
+          <p className='text-white text-2xl font-semibold'>Recensions</p>
+          <p className='text-white'>For now this book has been reviewed by {document.recensions.length} readers.</p>
+          </div>
+          <div className="flex gap-6 items-center">
+          
+              <MultipleDropDown label='Filters' selectedArray={[]}>
+                <SelectItem key={'Choice 1'}>Choice 1</SelectItem>
+                <SelectItem key={'Choice 2'}>Choice 2</SelectItem>
+                   <SelectItem key={'Choice 3'}>Choice 3</SelectItem>
+              </MultipleDropDown>
+              
+    <SingleDropDown label='Sorting' selectedArray={[]}>
+                <SelectItem key={'Choice 1'}>Choice 1</SelectItem>
+                <SelectItem key={'Choice 2'}>Choice 2</SelectItem>
+                   <SelectItem key={'Choice 3'}>Choice 3</SelectItem>
+          </SingleDropDown>
+
+          </div>
+        </div>
+
+          <div className=" flex flex-col gap-3 max-h-[60rem] overflow-y-auto">
+            <Recension userImg={''} username={'Username'} rate={6} isOwner={false} content={'lorem ipsum durum lalalalalllla'} type={'white'} />
+            <Recension userImg={''} username={'Username'} rate={6} isOwner={false} content={'lorem ipsum durum lalalalalllla'} type={'white'} />
+          </div>
+        </div>
+
+      
+      </>}
 
     </div>
   );

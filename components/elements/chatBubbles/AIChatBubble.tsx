@@ -22,7 +22,7 @@ function AIChatBubble({ message }: Props) {
     {message.name}
   </div>
           <div className="chat-bubble bg-primary-color text-white max-w-2xl h-fit w-fit">
-            {message.toolInvocations && message.toolInvocations.length > 0 && (message.toolInvocations as ToolInvocation[]).map((item)=>(JSON.stringify(item)))}
+            {message.toolInvocations && message.toolInvocations.length > 0 && (message.toolInvocations as ToolInvocation[])[0].state === 'result' && (message.toolInvocations as ToolInvocation[])[0].result}
               <ReactMarkdown className={'text-sm'}>          
               {message.content}
               

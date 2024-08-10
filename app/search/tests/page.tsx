@@ -94,7 +94,32 @@ function Tests() {
 
   return (
     <div className={`min-h-screen h-full w-full flex`}>
-      <FilterBar filterBarContent={
+   
+      
+
+      <div className="w-full h-full flex flex-col gap-6">
+        {sortedTests && sortedTests.length > 0 &&     
+    <Autocomplete
+          defaultItems={sortedTests}
+          onValueChange={(value)=>setSearchInputValue(value)}
+          label="Book Title"
+          labelPlacement='outside'
+      placeholder="Search a Book"
+      className="max-w-sm w-full self-center p-2"
+    >
+      {(book:any) => <AutocompleteItem key={book.testName}>{book.testName}</AutocompleteItem>}
+        </Autocomplete>
+        }
+        <div className="flex flex-col gap-2">
+          <p className='mx-4 text-white text-2xl'>Results for {searchInputValue}</p>
+        <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4 mx-4 my-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6">
+            {sortedTests && sortedTests.length > 0 && sortedTests.map((test: any) => (<Test key={test.testName} testData={test} type={'white'} />))}
+        </div>
+        </div>
+   
+      </div>
+
+         <FilterBar filterBarContent={
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
              <CheckboxGroup
@@ -125,29 +150,6 @@ function Tests() {
         </div>
           
 </div>} />
-      
-
-      {/* <div className="w-full h-full flex flex-col gap-6">
-        {sortedTests && sortedTests.length > 0 &&     
-    <Autocomplete
-          defaultItems={sortedTests}
-          onValueChange={(value)=>setSearchInputValue(value)}
-          label="Book Title"
-          labelPlacement='outside'
-      placeholder="Search a Book"
-      className="max-w-sm w-full self-center p-2"
-    >
-      {(book:any) => <AutocompleteItem key={book.testName}>{book.testName}</AutocompleteItem>}
-        </Autocomplete>
-        }
-        <div className="flex flex-col gap-2">
-          <p className='mx-4 text-white text-2xl'>Results for {searchInputValue}</p>
-        <div className="grid sm:grid-cols-1 gap-2 mx-4 my-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-7">
-            {sortedTests && sortedTests.length > 0 && sortedTests.map((test: any) => (<Test key={test.testName} testData={test} />))}
-        </div>
-        </div>
-   
-      </div> */}
     </div>
   );
 }

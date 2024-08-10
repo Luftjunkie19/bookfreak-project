@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 
 function YourChats() {
 
-  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
+
   
   return (
     <div className="min-h-screen h-full">

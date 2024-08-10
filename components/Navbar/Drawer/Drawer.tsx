@@ -8,7 +8,7 @@ type Props = {}
 function MobileDrawer({}: Props) {
   return (
  <Drawer>
-          <DrawerTrigger className="lg:hidden">
+          <DrawerTrigger className="lg:hidden ">
               <FaHamburger className="text-white" size={24}/>
   </DrawerTrigger>
   <DrawerContent>

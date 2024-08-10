@@ -2,21 +2,26 @@
 
 
 import { useState } from 'react';
-
-import { BsFillDoorOpenFill } from 'react-icons/bs';
+import image from '../../../assets/Logo.png'
+import { BsFillDoorOpenFill, BsListTask } from 'react-icons/bs';
 import {
+  FaBookOpen,
   FaFacebookMessenger,
   FaInfo,
   FaPencilAlt,
+  FaTasks,
   FaTrashAlt,
+  FaUserFriends,
   FaUserPlus,
 } from 'react-icons/fa';
 import {
+  FaClockRotateLeft,
   FaUsers,
   FaX,
 } from 'react-icons/fa6';
 import {
   GiBookmarklet,
+  GiCrane,
   GiRibbonShield,
 } from 'react-icons/gi';
 import { GrUserManager } from 'react-icons/gr';
@@ -41,14 +46,19 @@ import CompetitionChat from '../../../components/chat/CommunityChat';
 import { snackbarActions } from '../../../context/SnackBarContext';
 import { warningActions } from '../../../context/WarningContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import useGetDocument from '../../../hooks/useGetDocument';
-import useGetDocuments from '../../../hooks/useGetDocuments';
+
 import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
 import { User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 
-import ClubBar from 'components/Sidebars/ClubBar';
+import Image from 'next/image';
+import useGetDocument from 'hooks/firestore/useGetDocument';
+import { useRealDocument } from 'hooks/firestore/useGetRealDocument';
+import useGetCollection from 'hooks/firestore/useGetCollection';
+import Button from 'components/buttons/Button';
+import CompetitionAd from 'components/advertisements/CompetitionAd';
+import { IoChatbubbles } from 'react-icons/io5';
 
 function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
@@ -63,8 +73,8 @@ function Club({params}:{params:{clubId:string}}) {
   const { getDocuments } = useRealtimeDocuments();
   const { removeFromDataBase, addToDataBase } = useRealDatabase();
   const [message, setMessage] = useState<{open:boolean, message:string | null}>({ open: false, message: null });
-  const {document}=useGetDocument("readersClubs", id);
- const {documents: members}=useGetDocuments(`communityMembers/${id}/users`);
+  const {document}=useRealDocument("clubs", id);
+ const {documents }=useGetCollection(`users`);
 
 
 
@@ -170,7 +180,6 @@ function Club({params}:{params:{clubId:string}}) {
         },
       });
 
-      console.log(members);
 
       setMessage({
         open: true,
@@ -184,9 +193,183 @@ function Club({params}:{params:{clubId:string}}) {
 
   return (
     <div
-      className={`w-full h-screen flex `}
+      className={`w-full h-screen overflow-y-auto`}
     >
-   
+      <div className="relative top-0 left-0 bg-red-200 max-h-60 h-full">
+        {document && 
+        <div className="absolute z-10 -bottom-16 flex gap-6 items-center  left-0 m-3">
+            <Image src={document.clubLogo} alt='' width={60} height={60} className='w-44 z-10 h-44 object-cover rounded-lg' />
+            <div className="flex flex-col gap-1">
+              <p className="text-2xl font-bold text-white">{document.clubName}</p>
+              <p>{document.members && document.members.length} Members</p>
+              <div className="flex">
+                <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
+                <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
+                <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
+              </div>
+            </div>
+          
+        </div>
+        }
+   </div>
+              <div className="flex justify-end items-center gap-2 p-2">
+        <Button additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
+Share
+        </Button>
+           <Button additionalClasses='px-6 py-[0.375rem]' type={'white-blue'} >
+Join Club
+        </Button>
+      </div>
+      
+        <div className="flex items-center gap-6 w-full">
+        
+        <div className="flex flex-col my-4 mx-2 gap-3 max-w-sm w-full">
+          <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
+            <div className="flex items-center gap-6">
+              <IoChatbubbles className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>10 New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <FaUserFriends className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>19 Members Together</p>
+                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <GiCrane  className="text-primary-color text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>Estimated 3 years ago</p>
+                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+              </div>
+            </div>
+          </div>
+              <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft/> Activity</p>
+            <div className="flex items-center gap-6">
+              <IoChatbubbles className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>10 New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <FaUserFriends className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>19 Members Together</p>
+                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <GiCrane  className="text-primary-color text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>Estimated 3 years ago</p>
+                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 max-w-4xl w-full">
+          <div className="w-full bg-dark-gray p-2 rounded-lg">
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaTasks className='text-2xl' /> Competition Rules</p>
+            <ul>
+              <li>Competition </li>
+                <li>Competition </li>
+                  <li>Competition </li>
+            </ul>
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><BsListTask className='text-2xl' /> Description</p>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa, placeat sint deleniti, est nesciunt eius non dolore nemo voluptatibus odio qui magnam iusto voluptatum illum suscipit repellat eligendi modi sapiente quae consectetur. Nobis quos sit delectus animi autem magni quibusdam consequatur maiores necessitatibus dolorem voluptatem tenetur laboriosam unde placeat earum enim modi, quo consequuntur doloribus laborum vero! Similique laudantium ullam quidem itaque amet dolorum voluptate culpa fuga suscipit fugiat, sit, doloribus sunt, dicta laboriosam sapiente quasi aperiam iusto. Quod, voluptatibus.</p>
+          </div>
+
+       <CompetitionAd />
+
+        </div>
+</div>
+
+      <div className="flex flex-col gap-1 p-1">
+        <p className='text-xl flex gap-2 items-center  font-semibold text-white'><FaBookOpen className='text-white'/> Reading Activity of the users</p>
+      <div className="flex gap-4 py-1 items-center">
+          <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
+            <div className="flex items-center gap-6">
+              <IoChatbubbles className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>10 New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <FaUserFriends className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>19 Members Together</p>
+                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <GiCrane  className="text-primary-color text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>Estimated 3 years ago</p>
+                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+              </div>
+            </div>
+          </div>
+           <div className="w-full max-w-xs  h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
+            <div className="flex items-center gap-6">
+              <IoChatbubbles className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>10 New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <FaUserFriends className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>19 Members Together</p>
+                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <GiCrane  className="text-primary-color text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>Estimated 3 years ago</p>
+                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+              </div>
+            </div>
+          </div>
+           <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
+            <div className="flex items-center gap-6">
+              <IoChatbubbles className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>10 New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <FaUserFriends className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>19 Members Together</p>
+                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <GiCrane  className="text-primary-color text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>Estimated 3 years ago</p>
+                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+              </div>
+            </div>
+          </div>
+          
+         
+      </div>
+      </div>   
    
 
     </div>
