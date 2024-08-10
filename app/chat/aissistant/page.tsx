@@ -16,13 +16,8 @@ type Props = {}
 
 function Page({ }: Props) {
 
-    const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-        async onToolCall ({toolCall}) {
-            if (toolCall.toolName === 'getCurrentTime') {
-                return new Date().toDateString();
-            }
-        }
-    });
+    const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({  api: '/api/chat',
+        maxToolRoundtrips: 15,});
 
     
 
@@ -31,7 +26,7 @@ function Page({ }: Props) {
           <div className='h-[calc(100vh-7.5rem)] p-2 overflow-y-auto w-full'>
               
                   {messages.map(message => (
-                      <AIChatBubble message={message}/>
+                      <AIChatBubble key={message.id} message={message}/>
                     ))}
                     {isLoading && <p className="text-white">Loading....</p>}
           </div>

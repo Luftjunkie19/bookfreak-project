@@ -1,4 +1,4 @@
-import { Message } from 'ai'
+import { Message, ToolInvocation } from 'ai'
 import React from 'react'
 import { FaRobot } from 'react-icons/fa6'
 import ReactMarkdown from 'react-markdown';
@@ -22,7 +22,8 @@ function AIChatBubble({ message }: Props) {
     {message.name}
   </div>
           <div className="chat-bubble bg-primary-color text-white max-w-2xl h-fit w-fit">
-        <ReactMarkdown className={'text-sm w-full'}>     
+            {message.toolInvocations && message.toolInvocations.length > 0 && (message.toolInvocations as ToolInvocation[]).map((item)=>(JSON.stringify(item)))}
+              <ReactMarkdown className={'text-sm'}>          
               {message.content}
               
               </ReactMarkdown>
