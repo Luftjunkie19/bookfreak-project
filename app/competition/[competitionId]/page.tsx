@@ -60,6 +60,8 @@ import Button from 'components/buttons/Button';
 import { IoChatbubbles } from 'react-icons/io5';
 import { GiCrane } from 'react-icons/gi';
 import CompetitionAd from 'components/advertisements/CompetitionAd';
+import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
+import Slide from 'components/home/swipers/base-swiper/Slide';
 
 function Competition({params}:{params:{competitionId:string}}) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -226,7 +228,7 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
 
   return (
     <div
-      className={`h-screen overflow-y-hidden overflow-x-hidden w-full`}
+      className={`h-screen overflow-y-auto overflow-x-hidden w-full`}
     >
       <div className={`relative w-full ${classes['light-blue-gradient']} top-0 left-0 h-64 `}>
           {document && 
@@ -255,7 +257,7 @@ Request To Join
         </Button>
 </div>
 
-      <div className="flex overflow-x-hidden overflow-y-hidden  gap-6 w-full">
+      <div className="flex overflow-x-hidden overflow-y-hidden  gap-4 w-full">
         
         <div className="flex flex-col my-4 mx-2 gap-3 max-w-sm w-full">
           <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
@@ -308,24 +310,24 @@ Request To Join
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 p-1 overflow-y-auto max-w-4xl w-full">
-          <div className="w-full bg-dark-gray p-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaTasks className='text-2xl' /> Competition Rules</p>
-            <ul>
-              <li>Competition </li>
-                <li>Competition </li>
-                  <li>Competition </li>
-            </ul>
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><BsListTask className='text-2xl' /> Description</p>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa, placeat sint deleniti, est nesciunt eius non dolore nemo voluptatibus odio qui magnam iusto voluptatum illum suscipit repellat eligendi modi sapiente quae consectetur. Nobis quos sit delectus animi autem magni quibusdam consequatur maiores necessitatibus dolorem voluptatem tenetur laboriosam unde placeat earum enim modi, quo consequuntur doloribus laborum vero! Similique laudantium ullam quidem itaque amet dolorum voluptate culpa fuga suscipit fugiat, sit, doloribus sunt, dicta laboriosam sapiente quasi aperiam iusto. Quod, voluptatibus.</p>
+        <div className="flex flex-col gap-3 p-1 overflow-y-auto overflow-x-hidden max-w-4xl w-full">
+          <div className="flex flex-col gap-1">
+            <p className='text-white text-xl'>The Prize</p>
+          <div className="flex gap-3 p-1 w-full items-center">
+               <div className="w-full max-w-xs h-72 bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+          
           </div>
 
-          <CompetitionAd />
-          
-           <div className="flex flex-col gap-1 p-1">
-        <p className='text-xl flex gap-2 items-center  font-semibold text-white'><FaBookOpen className='text-white'/> Reading Activity of the users</p>
-      <div className="flex gap-4 py-1 overflow-y-auto items-center">
-          <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+               <div className="w-full max-w-xs h-72 bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+           
+          </div>
+           </div>
+         </div>
+           <div className="flex flex-col gap-1 p-1 w-full">
+            <p className='text-xl flex gap-2 items-center  font-semibold text-white'><FaBookOpen className='text-white' /> Reading Activity of the users</p>
+            <BaseSwiper  slidesOn2XlScreen={1.5} additionalClasses='w-full'>
+              <Slide>
+                        <div className="w-full max-w-xs h-72 bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -349,7 +351,9 @@ Request To Join
               </div>
             </div>
           </div>
-           <div className="w-full max-w-xs  h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+              </Slide>
+               <Slide>
+                        <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -373,7 +377,9 @@ Request To Join
               </div>
             </div>
           </div>
-           <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+              </Slide>
+               <Slide>
+                        <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -397,11 +403,10 @@ Request To Join
               </div>
             </div>
           </div>
-          
-         
+              </Slide>
+            </BaseSwiper>
       </div>
-      </div>
-        </div>
+  </div>
 </div>
       
      

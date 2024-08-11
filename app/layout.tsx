@@ -61,7 +61,7 @@ export default function RootLayout({
                 <Navbar />
                 <div className="flex h-full">
                   <LeftBar />
-                  <div className="w-full overflow-y-auto overflow-x-hidden max-h-screen h-full">
+                  <div className="w-full overflow-y-hidden overflow-x-hidden max-h-screen h-full">
               {children}
                 <Footer />
    </div>
