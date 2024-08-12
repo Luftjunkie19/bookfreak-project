@@ -62,6 +62,8 @@ import { GiCrane } from 'react-icons/gi';
 import CompetitionAd from 'components/advertisements/CompetitionAd';
 import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
 import Slide from 'components/home/swipers/base-swiper/Slide';
+import { Pagination } from 'swiper/modules';
+import { Swiper } from 'swiper/react';
 
 function Competition({params}:{params:{competitionId:string}}) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -310,7 +312,7 @@ Request To Join
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 p-1 overflow-y-auto overflow-x-hidden max-w-4xl w-full">
+        <div className="flex flex-col gap-3 p-1 overflow-x-hidden max-w-4xl w-full">
           <div className="flex flex-col gap-1">
             <p className='text-white text-xl'>The Prize</p>
           <div className="flex gap-3 p-1 w-full items-center">
@@ -323,88 +325,20 @@ Request To Join
           </div>
            </div>
          </div>
-           <div className="flex flex-col gap-1 p-1 w-full">
+           <div className="flex flex-col gap-1 p-1 h-full w-full">
             <p className='text-xl flex gap-2 items-center  font-semibold text-white'><FaBookOpen className='text-white' /> Reading Activity of the users</p>
-            <BaseSwiper  slidesOn2XlScreen={1.5} additionalClasses='w-full'>
-              <Slide>
-                        <div className="w-full max-w-xs h-72 bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
-            <div className="flex items-center gap-6">
-              <IoChatbubbles className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>10 New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <FaUserFriends className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>19 Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <GiCrane  className="text-primary-color text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>Estimated 3 years ago</p>
-                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
-              </div>
-            </div>
-          </div>
-              </Slide>
-               <Slide>
-                        <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
-            <div className="flex items-center gap-6">
-              <IoChatbubbles className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>10 New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <FaUserFriends className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>19 Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <GiCrane  className="text-primary-color text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>Estimated 3 years ago</p>
-                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
-              </div>
-            </div>
-          </div>
-              </Slide>
-               <Slide>
-                        <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
-            <div className="flex items-center gap-6">
-              <IoChatbubbles className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>10 New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <FaUserFriends className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>19 Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <GiCrane  className="text-primary-color text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>Estimated 3 years ago</p>
-                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
-              </div>
-            </div>
-          </div>
-              </Slide>
-            </BaseSwiper>
+            <Swiper modules={[Pagination]} className='w-full max-w-3xl' spaceBetween={8}>
+      <Slide>
+        <div className='bg-red-400 w-1/2'>
+
+        </div>
+      </Slide>
+
+<Slide>
+  <div className='bg-red-400 w-1/2'></div>
+</Slide>
+
+    </Swiper>
       </div>
   </div>
 </div>
