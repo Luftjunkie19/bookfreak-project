@@ -1,6 +1,6 @@
 'use client';
-import ChatBar from "components/chatList/ChatBar";
-import ChatList from "components/chatList/ChatList";
+import ChatBar from "components/chatList/ChatBottomBar";
+import ChatList from "components/chatList/chat-lists/ChatList";
 import useGetCollection from "hooks/firestore/useGetCollection";
 import { useRealDocument } from "hooks/firestore/useGetRealDocument";
 import { useAuthContext } from "hooks/useAuthContext";
@@ -13,9 +13,10 @@ export default function Page({params}:{params:{competitionId:string}}) {
     return (
         <div className="flex flex-col w-full h-screen">
             {user && document && 
-            <>
-            <ChatList document={document} messages={document.chatMessages} documents={documents} user={user} isNotAllowedToSee={document.members.find((member)=>member.id === user.uid)} />
-            <ChatBar isNotAllowedToType={!document.members.find((member)=>member.id === user.uid)}/>
+                <>
+                
+            <ChatList document={document} messages={document.chatMessages} documents={documents} user={user} isAllowedToSee={document.members.find((member)=>member.id === user.uid)} />
+                {document.members.find((member)=>member.id === user.uid)  && user ? <ChatBar isAllowedToType={true}/> : <ChatBar isAllowedToType={false}/> }
             </>
             }
 

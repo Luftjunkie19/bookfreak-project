@@ -62,7 +62,7 @@ function Navbar() {
           <Link className='sm:hidden lg:block' href={'/'}><FaHome className='text-2xl' /></Link>
           <CreateBtn/>
           <NotificationViewer />
-                    <Link href={'/chats'} className='sm:hidden lg:block'><PiChatsCircleFill  className='text-2xl text-white' /></Link>
+                    <Link href={'/chat'} className='sm:hidden lg:block'><PiChatsCircleFill  className='text-2xl text-white' /></Link>
           {documentBase && 
           <UserDropDown userId={user.uid} userObject={documentBase}/>
           }

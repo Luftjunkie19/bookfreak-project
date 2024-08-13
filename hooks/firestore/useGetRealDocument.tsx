@@ -9,12 +9,12 @@ import {
   getFirestore,
   onSnapshot,
 } from 'firebase/firestore';
+import { firestore } from 'app/firebase';
 
 export function useRealDocument(col:string, id:string) {
   const [document, setDocument] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const firestore = getFirestore();
 
   const ref = doc(firestore, col, id);
   useEffect(() => {
