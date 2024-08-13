@@ -22,7 +22,7 @@ function ChatBar({ }: Props) {
     },[chats, user])
 
   return (
-    <div className='max-w-xs w-full bg-dark-gray h-full flex flex-col'>
+    <div className='max-w-xs sm:hidden xl:flex w-full bg-dark-gray h-full flex-col'>
       <div className="flex gap-1 items-center w-full p-1">
         <FaSearch className='text-2xl text-white'/>
     <LabeledInput placeholder='Search for people...' additionalClasses='w-full p-2' setValue={(value)=>{
