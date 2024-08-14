@@ -12,10 +12,14 @@ import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
 import Image from 'next/image';
 import Button from 'components/buttons/Button';
 import LabeledInput from 'components/input/LabeledInput';
+import { IoMdDocument } from 'react-icons/io';
+import { useDisclosure } from '@nextui-org/react';
+import ModalComponent from 'components/modal/ModalComponent';
 
 type Props = {}
 
-function Page({}: Props) {
+function Page({ }: Props) {
+    const { isOpen, onOpen, onOpenChange} = useDisclosure();
   return (
       <div className='w-full flex h-screen'>
           <DashboardBar/>
@@ -45,10 +49,20 @@ function Page({}: Props) {
                       console.log(value);
                   }}/>
                   </div>
+
+                  <div className="flex flex-col gap-2 max-w-2xl">
+                      <p className='text-white text-2xl'>Additional Conditions</p>
+                      <p className='text-white'>In this section you can set additional conditions/questions, that users who want to request for membership.</p>
+
+                      <Button onClick={onOpen} type='blue' additionalClasses=" max-w-xs w-full flex gap-2 items-center justify-between">
+                          <p >3 <span>Additional Conditions</span></p> <IoMdDocument className='text-2xl'/> 
+                      </Button>
+                      <ModalComponent isOpen={isOpen} onOpenChange={onOpenChange} />
+                  </div>
                   
                   <div className="flex flex-col gap-1">
                       <p className='text-white'>Description</p>
-                      <textarea placeholder='Enter Description' className="w-full max-w-3xl h-60 p-2 rounded-lg bg-dark-gray outline-none border border-primary-color"/>
+                      <textarea placeholder='Enter Description' className="w-full text-white max-w-3xl h-60 p-2 rounded-lg bg-dark-gray outline-none border border-primary-color"/>
                   </div>
 
                   <Button type="blue" additionalClasses='w-fit px-8'>Update</Button>
