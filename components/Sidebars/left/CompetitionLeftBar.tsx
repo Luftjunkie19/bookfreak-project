@@ -3,8 +3,9 @@ import { useRealDocument } from 'hooks/firestore/useGetRealDocument';
 import { useAuthContext } from 'hooks/useAuthContext';
 import Image from 'next/image';
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import React, { useMemo } from 'react'
+import { BsThreeDotsVertical } from 'react-icons/bs';
 import { FaGear, FaVideo } from 'react-icons/fa6'
 import { GiExitDoor } from 'react-icons/gi'
 import { IoIosChatbubbles } from 'react-icons/io';
@@ -17,43 +18,38 @@ function CompetitionLeftBar() {
   const { competitionId } = useParams();
   const { user } = useAuthContext();
   const { document } = useRealDocument('competitions', competitionId as string);
- 
+  const pathname = usePathname();
   const isMemberCheck = useMemo(() => {
     return user && document && document.members.find((item) => item.id === user.uid)
   }, [user, document]);
  
   return (
-    <div className={`h-screen max-w-72 w-full ${isMemberCheck ? 'flex' : 'hidden'} flex-col  gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
+ <div className={`h-screen 2xl:max-w-72 2xl:w-full sm:w-fit ${isMemberCheck && !pathname.includes('settings') ? 'flex' : 'hidden'} flex-col justify-between gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
       <div className="flex flex-col gap-4">
-        <Link className='flex items-center gap-2' href={`/competition/${competitionId}/dashboard`}>
+        <Link className='flex items-center gap-2' href={`/competition/${competitionId}`}>
         <MdSpaceDashboard size={24} /> 
         <p>Dashboard</p>
           </Link>
-          <Link className='flex items-center gap-2' href={`/competition/${competitionId}/details`}>
+          <Link className='flex items-center gap-2' href={`/competition/${competitionId}/chat`}>
         <IoIosChatbubbles size={24} /> 
           <p>Chat</p>
           </Link>
-          <button className='flex items-center gap-2'>
+          <Link className='flex items-center gap-2' href={`/competition/${competitionId}/settings`} >
               <FaGear size={24} /> Settings 
-          </button>
+          </Link>
         </div>
-        {isMemberCheck &&
-          <div className='flex flex-col gap-2'>
-             <div className="flex flex-col gap-2">
-          <button className='flex items-center text-red-400 gap-2'>
-          <GiExitDoor size={24} /> 
-          <p>Leave Competition</p>
-          </button>
-        </div>    
-    
-          <div className=" flex gap-4 items-center">
+        {isMemberCheck && user &&
+          <div className='flex justify-between items-center gap-2 mb-12'>
+          <div className=" flex gap-2 items-center">
           <Image src={user.photoURL as string} alt='' width={60} height={60} className='w-8 h-8 rounded-full' />
-          <p>{user?.displayName}</p>
+          <p className='sm:hidden 2xl:block'>{user?.displayName}</p>
         </div>
+           <button className='text-white text-xl'><BsThreeDotsVertical/></button>
           </div>
         }
        
         </div>
+
     
   )
 }

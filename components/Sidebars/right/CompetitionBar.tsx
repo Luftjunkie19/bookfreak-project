@@ -9,10 +9,10 @@ import React, { Suspense, useMemo } from 'react'
 type Props = {}
 
 function CompetitionBar() {
-    const { competitionId } = useParams(); 
+    const { competitionId } = useParams();
     const { documents } = useGetCollection('users');
     const { document } = useRealDocument('competitions', (competitionId as string));
-    
+      const pathname = usePathname();
     const usersList = useMemo(() => {
         if (document) {
             return document.members.map((item) => documents.find((obj) => obj.id === item.id));
@@ -21,8 +21,8 @@ function CompetitionBar() {
     }, [document]);
 
 
-  return (
-      <div className="h-screen bg-dark-gray border-l-2 border-primary-color flex flex-col max-w-xs p-2 w-full">
+    return (
+        <div className={`h-screen bg-dark-gray ${!pathname.includes('settings') ? 'flex' : 'hidden'} border-l-2 border-primary-color flex-col sm:w-fit 2xl:max-w-xs p-2 2xl:w-full`}>
           {document && usersList.map((userObj) => (<Suspense fallback={<p>Loading....</p>}>
               <div className='text-white flex items-center gap-3'>
               <Image src={userObj.photoURL} alt="" width={60} height={60} className="w-12 h-12 rounded-full" />
