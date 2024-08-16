@@ -21,9 +21,9 @@ type Props = {}
 function Page({ }: Props) {
     const { isOpen, onOpen, onOpenChange} = useDisclosure();
   return (
-      <div className='w-full flex h-screen'>
+      <div className='w-full flex h-screen overflow-y-auto overflow-x-hidden'>
           <DashboardBar/>
-          <div className="w-full h-screen px-4 py-2 flex flex-col gap-2">
+          <div className="w-full h-screen overflow-y-auto overflow-x-hidden px-4 py-2 flex flex-col gap-2">
               <div className="">
               <p className='text-white flex gap-2 text-2xl items-center'><FaInfoCircle className='text-primary-color'/> Competition Info</p>
               <p className='text-sm font-light text-gray-400'>Provide Changes to the competititon if something unexpected popped into your head</p>           
