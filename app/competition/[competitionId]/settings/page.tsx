@@ -21,16 +21,16 @@ type Props = {}
 function Page({ }: Props) {
     const { isOpen, onOpen, onOpenChange} = useDisclosure();
   return (
-      <div className='w-full flex h-screen overflow-y-auto overflow-x-hidden'>
+      <div className='w-full flex'>
           <DashboardBar/>
-          <div className="w-full h-screen overflow-y-auto overflow-x-hidden px-4 py-2 flex flex-col gap-2">
+          <div className="w-full overflow-y-auto sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] overflow-x-hidden px-4 py-2 flex flex-col gap-2">
               <div className="">
               <p className='text-white flex gap-2 text-2xl items-center'><FaInfoCircle className='text-primary-color'/> Competition Info</p>
               <p className='text-sm font-light text-gray-400'>Provide Changes to the competititon if something unexpected popped into your head</p>           
               </div>
               <div className="flex flex-col gap-2">
               <div className="flex gap-6 p-2 w-full items-center">
-              <div className="flex gap-3 p-1 items-center">
+              <div className="flex sm:flex-col lg:flex-row gap-3 p-1 items-center">
                   <Image src={image} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>
                   <div className="flex flex-col gap-1">
                       <p className='text-white font-light text-xs'>Uploaded file can be up to 50MB</p>
@@ -41,7 +41,7 @@ function Page({ }: Props) {
                       console.log(value);
               }} />
               </div>        
-              <div className="flex items-center w-full gap-6">
+              <div className="flex sm:flex-col lg:flex-row items-center w-full gap-6">
                     <LabeledInput additionalClasses='p-2 min-w-80 max-w-xs w-full' label='Expiration Date' type='dark' setValue={(value) => {
                       console.log(value);
                   }} />
@@ -57,7 +57,17 @@ function Page({ }: Props) {
                       <Button onClick={onOpen} type='blue' additionalClasses=" max-w-xs w-full flex gap-2 items-center justify-between">
                           <p >3 <span>Additional Conditions</span></p> <IoMdDocument className='text-2xl'/> 
                       </Button>
-                      <ModalComponent isOpen={isOpen} onOpenChange={onOpenChange} />
+                      <ModalComponent modalTitle='Additional Conditions' modalBodyContent={<div>
+                          <p className='text-sm text-gray-400'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae, nemo!</p>
+                          <div className="flex flex-col gap-2 w-full overflow-y-auto">
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                          </div>
+                      </div>} isOpen={isOpen} onOpenChange={onOpenChange} />
                   </div>
                   
                   <div className="flex flex-col gap-1">

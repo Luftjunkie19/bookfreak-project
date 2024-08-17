@@ -11,11 +11,14 @@ type Props = {
 
 function ModalComponent({isOpen,onOpenChange,modalTitle, modalBodyContent, modalFooterContent }: Props) {
   return (
-  <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal backdrop='blur' classNames={{
+      'base': 'bg-dark-gray border border-primary-color',
+      closeButton:"hover:bg-red-500 transition-all duration-400 hover:text-white"
+    }} isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
-                      <ModalHeader className="flex flex-col gap-1">{modalTitle}</ModalHeader>
+                      <ModalHeader className="flex flex-col gap-1 text-white">{modalTitle}</ModalHeader>
               <ModalBody>
                {modalBodyContent}
               </ModalBody>

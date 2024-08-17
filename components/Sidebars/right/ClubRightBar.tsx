@@ -22,7 +22,7 @@ function CompetitionBar() {
 
 
   return (
-      <div className="h-screen bg-dark-gray border-l-2 border-primary-color flex flex-col max-w-xs gap-3 p-2 w-full">
+      <div className="sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] bg-dark-gray border-l-2 border-primary-color flex flex-col max-w-xs gap-3 p-2 w-full">
           {document && membersList.map((userObj) => (<Suspense fallback={<p>Loading....</p>}>
               <div className='text-white flex items-center gap-3'>
               <Image src={userObj?.photoURL} alt="" width={60} height={60} className="w-12 h-12 rounded-full" />

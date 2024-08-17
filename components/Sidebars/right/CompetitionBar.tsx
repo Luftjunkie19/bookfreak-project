@@ -22,7 +22,7 @@ function CompetitionBar() {
 
 
     return (
-        <div className={`h-screen bg-dark-gray ${!pathname.includes('settings') ? 'flex' : 'hidden'} border-l-2 border-primary-color flex-col sm:w-fit 2xl:max-w-xs p-2 2xl:w-full`}>
+        <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] bg-dark-gray ${!pathname.includes('settings') ? 'flex' : 'hidden'} border-l-2 border-primary-color flex-col sm:w-fit 2xl:max-w-xs p-2 2xl:w-full`}>
           {document && usersList.map((userObj) => (<Suspense fallback={<p>Loading....</p>}>
               <div className='text-white flex items-center gap-3'>
               <Image src={userObj.photoURL} alt="" width={60} height={60} className="w-12 h-12 rounded-full" />

@@ -21,8 +21,9 @@ function DefaultLeftBar({ }: Props) {
   const {user } = useAuthContext();
   const location = usePathname();
   return (
-    <div className={`h-screen overflow-y-auto ${location.includes('/book/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2 lg:max-w-fit xl:max-w-36 2xl:max-w-64 w-full  border-r-dark-gray  flex-col gap-2 rounded-r-xl border-r-2 `}>          
-    
+    <div className={`overflow-y-auto ${location.includes('/book/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2 sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] lg:max-w-fit xl:max-w-36 2xl:max-w-64 w-full  border-r-dark-gray  flex-col gap-2 rounded-r-xl border-r-2 `}>          
+      <div className="flex flex-col flex-grow">
+        
       <SearchBtn />
       <div className="flex flex-col gap-2">
         <Link href={'/search/books'}>      
@@ -56,7 +57,7 @@ function DefaultLeftBar({ }: Props) {
 
 
       </div>
-      
+      <div className="">
       <p className='text-white flex gap-4 text-lg items-center'>  <span className='sm:hidden xl:block'>Premium Features</span>  <WiStars className=' text-primary-color text-2xl'/> </p>
       <div className="flex text-sm gap-2 flex-col">
           <Link href={'/chat/aissistant'}>   
@@ -75,8 +76,10 @@ function DefaultLeftBar({ }: Props) {
           </Button>
         </Link>
 </div>
+        </div>
+    </div>
+        
       <div className="flex flex-col gap-2">
-        <p className="text-white font-semibold">Become Premium Freak !</p>
         <Button type='blue' additionalClasses='flex items-center gap-2 w-fit px-3'>Premium <MdWorkspacePremium className='' /></Button>
 </div>
       

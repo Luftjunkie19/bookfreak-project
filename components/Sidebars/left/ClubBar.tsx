@@ -13,7 +13,7 @@ import { TbListDetails } from 'react-icons/tb'
 function ClubBar() {
   const {clubId}=useParams();
   return (
-       <div className='flex flex-col gap-6 bg-dark-gray p-4 border-r border-primary-color text-white'>
+       <div className='flex flex-col sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] gap-6 bg-dark-gray p-4 border-r border-primary-color text-white'>
           <Link className='flex items-center gap-2' href={`/club/${clubId}/dashboard`}>
           <MdSpaceDashboard size={24} /> 
           </Link>

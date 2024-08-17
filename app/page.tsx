@@ -18,6 +18,7 @@ import ActivityManager from 'components/home/ActivityManager';
 import AdBanner from 'components/advertisements/AdBanner';
 import SubscriptionPlan from 'components/elements/subscription/SubscriptionPlan';
 import SubscriptionRow from 'components/elements/subscription/SubscriptionRow';
+import LeftSidebar from 'components/Sidebars/left/LeftSidebar';
 
 
 //error.tsx - Handles all errors from try catch
@@ -29,6 +30,7 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen flex flex-col p-2`}>
+
       <ActivityManager />
 
       

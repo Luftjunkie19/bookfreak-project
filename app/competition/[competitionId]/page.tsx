@@ -231,7 +231,7 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
 
   return (
     <div
-      className={`h-screen overflow-y-auto overflow-x-hidden w-full`}
+      className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] overflow-y-scroll overflow-x-hidden w-full`}
     >
       <div className={`relative w-full ${classes['light-blue-gradient']} top-0 left-0 h-64 `}>
           {document && 
@@ -251,7 +251,7 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
           }
       </div>
 
-      <div className="flex justify-end items-center gap-2 p-2">
+      <div className="flex sm:flex-col justify-end items-center gap-2 p-2">
         <Button additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
 Share
         </Button>
