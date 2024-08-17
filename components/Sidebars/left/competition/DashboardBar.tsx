@@ -12,7 +12,7 @@ type Props = {}
 function DashboardBar({ }: Props) {
     const { competitionId } = useParams();
   return (
-       <div className="flex flex-col gap-3 p-2 justify-between text-white bg-dark-gray max-w-xs sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] w-full">
+       <div className="flex flex-col gap-3 p-2 justify-between text-white bg-dark-gray sm:w-fit 2xl:max-w-xs sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] w-full">
                 <div className="flex flex-col gap-4">
                 <p className='flex items-center text-2xl font-bold gap-2'><FaUserGear  /> Settings</p>
                     <Link href={`/competition/${competitionId}/settings`} className='flex gap-2 items-center'><FaInfoCircle className='text-xl' /> General Info</Link>

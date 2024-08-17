@@ -193,7 +193,7 @@ function Club({params}:{params:{clubId:string}}) {
 
   return (
     <div
-      className={`w-full h-screen overflow-y-auto`}
+      className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto`}
     >
       <div className="relative top-0 left-0 bg-red-200 max-h-60 h-full">
         {document && 
@@ -283,7 +283,7 @@ Join Club
                   <li>Competition </li>
             </ul>
             <p className='flex gap-4 items-center text-lg font-bold text-white'><BsListTask className='text-2xl' /> Description</p>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa, placeat sint deleniti, est nesciunt eius non dolore nemo voluptatibus odio qui magnam iusto voluptatum illum suscipit repellat eligendi modi sapiente quae consectetur. Nobis quos sit delectus animi autem magni quibusdam consequatur maiores necessitatibus dolorem voluptatem tenetur laboriosam unde placeat earum enim modi, quo consequuntur doloribus laborum vero! Similique laudantium ullam quidem itaque amet dolorum voluptate culpa fuga suscipit fugiat, sit, doloribus sunt, dicta laboriosam sapiente quasi aperiam iusto. Quod, voluptatibus.</p>
+            <div className="max-h-44 overflow-y-auto h-full">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa, placeat sint deleniti, est nesciunt eius non dolore nemo voluptatibus odio qui magnam iusto voluptatum illum suscipit repellat eligendi modi sapiente quae consectetur. Nobis quos sit delectus animi autem magni quibusdam consequatur maiores necessitatibus dolorem voluptatem tenetur laboriosam unde placeat earum enim modi, quo consequuntur doloribus laborum vero! Similique laudantium ullam quidem itaque amet dolorum voluptate culpa fuga suscipit fugiat, sit, doloribus sunt, dicta laboriosam sapiente quasi aperiam iusto. Quod, voluptatibus.</div>
           </div>
 
        <CompetitionAd />

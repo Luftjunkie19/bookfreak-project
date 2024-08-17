@@ -18,7 +18,7 @@ function CompetitionAd({ }: Props) {
   }, []);
 
   return (
-             <ins className="adsbygoogle w-full max-w-4xl rounded-lg bg-dark-gray"
+             <ins className="adsbygoogle w-full max-h-52 h-full  rounded-lg bg-dark-gray"
      data-ad-client="ca-pub-9822550861323688"
      data-ad-slot="8396083192"
      data-ad-format="auto"

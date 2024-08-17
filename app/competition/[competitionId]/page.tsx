@@ -251,7 +251,7 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
           }
       </div>
 
-      <div className="flex sm:flex-col justify-end items-center gap-2 p-2">
+      <div className="flex justify-end items-center gap-2 p-2">
         <Button additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
 Share
         </Button>
