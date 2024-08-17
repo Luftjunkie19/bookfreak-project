@@ -3,7 +3,7 @@ import ClubRightBar from "components/Sidebars/right/ClubRightBar";
 
 export default function Layout({children}: {children: React.ReactNode}) {
     return (
-        <div className="flex w-full">
+        <div className="flex w-full ">
             <ClubBar />
         
             {children}

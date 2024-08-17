@@ -1,4 +1,3 @@
-import '../stylings/backgrounds.css';
 
 import React from 'react';
 
