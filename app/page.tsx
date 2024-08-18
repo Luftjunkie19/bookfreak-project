@@ -29,7 +29,7 @@ import LeftSidebar from 'components/Sidebars/left/LeftSidebar';
 export default function Home() {
 
   return (
-    <div className={`min-h-screen flex flex-col p-2`}>
+    <div className={`flex flex-col p-2`}>
 
       <ActivityManager />
 

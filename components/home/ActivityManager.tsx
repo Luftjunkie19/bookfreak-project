@@ -52,7 +52,7 @@ function ActivityManager({ }: Props) {
 
 
   return (
-      <div className=' xl:max-w-xl 2xl:max-w-3xl  self-center w-full bg-white rounded-xl shadow-md'>
+      <div className=' xl:max-w-xl 2xl:max-w-3xl my-2 self-center w-full bg-white rounded-xl shadow-md'>
       <div className="w-full shadow-xl px-2 py-1 border-b border-primary-color">
         {userDocument && 
               <div className="flex gap-2 items-center">
