@@ -20,7 +20,7 @@ import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import { useRouter } from 'next/navigation';
 import { User } from 'firebase/auth';
 import LabeledInput from 'components/input/LabeledInput';
-import { Avatar, Chip, DatePicker, Dropdown, DropdownItem, DropdownSection, DropdownTrigger, Select, SelectItem, Switch, Tooltip } from '@nextui-org/react';
+import { Avatar, Chip, DatePicker, Dropdown, DropdownItem, DropdownSection, DropdownTrigger, Select, SelectItem, Switch, Tooltip, useDisclosure } from '@nextui-org/react';
 import { FaInfo } from 'react-icons/fa6';
 import { InputSwitch } from 'primereact/inputswitch';
 import Image from 'next/image';
@@ -28,6 +28,9 @@ import { HiOutlineUpload } from 'react-icons/hi';
 import Button from 'components/buttons/Button';
 import SingleDropDown from 'components/drowdown/SingleDropDown';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
+import ModalComponent from 'components/modal/ModalComponent';
+import { MdEditDocument } from 'react-icons/md';
+import { PiStackPlusFill } from 'react-icons/pi';
 
 function CreateCompetition() {
   const { user } = useAuthContext();
@@ -268,16 +271,17 @@ function CreateCompetition() {
     }
   };
 
+     const { isOpen, onOpen, onOpenChange} = useDisclosure();
 
   return (
-     <div className={`min-h-screen h-full w-full overflow-x-hidden p-4`}>
+     <div className={`w-full  overflow-x-hidden p-4`}>
       <div className="flex flex-col gap-1 max-w-2xl w-full">
         <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
         <p className='text-white'>Are you an author, a book company or someone who wants to compete with other people ? Create the competition now and Read !</p>
      </div>
       
       
-      <div className="flex py-4  gap-12">
+      <div className="flex py-4 gap-12">
 
         <div className="w-56 cursor-pointer h-56 rounded-lg bg-white justify-center items-center flex">
           <input  type="file" name="" className="hidden" id="" />
@@ -340,6 +344,70 @@ function CreateCompetition() {
           }} />
           
         </div> 
+      </div>
+
+      <div className="flex flex-col gap-2 pb-2">
+        <div className="">
+          <p className='text-xl text-white font-semibold'>Additional Conditions</p>
+          <p className='text-xs text-gray-400'>You can add additional conditions users have to fullfill in order to join the competition.</p>
+        </div>
+
+          <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-52 max-w-2xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+</div> 
+
+        <Button onClick={onOpen} additionalClasses='w-fit px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill /></Button>
+        <ModalComponent modalFooterContent={<div className='flex gap-3 items-center'>
+            <Button type='blue' additionalClasses="w-fit  px-4 py-2">
+        Append
+      </Button>
+ </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col gap-1'>
+                                    
+          <SingleDropDown label='Type of Rule' selectedArray={[]}>
+     <SelectItem key={'rule1'}>Min. Read Pages of Genre</SelectItem>
+         <SelectItem key={'rule1'}>Min. Read Books of Genre</SelectItem>
+     <SelectItem key={'rule2'}>Min. Read Books Amount</SelectItem>
+      <SelectItem key={'rule2'}>Min. Read Pages Amount</SelectItem>
+     </SingleDropDown>
+
+                        
+                      </div>} isOpen={isOpen} onOpenChange={onOpenChange} />
+
       </div>
 
          <label className="flex flex-col gap-3">

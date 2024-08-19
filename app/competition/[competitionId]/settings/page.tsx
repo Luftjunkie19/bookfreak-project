@@ -57,9 +57,39 @@ function Page({ }: Props) {
                       <Button onClick={onOpen} type='blue' additionalClasses=" max-w-xs w-full flex gap-2 items-center justify-between">
                           <p >3 <span>Additional Conditions</span></p> <IoMdDocument className='text-2xl'/> 
                       </Button>
-                      <ModalComponent modalTitle='Additional Conditions' modalBodyContent={<div>
+                      <ModalComponent modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col gap-2'>
                           <p className='text-sm text-gray-400'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae, nemo!</p>
-                          <div className="flex flex-col gap-2 w-full overflow-y-auto">
+                          <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-40  h-full">
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
+                                      console.log(value);
+                                  }}/>
+                              </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
                                   <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {

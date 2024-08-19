@@ -59,7 +59,7 @@ export default function RootLayout({
               <PrimeReact>
               <Toaster />
                 <Navbar />
-                <div className="flex h-full">
+                <div className="flex w-full h-full">
                   <LeftBar />
                   <div className="w-full  overflow-x-hidden max-h-screen h-full">
               {children}

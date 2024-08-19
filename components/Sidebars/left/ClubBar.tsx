@@ -1,4 +1,5 @@
 'use client';
+import { useCheckPathname } from 'hooks/useCheckPathname';
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import React from 'react'
@@ -11,21 +12,22 @@ import { TbListDetails } from 'react-icons/tb'
 
 
 function ClubBar() {
-  const {clubId}=useParams();
+  const { clubId } = useParams();
+  const { includesElements } = useCheckPathname();
   return (
-       <div className='flex flex-col sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] gap-6 bg-dark-gray p-4 border-r border-primary-color text-white'>
-          <Link className='flex items-center gap-2' href={`/club/${clubId}/dashboard`}>
+    <div className={` ${!includesElements('settings') ? 'flex' : 'hidden'} flex-col justify-between sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
+      <div className="flex flex-col gap-4">
+      <Link className='flex items-center gap-2' href={`/club/${clubId}`}>
           <MdSpaceDashboard size={24} /> 
           </Link>
-          <Link className='flex items-center gap-2' href={`/club/${clubId}/details`}>
-          <TbListDetails size={24} /> 
+         <Link className='flex items-center gap-2' href={`/club/${clubId}/chat`}>
+         <IoChatbubbles size={24} /> 
+      </Link>
+      <Link className='flex items-center gap-2' href={`/club/${clubId}/settings`}>
+          <MdEdit size={24} className=' text-blue-600'/> 
           </Link>
-          <button className='flex items-center gap-2'>
-              <IoChatbubbles size={24} /> 
-          </button>
-          <button className='flex text-blue-300  items-center gap-2'>
-              <MdEdit size={24} /> 
-          </button>
+      </div>   
+        
           <button className='flex items-center text-red-400 gap-2'>
               <GiExitDoor  size={24} /> 
           </button>
