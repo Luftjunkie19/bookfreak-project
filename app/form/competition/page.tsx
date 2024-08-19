@@ -402,8 +402,23 @@ function CreateCompetition() {
      <SelectItem key={'rule1'}>Min. Read Pages of Genre</SelectItem>
          <SelectItem key={'rule1'}>Min. Read Books of Genre</SelectItem>
      <SelectItem key={'rule2'}>Min. Read Books Amount</SelectItem>
-      <SelectItem key={'rule2'}>Min. Read Pages Amount</SelectItem>
-     </SingleDropDown>
+     <SelectItem key={'rule2'}>Min. Read Pages Amount</SelectItem>
+          <SelectItem key={'rule2'}>Peculiar Question</SelectItem>
+   </SingleDropDown>
+   
+  <LabeledInput additionalClasses="max-w-xs w-full" label="Question" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+
+
+           <SingleDropDown label='Answer Accessment' selectedArray={[]}>
+     <SelectItem key={'rule1'}>Manual</SelectItem>
+         <SelectItem key={'rule1'}>Expected Answers</SelectItem>
+   </SingleDropDown>
+   
+     <LabeledInput additionalClasses="max-w-xs w-full" label="Expected Answers" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
 
                         
                       </div>} isOpen={isOpen} onOpenChange={onOpenChange} />
