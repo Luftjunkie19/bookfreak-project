@@ -293,7 +293,7 @@ function CreateCompetition() {
 
         
 <div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput additionalClasses="max-w-xs w-full" label="Competition Name" type={"dark"} setValue={(value) => {
+            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Competition Name" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
           
@@ -323,26 +323,36 @@ function CreateCompetition() {
      </SingleDropDown>
 
 
-        <div className="grid xl:grid-cols-2 2xl:grid-cols-3 gap-2 max-w-6xl">
-          <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+        <div className="grid xl:grid-cols-2 2xl:grid-cols-3 items-center gap-2 max-w-6xl">
+          <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Book Title" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="BookFreak's DB Reference" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Name" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
-            <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Type" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Label" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="What is the Voucher for" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
           
+                   <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Link  to the Voucher's Prize" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
+
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label='Money Prize' type={'transparent'} setValue={(value) => {
+              console.log(value);
+          }} />
+          
+          <div className="flex gap-1 flex-col col-span-full">
+             <span className="text-lg text-white font-semibold">Other Prize's Description</span>
+      <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
+          </div>
+
         </div> 
       </div>
 
@@ -392,11 +402,11 @@ function CreateCompetition() {
 </div> 
 
         <Button onClick={onOpen} additionalClasses='w-fit px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill /></Button>
-        <ModalComponent modalFooterContent={<div className='flex gap-3 items-center'>
+        <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
             <Button type='blue' additionalClasses="w-fit  px-4 py-2">
         Append
       </Button>
- </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col gap-1'>
+ </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col gap-3'>
                                     
           <SingleDropDown label='Type of Rule' selectedArray={[]}>
      <SelectItem key={'rule1'}>Min. Read Pages of Genre</SelectItem>
@@ -406,7 +416,7 @@ function CreateCompetition() {
           <SelectItem key={'rule2'}>Peculiar Question</SelectItem>
    </SingleDropDown>
    
-  <LabeledInput additionalClasses="max-w-xs w-full" label="Question" type={"dark"} setValue={(value) => {
+  <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
 
@@ -416,9 +426,7 @@ function CreateCompetition() {
          <SelectItem key={'rule1'}>Expected Answers</SelectItem>
    </SingleDropDown>
    
-     <LabeledInput additionalClasses="max-w-xs w-full" label="Expected Answers" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
+     <textarea placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
 
                         
                       </div>} isOpen={isOpen} onOpenChange={onOpenChange} />

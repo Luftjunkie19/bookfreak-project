@@ -39,7 +39,7 @@ import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import { User } from 'firebase/auth';
 import LabeledInput from 'components/input/LabeledInput';
-import { Avatar, Checkbox, Chip, DatePicker, Select, SelectItem, Switch } from '@nextui-org/react';
+import { Avatar, Checkbox, Chip, DatePicker, Select, SelectItem, Switch, tv, useCheckbox, useDisclosure } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import ReactFlagsSelect from 'react-flags-select/build/components/ReactFlagsSelect';
 import { useRouter } from 'next/navigation';
@@ -49,6 +49,8 @@ import Button from 'components/buttons/Button';
 import { HiOutlineUpload } from 'react-icons/hi';
 import SingleDropDown from 'components/drowdown/SingleDropDown';
 import MultipleDropDown from 'components/drowdown/MultipleDropDown';
+import ModalComponent from 'components/modal/ModalComponent';
+import { IoIosAddCircle } from 'react-icons/io';
 
 function CreateClub() {
   const [error, setError] = useState(null);
@@ -79,9 +81,7 @@ function CreateClub() {
     return Object.values(object);
   }).flat();
 
-
-
-  let notCurrentUsers = documents
+let notCurrentUsers = documents
     .filter((doc) => {
       return (
         doc.id !== (user as User).uid &&
@@ -250,15 +250,50 @@ function CreateClub() {
     }
   };
 
+  const { isOpen, onOpenChange, onOpen } = useDisclosure();
+
+  
+  const checkbox = tv({
+  slots: {
+    base: "border-default hover:bg-default-200",
+    content: "text-default-500"
+  },
+  variants: {
+    isSelected: {
+      true: {
+        base: "border-primary bg-primary hover:bg-primary-500 hover:border-primary-500",
+        content: "text-primary-foreground pl-1"
+      }
+    },
+    isFocusVisible: {
+      true: { 
+        base: "outline-none ring-2 ring-focus ring-offset-2 ring-offset-background",
+      }
+    }
+  }
+  })
+  
+    const {
+    children,
+    isSelected,
+    isFocusVisible,
+    getBaseProps,
+    getLabelProps,
+    getInputProps,
+  } = useCheckbox({
+    defaultSelected: true,
+  })
+
+
   return (
-   <div className={`min-h-screen h-full w-full p-4`}>
+   <div className={` h-full w-full p-4`}>
       <div className="flex flex-col gap-1 max-w-2xl w-full">
         <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
         <p className='text-white'>Are you an author, a book company or someone who wants to compete with other people ? Create the competition now and Read !</p>
      </div>
       
       
-      <div className="flex py-4  gap-12">
+      <div className="flex py-4 gap-12">
 
         <div className="w-56 cursor-pointer h-56 rounded-lg bg-white justify-center items-center flex">
           <input  type="file" name="" className="hidden" id="" />
@@ -268,14 +303,16 @@ function CreateClub() {
           </div>
         </div>
 
-        
-<div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput additionalClasses="max-w-xs w-full" label="Club name" type={"dark"} setValue={(value) => {
+            <LabeledInput containerStyle='max-w-xs w-full self-end' additionalClasses="max-w-xs w-full p-2" label="Club name" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
                
           
-  <Select
+
+  
+  </div>
+      <Select
+        className='max-w-sm w-full'
       items={[
   {
     id: 1,
@@ -512,16 +549,13 @@ function CreateClub() {
         </SelectItem>
       )}
     </Select>
-</div>
-  
-  </div>
 
       
       <div className="flex items-center gap-6 py-3">
         <div className="flex flex-col gap-2">
           <p className='text-white'>Do you want to have special requirements to join ?</p>
              <div className="flex gap-2 items-center">
-            <Checkbox />
+            <Checkbox color='default' />
             <p className='text-white text-sm'>Yes, I want to have special requirements.</p>
         </div>
 </div>             
@@ -530,7 +564,7 @@ function CreateClub() {
         <div className="flex flex-col gap-2">
             <p className='text-white'>Is your club free to join?</p>
           <div className="flex gap-2 items-center">
-          <Checkbox />
+          <Checkbox color='default' />
                <p className='text-white text-sm'>Yes, my club is free to join</p>
           </div>
         </div>
@@ -541,27 +575,46 @@ function CreateClub() {
 
       <div className="flex max-w-6xl w-full gap-2 flex-col pb-2">
         <p className='text-xl text-white font-semibold'>Club Requirements</p>
+          <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
+            <Button type='blue' additionalClasses="w-fit  px-4 py-2">
+        Append
+      </Button>
+ </div>} modalTitle='Additional Conditions' modalBodyContent={    <div className='flex flex-col gap-3'>
+                                    
+          <SingleDropDown label='Type of Rule' selectedArray={[]}>
+     <SelectItem key={'rule1'}>Min. Read Pages of Genre</SelectItem>
+         <SelectItem key={'rule1'}>Min. Read Books of Genre</SelectItem>
+     <SelectItem key={'rule2'}>Min. Read Books Amount</SelectItem>
+     <SelectItem key={'rule2'}>Min. Read Pages Amount</SelectItem>
+          <SelectItem key={'rule2'}>Peculiar Question</SelectItem>
+   </SingleDropDown>
 
-
-        <div className="flex gap-6 items-center pb-2 w-full">
-          <MultipleDropDown label='Requirement Types' selectedArray={[]}>
-            <SelectItem key={'minPagesRead'}>Minimum Pages Read</SelectItem>
-            <SelectItem key={'minSGBRead'}>Minimum Specific Genre Book/s Read</SelectItem>
-            <SelectItem key={'minSGPRead'}>Minimum Specific Genre Pages Read</SelectItem>
-            <SelectItem key={'manual'}>Manual Requirement</SelectItem>
-                </MultipleDropDown>
-         
-                 <LabeledInput additionalClasses="max-w-xs w-full" label="Pages Amount" type={"dark"} setValue={(value) => {
+     <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Pages" type={"dark"} setValue={(value) => {
               console.log(value);
-            }} />  
-        </div> 
+            }} />
+   
+  <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} setValue={(value) => {
+              console.log(value);
+            }} />
 
-          <p className='text-xl font-semibold text-white'>Requirements</p>
+
+           <SingleDropDown label='Answer Accessment' selectedArray={[]}>
+     <SelectItem key={'rule1'}>Manual</SelectItem>
+         <SelectItem key={'rule1'}>Expected Answers</SelectItem>
+   </SingleDropDown>
+   
+     <textarea placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
+
+                        
+                      </div> } isOpen={isOpen} onOpenChange={onOpenChange} />
+
         <div className="max-w-2xl p-1 min-h-96 max-h-96 h-full w-full flex flex-col gap-6  items-center justify-center bg-dark-gray rounded-lg border-primary-color border-2">
           <p className='text-3xl text-white font-semibold text-center opacity-75'>No Requirements yet !</p>
           <Image src={emptyImg} className='w-48 h-48' alt="" width={60} height={60} />
           <p className='text-center text-sm font-light opacity-40 text-white'>You haven&lsquo;t set any requirements yet. If you want to set requirements, click the dropdown above.</p>
-          </div>
+        </div>
+        
+        <Button additionalClasses='w-fit px-4 py-2 flex gap-2 items-center' onClick={onOpen} type='blue'>New Requirement <IoIosAddCircle /></Button>
 
       </div>
       

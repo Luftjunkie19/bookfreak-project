@@ -340,13 +340,13 @@ function CreateBook() {
         <div className="flex flex-col gap-2 max-w-2xl w-full">
 <p className="text-2xl text-white font-semibold flex gap-2 items-center"><RiBook2Fill className="text-4xl"/>  <span>General Book Information</span></p>
 <div className="grid gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput additionalClasses="max-w-xs w-full" label="Book Title" type={"dark"} setValue={(value) => {
+            <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Book Title" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Original Book Title" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Original Book Title" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Author" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Author" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
             <SingleDropDown selectedArray={bookCategories} label="Genre">
@@ -365,23 +365,30 @@ function CreateBook() {
           <div className="grid xl:grid-cols-2 2xl:grid-cols-3 lg:max-w-2xl 2xl:max-w-6xl w-full gap-4">
           <div className="flex flex-col gap-1">
 <p className="text-white">Version Language</p>
-            <ReactFlagsSelect searchable showOptionLabel selectButtonClassName='bg-dark-gray text-white border-primary-color font-inherit max-w-xs w-full' selected={"PL"}  onSelect={function (countryCode: string): void {
+            <ReactFlagsSelect  searchable showOptionLabel selectButtonClassName='bg-dark-gray text-white border-primary-color font-inherit max-w-xs w-full' selected={"PL"}  onSelect={function (countryCode: string): void {
               console.log(countryCode)
             } }/>
           </div>
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Publishing House" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Publishing House" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
                    <DatePicker
        label={<p className='text-white'>Date of Release</p>}
             className="max-w-xs w-full text-white"
             classNames={{
-              'innerWrapper': 'border-2 border-primary-color rounded-lg bg-dark-gray text-white',
-              'inputWrapper':'bg-dark-gray text-white',
-              'input':'border-2 border-primary-color rounded-lg bg-dark-gray text-white',
-              label: 'text-lg text-white',
-              'calendar': 'bg-dark-gray text-white',
-              'popoverContent':'bg-dark-gray text-white'
+       base:"",
+   label: "",
+   calendar:"",
+   selectorButton:"",
+   selectorIcon:"",
+   popoverContent:"",
+   calendarContent : "",
+   inputWrapper: "",
+   input: "",
+   segment: "",
+   helperWrapper: "",
+   description: "",
+   errorMessage: "",
             }}
      
         defaultValue={parseZonedDateTime("2022-11-07T00:45[America/Los_Angeles]")}
@@ -390,7 +397,7 @@ function CreateBook() {
   
 
 
-                                <LabeledInput minNumber={1} inputType='number' additionalClasses="max-w-xs w-full" label="Pages" type={"dark"} setValue={(value) => {
+                                <LabeledInput minNumber={1} inputType='number' additionalClasses="max-w-xs p-2 w-full" label="Pages" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
           
@@ -415,20 +422,20 @@ function CreateBook() {
          <div className="flex w-full flex-col gap-1">
           <p className="text-2xl text-white font-bold">Detailed Book Information</p>
           <div className="grid xl:grid-cols-2 2xl:grid-cols-3 max-w-6xl w-full gap-2">
-            <LabeledInput inputType="number" minNumber={0} additionalClasses="max-w-xs w-full" label="ISBN" type={"dark"} setValue={(value) => {
+            <LabeledInput inputType="number" minNumber={0} additionalClasses="max-w-xs p-2 w-full" label="ISBN" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Publishing Cycle" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Publishing Cycle" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Serie" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Serie" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full" label="Volume" type={"dark"} setValue={(value) => {
+                        <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Volume" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
 
-                                  <LabeledInput additionalClasses="max-w-xs w-full" label="Volume Number" type={"dark"} setValue={(value) => {
+                                  <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Volume Number" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
           
