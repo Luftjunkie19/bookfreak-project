@@ -3,20 +3,21 @@ import React from 'react'
 import Link from "next/link";
 import { FaInfo, FaUpload, FaUserGear } from "react-icons/fa6";
 import { IoGitPullRequestSharp } from 'react-icons/io5';
-import { MdAdminPanelSettings } from 'react-icons/md';
+import { MdAdminPanelSettings, MdDelete } from 'react-icons/md';
 import image from '../../../../assets/Logo.png'
-import { FaInfoCircle, FaUsers } from 'react-icons/fa';
+import { FaInfoCircle, FaPauseCircle, FaPencilAlt, FaUsers } from 'react-icons/fa';
 import { RiArrowGoBackFill } from 'react-icons/ri';
 import DashboardBar from 'components/Sidebars/left/competition/DashboardBar';
 import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
 import Image from 'next/image';
 import Button from 'components/buttons/Button';
 import LabeledInput from 'components/input/LabeledInput';
-import { IoMdDocument } from 'react-icons/io';
+import { IoMdDocument, IoMdSwap } from 'react-icons/io';
 import { DatePicker, SelectItem, useDisclosure } from '@nextui-org/react';
 import ModalComponent from 'components/modal/ModalComponent';
 import SingleDropDown from 'components/drowdown/SingleDropDown';
 import { PiStackPlusFill } from 'react-icons/pi';
+import { GiTargetPrize } from 'react-icons/gi';
 
 type Props = {}
 
@@ -25,7 +26,7 @@ function Page({ }: Props) {
   return (
       <div className='w-full flex'>
           <DashboardBar/>
-          <div className="w-full overflow-y-auto sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] overflow-x-hidden px-4 py-2 flex flex-col gap-2">
+          <div className="w-full overflow-y-auto sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] overflow-x-hidden px-4 py-2 flex flex-col gap-6">
               <div className="">
               <p className='text-white flex gap-2 text-2xl items-center'><FaInfoCircle className='text-primary-color'/> Competition Info</p>
               <p className='text-sm font-light text-gray-400'>Provide Changes to the competititon if something unexpected popped into your head</p>           
@@ -157,7 +158,26 @@ function Page({ }: Props) {
 
                   <Button type="blue" additionalClasses='w-fit px-8'>Update</Button>
               </div>
-              
+                 <div className="flex flex-col gap-2">
+              <p className='text-white flex gap-2 text-2xl items-center'><GiTargetPrize  className='text-primary-color'/> Competition's Prize</p>
+              <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition's prize as you wish ? Want to swap the prize for a different one ? Do it here !</p>           
+             
+                  <div className="flex gap-4 items-center">
+                      <Button type="blue" additionalClasses='w-fit px-4 flex gap-2 items-center'>Swap Prize <IoMdSwap/> </Button>
+                      <Button type="blue" additionalClasses='w-fit px-4 flex gap-2 items-center'>Change Details <FaPencilAlt /></Button>
+                  </div>
+             
+              </div>
+               <div className="flex flex-col gap-2">
+              <p className='text-white flex gap-2 text-2xl items-center'><MdDelete   className='text-red-400'/> Competition's Deletion</p>
+              <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition's deletion as you wish ? Your situation changed or because of another reasons you have to delete or terminate the competition ? Feel free to do it.</p>           
+             
+                  <div className="flex gap-4 items-center">
+                      <Button type='transparent' additionalClasses='w-fit bg-yellow-600 px-4 flex gap-2 items-center'>Terminate <FaPauseCircle /> </Button>
+                      <Button type="transparent" additionalClasses='w-fit px-4 flex gap-2 bg-red-400 items-center'>Cancel <MdDelete /></Button>
+                  </div>
+             
+              </div>
           </div>
     </div>
   )
