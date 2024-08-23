@@ -1,6 +1,7 @@
 'use client';
 import { useRealDocument } from 'hooks/firestore/useGetRealDocument';
 import { useAuthContext } from 'hooks/useAuthContext';
+import { useCheckPathname } from 'hooks/useCheckPathname';
 import Image from 'next/image';
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
@@ -18,13 +19,13 @@ function CompetitionLeftBar() {
   const { competitionId } = useParams();
   const { user } = useAuthContext();
   const { document } = useRealDocument('competitions', competitionId as string);
-  const pathname = usePathname();
+  const { includesElements } = useCheckPathname();
   const isMemberCheck = useMemo(() => {
     return user && document && document.members.find((item) => item.id === user.uid)
   }, [user, document]);
  
   return (
- <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] 2xl:max-w-72 2xl:w-full sm:w-fit ${isMemberCheck && !pathname.includes('settings') ? 'flex' : 'hidden'} flex-col justify-between gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
+ <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] 2xl:max-w-72 2xl:w-full sm:w-fit ${isMemberCheck && !includesElements('settings') ? 'flex' : 'hidden'} flex-col justify-between gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
       <div className="flex flex-col gap-4">
         <Link className='flex items-center gap-2' href={`/competition/${competitionId}`}>
         <MdSpaceDashboard size={24} /> 

@@ -9,12 +9,13 @@ import {
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useCheckPathname } from 'hooks/useCheckPathname';
 
 function Footer() {
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
-  const pathname = usePathname();
+  const { includesElements } = useCheckPathname();
   return (
-    <footer className={`sm:mb-7 lg:mb-14 p-10 ${pathname.includes('/chat/') || pathname.includes('/club/') || pathname.includes('/competition/') && !pathname.includes('/form/')  ? 'hidden' : 'footer'} ${isDarkModed ? " bg-primary-color" : "bg-secondary-color"} text-white`}>
+    <footer className={`sm:mb-7 lg:mb-14 p-10 ${includesElements('/chat/') || includesElements('/profile/settings') || includesElements('/profile/dashboard') || includesElements('/club/') || includesElements('/competition/') && !pathname.includes('/form/')  ? 'hidden' : 'footer'} ${isDarkModed ? " bg-primary-color" : "bg-secondary-color"} text-white`}>
       <nav>
         <header className={`footer-title ${isDarkModed ? "text-primeColor" : "text-accColor"}`}>Services</header>
         <Link href={''} className="link link-hover">Advertisement</Link>

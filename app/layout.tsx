@@ -1,5 +1,6 @@
 
 import './globals.css';
+import 'react-credit-cards-2/dist/es/styles-compiled.css';
 
 import "primereact/resources/themes/lara-dark-blue/theme.css";
 

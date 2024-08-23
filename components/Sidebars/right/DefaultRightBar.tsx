@@ -5,14 +5,15 @@ import image from '../../../assets/default-avatar-profile-trendy-style-social-me
 import { FaUser, FaUsers } from 'react-icons/fa6'
 import { usePathname } from 'next/navigation'
 import { useAuthContext } from 'hooks/useAuthContext'
+import { useCheckPathname } from 'hooks/useCheckPathname';
 
 type Props = {}
 
 function DefaultRightBar({ }: Props) {
-    const location = usePathname();
+    const { includesElements } = useCheckPathname();
     const { user } = useAuthContext();
     return (
-        <div className={` ${!user || location.includes('/search') || location.includes('/competition/') || location.includes('/club') || location.includes('/signup') || location.includes('/login') || location.includes('form/') || location.includes('/chat') || location.includes('/test/') ? 'hidden' : 'sm:hidden lg:flex'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] ${location.includes('/profile/') && 'sm:hidden xl:flex'} min-w-32 lg:max-w-48 2xl:max-w-64 w-full flex flex-col gap-2 border-l-2 border-dark-gray`}>
+        <div className={` ${!user || includesElements('/search') || includesElements('/competition/') || includesElements('/club') || includesElements('/signup') || includesElements('/login') || includesElements('form/') || includesElements('/chat') || includesElements('/test/') || includesElements('/settings') || includesElements('/profile/dashboard') ? 'hidden' : 'sm:hidden lg:flex flex-col'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)]  min-w-32 lg:max-w-48 2xl:max-w-64 w-full gap-2 border-l-2 border-dark-gray`}>
           <p className='text-xl p-2 text-white flex items-center gap-2'>Friends <FaUsers className='text-2xl' /></p>
           
           <div className="flex flex-col gap-4 px-2">

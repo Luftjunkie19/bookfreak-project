@@ -109,6 +109,7 @@
     "react-markdown": "^9.0.1",
     "react-particles": "^2.12.2",
     "react-phone-input-2": "^2.15.1",
+    "react-phone-input-beautify": "^1.0.12",
     "react-player": "^2.16.0",
     "react-pro-sidebar": "^1.1.0",
     "react-recaptcha": "^2.3.10",
