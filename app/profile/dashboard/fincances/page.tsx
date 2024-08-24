@@ -17,7 +17,7 @@ function Page({ }: Props) {
   const { document } = useGetUserObjectEffected();
 
   return (
-    <div className='flex flex-col overflow-y-auto sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] gap-3'>
+    <div className='flex flex-col pb-2 overflow-y-auto sm:h-[calc(100vh-3.5rem)] xl:h-[calc(100vh-4rem)] gap-3'>
       {document && <p className='text-white text-2xl'>Hello, {document.nickname} !</p>}
       
       <p className='text-white'>Financial Data</p>

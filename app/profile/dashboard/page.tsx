@@ -10,6 +10,9 @@ import { FaBookOpen, FaTrophy } from 'react-icons/fa';
 import Book from 'components/elements/Book';
 import { Progress } from '@nextui-org/react';
 import Button from 'components/buttons/Button';
+import { Area, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { AreaChart } from 'lucide-react';
+import { PagesPerDayChart } from 'components/charts/competition/CompetitionCharts';
 
 type Props = {}
 
@@ -89,46 +92,48 @@ function Page({ }: Props) {
         <p className='text-3xl font-semibold'>Currently Reading Book</p>
         <p>If some thing has changed in your reading progress, you can update it now from dashboard perspective</p>
         </div>
-        <div className="flex items-center">
-        <div className="flex items-center gap-12">
+        <div className="flex items-center gap-6">
+        <div className="flex items-center max-w-3xl w-full gap-12">
 
-          <Book bookCover={''} pages={45} author={'Book Author'} bookId={'BookID'} title={'Book Title'} bookCategory={'Book Category'} type={'white'} />
+          <Book additionalClasses='max-w-52 w-full' bookCover={''} pages={45} author={'Book Author'} bookId={'BookID'} title={'Book Title'} bookCategory={'Book Category'} type={'white'} />
       
-          <div className="flex flex-col gap-2">
+          <div className="flex max-w-xl w-full flex-col gap-2">
             <p className='text-2xl font-semibold text-white'>Book Title</p>
             <p className='text-white'>90/115 Read Pages</p>
             <Progress
               aria-label='loading...'
-              className="max-w-md w-full"
+              className="max-w-60 w-full"
       size='lg'
       value={value}
               classNames={{
-                'value': 'max-w-md w-full',
-                labelWrapper:'max-w-md w-full',
                 'indicator':'bg-primary-color'
               }}
 
             />
             <p className='text-white'>80% Done</p>
-            <Button type={'blue'} additionalClasses='flex items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
+            <Button type={'blue'} additionalClasses='flex w-fit px-3 gap-3 items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
 </div>
         </div>
 
-          <div className="max-w-lg w-full bg-dark-gray rounded-lg">
-            <ResponsiveContainer width={700} height="80%">
-    <AreaChart data={data}
-      margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-      <XAxis dataKey="name" />
-      <YAxis />
-      <CartesianGrid strokeDasharray="3 3" />
-      <Tooltip />
-      <ReferenceLine x="Page C" stroke="green" label="Min PAGE" />
-      <ReferenceLine y={4000} label="Max" stroke="red" strokeDasharray="3 3" />
-      <Area type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
-    </AreaChart>
-  </ResponsiveContainer>
+          <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
+       <PagesPerDayChart className='w-full h-full'/>
           </div>
+          
         </div>
+        <div className="flex flex-col gap-1">
+          <p className='text-white text-xl'>Your Book Reading Statistics</p>
+          <div className="flex gap-4 items-center">
+             <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
+       <PagesPerDayChart className='w-full h-full'/>
+            </div>
+               <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
+       <PagesPerDayChart className='w-full h-full'/>
+            </div>
+             <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
+       <PagesPerDayChart className='w-full h-full'/>
+          </div>
+          </div>
+         </div>
       </div>
 
 
