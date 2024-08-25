@@ -31,9 +31,48 @@ function page({}: Props) {
                  <p className='flex-1 justify-center flex items-center gap-6 text-center'>Decision <BsThreeDots  className='text-2xl text-primary-color' /></p>
             </div>
             
-          <div className="flex flex-col max-h-[32rem] gap-4 w-full bg-dark-gray p-2 rounded mx-auto">
+          <div className="flex flex-col max-h-96 h-full overflow-y-auto gap-4 w-full bg-dark-gray p-2 rounded mx-auto">
 
               <div className="flex items-center">
+                <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
+                  <Image alt='' className='w-8 h-8 rounded-full' src={img} width={60} height={60} />
+                  Nickname
+                </div>
+                <div className="flex-1 flex gap-2  text-white text-xl justify-center items-center">12</div>
+                <div className="flex-1 text-green-400  flex gap-2 justify-center items-center">Yes</div>
+                  <div className="flex-1 overflow-y-auto items-center flex justify-center text-gray-500"><Button type='blue'>Check Answers</Button></div>
+                <div className="flex-1 flex gap-1 justify-center items-center">
+                                    <Button additionalClasses='text-green-400 text-3xl' type='transparent'><FaCheckCircle/></Button>
+                   <Button additionalClasses='text-red-400 text-3xl' type='transparent'><MdCancel /></Button>
+                </div>
+            </div>
+             <div className="flex items-center">
+                <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
+                  <Image alt='' className='w-8 h-8 rounded-full' src={img} width={60} height={60} />
+                  Nickname
+                </div>
+                <div className="flex-1 flex gap-2  text-white text-xl justify-center items-center">12</div>
+                <div className="flex-1 text-green-400  flex gap-2 justify-center items-center">Yes</div>
+                  <div className="flex-1 overflow-y-auto items-center flex justify-center text-gray-500"><Button type='blue'>Check Answers</Button></div>
+                <div className="flex-1 flex gap-1 justify-center items-center">
+                                    <Button additionalClasses='text-green-400 text-3xl' type='transparent'><FaCheckCircle/></Button>
+                   <Button additionalClasses='text-red-400 text-3xl' type='transparent'><MdCancel /></Button>
+                </div>
+            </div>
+             <div className="flex items-center">
+                <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
+                  <Image alt='' className='w-8 h-8 rounded-full' src={img} width={60} height={60} />
+                  Nickname
+                </div>
+                <div className="flex-1 flex gap-2  text-white text-xl justify-center items-center">12</div>
+                <div className="flex-1 text-green-400  flex gap-2 justify-center items-center">Yes</div>
+                  <div className="flex-1 overflow-y-auto items-center flex justify-center text-gray-500"><Button type='blue'>Check Answers</Button></div>
+                <div className="flex-1 flex gap-1 justify-center items-center">
+                                    <Button additionalClasses='text-green-400 text-3xl' type='transparent'><FaCheckCircle/></Button>
+                   <Button additionalClasses='text-red-400 text-3xl' type='transparent'><MdCancel /></Button>
+                </div>
+            </div>
+             <div className="flex items-center">
                 <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
                   <Image alt='' className='w-8 h-8 rounded-full' src={img} width={60} height={60} />
                   Nickname
@@ -120,7 +159,7 @@ function page({}: Props) {
                  <p className='flex-1 justify-center flex items-center gap-6 text-center'>Mangement <BsThreeDots  className='text-2xl text-primary-color' /></p>
             </div>
             
-          <div className="flex flex-col max-h-[32rem] gap-4 w-full bg-dark-gray p-2 rounded mx-auto">
+          <div className="flex flex-col max-h-96 h-full overflow-y-auto gap-4 w-full bg-dark-gray p-2 rounded mx-auto">
 
               <div className="flex items-center">
                 <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
@@ -221,7 +260,7 @@ function page({}: Props) {
                  <p className='flex-1 justify-center flex items-center gap-6 text-center'>Decision <BsThreeDots  className='text-2xl text-primary-color' /></p>
             </div>
             
-          <div className="flex flex-col max-h-[32rem] gap-4 w-full bg-dark-gray p-2 rounded mx-auto">
+          <div className="flex flex-col max-h-96 h-full overflow-y-auto gap-4 w-full bg-dark-gray p-2 rounded mx-auto">
 
               <div className="flex items-center">
                 <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">

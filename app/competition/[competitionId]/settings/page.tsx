@@ -32,8 +32,8 @@ function Page({ }: Props) {
               <p className='text-sm font-light text-gray-400'>Provide Changes to the competititon if something unexpected popped into your head</p>           
               </div>
               <div className="flex flex-col gap-2">
-              <div className="flex gap-6 p-2 w-full items-center">
-              <div className="flex sm:flex-col lg:flex-row gap-3 p-1 items-center">
+              <div className="flex gap-6 p-2 w-full sm:flex-col 2xl:flex-row 2xl:items-center">
+              <div className="flex gap-3 p-1 items-center">
                   <Image src={image} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>
                   <div className="flex flex-col gap-1">
                       <p className='text-white font-light text-xs'>Uploaded file can be up to 50MB</p>

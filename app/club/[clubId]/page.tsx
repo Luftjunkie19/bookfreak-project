@@ -59,6 +59,8 @@ import useGetCollection from 'hooks/firestore/useGetCollection';
 import Button from 'components/buttons/Button';
 import CompetitionAd from 'components/advertisements/CompetitionAd';
 import { IoChatbubbles } from 'react-icons/io5';
+import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
+import { SwiperSlide } from 'swiper/react';
 
 function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
@@ -221,10 +223,10 @@ Join Club
         </Button>
       </div>
       
-        <div className="flex items-center gap-6 w-full">
+        <div className="flex sm:flex-col 2xl:flex-row 2xl:items-center gap-6 w-full">
         
-        <div className="flex flex-col my-4 mx-2 gap-3 max-w-sm w-full">
-          <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+        <div className="flex sm:flex-col xl:flex-row 2xl:flex-col my-4 mx-2 gap-3 sm:max-w-sm xl:max-w-full w-full">
+          <div className="w-full  h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -293,7 +295,9 @@ Join Club
 
       <div className="flex flex-col gap-1 p-1">
         <p className='text-xl flex gap-2 items-center  font-semibold text-white'><FaBookOpen className='text-white'/> Reading Activity of the users</p>
-      <div className="flex gap-4 py-1 items-center">
+        <div className="max-w-5xl w-full">
+          <BaseSwiper slidesOnXlScreen={2} additionalClasses='w-full'>
+            <SwiperSlide className='w-full max-w-xs'>
           <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
@@ -318,7 +322,9 @@ Join Club
               </div>
             </div>
           </div>
-           <div className="w-full max-w-xs  h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            </SwiperSlide>
+             <SwiperSlide className='w-full max-w-xs'>
+          <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -342,7 +348,9 @@ Join Club
               </div>
             </div>
           </div>
-           <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            </SwiperSlide>
+           <SwiperSlide className="w-full max-w-xs">
+          <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -366,6 +374,9 @@ Join Club
               </div>
             </div>
           </div>
+            </SwiperSlide>
+          </BaseSwiper>
+          
           
          
       </div>

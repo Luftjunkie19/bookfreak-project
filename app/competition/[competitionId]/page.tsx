@@ -232,11 +232,12 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
   return (
     <div
       className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] overflow-y-scroll overflow-x-hidden w-full`}
-    >
+     >
+      <div className="flex flex-col sm:gap-14 xl:gap-0">
       <div className={`relative w-full ${classes['light-blue-gradient']} top-0 left-0 h-64 `}>
           {document && 
         <div className="absolute z-10 -bottom-16 flex gap-6 items-center  left-0 m-3">
-            <Image src={image} alt='' width={60} height={60} className='w-44 z-10 h-44 object-cover rounded-lg' />
+            <Image src={image} alt='' width={60} height={60} className='sm:w-24 sm:h-24 xl:w-44 z-10 xl:h-44 object-cover rounded-lg' />
             <div className="flex flex-col gap-1">
               <p className="text-2xl font-bold text-white">{document.competitionName}</p>
               <p>{document.members.length} Members</p>
@@ -260,10 +261,12 @@ Request To Join
         </Button>
 </div>
 
+      </div>
+
    <div className="flex sm:flex-col 2xl:flex-row overflow-x-hidden  gap-4 w-full">
         
-        <div className="w-full sm:block max-w-2xl xl:hidden">
-          <BaseSwiper  slidesOnSmallScreen={1} slidesOnLargeScreen={2} slidesOnLargeScreen2={2} slidesOnXlScreen={2} slidesOn2XlScreen={2} additionalClasses='w-full'>
+        <div className="w-full sm:block xl:hidden">
+          <BaseSwiper  slidesOnSmallScreen={2} slidesOnLargeScreen={2} slidesOnLargeScreen2={2} slidesOnXlScreen={2} slidesOn2XlScreen={2} additionalClasses='w-full'>
             <SwiperSlide className='max-w-sm w-full'>
                  <div className="w-full h-72 max-w-sm bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
@@ -319,7 +322,7 @@ Request To Join
           </BaseSwiper>
         </div>
 
-        <div className="xl:flex sm:hidden flex-col my-4 mx-2 gap-3 xl:max-w-sm w-full">
+        <div className="xl:flex sm:hidden 2xl:flex-col my-4 mx-2 gap-3 2xl:max-w-sm w-full">
           <div className="w-full h-72 max-w-sm bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
@@ -397,7 +400,7 @@ Request To Join
         </div>
         
         <div className="flex flex-col gap-1">
-          <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={1} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
+          <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1.35}>
             <SwiperSlide>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Overall Ranking</p>
@@ -543,9 +546,9 @@ Request To Join
             
           </BaseSwiper>
 
-          <div className="flex flex-col max-w-lg w-full">
+          <div className="flex flex-col">
             <p className='text-white text-lg'>Data from members' progresses</p>
-             <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={1} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
+             <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1.35}>
             <SwiperSlide>
                <div className='max-w-sm w-full h-64 rounded-lg bg-dark-gray p-2'>
        <PagesPerDayChart className='w-full h-full' />

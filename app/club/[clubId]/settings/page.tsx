@@ -29,7 +29,7 @@ export default function Page() {
               <p className='text-sm font-light text-gray-400'>Provide Changes to the club's information, if something unexpected popped into your head.</p>           
               </div>
               <div className="flex flex-col gap-2">
-              <div className="flex gap-6 p-2 w-full items-center">
+              <div className="flex gap-6 p-2 w-full sm:flex-col 2xl:flex-row 2xl:items-center">
               <div className="flex sm:flex-col lg:flex-row gap-3 p-1 items-center">
                   <Image src={image} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>
                   <div className="flex flex-col gap-1">
@@ -135,7 +135,7 @@ export default function Page() {
               <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the clubs's deletion as you wish ? Your situation changed or because of another reasons you have to delete the club ? Feel free to do it.</p>           
              
                   <div className="flex gap-4 items-center">
-                      <Button type="transparent" additionalClasses='w-fit px-4 flex gap-2 bg-red-400 items-center'>Cancel <MdDelete /></Button>
+                      <Button type='black' additionalClasses='w-fit px-4 flex gap-2 text-white bg-red-400 items-center'>Cancel <MdDelete /></Button>
                   </div>
              
               </div>
