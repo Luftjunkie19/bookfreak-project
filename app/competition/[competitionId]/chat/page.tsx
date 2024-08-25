@@ -11,12 +11,11 @@ export default function Page({params}:{params:{competitionId:string}}) {
     const {documents}=useGetCollection('users');
     const {user}=useAuthContext();
     return (
-        <div className="flex flex-col w-full h-screen">
+        <div className="flex flex-col w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)]">
             {user && document && 
                 <>
-                
             <ChatList document={document} messages={document.chatMessages} documents={documents} user={user} isAllowedToSee={document && document.members.find((member)=>member.id === user.uid)} />
-                {document.members.find((member)=>member.id === user.uid)  && user ? <ChatBar isAllowedToType={document && document.members.find((member)=>member.id === user.uid)}/> : <ChatBar isAllowedToType={document && document.members.find((member)=>member.id === user.uid)}/>}
+                <ChatBar isAllowedToType={Boolean(document && user && document.members && document.members.find((member)=>member.id === user.uid))}/> 
             </>
             }
 

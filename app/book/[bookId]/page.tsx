@@ -399,7 +399,7 @@ const {document}=useRealDocument('books', id);
   };
 
   return (
-    <div className={`min-h-screen h-full overflow-x-hidden w-full p-2`}>
+    <div className={` overflow-x-hidden w-full p-2`}>
       {document && <>
         <div className="flex justify-center items-center p-2">
         <div className="flex justify-between max-w-5xl w-full items-center ">
@@ -451,14 +451,14 @@ const {document}=useRealDocument('books', id);
       </div>
         
         <div className="flex gap-6 items-center py-4 w-full">
-          <div className="flex flex-col gap-1">
+          <div className="flex max-w-lg w-full flex-col gap-1">
             <p className='text-white text-lg font-semibold'>Description</p>
             <div className="overflow-y-auto min-h-56 max-h-56 h-full bg-dark-gray text-white rounded-lg p-2 max-w-lg w-full">
               {document.description}
             </div>
        </div>
             
-          <div className=""> 
+          <div className="max-w-sm w-full"> 
             
 <p className='text-white text-lg font-semibold'>Book Details</p>
             <div className="overflow-y-auto text-white min-h-56 max-h-56 h-full bg-dark-gray rounded-lg p-2 max-w-sm w-full">

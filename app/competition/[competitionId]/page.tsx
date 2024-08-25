@@ -260,10 +260,12 @@ Request To Join
         </Button>
 </div>
 
-   <div className="flex overflow-x-hidden  gap-4 w-full">
+   <div className="flex sm:flex-col 2xl:flex-row overflow-x-hidden  gap-4 w-full">
         
-        <div className="flex flex-col my-4 mx-2 gap-3 max-w-sm w-full">
-          <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+        <div className="w-full sm:block max-w-2xl xl:hidden">
+          <BaseSwiper  slidesOnSmallScreen={1} slidesOnLargeScreen={2} slidesOnLargeScreen2={2} slidesOnXlScreen={2} slidesOn2XlScreen={2} additionalClasses='w-full'>
+            <SwiperSlide className='max-w-sm w-full'>
+                 <div className="w-full h-72 max-w-sm bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -287,7 +289,62 @@ Request To Join
               </div>
             </div>
           </div>
-              <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            </SwiperSlide>
+              <SwiperSlide className='max-w-sm w-full'>
+                 <div className="w-full h-72 max-w-sm bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
+            <div className="flex items-center gap-6">
+              <IoChatbubbles className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>10 New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <FaUserFriends className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>19 Members Together</p>
+                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <GiCrane  className="text-primary-color text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>Estimated 3 years ago</p>
+                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+              </div>
+            </div>
+          </div>
+          </SwiperSlide>
+          </BaseSwiper>
+        </div>
+
+        <div className="xl:flex sm:hidden flex-col my-4 mx-2 gap-3 xl:max-w-sm w-full">
+          <div className="w-full h-72 max-w-sm bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
+            <div className="flex items-center gap-6">
+              <IoChatbubbles className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>10 New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <FaUserFriends className="text-white text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>19 Members Together</p>
+                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+              </div>
+            </div>
+             <div className="flex items-center gap-6">
+              <GiCrane  className="text-primary-color text-2xl" />
+              <div className="flex flex-col gap-1 text-white">
+                <p>Estimated 3 years ago</p>
+                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+              </div>
+            </div>
+          </div>
+              <div className="w-full max-w-sm h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -316,7 +373,7 @@ Request To Join
         <div className="flex flex-col gap-3 p-1 overflow-y-auto h-auto overflow-x-hidden max-w-4xl w-full">
           <div className="flex flex-col gap-1">
             <p className='text-white text-xl'>The Prize</p>
-          <div className="flex gap-3 p-1 w-full items-center">
+          <div className="flex flex-wrap gap-3 p-1 w-full lg:items-center">
                <div className="w-full max-w-xs h-72 bg-dark-gray items-center p-2 flex flex-col justify-around border-green-400 border shadow-green-400 shadow gap-2 rounded-lg">
               <p className=' text-5xl font-bold text-green-400'>100.00$</p>
               <div className="flex flex-col gap-1 items-center">
@@ -486,7 +543,7 @@ Request To Join
             
           </BaseSwiper>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col max-w-lg w-full">
             <p className='text-white text-lg'>Data from members' progresses</p>
              <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={1} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
             <SwiperSlide>

@@ -11,7 +11,7 @@ type Props = {}
 
 function Page({}: Props) {
   return (
-    <div className='p-1 w-full flex flex-col gap-4'>
+    <div className='w-full sm:h-[calc(100vh-3.75rem)] xl:h-[calc(100vh-4.25rem)] overflow-y-auto flex flex-col gap-2'>
       <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1 text-white">   
         <p className='text-3xl font-semibold'>Currently Reading Book</p>
