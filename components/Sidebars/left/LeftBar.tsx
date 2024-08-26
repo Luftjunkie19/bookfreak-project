@@ -59,18 +59,13 @@ function DefaultLeftBar({ }: Props) {
       </div>
       <div className="">
       <p className='text-white flex gap-4 text-lg items-center'>  <span className='sm:hidden xl:block'>Premium Features</span>  <WiStars className=' text-primary-color text-2xl'/> </p>
-      <div className="flex text-sm gap-2 flex-col">
+      <div className="flex text-sm gap-1 flex-col">
           <Link href={'/chat/aissistant'}>   
         <Button type='transparent' additionalClasses=' flex gap-2 items-center font-medium'>
               <RiRobot3Fill className='text-2xl text-gray-600'/> <p className=' text-gray-600'><span className=' text-primary-color sm:hidden xl:block'> AIssistant </span></p>
           </Button>
         </Link>
-          <Link href={'/ai-test-creator'}>   
-        <Button type='transparent' additionalClasses=' flex gap-2 items-center font-medium'>
-              <GrDocumentPerformance className='text-2xl text-gray-600 xl:'/> <p className=' text-gray-600 sm:hidden xl:block'>AI-Test Creator</p>
-          </Button>
-        </Link>
-          <Link href={'/aissistant'}>   
+          <Link href={'/ai-bookcover-creator'}>   
         <Button type='transparent' additionalClasses=' flex gap-2 items-center font-medium'>
               <GiBookCover  className='text-2xl text-gray-600'/> <p className=' text-gray-600 sm:hidden xl:block'>BookCover Creator</p>
           </Button>

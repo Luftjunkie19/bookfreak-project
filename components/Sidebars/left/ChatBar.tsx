@@ -7,14 +7,15 @@ import Link from 'next/link';
 import React, { useMemo } from 'react'
 import { FaSearch } from 'react-icons/fa';
 import { FaImage } from 'react-icons/fa6';
+import { useParams } from 'react-router-dom';
 
 type Props = {}
 
 function ChatBar({ }: Props) {
 
     const { user } = useAuthContext();
-    const { documents: chats } = useGetCollection('userChats');
-
+  const { documents: chats } = useGetCollection('userChats');
+  const { chatId } = useParams();
     const yourChats = useMemo(() => {
         if (chats && user) {
             return chats.filter(chat => chat.chatUsers.find((item)=> item.id === user.uid));
@@ -22,7 +23,7 @@ function ChatBar({ }: Props) {
     },[chats, user])
 
   return (
-    <div className='max-w-xs sm:hidden xl:flex w-full bg-dark-gray h-full flex-col'>
+    <div className={`2xl:max-w-xs xl:max-w-60 sm:max-w-52 ${chatId ? "sm:hidden lg:flex" : 'sm:hidden lg:flex'} w-full lg:bg-dark-gray overflow-y-auto h-screen flex-col`}>
       <div className="flex gap-1 items-center w-full p-1">
         <FaSearch className='text-2xl text-white'/>
     <LabeledInput placeholder='Search for people...' additionalClasses='w-full p-2' setValue={(value)=>{

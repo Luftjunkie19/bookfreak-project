@@ -183,7 +183,7 @@ function Competitions() {
   const pagesAmount = Math.ceil(sortedClubs.length / objectsOnPage());
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   return (
-    <div className={`min-h-screen h-full flex `}>
+    <div className={`w-full flex`}>
 
 
       
@@ -191,7 +191,7 @@ function Competitions() {
              <Autocomplete
           defaultItems={sortedClubs}
           onValueChange={(value)=>setSearchInputValue(value)}
-          label="Club Name"
+           label={<p className='text-white'>Competition's Name</p>}
           labelPlacement='outside'
       placeholder="Search a Club"
       className="max-w-sm w-full self-center p-2"

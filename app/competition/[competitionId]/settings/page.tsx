@@ -174,7 +174,7 @@ function Page({ }: Props) {
              
                   <div className="flex gap-4 items-center">
                       <Button type='transparent' additionalClasses='w-fit bg-yellow-600 px-4 flex gap-2 items-center'>Terminate <FaPauseCircle /> </Button>
-                      <Button type="transparent" additionalClasses='w-fit px-4 flex gap-2 bg-red-400 items-center'>Cancel <MdDelete /></Button>
+                      <Button type="black" additionalClasses='w-fit px-4 flex gap-2 bg-red-400 items-center'>Cancel <MdDelete /></Button>
                   </div>
              
               </div>

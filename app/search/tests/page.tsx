@@ -93,7 +93,7 @@ function Tests() {
   },[filteredItems, selectedSort, sortOptions]);
 
   return (
-    <div className={`min-h-screen h-full w-full flex`}>
+    <div className={`w-full flex`}>
    
       
 
@@ -102,7 +102,7 @@ function Tests() {
     <Autocomplete
           defaultItems={sortedTests}
           onValueChange={(value)=>setSearchInputValue(value)}
-          label="Book Title"
+          label={<p className='text-white'>Test's Name</p>}
           labelPlacement='outside'
       placeholder="Search a Book"
       className="max-w-sm w-full self-center p-2"

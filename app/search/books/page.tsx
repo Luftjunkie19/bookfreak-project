@@ -245,8 +245,8 @@ function Books() {
 
 
   return (
-    <div className='flex'>
-    <div className={`h-screen flex flex-col gap-6 p-2`}>
+    <div className='w-full flex'>
+    <div className={`flex flex-col gap-6 p-2`}>
       <LabeledInput type={'dark'} additionalClasses='max-w-sm mx-auto w-full p-2' setValue={(value: string)=> {
         console.log(value);
       } } />

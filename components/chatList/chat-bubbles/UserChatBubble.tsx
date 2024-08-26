@@ -20,7 +20,7 @@ function UserChatBubble({item, usersObjects, user, condition}: Props) {
            </div>
          </div>
          <div className="chat-header gap-2">
-           {usersObjects.find((userObj)=>userObj.id === item.sender.id)?.nickname}, {' '}
+           {usersObjects.find((userObj)=>userObj.id === item.sender.id)!.nickname}, {' '}
            <time className="text-xs opacity-50 text-white">{formatDistanceToNow(item.sentAt)}</time>
          </div>
          <div className="chat-bubble bg-primary-color text-white">{item.content.startsWith('https://firebasestorage.') ? <Image src={item.content} className='max-w-sm w-full min-h-32 max-h-48 rounded-lg' width={60} height={60} alt=''/>: item.content}</div>      

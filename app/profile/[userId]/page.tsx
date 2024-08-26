@@ -133,7 +133,8 @@ const providedIdPartTwo=providedId.split("-")[1];
    {document && 
         <>
         <div className="flex flex-col gap-2 w-full">
-        <div className='bg-dark-gray min-h-52 relative top-0 left-0'>
+          <div className="flex flex-col w-full sm:gap-14 lg:gap-0">
+          <div className='bg-dark-gray min-h-52 relative top-0 left-0'>
           <div className="flex gap-8 items-center absolute -bottom-12 left-4 m-2">
             <Image src={document.photoURL} alt='' width={60} height={60} className='w-48 h-48 rounded-full' />
               <div className="flex flex-col gap-2">
@@ -157,10 +158,12 @@ const providedIdPartTwo=providedId.split("-")[1];
                 Message <TbMessageCircle2Filled />
               </Button>
             </div>
+            
+       </div>
 
           
-          <div className="flex md:flex-col 2xl:flex-row w-full gap-6 px-2 py-4">
-            <div className="flex md:flex-row 2xl:flex-col gap-4">
+          <div className="flex sm:flex-col 2xl:flex-row w-full gap-6 px-2 py-4">
+            <div className="flex sm:flex-col xl:flex-row 2xl:flex-col gap-4">
                <div className="flex flex-col gap-2 max-w-md rounded-lg border-2 p-2 border-primary-color bg-dark-gray w-full">
               <p className='text-xl text-white font-semibold'>Details</p>
               <div className="h-40 text-white overflow-y-auto">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolorem, at maxime quod rem sed ipsum iste harum natus facilis reiciendis cupiditate quasi aspernatur minima quam dolore laudantium magnam in voluptatibus consectetur, fugit tenetur similique aliquam ab? Possimus, eos laborum laudantium tempora corporis, consectetur eius reprehenderit nemo pariatur, culpa neque vel.</div>

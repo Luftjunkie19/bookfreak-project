@@ -226,7 +226,7 @@ Join Club
         <div className="flex sm:flex-col 2xl:flex-row 2xl:items-center gap-6 w-full">
         
         <div className="flex sm:flex-col xl:flex-row 2xl:flex-col my-4 mx-2 gap-3 sm:max-w-sm xl:max-w-full w-full">
-          <div className="w-full  h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+          <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />

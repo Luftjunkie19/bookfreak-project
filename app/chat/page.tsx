@@ -16,10 +16,10 @@ function YourChats() {
 
   
   return (
-    <div className="h-screen flex">
+    <div className="flex">
 
 <ChatBar/>
-<div className="w-full flex justify-center items-center">
+<div className="w-full sm:hidden lg:flex justify-center items-center">
   <div className="flex flex-col gap-2 items-center justify-center">
     <IoChatbubbles className='text-primary-color text-8xl'/>
     <p className='text-white text-2xl'>Start A Conversation Now!</p>

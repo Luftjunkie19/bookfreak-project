@@ -172,13 +172,13 @@ function Clubs() {
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   
   return (
-    <div className={`min-h-screen h-full flex`}>
+    <div className={`w-full flex`}>
    
       <div className="w-full h-full flex flex-col gap-6">
             <Autocomplete
           defaultItems={sortedClubs}
           onValueChange={(value)=>setSearchInputValue(value)}
-          label="Club Name"
+  label={<p className='text-white'>Club Name</p>}
           labelPlacement='outside'
       placeholder="Search a Club"
       className="max-w-sm w-full self-center p-2"
