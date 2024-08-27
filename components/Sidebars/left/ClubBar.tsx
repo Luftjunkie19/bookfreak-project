@@ -15,7 +15,7 @@ function ClubBar() {
   const { clubId } = useParams();
   const { includesElements } = useCheckPathname();
   return (
-    <div className={` ${!includesElements('settings') ? 'flex' : 'hidden'} flex-col justify-between sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
+    <div className={` ${!includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} flex-col justify-between sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
       <div className="flex flex-col gap-4">
       <Link className='flex items-center gap-2' href={`/club/${clubId}`}>
           <MdSpaceDashboard size={24} /> 

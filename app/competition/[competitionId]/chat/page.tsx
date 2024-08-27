@@ -1,4 +1,5 @@
 'use client';
+import CompetitionTopBar from "components/TopBar/CompetitionTopBar";
 import ChatBar from "components/chatList/ChatBottomBar";
 import ChatList from "components/chatList/chat-lists/ChatList";
 import useGetCollection from "hooks/firestore/useGetCollection";
@@ -14,8 +15,9 @@ export default function Page({params}:{params:{competitionId:string}}) {
         <div className="flex flex-col w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)]">
             {user && document && 
                 <>
+                <CompetitionTopBar/>
             <ChatList document={document} messages={document.chatMessages} documents={documents} user={user} isAllowedToSee={document && document.members.find((member)=>member.id === user.uid)} />
-                <ChatBar isAllowedToType={Boolean(document && user && document.members && document.members.find((member)=>member.id === user.uid))}/> 
+                <ChatBar isAllowedToType={document && user && document.members && document.members.find((member)=>member.id === user.uid) ? true : false}/> 
             </>
             }
 

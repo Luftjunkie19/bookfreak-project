@@ -187,7 +187,7 @@ function Competitions() {
 
 
       
-      <div className="w-full h-full flex flex-col gap-6">
+      <div className="w-full flex flex-col gap-6">
              <Autocomplete
           defaultItems={sortedClubs}
           onValueChange={(value)=>setSearchInputValue(value)}
