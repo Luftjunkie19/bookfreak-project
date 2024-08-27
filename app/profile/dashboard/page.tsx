@@ -13,6 +13,8 @@ import Button from 'components/buttons/Button';
 import { Area, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { AreaChart } from 'lucide-react';
 import { PagesPerDayChart } from 'components/charts/competition/CompetitionCharts';
+import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
+import { SwiperSlide } from 'swiper/react';
 
 type Props = {}
 
@@ -53,7 +55,7 @@ function Page({ }: Props) {
       
       <div className="flex flex-col gap-2">
         <p className='text-4xl font-semibold text-white'>Overview</p>
-        <div className="max-w-5xl p-4 flex justify-between items-center bg-dark-gray rounded-lg w-full">
+        <div className="max-w-5xl p-4 flex sm:flex-col xl:flex-row gap-4 justify-between items-center bg-dark-gray rounded-lg w-full">
           <div className="flex gap-4 items-center">
           <div className="w-16 h-16 flex bg-primary-color justify-center items-center rounded-full">
             <FaBook className='text-3xl text-white'/>
@@ -92,8 +94,8 @@ function Page({ }: Props) {
         <p className='text-3xl font-semibold'>Currently Reading Book</p>
         <p>If some thing has changed in your reading progress, you can update it now from dashboard perspective</p>
         </div>
-        <div className="flex items-center gap-6">
-        <div className="flex items-center max-w-3xl w-full gap-12">
+        <div className="flex flex-wrap items-center gap-6">
+        <div className="flex sm:flex-col lg:flex-row items-center max-w-3xl w-full gap-12">
 
           <Book additionalClasses='max-w-52 w-full' bookCover={''} pages={45} author={'Book Author'} bookId={'BookID'} title={'Book Title'} bookCategory={'Book Category'} type={'white'} />
       
@@ -122,17 +124,23 @@ function Page({ }: Props) {
         </div>
         <div className="flex flex-col gap-1">
           <p className='text-white text-xl'>Your Book Reading Statistics</p>
-          <div className="flex gap-4 items-center">
+          <BaseSwiper additionalClasses='w-full' spaceBetween={4} slidesOnSmallScreen={1} slidesOnLargeScreen={2} slidesOnLargeScreen2={'auto'}>
+          <SwiperSlide>
              <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
             </div>
+          </SwiperSlide>
+          <SwiperSlide>
                <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
             </div>
-             <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
+          </SwiperSlide>
+          <SwiperSlide>
+          <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
           </div>
-          </div>
+          </SwiperSlide>
+          </BaseSwiper>
          </div>
       </div>
 

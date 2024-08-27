@@ -45,7 +45,7 @@ function Login() {
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
 
   return (
-    <div className={`h-screen w-full flex justify-center items-center `}>
+    <div className={` w-full flex justify-center items-center min-h-screen `}>
 
       <div className="flex flex-col gap-3 p-2 m-1">
         <div className="flex flex-col gap-1 p-2 justify-center items-center">

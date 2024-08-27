@@ -252,11 +252,11 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
           }
       </div>
 
-      <div className="flex justify-end items-center gap-2 p-2">
+      <div className="flex overflow-x-auto justify-end items-center gap-2 p-2">
         <Button additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
 Share
         </Button>
-           <Button additionalClasses='px-6 py-[0.375rem]' type={'white-blue'} >
+           <Button additionalClasses='px-6 py-[0.375rem] text-nowrap' type={'white-blue'} >
 Request To Join
         </Button>
 </div>
@@ -400,7 +400,7 @@ Request To Join
         </div>
         
         <div className="flex flex-col gap-1">
-          <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1.35}>
+          <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
             <SwiperSlide>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Overall Ranking</p>
@@ -548,7 +548,7 @@ Request To Join
 
           <div className="flex flex-col">
             <p className='text-white text-lg'>Data from members' progresses</p>
-             <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1.35}>
+             <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
             <SwiperSlide>
                <div className='max-w-sm w-full h-64 rounded-lg bg-dark-gray p-2'>
        <PagesPerDayChart className='w-full h-full' />

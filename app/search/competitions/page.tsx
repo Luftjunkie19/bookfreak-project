@@ -28,7 +28,7 @@ import reuseableTranslations
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
 import useGetDocuments from '../../../hooks/useGetDocuments';
 import FilterBar from '../../../components/Sidebars/right/FilterBar';
-import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Radio, RadioGroup } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import Competition from 'components/elements/Competition';
 
 function Competitions() {
@@ -202,6 +202,10 @@ function Competitions() {
         <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">  
         {sortedClubs.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={''} competitionName={item.competitionTitle} membersAmount={0} comeptitionRemainingTime={item.expiresAt} type={'dark'}/>))}
          </div>
+         <Pagination classNames={{
+  'wrapper':' self-center mx-auto w-full p-2',
+  'cursor':"bg-primary-color",
+}} total={10} showControls loop color='primary' initialPage={1}  />
       </div>
          <FilterBar filterBarContent={
         <div className="flex flex-col gap-4">

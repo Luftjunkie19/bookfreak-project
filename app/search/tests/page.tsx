@@ -26,7 +26,7 @@ import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import FilterBar from 'components/Sidebars/right/FilterBar';
-import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Radio, RadioGroup } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import Test from 'components/elements/Test';
 import useGetDocuments from 'hooks/useGetDocuments';
 
@@ -116,7 +116,10 @@ function Tests() {
             {sortedTests && sortedTests.length > 0 && sortedTests.map((test: any) => (<Test key={test.testName} testData={test} type={'white'} />))}
         </div>
         </div>
-   
+        <Pagination classNames={{
+  'wrapper':' self-center mx-auto w-full p-2',
+  'cursor':"bg-primary-color",
+}} total={10} showControls loop color='primary' initialPage={1}  />
       </div>
 
          <FilterBar filterBarContent={

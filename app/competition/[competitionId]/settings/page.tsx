@@ -32,8 +32,8 @@ function Page({ }: Props) {
               <p className='text-sm font-light text-gray-400'>Provide Changes to the competititon if something unexpected popped into your head</p>           
               </div>
               <div className="flex flex-col gap-2">
-              <div className="flex gap-6 p-2 w-full sm:flex-col 2xl:flex-row 2xl:items-center">
-              <div className="flex gap-3 p-1 items-center">
+              <div className="flex gap-6 w-full sm:flex-col 2xl:flex-row 2xl:items-center">
+              <div className="flex sm:flex-wrap lg:flex-row gap-3 p-1 items-center">
                   <Image src={image} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>
                   <div className="flex flex-col gap-1">
                       <p className='text-white font-light text-xs'>Uploaded file can be up to 50MB</p>
@@ -162,9 +162,9 @@ function Page({ }: Props) {
               <p className='text-white flex gap-2 text-2xl items-center'><GiTargetPrize  className='text-primary-color'/> Competition's Prize</p>
               <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition's prize as you wish ? Want to swap the prize for a different one ? Do it here !</p>           
              
-                  <div className="flex gap-4 items-center">
-                      <Button type="blue" additionalClasses='w-fit px-4 flex gap-2 items-center'>Swap Prize <IoMdSwap/> </Button>
-                      <Button type="blue" additionalClasses='w-fit px-4 flex gap-2 items-center'>Change Details <FaPencilAlt /></Button>
+                  <div className="flex overflow-x-auto gap-4 items-center">
+                      <Button type="blue" additionalClasses='w-fit px-4 text-nowrap flex gap-2 items-center'>Swap Prize <IoMdSwap/> </Button>
+                      <Button type="blue" additionalClasses='w-fit px-4 flex text-nowrap gap-2 items-center'>Change Details <FaPencilAlt /></Button>
                   </div>
              
               </div>

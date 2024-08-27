@@ -17,7 +17,7 @@ type Props = {
 function FilterBar({filterBarContent, sortingBarContent }: Props) {
   const location = usePathname();
   return (
-    <div className={` sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] sm:max-w-40 xl:max-w-xs w-full ${location.includes('search') ? 'sm:hidden lg:flex': 'hidden'} z-40 py-4 px-6  bg-dark-gray  flex-col gap-6 rounded-l-xl border-l-2 border-primary-color`}>          
+    <div className={` sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] sm:max-w-40 2xl:max-w-xs w-full ${location.includes('search') ? 'sm:hidden xl:flex': 'hidden'} z-40 py-4 px-6  bg-dark-gray  flex-col gap-6 rounded-l-xl border-l-2 border-primary-color`}>          
       <div className="flex flex-col gap-2">
         <p className="text-white flex items-center gap-2"><FaFilter /> Filters</p>
           {filterBarContent}

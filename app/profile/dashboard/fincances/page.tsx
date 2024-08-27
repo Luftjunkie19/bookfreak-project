@@ -21,7 +21,7 @@ function Page({ }: Props) {
       {document && <p className='text-white text-2xl'>Hello, {document.nickname} !</p>}
       
       <p className='text-white'>Financial Data</p>
-      <div className="grid gap-4 grid-cols-3 max-w-5xl w-full">
+      <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 max-w-5xl w-full">
         <LabeledInput label='First Name' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='Last Name' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='Email' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
@@ -32,7 +32,7 @@ function Page({ }: Props) {
       </div>
       
       <p className='text-white'>Address</p>
-       <div className="grid gap-4 grid-cols-3 max-w-5xl w-full">
+       <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 max-w-5xl w-full">
         <LabeledInput label='Address' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='City' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='Zip Code' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
@@ -40,7 +40,7 @@ function Page({ }: Props) {
 
 
          <p className='text-white'>Bank Account</p>
-       <div className="grid gap-4 grid-cols-3 max-w-5xl w-full">
+       <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 max-w-5xl w-full">
         <LabeledInput label='IBAN' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='Currency' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='Confirm IBAN' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
@@ -49,7 +49,7 @@ function Page({ }: Props) {
       <Button type='blue' additionalClasses='w-fit px-4'>Submit</Button>
 
        <p className='text-white text-3xl'>Credits Management</p>
-      <div className="flex gap-4 items-center">
+      <div className="flex sm:flex-col lg:flex-row gap-4 items-center">
         <div className="bg-dark-gray max-w-md w-full flex flex-col gap-4 p-2 rounded-lg">
           <div className="flex gap-1 flex-col">
             <p className='text-white'>Your Owned Funds</p>
@@ -78,9 +78,9 @@ function Page({ }: Props) {
 
 
       <p className='text-white text-3xl'>Subscription Management</p>
-      <div className=" flex gap-3  items-center w-full ">
+      <div className=" flex gap-3 sm:flex-wrap xl:flex-row  items-center w-full ">
 
-    <div className="bg-dark-gray min-h-[20.125rem] h-full p-2 flex flex-col justify-between rounded-lg border-2 max-w-md w-full border-primary-color">
+    <div className="bg-dark-gray xl:min-h-[20.125rem] sm:max-h-64 h-full p-2 flex flex-col justify-between rounded-lg border-2 max-w-md w-full border-primary-color">
           <div className="">
           <p className='text-white font-thin'>Current Plan</p>
           <p className='text-green-400 text-4xl font-bold'>FOTM PLAN</p>
@@ -97,7 +97,7 @@ function Page({ }: Props) {
         </div>
 
         <div className="bg-dark-gray max-w-3xl w-full py-6 px-3 border-2 border-primary-color rounded-lg flex flex-col gap-2">
-      <div className="flex gap-2 items-center max-w-3xl w-full justify-between">
+      <div className="flex sm:flex-col lg:flex-wrap 2xl:flex-row gap-2 items-center max-w-3xl w-full justify-between">
             <div className=" max-w-56 w-full p-2">    
         <Card 
         focused='name'
@@ -108,7 +108,7 @@ function Page({ }: Props) {
                 preview={true}
       />
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex sm:self-start flex-col gap-4">
             <LabeledInput label='Card Number' setValue={(val) => { }} type='dark' additionalClasses='p-2 max-w-xs w-full' />
             <div className="flex justify-between gap-2 items-center"
             >

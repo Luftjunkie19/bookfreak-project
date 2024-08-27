@@ -214,7 +214,7 @@ function Page({}: Props) {
     </div>
       </div>
 
-      <div className="flex gap-8 items-center">
+      <div className="flex sm:flex-col 2xl:flex-row gap-8 2xl:items-center">
       <div className="flex flex-col max-w-sm w-full gap-2">
         <p className="text-white text-xl">Your friends</p>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">

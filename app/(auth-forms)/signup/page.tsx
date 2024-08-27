@@ -110,7 +110,7 @@ function SignUp() {
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
 
   return (
- <div className={`h-screen w-full flex justify-center items-center `}>
+ <div className={`min-h-screen w-full flex justify-center items-center `}>
 
       <div className="flex flex-col gap-3 m-1">
         <div className="flex flex-col gap-1 p-2 justify-center items-center">

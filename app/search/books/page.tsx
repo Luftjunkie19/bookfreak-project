@@ -24,11 +24,12 @@ import typesTranslation from '../../../assets/translations/TypesTranslations.jso
 import Book from '../../../components/elements/Book';
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
 import useGetDocuments from '../../../hooks/useGetDocuments';
-import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, PaginationItemType, Radio, RadioGroup } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import { DataView } from 'primereact/dataview';
 import LabeledInput from 'components/input/LabeledInput';
 import FilterBar from 'components/Sidebars/right/FilterBar';
+import { cn } from '@/lib/utils';
 
 function Books() {
   const { documents: orderedDocuments } = useGetDocuments('books');
@@ -241,7 +242,7 @@ function Books() {
     }
   }, [filteredArray, searchInputValue, selectedSort, sortTypes]);
   
-
+ 
 
 
   return (
@@ -250,11 +251,14 @@ function Books() {
       <LabeledInput type={'dark'} additionalClasses='max-w-sm mx-auto w-full p-2' setValue={(value: string)=> {
         console.log(value);
       } } />
-      <div className="grid mx-auto  p-2 gap-4 w-full sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-        {sortedArray && sortedArray.map((item)=>(<Book bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} type={'transparent'}/>))}
+      <div className="grid mx-auto  p-2 gap-4 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
+        {sortedArray && sortedArray.map((item)=>(<Book key={item.id} bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} type={'transparent'}/>))}
       </div>
 
-
+<Pagination classNames={{
+  'wrapper':' self-center mx-auto w-full p-2',
+  'cursor':"bg-primary-color",
+}} total={10} showControls loop color='primary' initialPage={1}  />
     </div>
         <FilterBar/>
     </div>

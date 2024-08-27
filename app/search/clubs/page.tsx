@@ -24,7 +24,7 @@ import reuseableTranslations
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
 import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useSearchParams } from 'next/navigation';
-import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Radio, RadioGroup } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import FilterBar from '../../../components/Sidebars/right/FilterBar';
 import Club from 'components/elements/Club';
 
@@ -188,6 +188,10 @@ function Clubs() {
         <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
         {sortedClubs.map((club, i)=>(<Club key={club.id} clubLogo={club.clubLogo} clubName={club.clubsName} membersAmount={0} clubData={club} hasRequirements={false} type={'dark'}  />))}
         </div>
+        <Pagination classNames={{
+  'wrapper':' self-center mx-auto w-full p-2',
+  'cursor':"bg-primary-color",
+}} total={10} showControls loop color='primary' initialPage={1}  />
       </div>
          <FilterBar sortingBarContent={   <div className="flex flex-col gap-2">
             <RadioGroup

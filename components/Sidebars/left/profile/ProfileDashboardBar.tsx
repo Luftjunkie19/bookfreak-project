@@ -12,7 +12,7 @@ type Props = {}
 function ProfileDashboardBar({ }: Props) {
     const { includesElements} = useCheckPathname();
   return (
-      <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] 2xl:max-w-72 2xl:w-full sm:w-fit ${includesElements('settings') || includesElements('profile/dashboard')  ? 'flex' : 'hidden'} flex-col justify-between gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
+      <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] 2xl:max-w-72 2xl:w-full sm:w-fit ${includesElements('settings') || includesElements('profile/dashboard')  ? 'sm:hidden lg:flex' : 'hidden'} flex-col justify-between gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
           
           <div className="flex flex-col gap-2">
               <p className='text-2xl'>Dashboard</p>
