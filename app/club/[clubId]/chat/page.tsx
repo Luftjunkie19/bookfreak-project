@@ -18,7 +18,7 @@ export default function Page({ params }: { params: { clubId: string } }) {
                 <>
                 <ClubTopBar/>
             <ChatList isAllowedToSee={document && user &&  document.members.find((member)=>member.id === user.uid)} document={document} messages={document.chatMessages} documents={documents} user={user} />
-                 <ChatBottomBar isAllowedToType={document && user && document.members.find((member)=>member.id === user.uid) ? true : false}/> 
+                 <ChatBottomBar isAllowedToType={document && user && document.members.find((member)=>member.id === user.uid) ? false : true}/> 
             </>
             }
 

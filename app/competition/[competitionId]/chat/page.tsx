@@ -17,7 +17,7 @@ export default function Page({params}:{params:{competitionId:string}}) {
                 <>
                 <CompetitionTopBar/>
             <ChatList document={document} messages={document.chatMessages} documents={documents} user={user} isAllowedToSee={document && document.members.find((member)=>member.id === user.uid)} />
-                <ChatBar isAllowedToType={document && user && document.members && document.members.find((member)=>member.id === user.uid) ? true : false}/> 
+                <ChatBar isAllowedToType={document && user && document.members && document.members.find((member)=>member.id === user.uid) ? false : true}/> 
             </>
             }
 

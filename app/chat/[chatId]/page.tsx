@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { FaImage } from 'react-icons/fa';
 import { FaMicrophone, FaPaperPlane } from 'react-icons/fa6';
 import UserChatList from 'components/chatList/chat-lists/UserChatList';
+import UserChatTopBar from 'components/TopBar/UserChatTopBar';
 
 function MessagesHolder({params}:{params:{chatId:string}}) {
   const router = useRouter();
@@ -25,10 +26,11 @@ const {documents}=useGetCollection('users');
   return (
 <div className='h-screen w-full flex'>
   <ChatBar />
-  <div className="flex flex-col h-screen w-full">
+  <div className="flex flex-col sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.25rem)] w-full">
         {document && documents && user && <>
+        <UserChatTopBar/>
           <UserChatList document={document} documents={documents} user={user} messages={document.messages} isAllowedToSee={document && document.chatUsers.find((item)=>item.id === user.uid)}/>
-         {document.chatUsers.find((item)=>item.id === user.uid) && user ? <ChatBottomBar isAllowedToType={true}/> : <ChatBottomBar isAllowedToType={false}/> }
+         {document.chatUsers.find((item)=>item.id === user.uid) && user ? <ChatBottomBar isAllowedToType={false}/> : <ChatBottomBar isAllowedToType={true}/> }
  </> }
   </div>
 </div>
