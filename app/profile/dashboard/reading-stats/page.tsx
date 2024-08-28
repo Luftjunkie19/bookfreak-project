@@ -12,20 +12,24 @@ function Page({}: Props) {
 
       <div className="flex flex-col py-2 px-1 gap-3">
         <p className='text-white text-2xl'>Reading Stats in a Month</p>
-        
+        <div className="flex items-center gap-2">
+        <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
+       <PagesPerDayChart className='w-full h-full'/>
+          </div>
+        </div>
         <BaseSwiper additionalClasses='w-full' slidesOnSmallScreen={1}>
-<SwiperSlide>
+<SwiperSlide className='max-w-sm h-72 w-full'>
    <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
           </div>
 </SwiperSlide>
-<SwiperSlide>
+<SwiperSlide className='max-w-sm h-72 w-full'>
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
           </div>
 </SwiperSlide>
 
-<SwiperSlide>
+<SwiperSlide className='max-w-sm h-72 w-full'> 
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
           </div>

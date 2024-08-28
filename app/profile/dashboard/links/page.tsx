@@ -13,7 +13,7 @@ type Props = {}
 
 function Page({}: Props) {
   return (
-    <div className='w-full flex flex-col gap-3'>
+    <div className='w-full sm:h-[calc(100vh-3.5rem)] overflow-y-auto lg:h-[calc(100vh-4rem)] flex flex-col gap-3'>
       <div className="">
       <p className='text-white text-2xl'>Your Links</p>
        <p className='text-gray-400 text-sm'>In this page, you can link to any outside social-media you would like to.</p>

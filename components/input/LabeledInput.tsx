@@ -12,6 +12,7 @@ type Props = {
   minNumber?: number,
   maxNumber?: number,
   containerStyle?:string,
+  value?: number | string,
   type: 'dark' | 'light' | 'blue' | 'transparent',
     setValue: (value:string)=>void
 }

@@ -18,6 +18,7 @@ import ModalComponent from 'components/modal/ModalComponent';
 import SingleDropDown from 'components/drowdown/SingleDropDown';
 import { PiStackPlusFill } from 'react-icons/pi';
 import { GiTargetPrize } from 'react-icons/gi';
+import ConditionItem from 'components/condition/ConditionItem';
 
 type Props = {}
 
@@ -81,43 +82,8 @@ function Page({ }: Props) {
         </div>
 
           <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-64 max-w-3xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
-                              </div>
-</div> 
+                             <ConditionItem conditionName={'Condition 2'} conditionValue={3} inputType={'number'} />
+                </div> 
 
         <Button onClick={onOpen} additionalClasses='w-fit px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill/></Button>
         <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>

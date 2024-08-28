@@ -55,25 +55,19 @@ function Page({}: Props) {
           <p className='text-gray-400 text-sm'>You can see a specific data about your progress here.</p>
         </div>
 
-        <div className="flex items-center gap-6">
-<BaseSwiper additionalClasses='w-full' slidesOnSmallScreen={1}>
-<SwiperSlide>
+        <div className="flex items-center gap-3 overflow-x-auto">
+
    <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
           </div>
-</SwiperSlide>
-<SwiperSlide>
-             <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
-          </div>
-</SwiperSlide>
 
-<SwiperSlide>
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
           </div>
-</SwiperSlide>
-</BaseSwiper>
+
+             <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
+       <PagesPerDayChart className='w-full h-full'/>
+          </div>
         </div>
       </div>
       

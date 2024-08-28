@@ -63,7 +63,6 @@ function Page({}: Props) {
               </div>
             </div>
       </div>
-
       </SwiperSlide>
        
         <SwiperSlide>

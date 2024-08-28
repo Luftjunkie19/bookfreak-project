@@ -50,7 +50,7 @@ function Page({ }: Props) {
 
 
   return (
-    <div className='flex flex-col gap-3'>{userObj && <>
+    <div className='flex sm:h-[calc(100vh-3rem)] overflow-y-auto lg:h-[calc(100vh-3.5rem)] flex-col gap-3'>{userObj && <>
       <p className='text-white text-3xl'>Welcome, <span className={`${classes['header-gradient']} ${classes['button-blue-dark-gradient']} font-bold`}>{userObj.nickname}</span></p>
       
       <div className="flex flex-col gap-2">
@@ -122,25 +122,25 @@ function Page({ }: Props) {
           </div>
           
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex max-w-6xl w-full flex-col gap-1">
           <p className='text-white text-xl'>Your Book Reading Statistics</p>
-          <BaseSwiper additionalClasses='w-full' spaceBetween={4} slidesOnSmallScreen={1} slidesOnLargeScreen={2} slidesOnLargeScreen2={'auto'}>
-          <SwiperSlide>
-             <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
+         <div className="flex gap-3 max-w-6xl overflow-x-auto items-center">
+             <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
             </div>
-          </SwiperSlide>
-          <SwiperSlide>
-               <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
+         
+               <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
             </div>
-          </SwiperSlide>
-          <SwiperSlide>
-          <div className="max-w-sm h-64 p-2 w-full bg-dark-gray rounded-lg">
+         
+          <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
           </div>
-          </SwiperSlide>
-          </BaseSwiper>
+
+         </div>
+        
+     
+          
          </div>
       </div>
 
