@@ -27,10 +27,12 @@ function MultipleDropDown({children, selectedArray, label }: Props) {
       className="max-w-xs w-full"
       labelPlacement='outside'
       classNames={{
+        'base': '',
+        'innerWrapper': '',
         'trigger': 'bg-dark-gray text-white border-2 rounded-lg border-primary-color hover:bg-dark-gray focus:bg-dark-gray py-2', 
         'label': 'text-white text-sm',
         'value': 'text-sm text-white',
-        'mainWrapper': 'outline-none',
+        'mainWrapper': 'outline-none text-white',
                 'listbox': 'outline-none',
         'popoverContent': 'bg-dark-gray text-white border-2 rounded-lg border-primary-color',
       }}

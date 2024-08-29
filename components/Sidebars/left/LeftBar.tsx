@@ -65,7 +65,7 @@ function DefaultLeftBar({ }: Props) {
               <RiRobot3Fill className='text-2xl text-gray-600'/> <p className=' text-gray-600'><span className=' text-primary-color sm:hidden xl:block'> AIssistant </span></p>
           </Button>
         </Link>
-          <Link href={'/ai-bookcover-creator'}>   
+          <Link href={'/ai-bookcover'}>   
         <Button type='transparent' additionalClasses=' flex gap-2 items-center font-medium'>
               <GiBookCover  className='text-2xl text-gray-600'/> <p className=' text-gray-600 sm:hidden xl:block'>BookCover Creator</p>
           </Button>
@@ -74,8 +74,10 @@ function DefaultLeftBar({ }: Props) {
         </div>
     </div>
         
-      <div className="flex justify-center items-center flex-col gap-2">
+      <div className="flex flex-col gap-2">
+        <Link href={'/premium'}>
         <Button type='blue' additionalClasses='flex sm:rounded-full xl:rounded-lg items-center gap-2 w-fit sm:p-2 xl:px-3'><span className='sm:hidden xl:block'>Premium</span> <MdWorkspacePremium className='' /></Button>
+        </Link>
 </div>
       
 

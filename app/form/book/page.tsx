@@ -52,6 +52,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import SingleDropDown from "components/drowdown/SingleDropDown";
 import { parseZonedDateTime } from "@internationalized/date";
 import MultipleDropDown from "components/drowdown/MultipleDropDown";
+import useGetCollection from "hooks/firestore/useGetCollection";
 
 
 function CreateBook() {
@@ -69,34 +70,10 @@ function CreateBook() {
   const [link, setLink] = useState(null);
   const [selected, setSelected] = useState("");
   const dispatch = useDispatch();
-  const { documents: availableBooks } = useGetDocuments("books");
+  const { documents: availableBooks } = useGetCollection("books");
  
   
-  
-  const stepperRef = useRef(null);
-  
 
-  const [book, setBook] = useState<{
-    author: string,
-    title: string,
-    pagesNumber: number,
-    category: null | string,
-    bookCover: null | string,
-    description: string,
-    dateOfPublishing: null | number,
-    countryOfRelease: string,
-    publishingHouse: null | string,
-  }>({
-    author: "",
-    title: "",
-    pagesNumber: 1,
-    category: null,
-    bookCover: null,
-    description: "",
-    dateOfPublishing: null,
-    countryOfRelease: "",
-    publishingHouse: null,
-  });
   const editorRef = useRef<AvatarEditor>(null);
 
   const [usersReadPages, setUsersReadPages] = useState(0);
@@ -164,13 +141,6 @@ function CreateBook() {
         return;
       }
 
-      if (book.pagesNumber < usersReadPages) {
-        setError(
-          alertMessages.notifications.wrong.outOfSpaceReading[selectedLanguage]
-        );
-        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.outOfSpaceReading[selectedLanguage]}`, alertType: "error" }));
-        return;
-      }
 
       if (
         availableBooks.find(
@@ -297,7 +267,7 @@ function CreateBook() {
   
       const storageRef = ref(
         storage,
-        `book-covers/${(user as User).uid}/${book.title ? book.title : `book${uniqid()}`
+        `bookcovers/${(user as User).uid}/${book.title ? book.title : `book${uniqid()}`
         }.jpg`
       );
       await uploadBytes(storageRef, byteArray);
@@ -378,15 +348,15 @@ function CreateBook() {
             classNames={{
        base:"",
    label: "",
-   calendar:"",
+   calendar:"text-white bg-dark-gray",
    selectorButton:"",
    selectorIcon:"",
-   popoverContent:"",
-   calendarContent : "",
-   inputWrapper: "",
-   input: "",
-   segment: "",
-   helperWrapper: "",
+   popoverContent:"text-white bg-dark-gray",
+   calendarContent : 'bg-dark-gray text-white',
+   inputWrapper: "text-white bg-dark-gray",
+   input: "text-white bg-dark-gray",
+   segment: "bg-primary-color",
+   helperWrapper: "text-white bg-dark-gray",
    description: "",
    errorMessage: "",
             }}
