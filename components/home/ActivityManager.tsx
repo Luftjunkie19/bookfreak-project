@@ -17,7 +17,8 @@ import { toast } from 'react-hot-toast';
 import { useFirestore } from 'hooks/firestore/useFirestore';
 import { Timestamp } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, StorageReference, uploadBytes } from 'firebase/storage';
-import { storage } from 'app/firebase';
+import { functions, storage } from 'app/firebase';
+import { httpsCallable } from 'firebase/functions';
 
 type Props = {}
 
@@ -26,7 +27,10 @@ function ActivityManager({ }: Props) {
   const { insertTo} = useFirestore();
   const { getDocument } = useRealtimeDocument();
   const [userDocument, setUserDocument] = useState<any | null>(null);
-  const [postImages, setPostImages] = useState<string[] | ArrayBuffer[]>([]);
+
+  
+  const [postImages, setPostImages] = useState<File[]>([]);
+  const [previewImages, setPreviewImages]=useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadUserObj = useCallback(async () => {
@@ -64,11 +68,17 @@ function ActivityManager({ }: Props) {
       }
 
       if (element.type.includes('image')) {
-        const fileReader = new FileReader();
-         fileReader.readAsDataURL(element);
-         fileReader.onload = () => {
-           setPostImages([...(postImages as string[]), (fileReader.result as string)]);
-         };
+        const reader= new FileReader();
+  
+        reader.readAsDataURL(element);
+
+        reader.onload = () => {
+          setPreviewImages([...previewImages, reader.result as string]);
+       return;
+        }
+        
+    
+       setPostImages([...postImages, element]);
            return;
       }
 
@@ -104,20 +114,18 @@ function ActivityManager({ }: Props) {
         for (let index = 0; index < postImages.length; index++) {
           const postImg = postImages[index];
           
-          const uploadPath = `postImages/${user.uid}/${uniqueId}/${postImg}`;
+          const uploadPath = `postImages/${user.uid}/${uniqueId}/${postImg.name}`;
   
   
-     const image = ref(storage, uploadPath);
+     const storageRef = ref(storage, uploadPath);
   
-     const snapshot = await uploadBytes(image, postImg as unknown as Blob);
+     const snapshot = await uploadBytes(storageRef, postImg);
      const fullImage =  await getDownloadURL(snapshot.ref);
   
        console.log(fullImage);
   
        postArray = [...postArray, fullImage];
-        }
-      
-        
+        }  
         
       }
 
@@ -157,8 +165,8 @@ function ActivityManager({ }: Props) {
           
           <div className="flex flex-col gap-2 w-full">
               <textarea name='postContent' className='border-none text-sm outline-none p-1 min-h-44 max-h-56 h-full resize-none' placeholder={`What's bookin', my friend ? Describe what you've been doing recently...`}></textarea>
-        <div className="flex gap-4 items-center p-2">
-          {postImages.map((item)=>(<Image src={item} alt='' width={60} height={60} className='w-16 h-16 relative top-0 left-0 before:absolute before:-top-full before:left-0 before:w-full hover:before:top-0 before:bg-dark-gray/60 duration-400 transition-all before:h-full rounded-lg'/>))}
+        <div className="grid auto-cols-auto gap-4 items-center p-2 overflow-x-auto max-w-xs w-full">
+          {previewImages.map((itemImg,i )=>(<Image src={itemImg} alt="" width={60} height={60} className='w-32 h-32 rounded-lg' key={i}/>))}
               </div>
           </div>
           
@@ -167,7 +175,7 @@ function ActivityManager({ }: Props) {
               <div className="flex gap-2 items-center">
           <Button onClick={openFileInput} type='transparent' additionalClasses='text-primary-color'>
             <FaImage className='text-2xl' />
-            <input onChange={selectImages} ref={fileInputRef} type='file' className='sm:hidden'/>
+            <input onChange={selectImages} multiple ref={fileInputRef} type='file' className='sm:hidden'/>
               </Button>
             <Button type='transparent' additionalClasses='text-dark-gray'><FaBookmark className='text-2xl'/></Button>
               </div>

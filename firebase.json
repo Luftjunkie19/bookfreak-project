@@ -17,7 +17,18 @@
   "database": {
     "rules": "database.rules.json"
   },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
   "hosting": {
+    "headers": [ {
+    "source": "**/*.@(eot|otf|ttf|ttc|woff|font.css)",
+    "headers": [ {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    } ]
+  } ],
     "public": "build",
     "ignore": [
       "firebase.json",
