@@ -10,12 +10,14 @@ components.json
 /node_modules
 /.pnp
 .pnp.js 
-
+cors.json
 # testing
 /coverage
 
 # production
 /build
+database.rules.json
+storage.rules
 
 # misc
 .DS_Store

@@ -51,15 +51,15 @@ export default function RootLayout({
         <Script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID}`}
           strategy="afterInteractive"
           crossOrigin="anonymous" />
+        <link rel="icon" href="/Logo.png" sizes="any" />
       </head>
       <body className={`bg-secondary-color overflow-y-hidden w-full `}>
-        <link rel="icon" href="/Logo.png" sizes="any" />
         <AuthContextProvider>
           <ReduxProvider>
             <Providers>
               <PrimeReact>
-              <Toaster />
                 <Navbar />
+              <Toaster />
                 <div className="flex w-full h-full">
                   <LeftBar />
                   <div className="w-full  overflow-x-hidden max-h-screen h-full">

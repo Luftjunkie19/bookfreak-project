@@ -123,131 +123,8 @@ function CreateBook() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setIsPending(true);
-
-    try {
-      const uniqueId = uniqid();
-
-      if (book.category && book.category.trim() === "") {
-        setError(
-          alertMessages.notifications.wrong.emptyMessage[selectedLanguage]
-        );
-        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.emptyMessage[selectedLanguage]}`, alertType: "error" }));
-        setIsPending(false);
-
-        return;
-      }
-
-
-      if (
-        availableBooks.find(
-          (doc) =>
-            doc.title.toLowerCase().includes(book.title.toLowerCase()) &&
-            doc.author.toLowerCase().includes(book.author.toLowerCase()) &&
-            doc.countryOfRelease.toLowerCase().includes(book.countryOfRelease.toLowerCase())
-        )
-      ) {
-        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.existsBook[selectedLanguage]}`, alertType: "error" }));
-        setError(alertMessages.notifications.wrong.existsBook[selectedLanguage]);
-        setLink(
-          availableBooks.find(
-            (doc) =>
-              doc.title.toLowerCase().includes(book.title.toLowerCase()) &&
-              doc.author.toLowerCase().includes(book.author.toLowerCase()) &&
-              doc.countryOfRelease.toLowerCase().includes(book.countryOfRelease.toLowerCase())
-          ).id
-        );
-        return;
-      }
-
-      if (book.description.trim().length < 20) {
-        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.writeLonger[selectedLanguage]}`, alertType: "error" }));
-        setError(alertMessages.notifications.wrong.writeLonger[selectedLanguage]);
-        return
-      }
-
-      if (book.countryOfRelease.trim().length === 0 || !book.dateOfPublishing || !book.publishingHouse) {
-        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.someFieldsEmpty[selectedLanguage]}`, alertType: "error" }));
-        return
-      }
-
-      if (!book.bookCover) {
-        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.bookCoverReq[selectedLanguage]}`, alertType: "error" }));
-        return
-      }
-
-
-
-      if (book.dateOfPublishing > new Date().getFullYear()) {
-        //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.timeTraveler[selectedLanguage]}`, alertType: "error" }));
-        return
-      }
-
-
-      const bookElement = {
-        ...book,
-        author: book.author,
-        title: book.title,
-        pagesNumber: book.pagesNumber,
-        photoURL: book.bookCover,
-        category: book.category,
-        createdBy: {
-          displayName: (user as User).displayName,
-          email: (user as User).email,
-          photoURL: (user as User).photoURL,
-          createdAt: new Date(),
-          id: (user as User).uid,
-        },
-        id: uniqueId,
-      };
-
-      console.log(bookElement);
-
-      addToDataBase("books", uniqueId, bookElement);
-      addToDataBase("likesData", uniqueId, {
-        likesAmount: 0,
-      });
-
-      addToDataBase("bookReaders", uniqueId, {
-        id: uniqueId,
-        readers: {
-          [(user as User).uid]: {
-            displayName: (user as User).displayName,
-            email: (user as User).email,
-            photoURL: (user as User).photoURL,
-            startedReading: hasStarted,
-            hasFinished: usersReadPages === book.pagesNumber,
-            pagesRead: usersReadPages,
-            bookRate: 0,
-            dateOfFinish: isCompleted ? new Date().getTime() : null,
-            recension: "",
-            id: (user as User).uid,
-
-            bookReadingId: uniqueId,
-          },
-        },
-      });
-
-      addToDataBase("bookRecensions", uniqueId, {
-        averageRate: 0,
-        recensions: {},
-      });
-
-
-      //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType: "success" }));
-
-
-
-      setIsPending(false);
-      setError(null);
-      router.push("/");
-    } catch (error) {
-      console.log(error);
-      setError(error.message);
-    }
+  const handleSubmit = async () => {
+   
   };
 
   const handleSaveCover = async () => {
@@ -267,17 +144,13 @@ function CreateBook() {
   
       const storageRef = ref(
         storage,
-        `bookcovers/${(user as User).uid}/${book.title ? book.title : `book${uniqid()}`
+        `bookcovers/${(user as User).uid}/${`book${uniqid()}`
         }.jpg`
       );
       await uploadBytes(storageRef, byteArray);
       const url = await getDownloadURL(storageRef);
       console.log(url);
   
-      setBook((book:any) => {
-        book.bookCover = url;
-        return book;
-      });
   
       setEditCover(null);
     }

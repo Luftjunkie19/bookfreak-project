@@ -1,7 +1,7 @@
 import React from 'react'
 
 type Props = {
-  children: React.ReactNode, additionalClasses?: string, onClick?: () => void | Promise<void>, isSubmit?: boolean, disableState?:boolean, type: 'blue' | 'white' | 'black' | 'white-blue' | 'dark-blue' | 'transparent' }
+  children: React.ReactNode, additionalClasses?: string, onClick?:() => void | Promise<void> , isSubmit?: boolean, disableState?:boolean, type: 'blue' | 'white' | 'black' | 'white-blue' | 'dark-blue' | 'transparent' }
 
 function Button({children, type, disableState, additionalClasses, onClick, isSubmit}: Props) {
     return (
