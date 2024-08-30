@@ -42,7 +42,7 @@ import useGetDocuments from '../../../hooks/useGetDocuments';
 import { User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
-import { DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Select, SelectItem } from '@nextui-org/react';
+import { Checkbox, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Select, SelectItem } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import { FileUpload } from 'primereact/fileupload';
 import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
@@ -123,8 +123,7 @@ function CreateBook() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (formData:FormData) => {
     setError(null);
     setIsPending(true);
 
@@ -291,7 +290,7 @@ function CreateBook() {
   
 
   return (
-    <div className={`min-h-screen px-6 py-4 h-full overflow-x-hidden flex flex-col gap-2 w-full `}>
+    <div className={`px-6 py-4 sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden flex flex-col gap-2 w-full `}>
       <div className="text-white">
       <p className='text-2xl font-bold'>Expand Our Bookish Database !</p>
       <p>Do we lack any book in our Database ? Insert it and help others finding this one !</p>
@@ -310,13 +309,13 @@ function CreateBook() {
         <div className="flex flex-col gap-2 max-w-2xl w-full">
 <p className="text-2xl text-white font-semibold flex gap-2 items-center"><RiBook2Fill className="text-4xl"/>  <span>General Book Information</span></p>
 <div className="grid gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Book Title" type={"dark"} setValue={(value) => {
+            <LabeledInput name="title" additionalClasses="max-w-xs p-2 w-full" label="Book Title" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Original Book Title" type={"dark"} setValue={(value) => {
+                        <LabeledInput name="originalTitle" additionalClasses="max-w-xs w-full p-2" label="Original Book Title" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Author" type={"dark"} setValue={(value) => {
+                        <LabeledInput name="author" additionalClasses="max-w-xs w-full p-2" label="Author" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
             <SingleDropDown selectedArray={bookCategories} label="Genre">
@@ -339,10 +338,11 @@ function CreateBook() {
               console.log(countryCode)
             } }/>
           </div>
-                        <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Publishing House" type={"dark"} setValue={(value) => {
+                        <LabeledInput name="publishingHouse" additionalClasses="max-w-xs p-2 w-full" label="Publishing House" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
                    <DatePicker
+                   name="releaseDate"
        label={<p className='text-white'>Date of Release</p>}
             className="max-w-xs w-full text-white"
             classNames={{
@@ -367,11 +367,11 @@ function CreateBook() {
   
 
 
-                                <LabeledInput minNumber={1} inputType='number' additionalClasses="max-w-xs p-2 w-full" label="Pages" type={"dark"} setValue={(value) => {
+                                <LabeledInput name="pages" minNumber={1} inputType='number' additionalClasses="max-w-xs p-2 w-full" label="Pages" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
           
-          <MultipleDropDown label="Accessible Book Types" selectedArray={[]}>
+          <MultipleDropDown name="bookTypes" label="Accessible Book Types" selectedArray={[]}>
             <SelectItem key={'book'}>Book</SelectItem>
             <SelectItem key={'ebook'}>Ebook</SelectItem>
               <SelectItem key={'audiobook'}>Audiobook</SelectItem>
@@ -383,7 +383,7 @@ function CreateBook() {
 
            <label className="flex flex-col gap-1">
           <span className="text-xl text-white font-semibold">Book Description</span>
-      <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
+      <textarea name="bookDescription" className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
       </label>
   
 
@@ -392,20 +392,20 @@ function CreateBook() {
          <div className="flex w-full flex-col gap-1">
           <p className="text-2xl text-white font-bold">Detailed Book Information</p>
           <div className="grid xl:grid-cols-2 2xl:grid-cols-3 max-w-6xl w-full gap-2">
-            <LabeledInput inputType="number" minNumber={0} additionalClasses="max-w-xs p-2 w-full" label="ISBN" type={"dark"} setValue={(value) => {
+            <LabeledInput name="isbn" inputType="number" minNumber={0} additionalClasses="max-w-xs p-2 w-full" label="ISBN" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Publishing Cycle" type={"dark"} setValue={(value) => {
+                        <LabeledInput name="publishingCycle" additionalClasses="max-w-xs p-2 w-full" label="Publishing Cycle" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Serie" type={"dark"} setValue={(value) => {
+                        <LabeledInput name="serie" additionalClasses="max-w-xs p-2 w-full" label="Serie" type={"dark"} setValue={(value) => {
               console.log(value);
             }} />
-                        <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Volume" type={"dark"} setValue={(value) => {
+                        <LabeledInput name="volume" additionalClasses="max-w-xs p-2 w-full" label="Volume" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
 
-                                  <LabeledInput additionalClasses="max-w-xs p-2 w-full" label="Volume Number" type={"dark"} setValue={(value) => {
+                                  <LabeledInput name="volumeNumber" additionalClasses="max-w-xs p-2 w-full" label="Volume Number" type={"dark"} setValue={(value) => {
               console.log(value);
           }} />
           
@@ -415,6 +415,12 @@ function CreateBook() {
 
 
         </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Checkbox/>
+        <p>By clicking this button, you admit BookFreak admnisitration to insert remaining information of the book, in case of lack of those. You allow to
+        delete the book from the database if the information will contain obscenities or will be faked or untrue.</p>
       </div>
 
       <Button type='blue' additionalClasses="w-fit px-6 py-2 text-lg my-4">

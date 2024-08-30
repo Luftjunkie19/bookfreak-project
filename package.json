@@ -131,6 +131,7 @@
     "redux": "^4.2.1",
     "shadcn-ui": "^0.8.0",
     "simplex-noise": "^4.0.1",
+    "socketio": "^1.0.0",
     "sonner": "^1.5.0",
     "sort-objects-array": "^2.0.0",
     "stripe": "^14.5.0",

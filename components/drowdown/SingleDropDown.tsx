@@ -5,10 +5,11 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 type Props = {
     children: any,
     selectedArray: string[],
-    label?:string
+    label?:string,
+    name?:string,
 }
 
-function SingleDropDown({ children, selectedArray, label }: Props) {
+function SingleDropDown({ children, selectedArray, label, name }: Props) {
     
     const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set(selectedArray));
     const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
@@ -23,6 +24,7 @@ function SingleDropDown({ children, selectedArray, label }: Props) {
     }
     
     return (  <Select
+    name={name}
       label={<p className='text-white'>{label}</p>}
       placeholder={`Select ${label}`}
       className="max-w-xs w-full"

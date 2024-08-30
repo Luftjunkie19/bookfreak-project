@@ -5,10 +5,11 @@ import { IoIosArrowDown } from 'react-icons/io';
 type Props = {
     children: any,
     selectedArray: string[],
-    label?:string
+    label?:string,
+    name?:string,
 }
 
-function MultipleDropDown({children, selectedArray, label }: Props) {
+function MultipleDropDown({children, selectedArray, label, name}: Props) {
      const [selectedKeys, setSelectedKeys] = React.useState(new Set(["text"]));
 
   const selectedValue = React.useMemo(
@@ -25,6 +26,7 @@ function MultipleDropDown({children, selectedArray, label }: Props) {
       placeholder={`Select ${label}`}
       selectionMode="multiple"
       className="max-w-xs w-full"
+      name={name}
       labelPlacement='outside'
       classNames={{
         'base': '',

@@ -286,7 +286,7 @@ let notCurrentUsers = documents
 
 
   return (
-   <div className={` h-full w-full p-4`}>
+   <div className={`sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto w-full p-4`}>
       <div className="flex flex-col gap-1 max-w-2xl w-full">
         <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
         <p className='text-white'>Are you an author, a book company or someone who wants to compete with other people ? Create the competition now and Read !</p>
