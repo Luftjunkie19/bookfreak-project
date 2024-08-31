@@ -19,18 +19,25 @@ import { Timestamp } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, StorageReference, uploadBytes } from 'firebase/storage';
 import { functions, storage } from 'app/firebase';
 import { httpsCallable } from 'firebase/functions';
+import useStorage from 'hooks/storage/useStorage';
 
 type Props = {}
+
+type PreviewImage= {
+  url: string,
+  description:string,
+}
 
 function ActivityManager({ }: Props) {
   const { user } = useAuthContext();
   const { insertTo} = useFirestore();
+  const {uploadImage}=useStorage();
   const { getDocument } = useRealtimeDocument();
   const [userDocument, setUserDocument] = useState<any | null>(null);
 
   
   const [postImages, setPostImages] = useState<File[]>([]);
-  const [previewImages, setPreviewImages]=useState<string[]>([]);
+  const [previewImages, setPreviewImages]=useState<PreviewImage[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadUserObj = useCallback(async () => {
@@ -73,7 +80,10 @@ function ActivityManager({ }: Props) {
         reader.readAsDataURL(element);
 
         reader.onload = () => {
-          setPreviewImages([...previewImages, reader.result as string]);
+          setPreviewImages([...previewImages, {
+            url: reader.result as string,
+            description: element.name
+          }]);
        return;
         }
         
@@ -113,18 +123,11 @@ function ActivityManager({ }: Props) {
 
         for (let index = 0; index < postImages.length; index++) {
           const postImg = postImages[index];
-          
-          const uploadPath = `postImages/${user.uid}/${uniqueId}/${postImg.name}`;
+        
+
+       const readyImage= await uploadImage(postImages[index], `postImages/${user.uid}/${uniqueId}/${postImg.name}`);
   
-  
-     const storageRef = ref(storage, uploadPath);
-  
-     const snapshot = await uploadBytes(storageRef, postImg);
-     const fullImage =  await getDownloadURL(snapshot.ref);
-  
-       console.log(fullImage);
-  
-       postArray = [...postArray, fullImage];
+       postArray = [...postArray, readyImage];
         }  
         
       }
@@ -166,7 +169,11 @@ function ActivityManager({ }: Props) {
           <div className="flex flex-col gap-2 w-full">
               <textarea name='postContent' className='border-none text-sm outline-none p-1 min-h-44 max-h-56 h-full resize-none' placeholder={`What's bookin', my friend ? Describe what you've been doing recently...`}></textarea>
         <div className="grid auto-cols-auto gap-4 items-center p-2 overflow-x-auto max-w-xs w-full">
-          {previewImages.map((itemImg,i )=>(<Image src={itemImg} alt="" width={60} height={60} className='w-32 h-32 rounded-lg' key={i}/>))}
+          {previewImages.map((itemImg,i )=>(
+            <Button type='transparent' key={i}>
+<Image src={itemImg.url} alt="" width={60} height={60} className='w-32 h-32 rounded-lg' key={i}/>
+            </Button>
+            ))}
               </div>
           </div>
           
