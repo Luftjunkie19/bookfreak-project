@@ -29,7 +29,7 @@ type Props = {}
 type PreviewImage= {
   url: string,
   description:string,
-   fileObj?:File,
+   fileObj:File,
 }
 
 type Post = {
@@ -44,19 +44,17 @@ function ActivityManager({ }: Props) {
   const { getDocument } = useRealtimeDocument();
   const [userDocument, setUserDocument] = useState<any | null>(null);
 
-  const { register, control, handleSubmit, formState, reset, resetField, watch, setValue } = useForm({
+  const { register, control, handleSubmit, formState, reset, resetField, watch } = useForm({
     
   });
-  const { errors, isSubmitted, isSubmitting, } = formState;
+  const { errors, isSubmitted, isSubmitting} = formState;
 
-  const { fields, append, remove, replace } = useFieldArray({
+  const { fields, append, remove, replace, update } = useFieldArray({
     name: "postImages",
-    control: control,
+    control,
+  
   });
 
-
-
-  const [postImages, setPostImages] = useState<PreviewImage[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadUserObj = useCallback(async () => {
@@ -100,13 +98,11 @@ function ActivityManager({ }: Props) {
 
         reader.onload = () => {
           append({
-            url: reader.result as string,
-            description: element.name
+              url: reader.result as string,
+            description: element.name,
+            fileObj:element
           });
-          setPostImages([...postImages, {
-            url: reader.result as string,
-            description: element.name
-          }]);
+       
        return;
         }
         
@@ -115,7 +111,7 @@ function ActivityManager({ }: Props) {
            return;
       }
 
-      setPostImages(postImages.map((item) => ({ ...item, fileObj: element })));
+    
     }
 
   }
@@ -129,7 +125,10 @@ function ActivityManager({ }: Props) {
   const createPost = async (formData:Post) => {
     const uniqueId = uniqid();
     const postContent = formData['postContent'];
+    const images = formData['postImages'];
     console.log(postContent);
+
+    console.log(images);
 
     try {
       
@@ -143,13 +142,13 @@ function ActivityManager({ }: Props) {
 
       let postArray:{url:string, description:string}[] = [];
 
-      if (postImages.length > 0) {
+      if (images.length > 0) {
 
-        for (let index = 0; index < postImages.length; index++) {
-          const postImg = postImages[index];
+        for (let index = 0; index < images.length; index++) {
+          const postImg = images[index];
         
 
-       const readyImage= await uploadImage(postImg!.fileObj, `postImages/${user.uid}/${uniqueId}/${postImg.fileObj?.name}`);
+       const readyImage= await uploadImage(postImg.fileObj, `postImages/${user.uid}/${uniqueId}/${postImg.fileObj?.name}`);
   
           postArray = [...postArray, { url:readyImage, description:postImg.description}];
         }  
@@ -169,9 +168,8 @@ function ActivityManager({ }: Props) {
         shares:[],
       }, uniqueId);
 
-      setPostImages([]);
       reset();
-      resetField('postImages');
+      replace([]);
       toast.success('Successfully created a post ✅');
       
     } catch (err) {
@@ -180,6 +178,8 @@ function ActivityManager({ }: Props) {
   }
 
   const { isOpen, onOpenChange, onOpen, onClose} = useDisclosure();
+
+
 
   return (<>
     <form onSubmit={handleSubmit(createPost, (errors) => {
@@ -203,24 +203,51 @@ function ActivityManager({ }: Props) {
         <textarea {...register('postContent', {
           min: 1, required: 'The minimum content of at least 1 charachter is required.'})} className='border-none text-sm outline-none p-1 min-h-44 max-h-56 h-full resize-none' placeholder={`What's bookin', my friend ? Describe what you've been doing recently...`}></textarea>
         <div className=" inline-flex items-center gap-3 p-2">
-          {fields.map((field, index) => (<>
-            <Button onClick={onOpen} additionalClasses='group p-0 outline-none border border-primary-color' type='transparent' key={index}>
-              <Image src={(field as any).url} alt="" width={60} height={60} className='w-24 object-cover relative outline-none border-none top-0 left-0 before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-dark-gray/40  p-0 before:group-hover:top-0 duration-400 transition-all h-24 rounded-lg' />
-            </Button>
-            <ModalComponent modalFooterContent={<div className='flex gap-3 items-center'>
-              <Button onClick={()=>{
-                onClose();
-                remove(index);
-              }} additionalClasses='flex gap-2 items-center bg-red-400' type='black'>Delete <MdDelete /></Button>
-            </div>} isOpen={isOpen} onOpenChange={onOpenChange} modalBodyContent={ <div className="w-full relative top-0 left-0 h-full">
-              <Image src={(field as any).url} alt="" width={300} height={300} className="w-full h-full object-cover" />
-              <LabeledInput key={field.id} inputType='text' placeholder='Enter Image Description...' {...register(`postImages.${index}.description` as const)} additionalClasses='w-full p-2 absolute rounded-none h-12 bg-dark-gray/75 border-none bottom-0 left-0' onChange={(e) => {
-             setValue(`postImages.${index}.description`, e.target.value);
-              
-              }} type='transparent' />
-            </div>} />
-          </>
-            ))}
+       {fields.map((field, index) => (
+  <>
+    <Button onClick={onOpen} additionalClasses='group p-0 outline-none border border-primary-color' type='transparent' key={field.id}>
+      <Image src={field.url} alt="" width={60} height={60} className='w-24 object-cover relative outline-none border-none top-0 left-0 before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-dark-gray/40  p-0 before:group-hover:top-0 duration-400 transition-all h-24 rounded-lg' />
+    </Button>
+           <ModalComponent
+      modalFooterContent={
+        <div className='flex gap-3 items-center'>
+          <Button
+            onClick={() => remove(index)}
+            additionalClasses='flex gap-2 items-center bg-red-400'
+            type='black'
+          >
+            Delete <MdDelete />
+          </Button>
+        </div>
+      }
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      modalBodyContent={
+        <div  className="w-full relative top-0 left-0 h-full">
+          <Image src={field.url} alt="" width={300} height={300} className="w-full h-full object-cover" />
+          <LabeledInput
+            key={field.id}
+            inputType='text'
+            placeholder='Enter Image Description...'
+          defaultValue={field.description}
+            {...register(`postImages.${index}.description`, {
+              onChange: (e) => {
+                field.description = e.target.value;
+              },
+              onBlur() {
+                update(index, field)
+              },
+            })}
+      
+            additionalClasses='w-full p-2 absolute rounded-none h-12 bg-dark-gray/60 border-none bottom-0 left-0'
+            type='dark'
+          />
+        </div>
+      }
+    />
+  </>
+))}
+
               </div>
           </div>
           
