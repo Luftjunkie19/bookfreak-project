@@ -260,13 +260,13 @@ function CreateBook() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Checkbox  {...register('termsConsent'), {
+      <div className="flex items-center gap-2 py-3">
+        <Checkbox  {...register('termsConsent',  {
           validate: (value) => {
             return value || 'You have to agree for the terms';
           }
-        }}/>
-        <p>By clicking this button, you admit BookFreak admnisitration to insert remaining information of the book, in case of lack of those. You allow to
+        })}/>
+        <p className="text-sm text-white max-w-5xl w-full">By clicking this button, you admit BookFreak admnisitration to insert remaining information of the book, in case of lack of those. You allow to
         delete the book from the database if the information will contain obscenities or will be faked or untrue.</p>
       </div>
 

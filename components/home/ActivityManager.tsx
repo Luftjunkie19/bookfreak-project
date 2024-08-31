@@ -99,7 +99,7 @@ function ActivityManager({ }: Props) {
         reader.onload = () => {
           append({
               url: reader.result as string,
-            description: element.name,
+            description: "",
             fileObj:element
           });
        
@@ -206,7 +206,7 @@ function ActivityManager({ }: Props) {
        {fields.map((field, index) => (
   <>
     <Button onClick={onOpen} additionalClasses='group p-0 outline-none border border-primary-color' type='transparent' key={field.id}>
-      <Image src={field.url} alt="" width={60} height={60} className='w-24 object-cover relative outline-none border-none top-0 left-0 before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-dark-gray/40  p-0 before:group-hover:top-0 duration-400 transition-all h-24 rounded-lg' />
+      <Image src={(field as any).url} alt="" width={60} height={60} className='w-24 object-cover relative outline-none border-none top-0 left-0 before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-dark-gray/40  p-0 before:group-hover:top-0 duration-400 transition-all h-24 rounded-lg' />
     </Button>
            <ModalComponent
       modalFooterContent={
@@ -224,15 +224,15 @@ function ActivityManager({ }: Props) {
       onOpenChange={onOpenChange}
       modalBodyContent={
         <div  className="w-full relative top-0 left-0 h-full">
-          <Image src={field.url} alt="" width={300} height={300} className="w-full h-full object-cover" />
+          <Image src={(field as any).url} alt="" width={300} height={300} className="w-full h-full object-cover" />
           <LabeledInput
             key={field.id}
             inputType='text'
             placeholder='Enter Image Description...'
-          defaultValue={field.description}
+          defaultValue={(field as any).description}
             {...register(`postImages.${index}.description`, {
               onChange: (e) => {
-                field.description = e.target.value;
+                (field as any).description = e.target.value;
               },
               onBlur() {
                 update(index, field)
