@@ -53,18 +53,16 @@ import SingleDropDown from "components/drowdown/SingleDropDown";
 import { parseZonedDateTime } from "@internationalized/date";
 import MultipleDropDown from "components/drowdown/MultipleDropDown";
 import useGetCollection from "hooks/firestore/useGetCollection";
+import { useForm } from "react-hook-form";
 
 
 function CreateBook() {
   const { user } = useAuthContext();
-  const [error, setError] = useState<string | null>("");
-  const [isCompleted, setIsCompleted] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [editCover, setEditCover] = useState<string | null>(null);
   const { addToDataBase } = useRealDatabase();
   const router = useRouter();
 
-  const [hasStarted, setHasStarted] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [radius, setRadius] = useState(0);
   const [link, setLink] = useState(null);
@@ -72,7 +70,7 @@ function CreateBook() {
   const dispatch = useDispatch();
   const { documents: availableBooks } = useGetCollection("books");
  
-  
+  const { register, setError, handleSubmit} = useForm();
 
   const editorRef = useRef<AvatarEditor>(null);
 
@@ -84,14 +82,12 @@ function CreateBook() {
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
 
   const handleSelect = (e) => {
-    setError(null);
     setEditCover(null);
     setIsPending(false);
 
     let selected = e.target.files[0];
 
     if (selected?.size > 200000) {
-      setError(alertMessages.notifications.wrong.tooBigFile[selectedLanguage]);
       setEditCover(null);
       return;
     }
@@ -104,9 +100,7 @@ function CreateBook() {
 
     if (selected === null) {
       //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.selectAnything[selectedLanguage]}`, alertType: "error" }));
-      setError(
-        alertMessages.notifications.wrong.selectAnything[selectedLanguage]
-      );
+
 
       setEditCover(null);
       return;
@@ -118,12 +112,11 @@ function CreateBook() {
       fileReader.onload = () => {
         setEditCover(fileReader.result as string);
       };
-      setError(null);
       return;
     }
   };
 
-  const handleSubmit = async () => {
+  const submitForm = async () => {
    
   };
 
@@ -169,11 +162,11 @@ function CreateBook() {
       <p className='text-2xl font-bold'>Expand Our Bookish Database !</p>
       <p>Do we lack any book in our Database ? Insert it and help others finding this one !</p>
      </div>
-
+      <form onSubmit={handleSubmit(submitForm)}>
       <div className="flex py-2 items-center gap-12">
 
         <div onClick={triggerInputFile} className="w-52 cursor-pointer h-72 rounded-lg bg-white justify-center items-center flex">
-          <input ref={fileInputRef} type="file" name="" className="hidden" id="" />
+          <input ref={fileInputRef} type="file"  className="hidden" id="" />
           <div className="flex w-full flex-col items-center gap-2">
 <HiOutlineUpload className="text-5xl text-primary-color" />
           <p className='text-xs text-dark-gray'>Upload Image</p>
@@ -183,15 +176,9 @@ function CreateBook() {
         <div className="flex flex-col gap-2 max-w-2xl w-full">
 <p className="text-2xl text-white font-semibold flex gap-2 items-center"><RiBook2Fill className="text-4xl"/>  <span>General Book Information</span></p>
 <div className="grid gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput name="title" additionalClasses="max-w-xs p-2 w-full" label="Book Title" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput name="originalTitle" additionalClasses="max-w-xs w-full p-2" label="Original Book Title" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput name="author" additionalClasses="max-w-xs w-full p-2" label="Author" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
+            <LabeledInput {...register('title')}  additionalClasses="max-w-xs p-2 w-full" label="Book Title" type={"dark"}  />
+                        <LabeledInput {...register('originalTitle')} additionalClasses="max-w-xs w-full p-2" label="Original Book Title" type={"dark"} />
+                        <LabeledInput  {...register('author')} additionalClasses="max-w-xs w-full p-2" label="Author" type={"dark"} />
             <SingleDropDown selectedArray={bookCategories} label="Genre">
               {bookCategories.map((item) => (<SelectItem key={item}>{item}</SelectItem>
 ))}
@@ -212,10 +199,9 @@ function CreateBook() {
               console.log(countryCode)
             } }/>
           </div>
-                        <LabeledInput name="publishingHouse" additionalClasses="max-w-xs p-2 w-full" label="Publishing House" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                   <DatePicker
+                        <LabeledInput  {...register('publishingHouse')} additionalClasses="max-w-xs p-2 w-full" label="Publishing House" type={"dark"} />
+          <DatePicker
+            
                    name="releaseDate"
        label={<p className='text-white'>Date of Release</p>}
             className="max-w-xs w-full text-white"
@@ -241,9 +227,7 @@ function CreateBook() {
   
 
 
-                                <LabeledInput name="pages" minNumber={1} inputType='number' additionalClasses="max-w-xs p-2 w-full" label="Pages" type={"dark"} setValue={(value) => {
-              console.log(value);
-          }} />
+                                <LabeledInput {...register('pages')} minNumber={1} inputType='number' additionalClasses="max-w-xs p-2 w-full" label="Pages" type={"dark"} />
           
           <MultipleDropDown name="bookTypes" label="Accessible Book Types" selectedArray={[]}>
             <SelectItem key={'book'}>Book</SelectItem>
@@ -257,7 +241,7 @@ function CreateBook() {
 
            <label className="flex flex-col gap-1">
           <span className="text-xl text-white font-semibold">Book Description</span>
-      <textarea name="bookDescription" className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
+      <textarea {...register('bookDescription')}  className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
       </label>
   
 
@@ -266,33 +250,22 @@ function CreateBook() {
          <div className="flex w-full flex-col gap-1">
           <p className="text-2xl text-white font-bold">Detailed Book Information</p>
           <div className="grid xl:grid-cols-2 2xl:grid-cols-3 max-w-6xl w-full gap-2">
-            <LabeledInput name="isbn" inputType="number" minNumber={0} additionalClasses="max-w-xs p-2 w-full" label="ISBN" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput name="publishingCycle" additionalClasses="max-w-xs p-2 w-full" label="Publishing Cycle" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput name="serie" additionalClasses="max-w-xs p-2 w-full" label="Serie" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput name="volume" additionalClasses="max-w-xs p-2 w-full" label="Volume" type={"dark"} setValue={(value) => {
-              console.log(value);
-          }} />
+            <LabeledInput {...register('isbn')} inputType="number" minNumber={0} additionalClasses="max-w-xs p-2 w-full" label="ISBN" type={"dark"}  />
+                        <LabeledInput  {...register('publishingCycle')} additionalClasses="max-w-xs p-2 w-full" label="Publishing Cycle" type={"dark"}  />
+                        <LabeledInput  {...register('serie')} additionalClasses="max-w-xs p-2 w-full" label="Serie" type={"dark"}  />
+                        <LabeledInput {...register('volume')} additionalClasses="max-w-xs p-2 w-full" label="Volume" type={"dark"}/>
 
-                                  <LabeledInput name="volumeNumber" additionalClasses="max-w-xs p-2 w-full" label="Volume Number" type={"dark"} setValue={(value) => {
-              console.log(value);
-          }} />
+                                  <LabeledInput  {...register('volumeNumber')} additionalClasses="max-w-xs p-2 w-full" label="Volume Number" type={"dark"}  />
           
-                        
-          
- 
-
-
         </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <Checkbox/>
+        <Checkbox  {...register('termsConsent'), {
+          validate: (value) => {
+            return value || 'You have to agree for the terms';
+          }
+        }}/>
         <p>By clicking this button, you admit BookFreak admnisitration to insert remaining information of the book, in case of lack of those. You allow to
         delete the book from the database if the information will contain obscenities or will be faked or untrue.</p>
       </div>
@@ -300,6 +273,7 @@ function CreateBook() {
       <Button type='blue' additionalClasses="w-fit px-6 py-2 text-lg my-4">
         Insert
       </Button>
+</form>
 
     </div>
   );
