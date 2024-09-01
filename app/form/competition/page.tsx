@@ -293,9 +293,7 @@ function CreateCompetition() {
 
         
 <div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Competition Name" type={"dark"} setValue={(value) => {
-              console.log(value);
-          }} />
+            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Competition Name" type={"dark"} />
           
           <SingleDropDown label='Competition Rules' selectedArray={[]}>
             <SelectItem key={'rule1'}>Rule 1</SelectItem>
@@ -324,29 +322,15 @@ function CreateCompetition() {
 
 
         <div className="grid xl:grid-cols-2 2xl:grid-cols-3 items-center gap-2 max-w-6xl">
-          <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Book Title" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="BookFreak's DB Reference" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Name" type={"dark"} setValue={(value) => {
-              console.log(value);
-          }} />
-            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Type" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="What is the Voucher for" type={"dark"} setValue={(value) => {
-              console.log(value);
-          }} />
+          <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Book Title" type={"dark"} />
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="BookFreak's DB Reference" type={"dark"} />
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Name" type={"dark"}  />
+            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Type" type={"dark"} />
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="What is the Voucher for" type={"dark"} />
           
-                   <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Link  to the Voucher's Prize" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
+                   <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Link  to the Voucher's Prize" type={"dark"}  />
 
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label='Money Prize' type={'transparent'} setValue={(value) => {
-              console.log(value);
-          }} />
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label='Money Prize' type={'transparent'} />
           
           <div className="flex gap-1 flex-col col-span-full">
              <span className="text-lg text-white font-semibold">Other Prize's Description</span>
@@ -365,39 +349,27 @@ function CreateCompetition() {
           <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-52 max-w-2xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
                               </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
                               </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
                               </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
                               </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
                               </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' setValue={(value) => {
-                                      console.log(value);
-                                  }}/>
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
                               </div>
 </div> 
 
@@ -416,9 +388,7 @@ function CreateCompetition() {
           <SelectItem key={'rule2'}>Peculiar Question</SelectItem>
    </SingleDropDown>
    
-  <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
+  <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
 
 
            <SingleDropDown label='Answer Accessment' selectedArray={[]}>

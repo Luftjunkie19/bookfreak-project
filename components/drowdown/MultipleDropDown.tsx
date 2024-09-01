@@ -1,5 +1,5 @@
 import React from 'react'
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Select} from "@nextui-org/react";
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Select, SelectProps} from "@nextui-org/react";
 import { IoIosArrowDown } from 'react-icons/io';
 
 type Props = {
@@ -7,9 +7,9 @@ type Props = {
     selectedArray: string[],
     label?:string,
     name?:string,
-}
+} 
 
-function MultipleDropDown({children, selectedArray, label, name}: Props) {
+function MultipleDropDown({children, selectedArray, label, name, ...props}: Props) {
      const [selectedKeys, setSelectedKeys] = React.useState(new Set(["text"]));
 
   const selectedValue = React.useMemo(
@@ -22,6 +22,7 @@ function MultipleDropDown({children, selectedArray, label, name}: Props) {
 
   return (
     <Select
+      {...props}
       label={<p className='text-white'>{label}</p>}
       placeholder={`Select ${label}`}
       selectionMode="multiple"

@@ -100,81 +100,83 @@ let notCurrentUsers = documents
     });
 
   const { addToDataBase } = useRealDatabase();
-  const submitForm = (e) => {
-    e.preventDefault();
-    setError(null);
-    setIsPending(true);
-
-    if (
-      allMembers.find(
-        (member:any) =>
-          member.value.id === (user as User).uid &&
-          member.belongsTo.includes("readersClub")
-      )
-    ) {
-      dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.loyality[selectedLanguage]}` }));
-
-      return;
-    }
 
 
-    if (!readersClub.clubLogo || readersClub.description.trim().length === 0 || readersClub.clubsName.trim().length === 0 || readersClub.requiredPagesRead === 0) {
-      dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.someFieldsEmpty[selectedLanguage]}` }));
+  const submitForm = () => {
+    // e.preventDefault();
+    // setError(null);
+    // setIsPending(true);
 
-      return;
-    }
+    // if (
+    //   allMembers.find(
+    //     (member:any) =>
+    //       member.value.id === (user as User).uid &&
+    //       member.belongsTo.includes("readersClub")
+    //   )
+    // ) {
+    //   dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.loyality[selectedLanguage]}` }));
 
-    const uniqueId = uniqid("readersClub");
+    //   return;
+    // }
 
-    addToDataBase("readersClubs", uniqueId, {
-      clubsName: readersClub.clubsName,
-      clubLogo: readersClub.clubLogo,
-      description: readersClub.description,
-      requiredPagesRead: readersClub.requiredPagesRead,
-      createdBy: {
-        displayName: (user as User).displayName,
-        email: (user as User).email,
-        photoURL: (user as User).photoURL,
-        createdAt: new Date().getTime(),
-        id: (user as User).uid,
-      },
-      id: uniqueId,
-    });
 
-    addToDataBase("communityChats", uniqueId, {
-      messages: {},
-      chatId: uniqueId,
-    });
+    // if (!readersClub.clubLogo || readersClub.description.trim().length === 0 || readersClub.clubsName.trim().length === 0 || readersClub.requiredPagesRead === 0) {
+    //   dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.someFieldsEmpty[selectedLanguage]}` }));
 
-    addToDataBase("communityMembers", uniqueId, {
-      users: {
-        [(user as User).uid]: {
-          label: (user as User).displayName,
-          belongsTo: uniqueId,
-          value: {
-            nickname: (user as User).displayName,
-            id: (user as User).uid,
-            photoURL: (user as User).photoURL,
-          },
-        },
-      },
-    });
+    //   return;
+    // }
 
-    attachedUsers.map((member:any) =>
-      addToDataBase("notifications", member.value.id, {
-        notificationContent: `You've been invited by ${(user as User).displayName} to ${readersClub.clubsName} club.`,
-        directedTo: member.value.id,
-        linkTo: `/readers-club/${uniqueId}`,
-        notificationId: uniqueId,
-        isRead: false,
-        notificationTime: new Date().getTime(),
-        addedTo: readersClub.clubsName,
-      })
-    );
-    setIsPending(false);
-    dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.successfull.create[selectedLanguage]}` }));
-    setError(null);
-    navigate.push("/");
+    // const uniqueId = uniqid("readersClub");
+
+    // addToDataBase("readersClubs", uniqueId, {
+    //   clubsName: readersClub.clubsName,
+    //   clubLogo: readersClub.clubLogo,
+    //   description: readersClub.description,
+    //   requiredPagesRead: readersClub.requiredPagesRead,
+    //   createdBy: {
+    //     displayName: (user as User).displayName,
+    //     email: (user as User).email,
+    //     photoURL: (user as User).photoURL,
+    //     createdAt: new Date().getTime(),
+    //     id: (user as User).uid,
+    //   },
+    //   id: uniqueId,
+    // });
+
+    // addToDataBase("communityChats", uniqueId, {
+    //   messages: {},
+    //   chatId: uniqueId,
+    // });
+
+    // addToDataBase("communityMembers", uniqueId, {
+    //   users: {
+    //     [(user as User).uid]: {
+    //       label: (user as User).displayName,
+    //       belongsTo: uniqueId,
+    //       value: {
+    //         nickname: (user as User).displayName,
+    //         id: (user as User).uid,
+    //         photoURL: (user as User).photoURL,
+    //       },
+    //     },
+    //   },
+    // });
+
+    // attachedUsers.map((member:any) =>
+    //   addToDataBase("notifications", member.value.id, {
+    //     notificationContent: `You've been invited by ${(user as User).displayName} to ${readersClub.clubsName} club.`,
+    //     directedTo: member.value.id,
+    //     linkTo: `/readers-club/${uniqueId}`,
+    //     notificationId: uniqueId,
+    //     isRead: false,
+    //     notificationTime: new Date().getTime(),
+    //     addedTo: readersClub.clubsName,
+    //   })
+    // );
+    // setIsPending(false);
+    // dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.successfull.create[selectedLanguage]}` }));
+    // setError(null);
+    // navigate.push("/");
   };
 
   const handleSelect = (e) => {
@@ -217,38 +219,6 @@ let notCurrentUsers = documents
     }
   };
 
-  const handleSaveCover = async () => {
-    if (editorRef.current) {
-      const editorImg = editorRef.current
-        .getImageScaledToCanvas()
-        .toDataURL("image/jpg");
-  
-      const byteCharacters = atob(editorImg.split(",")[1]);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-  
-      const byteArray = new Uint8Array(byteNumbers);
-  
-      const storageRef = ref(
-        storage,
-        `readersClub-logos/${(user as User).uid}/${readersClub.clubsName ? readersClub.clubsName : `readersClub${uniqid()}`
-        }.jpg`
-      );
-      await uploadBytes(storageRef, byteArray);
-      const url = await getDownloadURL(storageRef);
-      console.log(url);
-  
-      setReadersClub((club:any) => {
-        club.clubLogo = url;
-        return club;
-      });
-  
-      setEditCover(null);
-      
-    }
-  };
 
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
 
@@ -303,12 +273,8 @@ let notCurrentUsers = documents
           </div>
         </div>
 
-            <LabeledInput containerStyle='max-w-xs w-full self-end' additionalClasses="max-w-xs w-full p-2" label="Club name" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
-               
-          
-
+            <LabeledInput containerStyle='max-w-xs w-full self-end' additionalClasses="max-w-xs w-full p-2" label="Club name" type={"dark"}  />
+              
   
   </div>
       <Select
@@ -589,13 +555,9 @@ let notCurrentUsers = documents
           <SelectItem key={'rule2'}>Peculiar Question</SelectItem>
    </SingleDropDown>
 
-     <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Pages" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
+     <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Pages" type={"dark"} />
    
-  <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
+  <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
 
 
            <SingleDropDown label='Answer Accessment' selectedArray={[]}>

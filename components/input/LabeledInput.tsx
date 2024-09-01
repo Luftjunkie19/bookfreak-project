@@ -14,6 +14,10 @@ type Props = {
   containerStyle?:string,
   value?: number | string,
   type: 'dark' | 'light' | 'blue' | 'transparent',
+  error?: {
+    message: string,
+  },
+  errorMessageComponent?:React.ReactNode,
 } & React.InputHTMLAttributes<HTMLInputElement>
 
 function LabeledInput({label, minNumber,containerStyle, maxNumber,placeholder, inputType, name, type, additionalClasses, ...props}: Props) {

@@ -1,5 +1,6 @@
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Select } from '@nextui-org/react';
 import React, { useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 
 type Props = {
@@ -9,8 +10,8 @@ type Props = {
     name?:string,
 }
 
-function SingleDropDown({ children, selectedArray, label, name }: Props) {
-    
+function SingleDropDown({ children, selectedArray, label, name, ...props }: Props) {
+  const { register } = useForm();
     const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set(selectedArray));
     const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
 
@@ -23,7 +24,8 @@ function SingleDropDown({ children, selectedArray, label, name }: Props) {
         setIsDropDownOpen(!isDropDownOpen);
     }
     
-    return (  <Select
+  return (<Select
+    {...props}
     name={name}
       label={<p className='text-white'>{label}</p>}
       placeholder={`Select ${label}`}
