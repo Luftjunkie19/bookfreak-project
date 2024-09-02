@@ -149,24 +149,16 @@ const dispatch=useDispatch();
     <div className={`min-h-screen h-full flex`}>
       <div className='xl:bg-dark-gray flex flex-col gap-2 p-2 xl:h-screen max-w-xs w-full'>
         <p className='text-xl font-semibold text-white'>Test Creator</p>
-        <LabeledInput additionalClasses='p-2' label='Question' type={'light'} setValue={function (value: string): void {
-          
-        }} />
+        <LabeledInput additionalClasses='p-2' label='Question' type={'light'}  />
         
         <div className="flex flex-col gap-2">
           <p className='text-lg text-white'>Possible Answers</p>
           <div className="flex flex-col overflow-y-auto gap-2 h-60">
-                 <LabeledInput additionalClasses='p-2' label='Answer A' type={'light'} setValue={function (value: string): void {
-          
-            }} />
+                 <LabeledInput additionalClasses='p-2' label='Answer A' type={'light'} />
             
-                      <LabeledInput additionalClasses='p-2' label='Answer B' type={'light'} setValue={function (value: string): void {
-          
-            }} />
+                      <LabeledInput additionalClasses='p-2' label='Answer B' type={'light'}  />
             
-                      <LabeledInput additionalClasses='p-2' label='Answer C' type={'light'} setValue={function (value: string): void {
-          
-        }} />
+                      <LabeledInput additionalClasses='p-2' label='Answer C' type={'light'}  />
           </div>
         </div>
 

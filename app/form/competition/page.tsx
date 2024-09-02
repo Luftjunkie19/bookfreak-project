@@ -31,10 +31,28 @@ import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import ModalComponent from 'components/modal/ModalComponent';
 import { MdEditDocument } from 'react-icons/md';
 import { PiStackPlusFill } from 'react-icons/pi';
+import { useFirestore } from 'hooks/firestore/useFirestore';
+
+type Competition = {
+ competitionTitle: string,
+    competitionsName: string,
+    expiresAt:  Date | null ,
+    description: string,
+    prizeType: 'Money' | 'item' | null,
+    chargeId: string | null ,
+    prizeHandedIn: false,
+    prize: {
+      moneyPrize?: {
+        amount: number | null,
+        currency: string | null,
+      },
+      itemPrize?: { title: string | null, typeOfPrize: string | null },
+    },
+}
 
 function CreateCompetition() {
   const { user } = useAuthContext();
-  const { addToDataBase, updateDatabase } = useRealDatabase();
+  const { insertTo } = useFirestore();
   const [attachedUsers, setAttachedUsers] = useState([]);
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
@@ -44,7 +62,7 @@ function CreateCompetition() {
   const [isPending, setIsPending] = useState(false);
   const dispatch=useDispatch();
   const payCompetitionCharge= httpsCallable(functions, 'payCompetitionCharge');
-  const [prize, setPrize]=useState(null)
+  const [prize, setPrize] = useState(null);
    const competitionTypes = [
     { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
     {
@@ -94,88 +112,57 @@ function CreateCompetition() {
       };
     });
 
-  const [competition, setCompetition] = useState<{
-    competitionTitle: string,
-    competitionsName: string,
-    expiresAt: null | Date,
-    description: string,
-    prizeType: null | 'Money' | 'item',
-    chargeId: null | string,
-    prizeHandedIn: false,
-    prize: {
-      moneyPrize?: {
-        amount: number | null,
-        currency: string | null,
-      },
-      itemPrize?: { title: string | null, typeOfPrize: string | null },
-    },
-  }>({
-    competitionTitle: "",
-    competitionsName: "",
-    expiresAt: null,
-    description: "",
-    prizeType: null,
-    chargeId: null,
-    prizeHandedIn: false,
-    prize: {
-      moneyPrize: {
-        amount: 0,
-        currency: null,
-      },
-      itemPrize: { title: null, typeOfPrize: null },
-    },
-  });
 
   const finalizeAll = () => {
     const uniqueId = uniqid();
-    addToDataBase("competitions", uniqueId, {
-      competitionTitle: competition.competitionTitle,
-      competitionsName: competition.competitionsName,
-      expiresAt: new Date((competition.expiresAt as Date)).getTime(),
-      description: competition.description,
-      prizeHandedIn: false,
-      chargeId: competition.chargeId,
-      prize: competition.prize,
-      createdBy: {
-        displayName: (user as User).displayName,
-        email: (user as User).email,
-        photoURL: (user as User).photoURL,
-        createdAt: new Date().getTime(),
-        id: (user as User).uid,
-      },
-      id: uniqueId,
-    });
+    // addToDataBase("competitions", uniqueId, {
+    //   competitionTitle: competition.competitionTitle,
+    //   competitionsName: competition.competitionsName,
+    //   expiresAt: new Date((competition.expiresAt as Date)).getTime(),
+    //   description: competition.description,
+    //   prizeHandedIn: false,
+    //   chargeId: competition.chargeId,
+    //   prize: competition.prize,
+    //   createdBy: {
+    //     displayName: (user as User).displayName,
+    //     email: (user as User).email,
+    //     photoURL: (user as User).photoURL,
+    //     createdAt: new Date().getTime(),
+    //     id: (user as User).uid,
+    //   },
+    //   id: uniqueId,
+    // });
 
-    addToDataBase("communityChats", uniqueId, {
-      messages: {},
-      chatId: uniqueId,
-    });
+    // addToDataBase("communityChats", uniqueId, {
+    //   messages: {},
+    //   chatId: uniqueId,
+    // });
 
-    addToDataBase("communityMembers", uniqueId, {
-      users: {
-        [(user as User).uid]: {
-          label: (user as User).displayName,
-          belongsTo: uniqueId,
-          value: {
-            nickname: (user as User).displayName,
-            id: (user as User).uid,
-            photoURL: (user as User).photoURL,
-          },
-        },
-      },
-    });
+    // addToDataBase("communityMembers", uniqueId, {
+    //   users: {
+    //     [(user as User).uid]: {
+    //       label: (user as User).displayName,
+    //       belongsTo: uniqueId,
+    //       value: {
+    //         nickname: (user as User).displayName,
+    //         id: (user as User).uid,
+    //         photoURL: (user as User).photoURL,
+    //       },
+    //     },
+    //   },
+    // });
 
-    attachedUsers.map((member:any) =>
-      addToDataBase("notifications", `${uniqueId}-${new Date().getTime()}`, {
-        notificationContent: `You've been invited by ${(user as User).displayName} to join the ${competition.competitionsName} competition.`,
-        directedTo: member.value.id,
-        linkTo: `/competition/${uniqueId}`,
-        isRead: false,
-        notificationId: uniqueId,
-        notificationTime: new Date().getTime(),
-        addedTo: competition.competitionsName,
-      })
-    );
+    // attachedUsers.map((member:any) =>
+    //   addToDataBase("notifications", `${uniqueId}-${new Date().getTime()}`, {
+    //     notificationContent: `You've been invited by ${(user as User).displayName} to join the ${competition.competitionsName} competition.`,
+    //     directedTo: member.value.id,
+    //     linkTo: `/competition/${uniqueId}`,
+    //     isRead: false,
+    //     notificationId: uniqueId,
+    //     notificationTime: new Date().getTime(),
+    //     addedTo: competition.competitionsName,
+    //   })
+    // );
 
     setIsPending(false);
     setError(null);
@@ -187,84 +174,84 @@ function CreateCompetition() {
     setError(null);
     setIsPending(true);
     try {
-      if (!competition.expiresAt) {
-        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.earlyDate[selectedLanguage]}`,alertType:"error", }));
-        setIsPending(false);
-        return;
-      }
+      // if (!competition.expiresAt) {
+      //   dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.earlyDate[selectedLanguage]}`,alertType:"error", }));
+      //   setIsPending(false);
+      //   return;
+      // }
 
-      if (
-        competition.prizeType === "Money" &&  competition.prize.moneyPrize &&
-        competition.prize.moneyPrize.amount === 0
-      ) {
-        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.zeroAmount[selectedLanguage]}`, alertType:"error"}));
+      // if (
+      //   competition.prizeType === "Money" &&  competition.prize.moneyPrize &&
+      //   competition.prize.moneyPrize.amount === 0
+      // ) {
+      //   dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.zeroAmount[selectedLanguage]}`, alertType:"error"}));
         
         
-        setIsPending(false);
-        return;
-      }
+      //   setIsPending(false);
+      //   return;
+      // }
 
-      if (competition.prize.moneyPrize && competition.prize.moneyPrize.amount && competition.prize.moneyPrize.amount > document.creditsAvailable) {
-        dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.notEnoughCredits[selectedLanguage]}`, alertType:"error"}));
+      // if (competition.prize.moneyPrize && competition.prize.moneyPrize.amount && competition.prize.moneyPrize.amount > document.creditsAvailable) {
+      //   dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.notEnoughCredits[selectedLanguage]}`, alertType:"error"}));
         
      
-        setIsPending(false);
-        return;
-      }
+      //   setIsPending(false);
+      //   return;
+      // }
 
-      if (
-        competition.prize.itemPrize === undefined ||
-        competition.prize.itemPrize === null ||
-        competition.prize.moneyPrize === null ||
-        competition.prize.moneyPrize === undefined
-      ) {
+      // if (
+      //   competition.prize.itemPrize === undefined ||
+      //   competition.prize.itemPrize === null ||
+      //   competition.prize.moneyPrize === null ||
+      //   competition.prize.moneyPrize === undefined
+      // ) {
         
-          //state.message = "Something went wrong.";
+      //     //state.message = "Something went wrong.";
        
-        setIsPending(false);
-        return;
-      }
+      //   setIsPending(false);
+      //   return;
+      // }
 
-      if (competition.prizeType === "Money" && competition.prize.moneyPrize) {
-        const payoutObject = await payCompetitionCharge({
-          organizatorObject: document,
-          payerId: document.stripeAccountData.id,
-          amount: competition.prize.moneyPrize.amount,
-          currency:
-            document.stripeAccountData.default_currency.toUpperCase(),
-        });
+      // if (competition.prizeType === "Money" && competition.prize.moneyPrize) {
+      //   const payoutObject = await payCompetitionCharge({
+      //     organizatorObject: document,
+      //     payerId: document.stripeAccountData.id,
+      //     amount: competition.prize.moneyPrize.amount,
+      //     currency:
+      //       document.stripeAccountData.default_currency.toUpperCase(),
+      //   });
         
-        const { error, chargeObject } = await payoutObject.data as any;
+      //   const { error, chargeObject } = await payoutObject.data as any;
 
-        console.log(chargeObject);
+      //   console.log(chargeObject);
 
-        if (error) {
-          setError(error);
-          setIsPending(false);
-          return;
-        }
+      //   if (error) {
+      //     setError(error);
+      //     setIsPending(false);
+      //     return;
+      //   }
 
-        if (chargeObject && user) {
-          setCompetition((comp) => {
-            comp.chargeId = chargeObject.id;
-            (comp.prize.moneyPrize as any).currency =
-              document.stripeAccountData.default_currency;
-            return comp;
-          });
-          updateDatabase(
-            {
-              valueInMoney:
-                document.creditsAvailable.valueInMoney -
-                (competition.prize.moneyPrize.amount as number),
-            },
-            "users",
-            `${user.uid}/creditsAvailable`
-          );
-        }
-      }
-      finalizeAll();
-      dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
-      setIsPending(false);
+      //   if (chargeObject && user) {
+      //     setCompetition((comp) => {
+      //       comp.chargeId = chargeObject.id;
+      //       (comp.prize.moneyPrize as any).currency =
+      //         document.stripeAccountData.default_currency;
+      //       return comp;
+      //     });
+      //     updateDatabase(
+      //       {
+      //         valueInMoney:
+      //           document.creditsAvailable.valueInMoney -
+      //           (competition.prize.moneyPrize.amount as number),
+      //       },
+      //       "users",
+      //       `${user.uid}/creditsAvailable`
+      //     );
+      //   }
+      // }
+      // finalizeAll();
+      // dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
+      // setIsPending(false);
     } catch (err) {
       console.log(err);
       setIsPending(false);
