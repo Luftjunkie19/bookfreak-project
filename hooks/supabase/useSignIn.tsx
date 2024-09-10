@@ -24,7 +24,7 @@ function useSignIn({ }: Props) {
     }
     }
 
-    const singUp = async (password: string, email: string) => {
+    const signUp = async (password: string, email: string) => {
         
         try {
             const { data, error } = await supabase.auth.signUp({
@@ -44,9 +44,7 @@ function useSignIn({ }: Props) {
     }
 
 
-  return (
-    <div>useSignIn</div>
-  )
+  return {signInWithPassword, signUp}
 }
 
 export default useSignIn

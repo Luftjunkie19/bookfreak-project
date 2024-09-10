@@ -1,22 +1,44 @@
-import { storage } from 'app/firebase';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+
+import { createClient } from 'lib/supabase/client';
 import React from 'react'
 
 
 
 function useStorage() {
+  const supabase = createClient();
 
-    const uploadImage=async(fileObject:File, path:string)=>{
-    
-     const storageRef = ref(storage, path);
+  const uploadImage = async (fileObject: File, bucket: string, path: string) => {
+    try {
+      const { data, error } = await supabase.storage.from(bucket).upload(path, fileObject);
   
-     const snapshot = await uploadBytes(storageRef, fileObject);
-     const fullImage =  await getDownloadURL(snapshot.ref);
+      if (error) {
+        throw new Error(error.message, {
+          'cause': error.cause
+        });
+      }
+
+      console.log(data);
+      
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+    const uploadImageUrl=async(path:string, bucketName:string)=>{
+      try {
   
-       return fullImage;
+  const { data } = await supabase.storage.from(bucketName).getPublicUrl(path, {
+    'download':true,
+  });
+
+  return data.publicUrl;
+  
+} catch (error) {
+        console.log(error);
+}
     }
 
-  return {uploadImage}
+  return {uploadImage, uploadImageUrl}
 }
 
 export default useStorage

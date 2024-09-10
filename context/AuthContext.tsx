@@ -1,5 +1,8 @@
 'use client';
 
+import { SupabaseClient, User } from '@supabase/supabase-js';
+import { SupabaseAuthClient } from '@supabase/supabase-js/dist/module/lib/SupabaseAuthClient';
+import { createClient } from 'lib/supabase/client';
 /* eslint-disable no-unused-vars */
 import {
   createContext,
@@ -7,11 +10,6 @@ import {
   useReducer,
 } from 'react';
 
-import { auth } from 'app/firebase';
-import {
-  onAuthStateChanged,
-  User,
-} from 'firebase/auth';
 
 const initalState: { user: User | null, userIsReady: boolean, dispatch: (p0: unknown) => null } = { user: null,
   userIsReady: false,
@@ -36,20 +34,26 @@ export const authReducer = (state: any, action: { type: any; payload: any; }) =>
 };
 
 export default function AuthContextProvider({ children }) {
+
+  const supabase = createClient();
+
   const [state, dispatch] = useReducer(authReducer, {
     user: null,
     userIsReady: false,
   });
-
   
-
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user:User) => {
-      dispatch({ type: "AUTH_READY", payload: user });
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+     async (event, session) => {
+        if (session) {
+          console.log(session, event);
+       dispatch({ type: "AUTH_READY", payload: session });
+     }
+     }
+    )
 
-      unsub();
-    });
-  }, [dispatch]);
+    return () => authListener.subscription.unsubscribe();
+   }, [])
 
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>

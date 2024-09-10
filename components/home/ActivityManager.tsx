@@ -16,7 +16,6 @@ import { toast } from 'react-hot-toast';
 import { useFirestore } from 'hooks/firestore/useFirestore';
 import { Timestamp } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, StorageReference, uploadBytes } from 'firebase/storage';
-import { functions, storage } from 'app/firebase';
 import { httpsCallable } from 'firebase/functions';
 import useStorage from 'hooks/storage/useStorage';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -39,10 +38,8 @@ type Post = {
 
 function ActivityManager({ }: Props) {
   const { user } = useAuthContext();
-  const { insertTo} = useFirestore();
-  const {uploadImage}=useStorage();
-  const { getDocument } = useRealtimeDocument();
-  const [userDocument, setUserDocument] = useState<any | null>(null);
+
+
 
   const { register, control, handleSubmit, formState, reset, resetField, watch } = useForm({
     
@@ -57,13 +54,6 @@ function ActivityManager({ }: Props) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const loadUserObj = useCallback(async () => {
-    if (user) {
-      const obj = await getDocument('users', user.uid);
-      setUserDocument(obj);
-      console.log(obj);
-    }
-  }, [user]);
 
   const openFileInput = () => {
     fileInputRef.current?.click();
@@ -116,9 +106,6 @@ function ActivityManager({ }: Props) {
 
   }
 
-  useEffect(() => {
-    loadUserObj();
-  },[loadUserObj])
 
 
 
@@ -148,25 +135,25 @@ function ActivityManager({ }: Props) {
           const postImg = images[index];
         
 
-       const readyImage= await uploadImage(postImg.fileObj, `postImages/${user.uid}/${uniqueId}/${postImg.fileObj?.name}`);
+      //  const readyImage= await uploadImage(postImg.fileObj, `postImages/${user.uid}/${uniqueId}/${postImg.fileObj?.name}`);
   
-          postArray = [...postArray, { url:readyImage, description:postImg.description}];
+          // postArray = [...postArray, { url:readyImage, description:postImg.description}];
         }  
         
       }
 
 
 
-      await insertTo('posts', {
-        id:uniqueId,
-        postContent,
-        postedBy:user.uid,
-        timeOfPosting: Timestamp.now(),
-        postImages: postArray,
-        likes: [],
-        comments: [],
-        shares:[],
-      }, uniqueId);
+      // await insertTo('posts', {
+      //   id:uniqueId,
+      //   postContent,
+      //   postedBy:user.uid,
+      //   timeOfPosting: Timestamp.now(),
+      //   postImages: postArray,
+      //   likes: [],
+      //   comments: [],
+      //   shares:[],
+      // }, uniqueId);
 
       reset();
       replace([]);
@@ -191,12 +178,12 @@ function ActivityManager({ }: Props) {
       
       })} className='xl:max-w-xl 2xl:max-w-3xl my-2 self-center w-full bg-white rounded-xl shadow-md'>
       <div className="w-full shadow-xl px-2 py-1 border-b border-primary-color">
-        {userDocument && 
+        {/* {userDocument && 
               <div className="flex gap-2 items-center">
                   <Image width={45} height={54} src={userDocument.photoURL} className='w-8 h-8 rounded-full ' alt='' />
             <p>{userDocument.nickname}</p>
               </div>
-        }
+        } */}
           </div>
           
           <div className="flex flex-col gap-2 w-full">

@@ -5,8 +5,6 @@ import {
   useState,
 } from 'react';
 import classes from '../../../stylings/gradient.module.css'
-import { useLogin } from 'hooks/useLogin';
-import Lottie from 'lottie-react';
 import AvatarEditor from 'react-avatar-editor';
 import {
   FaFacebook,
@@ -24,14 +22,7 @@ import { FcGoogle } from 'react-icons/fc';
 import Button from 'components/buttons/Button';
 
 function SignUp() {
-  const {
-    signUpUser,
-    signInWithGoogle,
-    signInWithFacebook,
-    signInWithGithub,
-    error,
-    isPending,
-  } = useLogin();
+
   const selectedLanguage = useSelector(
     (state: any) => state.languageSelection.selectedLangugage
   );
@@ -45,7 +36,7 @@ function SignUp() {
   const editorRef = useRef<AvatarEditor>(null);
 
   const handleSubmit = async () => {
-    await signUpUser(email, password, displayName, userImg);
+    // await signUpUser(email, password, displayName, userImg);
   };
 
   const handleSelect = (e) => {
@@ -120,17 +111,17 @@ function SignUp() {
 
       <div className="max-w-md min-h-96 p-2  w-full flex justify-between self-center flex-col gap-3 rounded-lg bg-dark-gray">
           <div className="flex flex-col gap-3 p-1">
-<LabeledInput placeholder='Enter Nickname...' additionalClasses='p-2' label='Nickname' type='dark' setValue={(value)=>{}}/>
-        <LabeledInput placeholder='Enter Email...' additionalClasses='p-2' label='Email' type='dark' setValue={(value)=>{}}/>
-          <LabeledInput placeholder='Enter Password...' additionalClasses='p-2' label='Password' type='dark' setValue={(value) => { }} />
+<LabeledInput placeholder='Enter Nickname...' additionalClasses='p-2' label='Nickname' type='dark' />
+        <LabeledInput placeholder='Enter Email...' additionalClasses='p-2' label='Email' type='dark' />
+          <LabeledInput placeholder='Enter Password...' additionalClasses='p-2' label='Password' type='dark' />
           <Button type='blue' additionalClasses='max-w-sm w-full self-center'>Login</Button>
           </div>
           <div className="flex flex-col gap-2 ">
 <p className='text-white px-1 text-center'>Or sign in with</p>
           <div className="flex sm:flex-row md:flex-col gap-4 p-2 items-center">
-            <Button additionalClasses='flex items-center justify-center gap-6 w-full' onClick={signInWithGoogle} type='white'><FcGoogle className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Google</span> </Button>
-            <Button onClick={signInWithGithub} type='black' additionalClasses=' bg-secondary-color w-full  text-white flex items-center justify-center gap-6'><FaGithub className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Github</span></Button>
-            <Button additionalClasses='flex items-center justify-center w-full gap-6' onClick={signInWithFacebook} type='blue' ><FaFacebook className='text-3xl '  /> <span className='sm:hidden md:block'>Sign in with Facebook</span></Button>
+            <Button additionalClasses='flex items-center justify-center gap-6 w-full'  type='white'><FcGoogle className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Google</span> </Button>
+            <Button  type='black' additionalClasses=' bg-secondary-color w-full  text-white flex items-center justify-center gap-6'><FaGithub className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Github</span></Button>
+            <Button additionalClasses='flex items-center justify-center w-full gap-6'  type='blue' ><FaFacebook className='text-3xl '  /> <span className='sm:hidden md:block'>Sign in with Facebook</span></Button>
           </div>
           </div>
       </div>

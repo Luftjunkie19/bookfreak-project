@@ -1,10 +1,10 @@
-import { auth } from 'app/firebase';
-import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 
 import { useAuthContext } from './useAuthContext';
+import { createClient } from 'lib/supabase/client';
 
 export function useLogout() {
+  const supabase = createClient();
   const { dispatch } = useAuthContext();
   const navigate = useRouter();
 
@@ -12,7 +12,7 @@ export function useLogout() {
     try {
   
 
-      await signOut(auth);
+      await supabase.auth.signOut();
 
       navigate.push("/");
 

@@ -2,7 +2,6 @@
 import { useState } from 'react';
 
 import LabeledInput from 'components/input/LabeledInput';
-import { useLogin } from 'hooks/useLogin';
 import Lottie from 'lottie-react';
 import toast from 'react-hot-toast';
 import {
@@ -20,14 +19,7 @@ import classes from '../../../stylings/gradient.module.css';
 import Button from 'components/buttons/Button';
 
 function Login() {
-  const {
-    signInNormally,
-    signInWithGithub,
-    signInWithGoogle,
-    signInWithFacebook,
-    error,
-    isPending
-  } = useLogin();
+
 
   const selectedLanguage = useSelector(
     (state: any) => state.languageSelection.selectedLangugage
@@ -37,7 +29,7 @@ function Login() {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      await signInNormally(email, password);
+      // await signInNormally(email, password);
     } catch (error) {
       toast.error('Something went not correct !');
     }
@@ -56,16 +48,16 @@ function Login() {
       <div className="max-w-md min-h-96 p-3  w-full flex justify-between self-center flex-col gap-3 rounded-lg bg-dark-gray">
           <div className="flex flex-col gap-3 p-1">
 
-        <LabeledInput placeholder='Enter Email...' additionalClasses='p-2' label='Email' type='dark' setValue={(value)=>{}}/>
-          <LabeledInput placeholder='Enter Password...' additionalClasses='p-2' label='Password' type='dark' setValue={(value) => { }} />
+        <LabeledInput placeholder='Enter Email...' additionalClasses='p-2' label='Email' type='dark' />
+          <LabeledInput placeholder='Enter Password...' additionalClasses='p-2' label='Password' type='dark'  />
           <Button type='blue' additionalClasses='max-w-sm w-full self-center'>Login</Button>
           </div>
           <div className="flex flex-col gap-2 ">
 <p className='text-white px-1 text-center'>Or sign in with</p>
           <div className="flex sm:flex-row md:flex-col gap-4 p-2 items-center">
-            <Button additionalClasses='flex items-center justify-center gap-6 w-full' onClick={signInWithGoogle} type='white'><FcGoogle className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Google</span> </Button>
-            <Button onClick={signInWithGithub} type='black' additionalClasses=' bg-secondary-color w-full  text-white flex items-center justify-center gap-6'><FaGithub className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Github</span></Button>
-            <Button additionalClasses='flex items-center justify-center w-full gap-6' onClick={signInWithFacebook} type='blue' ><FaFacebook className='text-3xl '  /> <span className='sm:hidden md:block'>Sign in with Facebook</span></Button>
+            <Button additionalClasses='flex items-center justify-center gap-6 w-full'  type='white'><FcGoogle className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Google</span> </Button>
+            <Button type='black' additionalClasses=' bg-secondary-color w-full  text-white flex items-center justify-center gap-6'><FaGithub className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Github</span></Button>
+            <Button additionalClasses='flex items-center justify-center w-full gap-6'  type='blue' ><FaFacebook className='text-3xl '  /> <span className='sm:hidden md:block'>Sign in with Facebook</span></Button>
           </div>
           </div>
       </div>

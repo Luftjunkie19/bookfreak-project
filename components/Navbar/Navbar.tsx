@@ -13,8 +13,6 @@ import { InputText } from "primereact/inputtext";
 import navBarTranslation
   from '../../assets/translations/navbarTranslations.json';
 import { useAuthContext } from '../../hooks/useAuthContext';
-import useGetDocument from '../../hooks/useGetDocument';
-import useGetDocuments from '../../hooks/useGetDocuments';
 import { useLogout } from '../../hooks/useLogout';
 import LanguageSelect from './LanguageSelect';
 import NotificationViewer from './NotificationViewer';
@@ -45,14 +43,12 @@ function Navbar() {
       return true;
     }
   };
-  const { documents } = useGetDocuments('notifications');
-  const { document: documentBase } = useGetDocument('users', user ? (user).uid : '');
 
 
   const dispatch = useDispatch();
 
   return (
-    <div className="flex sticky top-0 left-0 z-50 bg-primary-color justify-between px-4 py-2 items-center w-full">
+    <div className="flex sticky sm:h-14 lg:h-16 top-0 left-0 z-50 bg-primary-color justify-between px-4 py-2 items-center w-full">
       <div className="flex gap-2 items-center sticky top-0 left-0">
         <Link href={'/'} className=' text-white text-xl'><span className='text-secondary-color text-2xl font-bold'>B</span>ook<span className='text-secondary-color text-2xl font-bold'>F</span>reak</Link>
         
@@ -63,8 +59,8 @@ function Navbar() {
           <CreateBtn/>
           <NotificationViewer />
                     <Link href={'/chat'} className='sm:hidden lg:block'><PiChatsCircleFill  className='text-2xl text-white' /></Link>
-          {documentBase && 
-          <UserDropDown userId={user.uid} userObject={documentBase}/>
+          {1 + 1 ===3 && 
+          <UserDropDown userId={user.id} userObject={{}}/>
           }
           <LanguageSelect  />
           <MobileDrawer/>

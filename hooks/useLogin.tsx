@@ -1,36 +1,13 @@
 import { useState } from 'react';
 
-import { functions } from 'app/firebase';
-import {
-  createUserWithEmailAndPassword,
-  FacebookAuthProvider,
-  getAuth,
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  updateProfile,
-} from 'firebase/auth';
-import { httpsCallable } from 'firebase/functions';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
+
 import { useRouter } from 'next/navigation';
 
 import { useAuthContext } from './useAuthContext';
-import { useRealDatabase } from './useRealDatabase';
-import useRealtimeDocument from './useRealtimeDocument';
 
 export function useLogin() {
   const [error, setError] = useState<string | null>("");
   const [isPending, setIsPending] = useState(false);
-  const { getDocument } = useRealtimeDocument();
-  const { addToDataBase } = useRealDatabase();
-const createStripeAccount= httpsCallable(functions, "createAccount");
-const createStripeAccountLink=httpsCallable(functions, "createAccountLink");
   const context = useAuthContext();
 
   const { dispatch } = context;
