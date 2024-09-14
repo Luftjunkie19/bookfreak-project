@@ -9,10 +9,301 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id String @id @default(cuid())
+  id            String       @id @default(cuid())
+  name          String
+  email         String       @unique
+  description   String?
+  booksInRead   BookInRead[]
+  bookShelfs    Shelf[]
+  dateOfJoin    DateTime
+  addedBooks    Book[]
+  recensions    Recension[]
+  chats         Chat[]
+  chatId        String?
+  BookLover     BookLover[]
+  Club          Club?        @relation(fields: [clubId], references: [id])
+  clubId        String?
+  Post          Post[]
+  Comment       Comment[]
+  Competition   Competition? @relation(fields: [competitionId], references: [id])
+  competitionId String?
+  Test          Test[]
+  Result        Result[]
+}
+
+model Shelf {
+  id     String @id @default(cuid())
+  name   String
+  boo1ks Book[]
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model BookInRead {
+  id           String    @default(cuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id])
+  bookId       String
+  readingDate  DateTime
+  startedTime  DateTime
+  finishedTime DateTime?
+  pagesRead    Int
+}
+
+model Book {
+  id                String           @id @default(cuid())
+  bookCover         String
+  title             String
+  bookDescription   String
+  addedBy           User             @relation(fields: [userId], references: [id])
+  bookAddedAt       DateTime
+  releaseDate       DateTime?
+  fullTitle         String?
+  recensions        Recension[]
+  lovedBy           BookLover[]
+  pages             Int
+  accessibleTypes   bookType[]
+  volume            String?
+  volumeNumber      Int?
+  serie             Int?
+  publishingCycle   String?
+  genre             String?
+  isbn              Int?
+  language          String?
+  Shelf             Shelf[]
+  shelfId           String?
+  userId            String
+  author            author?          @relation(fields: [authorId], references: [id])
+  authorId          String?
+  publishingHouseId String?
+  publishingHouse   publishingHouse? @relation(fields: [publishingHouseId], references: [id])
+}
+
+model Recension {
+  id            String   @id @default(cuid())
+  bookId        String
+  userId        String
+  rating        Int
+  comment       String
+  recensionDate DateTime
+  user          User     @relation(fields: [userId], references: [id])
+  book          Book     @relation(fields: [bookId], references: [id])
+}
+
+model BookLover {
+  id            String   @id @default(cuid())
+  userId        String
+  bookId        String
+  bookLoverDate DateTime
+  user          User     @relation(fields: [userId], references: [id])
+  Book          Book     @relation(fields: [bookId], references: [id])
+}
+
+model author {
+  id          String    @id @default(cuid())
+  firstName   String
+  lastName    String
+  birthDate   DateTime?
+  deathDate   DateTime?
+  nationality String?
+  bio         String?
+  books       Book[]
+}
+
+model publishingHouse {
+  id    String @id @default(cuid())
+  name  String
+  books Book[]
+}
+
+model Chat {
+  id             String        @id @default(cuid())
+  users          User[]
+  messages       Message[]
+  dateOfCreation DateTime
+  Club           Club[]
+  Competition    Competition[]
+}
+
+model Message {
+  id       String  @id @default(cuid())
+  content  String
+  senderId String
+  Chat     Chat?   @relation(fields: [chatId], references: [id])
+  chatId   String?
+}
+
+model Club {
+  id              String        @id @default(cuid())
+  chatId          String?
+  chat            Chat?         @relation(fields: [chatId], references: [id])
+  users           User[]
+  hasRequirements Boolean
+  requirements    Requirement[]
+}
+
+model Requirement {
+  id             String  @id @default(cuid())
+  clubId         String
+  Club           Club?   @relation(fields: [clubId], references: [id])
+  name           String
+  requiredAmount Int?
+  description    String?
+}
+
+model Competition {
+  id              String          @id @default(cuid())
+  competitionName String
+  competitionType competitionType
+  startDate       DateTime
+  endDate         DateTime
+  rules           Rule[]
+  chatId          String
+  chat            Chat            @relation(fields: [chatId], references: [id])
+  members         User[]
+  prizeId         String?
+  prize           Prize?
+}
+
+model Prize {
+  id               String       @id @default(cuid())
+  competitionId    String?      @unique
+  competition      Competition? @relation(fields: [competitionId], references: [id])
+  prizeType        PrizeType
+  amount           Float?
+  prizeDescription String?
+}
+
+model Rule {
+  id               String       @id @default(cuid())
+  Competition      Competition? @relation(fields: [competitionId], references: [id])
+  competitionId    String?
+  name             String
+  description      String
+  requiredValue    Int?
+  requiredReadType String?
+}
+
+model Test {
+  id          String     @id @default(cuid())
+  name        String
+  description String
+  createdAt   DateTime
+  creatorId   String     @unique
+  creator     User?      @relation(fields: [creatorId], references: [id])
+  questions   Question[]
+  results     Result[]
+}
+
+model Question {
+  id              String   @id @default(cuid())
+  questionContent String
+  correctAnswer   answer
+  answers         Answer[]
+  testId          String   @unique
+  test            Test     @relation(fields: [testId], references: [id])
+}
+
+model Result {
+  id               String   @id @default(cuid())
+  testId           String   @unique
+  test             Test     @relation(fields: [testId], references: [id])
+  userId           String   @unique
+  user             User?    @relation(fields: [userId], references: [id])
+  score            Int
+  percentageResult Int
+  timeDevoted      DateTime
+  timeStarted      DateTime
+  timeFinished     DateTime
+}
+
+model Answer {
+  id            String    @id @default(cuid())
+  answerContent String
+  isCorrect     Boolean
+  Question      Question? @relation(fields: [questionId], references: [id])
+  questionId    String?
+}
+
+model Post {
+  id       String    @id @default(cuid())
+  header   String
+  body     String
+  ownerId  String
+  owner    User?     @relation(fields: [ownerId], references: [id])
+  images   String[]
+  comments Comment[]
+  hashtags Hashtag[]
+}
+
+model Comment {
+  id       String    @id @default(cuid())
+  postId   String
+  Post     Post?     @relation(fields: [postId], references: [id])
+  ownerId  String
+  owner    User?     @relation(fields: [ownerId], references: [id])
+  body     String
+  images   String[]
+  hashtags Hashtag[]
+}
+
+model Hashtag {
+  id          String    @id @default(cuid())
+  hashtagName String
+  posts       Post[]
+  Comment     Comment[]
+}
+
+enum competitionType {
+  ReadAndGrow
+  RecommendReadGrowEnjoy
+  ReadTestWin
+}
+
+enum answer {
+  A
+  B
+  C
+  D
+  E
+  F
+  G
+  H
+  I
+  J
+  K
+  L
+  M
+  N
+  O
+  P
+  Q
+  R
+  S
+  T
+  U
+  V
+  W
+  X
+  Y
+  Z
+}
+
+enum PrizeType {
+  money
+  book
+  giftCard
+  voucher
+}
+
+enum bookType {
+  ebook
+  paperbook
+  audiobook
 }

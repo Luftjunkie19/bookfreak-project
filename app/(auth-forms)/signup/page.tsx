@@ -20,9 +20,9 @@ import LabeledInput from 'components/input/LabeledInput';
 
 import { FcGoogle } from 'react-icons/fc';
 import Button from 'components/buttons/Button';
+import { useLogin } from 'hooks/useLogin';
 
 function SignUp() {
-
   const selectedLanguage = useSelector(
     (state: any) => state.languageSelection.selectedLangugage
   );
@@ -100,6 +100,9 @@ function SignUp() {
 
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
 
+  const { signInWithFacebook, signInWithGithub, signUp, signInWithGoogle, signInWithPassword } = useLogin();
+
+
   return (
  <div className={`min-h-screen w-full flex justify-center items-center `}>
 
@@ -114,14 +117,14 @@ function SignUp() {
 <LabeledInput placeholder='Enter Nickname...' additionalClasses='p-2' label='Nickname' type='dark' />
         <LabeledInput placeholder='Enter Email...' additionalClasses='p-2' label='Email' type='dark' />
           <LabeledInput placeholder='Enter Password...' additionalClasses='p-2' label='Password' type='dark' />
-          <Button type='blue' additionalClasses='max-w-sm w-full self-center'>Login</Button>
+          <Button type='blue' additionalClasses='max-w-sm w-full self-center'>Sign up</Button>
           </div>
           <div className="flex flex-col gap-2 ">
-<p className='text-white px-1 text-center'>Or sign in with</p>
+<p className='text-white px-1 text-center'>Or sign up with</p>
           <div className="flex sm:flex-row md:flex-col gap-4 p-2 items-center">
-            <Button additionalClasses='flex items-center justify-center gap-6 w-full'  type='white'><FcGoogle className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Google</span> </Button>
-            <Button  type='black' additionalClasses=' bg-secondary-color w-full  text-white flex items-center justify-center gap-6'><FaGithub className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Github</span></Button>
-            <Button additionalClasses='flex items-center justify-center w-full gap-6'  type='blue' ><FaFacebook className='text-3xl '  /> <span className='sm:hidden md:block'>Sign in with Facebook</span></Button>
+            <Button onClick={signInWithGoogle} additionalClasses='flex items-center justify-center gap-6 w-full'  type='white'><FcGoogle className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Google</span> </Button>
+            <Button onClick={signInWithGithub}  type='black' additionalClasses=' bg-secondary-color w-full  text-white flex items-center justify-center gap-6'><FaGithub className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Github</span></Button>
+            <Button onClick={signInWithFacebook} additionalClasses='flex items-center justify-center w-full gap-6'  type='blue' ><FaFacebook className='text-3xl '  /> <span className='sm:hidden md:block'>Sign in with Facebook</span></Button>
           </div>
           </div>
       </div>

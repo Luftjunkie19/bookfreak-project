@@ -23,6 +23,9 @@ import {DevTool} from '@hookform/devtools';
 import ModalComponent from 'components/modal/ModalComponent';
 import { useDisclosure } from '@nextui-org/react';
 import { MdDelete } from 'react-icons/md';
+import { useLogout } from 'hooks/useLogout';
+import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
 type Props = {}
 
 type PreviewImage= {
@@ -39,7 +42,7 @@ type Post = {
 function ActivityManager({ }: Props) {
   const { user } = useAuthContext();
 
-
+  const { logout } = useLogout();
 
   const { register, control, handleSubmit, formState, reset, resetField, watch } = useForm({
     
@@ -167,6 +170,10 @@ function ActivityManager({ }: Props) {
   const { isOpen, onOpenChange, onOpen, onClose} = useDisclosure();
 
 
+  const { } = useQuery({
+    queryKey:['todo']
+  });
+
 
   return (<>
     <form onSubmit={handleSubmit(createPost, (errors) => {
@@ -178,6 +185,8 @@ function ActivityManager({ }: Props) {
       
       })} className='xl:max-w-xl 2xl:max-w-3xl my-2 self-center w-full bg-white rounded-xl shadow-md'>
       <div className="w-full shadow-xl px-2 py-1 border-b border-primary-color">
+        {user ? <p className='flex items-center gap-2'>If you want to continue, <Button type='transparent' additionalClasses='text-red-400 hover:underline hover:font-bold transition-all duration-400' onClick={logout}>Logout</Button></p> : <p className='flex items-center gap-2'>If you want to continue, <Link href="/login" className='text-primary-color hover:underline hover:font-bold transition-all duration-400'>Login</Link></p>}
+      
         {/* {userDocument && 
               <div className="flex gap-2 items-center">
                   <Image width={45} height={54} src={userDocument.photoURL} className='w-8 h-8 rounded-full ' alt='' />

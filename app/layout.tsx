@@ -20,6 +20,7 @@ import LeftBar from '../components/Sidebars/left/LeftBar';
 import DefaultRightBar from 'components/Sidebars/right/DefaultRightBar';
 import Script from 'next/script';
 import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
+import QueryProvider from 'context/QueryProdiver';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -56,6 +57,7 @@ export default function RootLayout({
       <body className={`bg-secondary-color overflow-y-hidden w-full `}>
         <AuthContextProvider>
           <ReduxProvider>
+            <QueryProvider>
             <Providers>
               <PrimeReact>
                 <Navbar />
@@ -70,7 +72,8 @@ export default function RootLayout({
                   <AdvertisementBar/>
                 </div>
                 </PrimeReact>
-            </Providers>
+              </Providers>
+               </QueryProvider>
           </ReduxProvider>
         </AuthContextProvider>
       </body>

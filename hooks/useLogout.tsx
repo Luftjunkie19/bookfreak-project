@@ -12,7 +12,13 @@ export function useLogout() {
     try {
   
 
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        throw new Error(error.message, {
+          'cause':error.cause
+        })
+      }
 
       navigate.push("/");
 

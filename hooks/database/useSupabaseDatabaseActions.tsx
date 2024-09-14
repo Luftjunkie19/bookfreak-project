@@ -48,13 +48,26 @@ try {
         }
     }
     
+    const retrieveElement = async (tableName: string, id: string) => {
+        try {
+            const { data, error } = await supabase.from(tableName).select('*').eq('id', id).limit(1);
+    
+            if (error) return null;
+    
+            return data;
+            
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
 
 
     return {
         insertToDatabase,
         deleteFromDatabase,
-        updateElement
+        updateElement,
+        retrieveElement
   }
 }
 

@@ -11,10 +11,15 @@ function useSupabaseDatabaseElement({ tableName, id }: Props) {
     const [element, setElement] = useState<any>(null); 
 
     useEffect(() => {
-        const elements = supabase.realtime.channel(tableName).on('*');
-    },[])
+        const unsub = supabase.channel(tableName).on('*', { event: '*' }, (payload) => {
+            setElement(payload)
+        }).subscribe();
+
+        return () => { supabase.removeChannel(unsub) };
+    }, [tableName]);
 
 
+    return {element}
 
 }
 

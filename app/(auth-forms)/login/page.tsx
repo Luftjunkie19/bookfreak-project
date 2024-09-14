@@ -17,9 +17,10 @@ import lottieAnimation
   from '../../../assets/lottieAnimations/Planet-With-Readers.json';
 import classes from '../../../stylings/gradient.module.css';
 import Button from 'components/buttons/Button';
+import { useLogin } from 'hooks/useLogin';
 
 function Login() {
-
+const { signInWithFacebook, signInWithGithub, signUp, signInWithGoogle, signInWithPassword } = useLogin();
 
   const selectedLanguage = useSelector(
     (state: any) => state.languageSelection.selectedLangugage
@@ -55,9 +56,9 @@ function Login() {
           <div className="flex flex-col gap-2 ">
 <p className='text-white px-1 text-center'>Or sign in with</p>
           <div className="flex sm:flex-row md:flex-col gap-4 p-2 items-center">
-            <Button additionalClasses='flex items-center justify-center gap-6 w-full'  type='white'><FcGoogle className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Google</span> </Button>
-            <Button type='black' additionalClasses=' bg-secondary-color w-full  text-white flex items-center justify-center gap-6'><FaGithub className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Github</span></Button>
-            <Button additionalClasses='flex items-center justify-center w-full gap-6'  type='blue' ><FaFacebook className='text-3xl '  /> <span className='sm:hidden md:block'>Sign in with Facebook</span></Button>
+            <Button onClick={signInWithGoogle} additionalClasses='flex items-center justify-center gap-6 w-full'  type='white'><FcGoogle className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Google</span> </Button>
+            <Button onClick={signInWithGithub} type='black' additionalClasses=' bg-secondary-color w-full  text-white flex items-center justify-center gap-6'><FaGithub className='text-3xl' /> <span className='sm:hidden md:block'>Sign in with Github</span></Button>
+            <Button onClick={signInWithFacebook} additionalClasses='flex items-center justify-center w-full gap-6'  type='blue' ><FaFacebook className='text-3xl '  /> <span className='sm:hidden md:block'>Sign in with Facebook</span></Button>
           </div>
           </div>
       </div>
