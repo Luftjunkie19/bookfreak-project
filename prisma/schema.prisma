@@ -15,26 +15,26 @@ datasource db {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String
-  email         String       @unique
-  description   String?
-  booksInRead   BookInRead[]
-  bookShelfs    Shelf[]
-  dateOfJoin    DateTime
-  addedBooks    Book[]
-  recensions    Recension[]
-  chats         Chat[]
-  chatId        String?
-  BookLover     BookLover[]
-  Club          Club?        @relation(fields: [clubId], references: [id])
-  clubId        String?
-  Post          Post[]
-  Comment       Comment[]
-  Competition   Competition? @relation(fields: [competitionId], references: [id])
-  competitionId String?
-  Test          Test[]
-  Result        Result[]
+  id          String        @id @default(cuid())
+  nickname    String
+  email       String        @unique
+  photoURL    String?
+  description String?
+  booksInRead BookInRead[]
+  bookShelfs  Shelf[]
+  dateOfJoin  DateTime
+  addedBooks  Book[]
+  recensions  Recension[]
+  chats       Chat[]
+  chatId      String?
+  BookLover   BookLover[]
+  Club        Club?         @relation(fields: [clubId], references: [id])
+  clubId      String?
+  Post        Post[]
+  Comment     Comment[]
+  Competition Competition[]
+  Test        Test[]
+  Result      Result[]
 }
 
 model Shelf {

@@ -57,7 +57,8 @@ export default function RootLayout({
       <body className={`bg-secondary-color overflow-y-hidden w-full `}>
         <AuthContextProvider>
           <ReduxProvider>
-            <QueryProvider>
+       
+          <QueryProvider>
             <Providers>
               <PrimeReact>
                 <Navbar />
@@ -73,8 +74,9 @@ export default function RootLayout({
                 </div>
                 </PrimeReact>
               </Providers>
-               </QueryProvider>
-          </ReduxProvider>
+            </QueryProvider>
+    
+            </ReduxProvider>
         </AuthContextProvider>
       </body>
       <GoogleAdsense pId={process.env.NEXT_PUBLIC_ADSENSE_ID as string} />

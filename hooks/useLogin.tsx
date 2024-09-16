@@ -25,7 +25,7 @@ export function useLogin() {
         'provider': 'google',
       });
 
-      console.log(data);
+    
    
 
 //       if (!documentExistence) {

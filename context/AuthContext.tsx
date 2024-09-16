@@ -35,9 +35,9 @@ export const authReducer = (state: any, action: { type: any; payload: any; }) =>
 };
 
 export default function AuthContextProvider({ children }) {
-
-  const { insertToDatabase, retrieveElement } = useSupabaseDatabaseActions();
   const supabase = createClient();
+
+  const { retrieveElement } = useSupabaseDatabaseActions();
   
 
   const [state, dispatch] = useReducer(authReducer, {
@@ -46,12 +46,46 @@ export default function AuthContextProvider({ children }) {
   });
   
   useEffect(() => {
+    
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+
+
+        if (event === 'INITIAL_SESSION' && session) {
+          
+             const retrievedElement = await retrieveElement('users', session.user.id);
+
+          if (!retrievedElement || retrievedElement.length === 0) {
+            const fetchedUser = await fetch('/api/supabase/user/create', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ id: session.user.id, nickname: session.user.identities!.length > 0 ?  session.user.identities[0].identity_data.name : 'Username', description: session.user.created_at, email: session.user.email, photoURL:  session.user.identities!.length > 0 ?  session.user.identities[0].identity_data.avatar_url : 'Username' }),
+            });
+            
+            console.log(await fetchedUser.json());
+          }
+        }
         
         if (event === 'SIGNED_IN' && session) {
-          dispatch({ type: "AUTH_READY", payload: session });
-       console.log(session, event);
+          dispatch({ type: "AUTH_READY", payload: session.user });
+     
+          //    const retrievedElement = await retrieveElement('users', session.user.id);
+
+          // if (!retrievedElement || retrievedElement.length === 0) {
+          //   const fetchedUser = await fetch('/api/supabase/user/create', {
+          //     method: 'POST',
+          //     headers: {
+          //       'Content-Type': 'application/json',
+          //     },
+          //     body: JSON.stringify({ id: session.user.id, nickname: 'Jow', description: session.user.created_at, email: session.user.email }),
+          //   });
+            
+          //   console.log(await fetchedUser.json());
+          // }
+
+          
         }
         
       
