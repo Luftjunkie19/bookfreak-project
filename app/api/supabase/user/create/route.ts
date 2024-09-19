@@ -13,7 +13,11 @@ export async function POST(req: NextRequest) {
                 dateOfJoin: new Date(),
                 photoURL
             }
-        })
+        });
+
+        
+
+
 
         return NextResponse.json(fetchedItem);
 
