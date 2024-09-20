@@ -21,6 +21,7 @@ import { useQuery } from '@tanstack/react-query';
 import useSupabaseDatabaseActions from 'hooks/database/useSupabaseDatabaseActions';
 import useSupabaseDatabaseElement from 'hooks/database/useSupabaseDatabaseElement';
 import useLoadFetch from 'hooks/useLoadFetch';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 type Props = {}
@@ -38,14 +39,10 @@ type Post = {
 
 function ActivityManager({ }: Props) {
   const { user } = useAuthContext();
-const {loadUserElement}=useLoadFetch();
+const {element:userDocument}=useLoadFetch();
   const { logout } = useLogout();
 
-  const { data:userDocument, isError, error, isFetching } = useQuery({
-    queryKey: ['user'],
-    queryFn: () => loadUserElement(),
-    
- });
+ 
 
   const { register, control, handleSubmit, formState, reset, resetField, watch } = useForm({
     
@@ -194,7 +191,7 @@ const {loadUserElement}=useLoadFetch();
         { userDocument ?  <div className="flex gap-2 items-center">
                   <Image width={45} height={54} src={userDocument.photoURL} className='w-8 h-8 rounded-full ' alt='' />
             <p>{userDocument.nickname}</p>
-        </div> : <p className='flex items-center gap-2'>If you want to continue {JSON.stringify({userDocument})}, <Link href="/login" className='text-primary-color hover:underline hover:font-bold transition-all duration-400'>Login</Link></p>}
+        </div> : <p className='flex items-center gap-2'>If you want to continue, <Link href="/login" className='text-primary-color hover:underline hover:font-bold transition-all duration-400'>Login</Link></p>}
       
         
       
@@ -254,12 +251,43 @@ const {loadUserElement}=useLoadFetch();
           
 
            <div className="w-full flex justify-between items-center shadow-xl border-t border-dark-gray px-2 py-1">
-              <div className="flex gap-2 items-center">
-          <Button onClick={openFileInput} type='transparent' additionalClasses='text-primary-color'>
+        <div className="flex gap-2 items-center">
+
+<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger>Hover</TooltipTrigger>
+    <TooltipContent>
+      <p>Add to library</p>
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+
+
+  <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger>
+              <Button onClick={openFileInput} type='transparent' additionalClasses='text-primary-color'>
             <FaImage className='text-2xl' />
             <input onChange={selectImages} multiple ref={fileInputRef} type='file' className='sm:hidden'/>
               </Button>
+        </TooltipTrigger>
+        <TooltipContent side='bottom' popover='auto' align='end'>
+          <p>Add to library</p>
+        </TooltipContent>
+      </Tooltip>
+          </TooltipProvider>
+     
+        
+
+          
+   
+ 
             <Button type='transparent' additionalClasses='text-dark-gray'><FaBookmark className='text-2xl'/></Button>
+ 
+
+
+                   
+ 
               </div>
               <Button isSubmit type='blue' additionalClasses='px-6 py-[0.375rem]'>Publish</Button>
         </div>

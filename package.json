@@ -131,6 +131,7 @@
     "react-spring-bottom-sheet": "^3.4.1",
     "react-step-builder": "^3.0.6",
     "react-swipeable": "^7.0.1",
+    "react-tooltip": "^5.28.0",
     "react-verification-input": "^3.3.1",
     "recharts": "^2.12.7",
     "redux": "^4.2.1",
