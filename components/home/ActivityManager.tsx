@@ -253,28 +253,33 @@ const {element:userDocument}=useLoadFetch();
            <div className="w-full flex justify-between items-center shadow-xl border-t border-dark-gray px-2 py-1">
         <div className="flex gap-2 items-center">
 
-<TooltipProvider>
-  <Tooltip>
-    <TooltipTrigger>Hover</TooltipTrigger>
-    <TooltipContent>
-      <p>Add to library</p>
-    </TooltipContent>
-  </Tooltip>
-</TooltipProvider>
-
-
-  <TooltipProvider delayDuration={300}>
-      <Tooltip>
-        <TooltipTrigger>
-              <Button onClick={openFileInput} type='transparent' additionalClasses='text-primary-color'>
+  <TooltipProvider>
+      <Tooltip delayDuration={150}>
+              <TooltipTrigger>
+                <Button  onClick={openFileInput} type='transparent' additionalClasses='text-primary-color'>
             <FaImage className='text-2xl' />
             <input onChange={selectImages} multiple ref={fileInputRef} type='file' className='sm:hidden'/>
               </Button>
         </TooltipTrigger>
-        <TooltipContent side='bottom' popover='auto' align='end'>
-          <p>Add to library</p>
-        </TooltipContent>
-      </Tooltip>
+        <TooltipContent className=' bg-primary-color text-white' side='bottom' align='end'>
+          <p>Select Images</p>
+              </TooltipContent>
+              
+            </Tooltip>
+
+            
+                 <Tooltip delayDuration={150}>
+              <TooltipTrigger>
+                   <Button type='transparent' additionalClasses='text-dark-gray'><FaBookmark className='text-2xl'/></Button>    
+        </TooltipTrigger>
+        <TooltipContent className=' bg-primary-color text-white' side='bottom' align='end'>
+          <p>Enclose a book, you recently read</p>
+              </TooltipContent>
+              
+            </Tooltip>
+
+        
+
           </TooltipProvider>
      
         
@@ -282,7 +287,7 @@ const {element:userDocument}=useLoadFetch();
           
    
  
-            <Button type='transparent' additionalClasses='text-dark-gray'><FaBookmark className='text-2xl'/></Button>
+         
  
 
 

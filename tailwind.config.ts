@@ -10,6 +10,7 @@ module.exports = withMT({
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{html,jsx,js}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    './@/**/*.{js,ts,jsx,tsx,mdx}'
 ],
   theme: {
     screens: {
