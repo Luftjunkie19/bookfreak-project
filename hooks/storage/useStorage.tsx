@@ -11,16 +11,12 @@ function useStorage() {
     try {
       const { data, error } = await supabase.storage.from(bucket).upload(path, fileObject);
   
-      if (error) {
-        throw new Error(error.message, {
-          'cause': error.cause
-        });
-      }
+      
 
-      console.log(data);
+    return {error, data}
       
     } catch (err) {
-      console.error(err);
+      return {error:err, data:null}
     }
   }
 
@@ -36,9 +32,22 @@ function useStorage() {
 } catch (error) {
         console.log(error);
 }
-    }
+  }
+  
 
-  return {uploadImage, uploadImageUrl}
+  const getImageUrl = async (bucketName:string, path:string) => {
+    try {
+
+      const image = supabase.storage.from(bucketName).toBase64(path);
+
+      return {image, error:null}
+
+    } catch (err) {
+      return {error:err, image:null}
+    }
+  }
+
+  return {uploadImage, uploadImageUrl, getImageUrl}
 }
 
 export default useStorage

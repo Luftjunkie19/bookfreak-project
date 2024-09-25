@@ -39,12 +39,13 @@ type Post = {
 
 function ActivityManager({ }: Props) {
   const { user } = useAuthContext();
-const {element:userDocument}=useLoadFetch();
+  const { element: userDocument } = useLoadFetch();
+  const { uploadImage, uploadImageUrl } = useStorage();
   const { logout } = useLogout();
 
  
 
-  const { register, control, handleSubmit, formState, reset, resetField, watch } = useForm({
+  const { register, control, handleSubmit, formState, reset, resetField, watch, setError, clearErrors} = useForm({
     
   });
   const { errors, isSubmitted, isSubmitting} = formState;
@@ -59,6 +60,7 @@ const {element:userDocument}=useLoadFetch();
 
 
   const openFileInput = () => {
+
     fileInputRef.current?.click();
   }
 
@@ -112,23 +114,34 @@ const {element:userDocument}=useLoadFetch();
 
 
 
-  const createPost = async (formData:Post) => {
+  const createPost = async (formData: Post) => {
     const uniqueId = uniqid();
     const postContent = formData['postContent'];
     const images = formData['postImages'];
     console.log(postContent);
 
-    console.log(images);
+
 
     try {
       
       if (!postContent || postContent.toString().trim().length === 0) {
+        setError('No content provided into the textarea.', {
+          'message': 'No content provided into the textarea.',
+          'type':'pattern'
+                });
         throw new Error('No content provided into the textarea.');
       }
 
       if (!user) {
-        throw new Error('You must be logged in to create a post.');
+        setError('You must be logged in to create a post.', {
+          'message': 'You must be logged in to create a post.',
+          'type':'pattern'
+                });
+        throw new Error('You must be logged in to create a post.', {
+          'cause':'You must be logged in to create a post.'
+        });
       }
+
 
       let postArray:{url:string, description:string}[] = [];
 
@@ -138,32 +151,71 @@ const {element:userDocument}=useLoadFetch();
           const postImg = images[index];
         
 
-      //  const readyImage= await uploadImage(postImg.fileObj, `postImages/${user.uid}/${uniqueId}/${postImg.fileObj?.name}`);
-  
-          // postArray = [...postArray, { url:readyImage, description:postImg.description}];
-        }  
+          const { data:imageObj, error } = await uploadImage(postImg.fileObj, `postImages`, `${user.id}/${uniqueId}/${postImg.fileObj?.name}`);
+
+          if (!imageObj || error) {
+            console.log(imageObj, error);
+            return;
+          }
+
+          
+          const imageUrl = await uploadImageUrl(imageObj.path, `postImages`);
+
+           if (imageUrl) {
+            postArray = [...postArray, { url: imageUrl, description: postImg.description }];
+             replace(postArray);
+          }
+       
         
       }
 
 
+   
+      
+      }
 
-      // await insertTo('posts', {
-      //   id:uniqueId,
-      //   postContent,
-      //   postedBy:user.uid,
-      //   timeOfPosting: Timestamp.now(),
-      //   postImages: postArray,
-      //   likes: [],
-      //   comments: [],
-      //   shares:[],
-      // }, uniqueId);
+   const fetchData = await fetch('api/supabase/post/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: uniqueId,
+          body: postContent,
+          images,
+          ownerId: user.id,
+          header: 'Hello !'
+        }),
+      });
+      const { data, error } = await fetchData.json();
+      
+      if (error) {
+        setError('Error with post creation !', {
+          'message': 'Some data is inavalid perhaps',
+          'type': 'validate'
+        });
+        return;
+      }
+
+
+
+      console.log(data, error);
+
+   
 
       reset();
       replace([]);
+      clearErrors();
       toast.success('Successfully created a post ✅');
-      
+
+
+
+
     } catch (err) {
       console.log(err);
+         if (errors.root) {
+        console.log(errors.root);
+      }
     }
   }
 
@@ -254,26 +306,26 @@ const {element:userDocument}=useLoadFetch();
         <div className="flex gap-2 items-center">
 
   <TooltipProvider>
-      <Tooltip delayDuration={150}>
-              <TooltipTrigger>
+      <Tooltip delayDuration={50}>
+              <TooltipTrigger >
                 <Button  onClick={openFileInput} type='transparent' additionalClasses='text-primary-color'>
             <FaImage className='text-2xl' />
             <input onChange={selectImages} multiple ref={fileInputRef} type='file' className='sm:hidden'/>
               </Button>
         </TooltipTrigger>
-        <TooltipContent className=' bg-primary-color text-white' side='bottom' align='end'>
+        <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray border-primary-color text-white' side='bottom' align='end'>
           <p>Select Images</p>
               </TooltipContent>
               
             </Tooltip>
 
             
-                 <Tooltip delayDuration={150}>
+                 <Tooltip delayDuration={50}>
               <TooltipTrigger>
                    <Button type='transparent' additionalClasses='text-dark-gray'><FaBookmark className='text-2xl'/></Button>    
         </TooltipTrigger>
-        <TooltipContent className=' bg-primary-color text-white' side='bottom' align='end'>
-          <p>Enclose a book, you recently read</p>
+        <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray border-primary-color text-white' side='bottom' align='end'>
+          <p>Attach a book, you recently read</p>
               </TooltipContent>
               
             </Tooltip>

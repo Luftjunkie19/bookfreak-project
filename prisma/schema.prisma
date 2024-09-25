@@ -237,7 +237,7 @@ model Post {
   body     String
   ownerId  String
   owner    User?     @relation(fields: [ownerId], references: [id])
-  images   String[]
+  images   Json[]
   comments Comment[]
   hashtags Hashtag[]
 }
