@@ -118,10 +118,6 @@ function ActivityManager({ }: Props) {
     const uniqueId = uniqid();
     const postContent = formData['postContent'];
     const images = formData['postImages'];
-    console.log(postContent);
-
-
-
     try {
       
       if (!postContent || postContent.toString().trim().length === 0) {
@@ -145,7 +141,7 @@ function ActivityManager({ }: Props) {
 
       let postArray:{url:string, description:string}[] = [];
 
-      if (images.length > 0) {
+      if (!images || images.length > 0) {
 
         for (let index = 0; index < images.length; index++) {
           const postImg = images[index];
@@ -161,9 +157,10 @@ function ActivityManager({ }: Props) {
           
           const imageUrl = await uploadImageUrl(imageObj.path, `postImages`);
 
+          console.log(postImg.description);
+
            if (imageUrl) {
             postArray = [...postArray, { url: imageUrl, description: postImg.description }];
-             replace(postArray);
           }
        
         
@@ -174,20 +171,23 @@ function ActivityManager({ }: Props) {
       
       }
 
-   const fetchData = await fetch('api/supabase/post/create', {
+        const fetchData = await fetch('api/supabase/post/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: uniqueId,
+     body: JSON.stringify({
+       data: {
+           id: uniqueId,
           body: postContent,
-          images,
+          images:postArray,
           ownerId: user.id,
           header: 'Hello !'
+          }
         }),
       });
       const { data, error } = await fetchData.json();
+
       
       if (error) {
         setError('Error with post creation !', {
@@ -207,6 +207,7 @@ function ActivityManager({ }: Props) {
       replace([]);
       clearErrors();
       toast.success('Successfully created a post ✅');
+ 
 
 
 
@@ -346,7 +347,7 @@ function ActivityManager({ }: Props) {
                    
  
               </div>
-              <Button isSubmit type='blue' additionalClasses='px-6 py-[0.375rem]'>Publish</Button>
+              <Button disableState={isSubmitting} isSubmit type='blue' additionalClasses='px-6 py-[0.375rem]'>Publish</Button>
         </div>
     </form>
   </>)
