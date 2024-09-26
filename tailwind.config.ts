@@ -10,7 +10,8 @@ module.exports = withMT({
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{html,jsx,js}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
-    './@/**/*.{js,ts,jsx,tsx,mdx}'
+    './@/**/*.{js,ts,jsx,tsx,mdx}',
+     "./node_modules/react-tailwindcss-select/dist/index.esm.js"
 ],
   theme: {
     screens: {

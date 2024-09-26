@@ -3,15 +3,12 @@ import { HiOutlineUpload } from "react-icons/hi";
 import { RiBook2Fill } from "react-icons/ri";
 
 import {
+  useCallback,
   useRef,
   useState,
 } from 'react';
-import '../../../stylings/primereact-custom/stepper.css'
-import {
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
+
+
 import AvatarEditor from 'react-avatar-editor';
 import ReactFlagsSelect from 'react-flags-select';
 import {
@@ -23,26 +20,19 @@ import {
   useDispatch,
   useSelector,
 } from 'react-redux';
-import { useNavigate } from 'react-router';
 import  Link  from 'next/link';
 import uniqid from 'uniqid';
 
 import { Stepper } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
-
-import { storage } from '../../firebase';
 // import { bookCategories } from '../../assets/CreateVariables';
 import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { useRealDatabase } from 'hooks/useRealDatabase';
-import useGetDocuments from '../../../hooks/useGetDocuments';
-import { User } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
-import { Checkbox, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Select, SelectItem } from '@nextui-org/react';
+import { Checkbox, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import { FileUpload } from 'primereact/fileupload';
 import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
@@ -52,13 +42,21 @@ import { IoIosArrowDown } from "react-icons/io";
 import SingleDropDown from "components/drowdown/SingleDropDown";
 import { getLocalTimeZone, parseAbsoluteToLocal, parseZonedDateTime, today } from "@internationalized/date";
 import MultipleDropDown from "components/drowdown/MultipleDropDown";
-import useGetCollection from "hooks/firestore/useGetCollection";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import useStorage from "hooks/storage/useStorage";
-import { Timestamp } from "firebase/firestore";
-import { useFirestore } from "hooks/firestore/useFirestore";
+import { useRouter } from "next/navigation";
+import DropDown from "components/drowdown/rcSelectComponent/DropDown";
+import 'react-tailwindcss-select/dist/index.css'
+import Select from "react-tailwindcss-select";
+import { SelectValue } from "react-tailwindcss-select/dist/components/type";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+
+
 
 interface coverImage {
   file: File | null,
@@ -78,7 +76,7 @@ interface Book{
   publishingCycle:string | null,
   publishingHouse: string | null,
   language: string,
-  bookFormat: string[],
+  bookFormat: SelectValue,
   termsConsent: boolean,
   volume: string | null,
   volumeNumber: string | null,
@@ -89,15 +87,14 @@ function CreateBook() {
   const { user } = useAuthContext();
   const [isPending, setIsPending] = useState(false);
   const [editCover, setEditCover] = useState<coverImage | null>(null);
-  const { insertTo } = useFirestore();
+  const [date, setDate] = useState<Date>();
   const router = useRouter();
   const { uploadImage } = useStorage();
-  const [link, setLink] = useState(null);
+  const [bookTypes, setBookTypes] = useState<SelectValue>([]);
   const dispatch = useDispatch();
 
-  const { documents: availableBooks } = useGetCollection("books");
  
-  const { register, setError, handleSubmit, getValues, setValue, clearErrors, getFieldState, formState, reset } = useForm<Book>();
+  const { register, setError, handleSubmit, getValues, setValue, clearErrors, getFieldState, formState, reset} = useForm<Book>();
   
   const { isSubmitted, errors } = formState;
 
@@ -151,98 +148,110 @@ function CreateBook() {
 
   const submitForm = async (formData: Book) => {
     const bookId = uniqid();
- try {
+//  try {
 
-   if (!user) {
-     toast.error('You are not allowed to add any book.');
-     return;
-   }
+//    if (!user) {
+//      toast.error('You are not allowed to add any book.');
+//      return;
+//    }
    
    
-   if (!formData.coverImage) {
-     setError('coverImage', {
-       'message': 'You have to upload any image as a cover to insert the book item.',
-       type: 'required',
-     });
-     return;
-   }
+//    if (!formData.coverImage) {
+//      setError('coverImage', {
+//        'message': 'You have to upload any image as a cover to insert the book item.',
+//        type: 'required',
+//      });
+//      return;
+//    }
 
-   const bookCover = await uploadImage(formData.coverImage, `book-covers/${user.uid}/${bookId}`);
-   console.log(bookCover);
+//    const bookCover = await uploadImage(formData.coverImage, `book-covers/${user.uid}/${bookId}`);
+//    console.log(bookCover);
 
 
-   await insertTo('books', {
-     bookCover,
-     title: formData.title,
-     author: { id: formData.author, nickname:formData.author},
-     bookDescription: formData.bookDescription,
-     addedBy: user.uid,
-     bookAddedAt: Timestamp.fromDate(new Date()),
-     releaseDate: !formData.releaseDate || isNaN(formData.releaseDate.getDate()) ? new Date().getFullYear() : formData.releaseDate.getFullYear(),
-     fullTitle: formData.originalTitle,
-     publishingHouse: { id: formData.publishingHouse, name: formData.publishingHouse },
-     recensions: [],
-     lovedBy: [],
-     pages: formData.pages,
-     accessibleTypes: formData.bookFormat,
-     volume: formData.volume,
-     volumeNumber: formData.volumeNumber,
-     serie: formData.serie,
-     publishingCycle: formData.publishingCycle,
-     genre: formData.genre,
-     isbn: formData.isbn,
-     language: formData.language,
-   }, bookId);
+//    await insertTo('books', {
+//      bookCover,
+//      title: formData.title,
+//      author: { id: formData.author, nickname:formData.author},
+//      bookDescription: formData.bookDescription,
+//      addedBy: user.uid,
+//      bookAddedAt: Timestamp.fromDate(new Date()),
+//      releaseDate: !formData.releaseDate || isNaN(formData.releaseDate.getDate()) ? new Date().getFullYear() : formData.releaseDate.getFullYear(),
+//      fullTitle: formData.originalTitle,
+//      publishingHouse: { id: formData.publishingHouse, name: formData.publishingHouse },
+//      recensions: [],
+//      lovedBy: [],
+//      pages: formData.pages,
+//      accessibleTypes: formData.bookFormat,
+//      volume: formData.volume,
+//      volumeNumber: formData.volumeNumber,
+//      serie: formData.serie,
+//      publishingCycle: formData.publishingCycle,
+//      genre: formData.genre,
+//      isbn: formData.isbn,
+//      language: formData.language,
+//    }, bookId);
 
-   reset();
-   setEditCover(null);
-   toast.success('Successfully inserted Book !');
+//    reset();
+//    setEditCover(null);
+//    toast.success('Successfully inserted Book !');
 
-   router.push('/');
+//    router.push('/');
     
    
- } catch (error) {
-   console.log(error);
-   toast.error(JSON.stringify(error));
-  }
+//  } catch (error) {
+//    console.log(error);
+//    toast.error(JSON.stringify(error));
+//   }
     
   
     
   };
 
   const handleSaveCover = async () => {
-    if (editorRef.current) {
+    // if (editorRef.current) {
       
-      const editorImg = editorRef.current
-        .getImageScaledToCanvas()
-        .toDataURL("image/jpg");
+    //   const editorImg = editorRef.current
+    //     .getImageScaledToCanvas()
+    //     .toDataURL("image/jpg");
   
-      const byteCharacters = atob(editorImg.split(",")[1]);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
+    //   const byteCharacters = atob(editorImg.split(",")[1]);
+    //   const byteNumbers = new Array(byteCharacters.length);
+    //   for (let i = 0; i < byteCharacters.length; i++) {
+    //     byteNumbers[i] = byteCharacters.charCodeAt(i);
+    //   }
   
-      const byteArray = new Uint8Array(byteNumbers);
+    //   const byteArray = new Uint8Array(byteNumbers);
   
-      const storageRef = ref(
-        storage,
-        `bookcovers/${(user as User).uid}/${`book${uniqid()}`
-        }.jpg`
-      );
-      await uploadBytes(storageRef, byteArray);
-      const url = await getDownloadURL(storageRef);
-      console.log(url);
+    //   const storageRef = ref(
+    //     storage,
+    //     `bookcovers/${(user as User).uid}/${`book${uniqid()}`
+    //     }.jpg`
+    //   );
+    //   await uploadBytes(storageRef, byteArray);
+    //   const url = await getDownloadURL(storageRef);
+    //   console.log(url);
   
   
-      setEditCover(null);
-    }
+    //   setEditCover(null);
+    // }
   };
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const triggerInputFile = () => {
     fileInputRef.current?.click();
   }
+
+
+  const bookTypesOptions = [
+    { value: "Book", label: "📖 Book" },
+    { value: "Ebook", label: "📱 Ebook" },
+    { value: "Audiobook", label: "🎧 Audiobook" }
+  ];
+  
+  const insertItem = useCallback((values:SelectValue) => {
+      setBookTypes(values);
+                setValue('bookFormat', bookTypes);
+  },[])
 
   
 
@@ -259,7 +268,7 @@ function CreateBook() {
           }
           return item;
         }));
-        Object.values(errors).map((item) => (toast.error(item.message, {
+        Object.values(errors).map((item) => (toast.error((item as any).message, {
           'className': 'delay-250 bg-dark-gray text-white border-primary-color border max-w-sm w-full',
         })))
       })}>
@@ -267,7 +276,7 @@ function CreateBook() {
 
         <div onClick={triggerInputFile} className="w-52 group cursor-pointer relative top-0 left-0 h-72 overflow-hidden rounded-lg bg-white justify-center items-center flex">
           <input onChange={handleSelect} ref={fileInputRef} type="file"  className="hidden" id="" />
-            {editCover ? <>
+            {editCover && editCover.url ? <>
               <Image width={60} height={60} src={editCover.url} alt="" className="w-full duration-400 transition-all rounded-lg object-cover h-full" /> 
               <div className="h-full flex items-center gap-3 flex-col justify-center group-hover:top-0 duration-500 transition-all w-full absolute bg-dark-gray/50 rounded-lg -top-full left-0">
               <HiOutlineUpload className="text-5xl text-primary-color" />
@@ -305,12 +314,12 @@ function CreateBook() {
                   notEmpty: (value) => value.trim() !== '' || 'The author field cannot be empty !',
                 },
               })} additionalClasses="max-w-xs w-full p-2" label="Author" type={"dark"} />
-              <SingleDropDown {...register('genre', {
+              {/* <SingleDropDown {...register('genre', {
               required:'You have to provide the genre to problemlessly insert the book !'
             })} selectedArray={bookCategories} label="Genre">
               {bookCategories.map((item) => (<SelectItem key={item}>{item}</SelectItem>
 ))}
-            </SingleDropDown>   
+            </SingleDropDown>    */}
 </div>
         </div>
 
@@ -335,35 +344,34 @@ function CreateBook() {
                            onChange: (e) => {
                   setValue('publishingHouse', e.target.value)
                 },
-                        })} additionalClasses="max-w-xs p-2 w-full" label="Publishing House" type={"dark"} />
-            <DatePicker {...register('releaseDate', {
+            })} additionalClasses="max-w-xs p-2 w-full" label="Publishing House" type={"dark"} />
+            
+            <div className="flex flex-col gap-1">
+              <p className="text-white text-base">Release Date</p>
+            <Popover>
+      <PopoverTrigger asChild>
+        <div className="flex gap-2 items-center text-white bg-dark-gray py-2 px-4 h-fit max-w-xs w-full rounded-lg border-2 border-primary-color"
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? format(date, "PPP") : <span>Pick a date</span>}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                     {...register('releaseDate', {
               valueAsDate:true,
             })}
-              maxValue={today(getLocalTimeZone())}
-              onChange={(value) => {
-                setValue('releaseDate', value.toDate(getLocalTimeZone()));
-            }}
-       label={<p className='text-white'>Date of Release</p>}
-            className="max-w-xs w-full text-white"
-            classNames={{
-       base:"",
-   label: "",
-   calendar:"text-white bg-dark-gray",
-   selectorButton:"",
-   selectorIcon:"",
-   popoverContent:"text-white bg-dark-gray",
-   calendarContent : 'bg-dark-gray text-white',
-   inputWrapper: "text-white bg-dark-gray",
-   input: "text-white bg-dark-gray",
-   segment: "bg-primary-color",
-   helperWrapper: "text-white bg-dark-gray",
-   description: "",
-   errorMessage: "",
-            }}
-    
-        labelPlacement="outside"
-      />
-  
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+                
+                  
+        />
+      </PopoverContent>
+            </Popover>
+</div>
+            
+   
 
 
             <LabeledInput {...register('pages', {
@@ -374,16 +382,40 @@ function CreateBook() {
               required:'You have to pass the amount of pages, to allow users tracking their progress.'
                                   })} minNumber={1} inputType='number' additionalClasses="max-w-xs p-2 w-full" label="Pages" type={"dark"} />
           
-            <MultipleDropDown {...register('bookFormat', {
+            <div className="flex flex-col gap-1">
+              <p className='text-white'>Accessible Book Types</p>
+              <Select isMultiple {...register('bookFormat', {
+                validate: {
+                  noValues: (value) => {
+                    if (!value) {
+                      return 'You are full of shit !'
+                    }
+                  }
+                },
+              })} classNames={{
+                'tagItemText': '',
+                'tagItemIconContainer': '',
+                'list': '',
+                'menu': '',
+                menuButton: (value)=>'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color'
+                
+              }} value={bookTypes} primaryColor='' onChange={(values) => {
+                insertItem(values);
+              }} options={bookTypesOptions} />
+          </div>
+          
+         
+         
+            {/* <MultipleDropDown {...register('bookFormat', {
               required: 'You have to pass the book format, to allow users tracking their progress.',
               onChange: (e) => {
-                setValue('bookFormat', e.target.value.split(','));           
+                setValue('bookFormat', e.target.value.split(','));
               }
           })} label="Accessible Book Types" selectedArray={[]}>
             <SelectItem key={'book'}>Book</SelectItem>
             <SelectItem key={'ebook'}>Ebook</SelectItem>
               <SelectItem key={'audiobook'}>Audiobook</SelectItem>
-          </MultipleDropDown>
+          </MultipleDropDown> */}
           
 
         </div>

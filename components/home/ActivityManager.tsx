@@ -60,11 +60,17 @@ function ActivityManager({ }: Props) {
 
 
   const openFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+}
 
-    fileInputRef.current?.click();
+
   }
 
   const selectImages = (e:React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+
     const files = e.target.files;
 
     if (!files) { 
@@ -308,43 +314,26 @@ function ActivityManager({ }: Props) {
 
   <TooltipProvider>
       <Tooltip delayDuration={50}>
-              <TooltipTrigger >
-                <Button  onClick={openFileInput} type='transparent' additionalClasses='text-primary-color'>
+              <TooltipTrigger type='button' onClick={openFileInput} className='text-primary-color p-2'>
             <FaImage className='text-2xl' />
             <input onChange={selectImages} multiple ref={fileInputRef} type='file' className='sm:hidden'/>
-              </Button>
         </TooltipTrigger>
         <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray border-primary-color text-white' side='bottom' align='end'>
           <p>Select Images</p>
               </TooltipContent>
-              
             </Tooltip>
 
             
                  <Tooltip delayDuration={50}>
-              <TooltipTrigger>
-                   <Button type='transparent' additionalClasses='text-dark-gray'><FaBookmark className='text-2xl'/></Button>    
+              <TooltipTrigger type='button' className='text-dark-gray p-2'>
+                  <FaBookmark className='text-2xl'/>
         </TooltipTrigger>
         <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray border-primary-color text-white' side='bottom' align='end'>
           <p>Attach a book, you recently read</p>
               </TooltipContent>
               
             </Tooltip>
-
-        
-
-          </TooltipProvider>
-     
-        
-
-          
-   
- 
-         
- 
-
-
-                   
+          </TooltipProvider>   
  
               </div>
               <Button disableState={isSubmitting} isSubmit type='blue' additionalClasses='px-6 py-[0.375rem]'>Publish</Button>
