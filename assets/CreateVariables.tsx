@@ -6,20 +6,20 @@ import fifthImage from '../assets/moneyOption5.webp';
 
 
 export const bookCategories = [
-  "Fiction",
-  "Non-fiction",
-  "Crime",
-  "Science fiction and fantasy",
-  "Children's and young adult literature",
-  "Travel and adventure literature",
-  "Popular science and popular history",
-  "Self-help and personal development",
-  "History and culture",
-  "Art and design",
-  "Business and economics",
-  "Psychology and philosophy",
-  "Health and medicine",
-  "Erotic literature",
+  { value: 'Fiction', label: 'Fiction 📖' },
+  { value: 'Non-fiction', label: 'Non-fiction 📚' },
+  { value: 'Crime', label: 'Crime 🕵️‍♂️' },
+  { value: 'Science fiction and fantasy', label: 'Science fiction and fantasy 🚀🐉' },
+  { value: `Children's and young adult literature`, label: `Children's and young adult literature 🌟` },
+  { value: 'Travel and adventure literature', label: 'Travel and adventure literature 🌍✈️' },
+  { value: 'Popular science and popular history', label: 'Popular science and popular history 🔬📜' },
+  { value: 'Self-help and personal development', label: 'Self-help and personal development 🌱' },
+  { value: 'History and culture', label: 'History and culture 🏺' },
+  { value: 'Art and design', label: 'Art and design 🎨' },
+  { value: 'Business and economics', label: 'Business and economics 💼📊' },
+  { value: 'Psychology and philosophy', label: 'Psychology and philosophy 🧠💭' },
+  { value: 'Health and medicine', label: 'Health and medicine ⚕️💉' },
+  { value: 'Erotic literature', label: 'Erotic literature ❤️‍🔥' }
 ];
 
 

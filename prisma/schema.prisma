@@ -40,7 +40,7 @@ model User {
 model Shelf {
   id     String @id @default(cuid())
   name   String
-  boo1ks Book[]
+  books  Book[]
   userId String
   user   User   @relation(fields: [userId], references: [id])
 }
@@ -57,32 +57,34 @@ model BookInRead {
 }
 
 model Book {
-  id                String           @id @default(cuid())
-  bookCover         String
-  title             String
-  bookDescription   String
-  addedBy           User             @relation(fields: [userId], references: [id])
-  bookAddedAt       DateTime
-  releaseDate       DateTime?
-  fullTitle         String?
-  recensions        Recension[]
-  lovedBy           BookLover[]
-  pages             Int
-  accessibleTypes   bookType[]
-  volume            String?
-  volumeNumber      Int?
-  serie             Int?
-  publishingCycle   String?
-  genre             String?
-  isbn              Int?
-  language          String?
-  Shelf             Shelf[]
-  shelfId           String?
-  userId            String
-  author            author?          @relation(fields: [authorId], references: [id])
-  authorId          String?
-  publishingHouseId String?
-  publishingHouse   publishingHouse? @relation(fields: [publishingHouseId], references: [id])
+  id                  String           @id @default(cuid())
+  bookCover           String
+  title               String
+  bookDescription     String
+  addedBy             User             @relation(fields: [userId], references: [id])
+  bookAddedAt         DateTime
+  releaseDate         DateTime?
+  fullTitle           String?
+  recensions          Recension[]
+  lovedBy             BookLover[]
+  pages               Int
+  accessibleTypes     String[]
+  volume              String?
+  volumeNumber        Int?
+  serie               Int?
+  publishingCycle     String?
+  genre               String?
+  isbn                Int?
+  language            String?
+  Shelf               Shelf[]
+  shelfId             String?
+  userId              String
+  author              author?          @relation(fields: [authorId], references: [id])
+  bookAuthor          String?
+  authorId            String?
+  publishingHouseId   String?
+  bookPublishingHouse String?
+  publishingHouse     publishingHouse? @relation(fields: [publishingHouseId], references: [id])
 }
 
 model Recension {
@@ -107,8 +109,7 @@ model BookLover {
 
 model author {
   id          String    @id @default(cuid())
-  firstName   String
-  lastName    String
+  name        String
   birthDate   DateTime?
   deathDate   DateTime?
   nationality String?
