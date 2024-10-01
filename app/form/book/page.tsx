@@ -169,14 +169,15 @@ function CreateBook() {
      return;
    }
 
-      const { data: imageData } = await uploadImage(formData.coverImage, 'bookCovers', `${bookId}/${uniqid('bookImage')}`);
-      console.log(imageData);
+      const { data: imageData, error } = await uploadImage(formData.coverImage, 'bookCovers', `${bookId}/${uniqid('bookImage')}`);
+      console.log(imageData, error);
    
       if (!imageData) {
         setError('coverImage', {
           'message': 'Failed to upload the image.',
           'type': 'error',
         });
+             toast.error('Somethin went not correct.');
         return;
       }
 
@@ -198,9 +199,10 @@ function CreateBook() {
         isbn: formData['isbn'],
         bookPublishingHouse: formData['publishingHouse'],
         releaseDate: formData['releaseDate'],
+        publishingCycle:formData['publishingCycle'],
         serie: formData['serie'],
         language: formData['language'],
-        authorId: formData['author'] && formData['author'].trim().length > 0 ? authorId : null,
+        authorId: formData['author'] && formData['author'].trim().length > 0 && authorId ,
         publishingHouseId: formData['publishingHouse'] && formData['publishingHouse'].trim().length > 0 ? publishingHouseId : null
       });
 
@@ -236,7 +238,7 @@ function CreateBook() {
       const fetchData = await fetch('/api/supabase/book/create', {
         method: 'POST',
         body: JSON.stringify({
-          data:{
+         
         id: bookId,
         userId: user.id,
             bookCover: imageUrl,
@@ -253,11 +255,11 @@ function CreateBook() {
         bookDescription: formData['bookDescription'],
         bookPublishingHouse: formData['publishingHouse'],
         releaseDate: formData['releaseDate'],
-        serie: formData['serie'] && parseFloat(formData['serie']),
+        serie: formData['serie'] ? parseFloat(formData['serie']) : null,
         language: formData['language'],
         authorId: formData['author'] && formData['author'].trim().length > 0 ? authorId : null,
         publishingHouseId: formData['publishingHouse'] && formData['publishingHouse'].trim().length > 0 ? publishingHouseId : null
-      }
+      
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -503,11 +505,7 @@ function CreateBook() {
                 },
               valueAsNumber:true
             })} inputType="number" minNumber={0} additionalClasses="max-w-xs p-2 w-full" label="ISBN" type={"dark"}  />
-            <LabeledInput  {...register('publishingCycle', {
-                            onChange: (e) => {
-                  setValue('publishingCycle', e.target.value)
-                },
-                        })} additionalClasses="max-w-xs p-2 w-full" label="Publishing Cycle" type={"dark"}  />
+            <LabeledInput  {...register('publishingCycle')} additionalClasses="max-w-xs p-2 w-full" label="Publishing Cycle" type={"dark"}  />
             <LabeledInput  {...register('serie', {
                           onChange: (e) => {
                   setValue('serie', e.target.value)

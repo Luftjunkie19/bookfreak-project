@@ -6,11 +6,6 @@ import React, {
 
 import emptyImg from '../../../assets/emptyBox.png'
 
-import {
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from 'firebase/storage';
 import AvatarEditor from 'react-avatar-editor';
 import { BsStars } from 'react-icons/bs';
 import { CgDetailsMore } from 'react-icons/cg';
@@ -25,19 +20,12 @@ import {
 } from 'react-redux';
 import { useNavigate } from 'react-router';
 import uniqid from 'uniqid';
-
-
-
-import { storage } from '../../firebase';
 import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
 import { snackbarActions } from '../../../context/SnackBarContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import useGetDocuments from '../../../hooks/useGetDocuments';
-import { useRealDatabase } from '../../../hooks/useRealDatabase';
-import { User } from 'firebase/auth';
 import LabeledInput from 'components/input/LabeledInput';
 import { Avatar, Checkbox, Chip, DatePicker, Select, SelectItem, Switch, tv, useCheckbox, useDisclosure } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
@@ -72,34 +60,31 @@ function CreateClub() {
     (state:any) => state.languageSelection.selectedLangugage
   );
   const { user } = useAuthContext();
-  const { documents } = useGetDocuments("users");
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
-  const { documents: members } = useGetDocuments('communityMembers');
-  const allMembers = members.map((club) => {
-    return club.users;
-  }).map((object) => {
-    return Object.values(object);
-  }).flat();
+  // const allMembers = members.map((club) => {
+  //   return club.users;
+  // }).map((object) => {
+  //   return Object.values(object);
+  // }).flat();
 
-let notCurrentUsers = documents
-    .filter((doc) => {
-      return (
-        doc.id !== (user as User).uid &&
-        !attachedUsers.some((member:any) => member.value.id === doc.id)
-      );
-    })
-    .map((user) => {
-      return {
-        label: user.nickname,
-        value: {
-          nickname: user.nickname,
-          id: user.id,
-          photoURL: user.photoURL,
-        },
-      };
-    });
+// let notCurrentUsers = documents
+//     .filter((doc) => {
+//       return (
+//         doc.id !== (user as User).uid &&
+//         !attachedUsers.some((member:any) => member.value.id === doc.id)
+//       );
+//     })
+//     .map((user) => {
+//       return {
+//         label: user.nickname,
+//         value: {
+//           nickname: user.nickname,
+//           id: user.id,
+//           photoURL: user.photoURL,
+//         },
+//       };
+//     });
 
-  const { addToDataBase } = useRealDatabase();
 
 
   const submitForm = () => {

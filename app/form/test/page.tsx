@@ -27,8 +27,6 @@ import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/BookPageTranslations.json';
 import formTranslations from '../../../assets/translations/FormsTranslations.json';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import useGetDocuments from '../../../hooks/useGetDocuments';
-import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import { useRouter } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
 import { MdNoteAdd, MdQuestionAnswer } from 'react-icons/md';
@@ -45,8 +43,6 @@ function CreateTests() {
   const { user } = useAuthContext();
   const [testName, setTestName] = useState('');
   const [refersToBook, setRefersToBook] = useState<any | null>(null);
-  const { addToDataBase } = useRealDatabase();
-  const { documents: books } = useGetDocuments('books');
   const navigate = useRouter();
 const dispatch=useDispatch();
   const selectedLanguage = useSelector(
@@ -101,43 +97,43 @@ const dispatch=useDispatch();
     if (user) {
       const testId = uniqid('Test');
   
-      addToDataBase('tests', testId, {
-        testName: testName,
-        refersToBook: refersToBook
-          ? {
-              id: refersToBook.id,
-              title: refersToBook.title,
-              author: refersToBook.author,
-              photoURL: refersToBook.photoURL,
-            }
-          : 'No book selected',
-        testId: testId,
-        createdBy: {
-          nickname: user.displayName,
-          id: user.uid,
-          photoURL: user.photoURL,
-        },
-        createdAt: new Date().getTime(),
-      });
+      // addToDataBase('tests', testId, {
+      //   testName: testName,
+      //   refersToBook: refersToBook
+      //     ? {
+      //         id: refersToBook.id,
+      //         title: refersToBook.title,
+      //         author: refersToBook.author,
+      //         photoURL: refersToBook.photoURL,
+      //       }
+      //     : 'No book selected',
+      //   testId: testId,
+      //   createdBy: {
+      //     nickname: user.displayName,
+      //     id: user.uid,
+      //     photoURL: user.photoURL,
+      //   },
+      //   createdAt: new Date().getTime(),
+      // });
   
-      queries.map((query:any) =>
-        addToDataBase('tests', `${testId}/queries/${query.queryId}`, {
-          ...query,
-        })
-      );
+      // queries.map((query:any) =>
+      //   addToDataBase('tests', `${testId}/queries/${query.queryId}`, {
+      //     ...query,
+      //   })
+      // );
   
-      queries.map((query:any, i) =>
-        query.possibleAnswers.map((answer:any) =>
-          addToDataBase(
-            'tests',
-            `${testId}/answers/${query.queryId}/${answer.label}`,
-            {
-              ...answer,
-              queryId: query.queryId,
-            }
-          )
-        )
-      );
+      // queries.map((query:any, i) =>
+      //   query.possibleAnswers.map((answer:any) =>
+      //     addToDataBase(
+      //       'tests',
+      //       `${testId}/answers/${query.queryId}/${answer.label}`,
+      //       {
+      //         ...answer,
+      //         queryId: query.queryId,
+      //       }
+      //     )
+      //   )
+      // );
   
       navigate.push('/');
       

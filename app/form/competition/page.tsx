@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 
-import { httpsCallable } from 'firebase/functions';
 import {
   useDispatch,
   useSelector,
@@ -9,16 +8,12 @@ import {
 import uniqid from 'uniqid';
 
 
-import { functions } from '../../firebase';
+
 import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/FormsTranslations.json';
 import { snackbarActions } from '../../../context/SnackBarContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import useGetDocument from '../../../hooks/useGetDocument';
-import useGetDocuments from '../../../hooks/useGetDocuments';
-import { useRealDatabase } from '../../../hooks/useRealDatabase';
 import { useRouter } from 'next/navigation';
-import { User } from 'firebase/auth';
 import LabeledInput from 'components/input/LabeledInput';
 import { Avatar, Chip, DatePicker, Dropdown, DropdownItem, DropdownSection, DropdownTrigger, Select, SelectItem, Switch, Tooltip, useDisclosure } from '@nextui-org/react';
 import { FaInfo } from 'react-icons/fa6';
@@ -31,7 +26,6 @@ import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import ModalComponent from 'components/modal/ModalComponent';
 import { MdEditDocument } from 'react-icons/md';
 import { PiStackPlusFill } from 'react-icons/pi';
-import { useFirestore } from 'hooks/firestore/useFirestore';
 
 type Competition = {
  competitionTitle: string,
@@ -52,7 +46,6 @@ type Competition = {
 
 function CreateCompetition() {
   const { user } = useAuthContext();
-  const { insertTo } = useFirestore();
   const [attachedUsers, setAttachedUsers] = useState([]);
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
@@ -61,7 +54,6 @@ function CreateCompetition() {
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const dispatch=useDispatch();
-  const payCompetitionCharge= httpsCallable(functions, 'payCompetitionCharge');
   const [prize, setPrize] = useState(null);
    const competitionTypes = [
     { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
@@ -90,27 +82,27 @@ function CreateCompetition() {
   ];
 
   const navigate = useRouter();
-  const { documents }=useGetDocuments('users');
-  const {document}=useGetDocument("users", user ? user.uid : '');
+  // const { documents }=useGetDocuments('users');
+  // const {document}=useGetDocument("users", user ? user.uid : '');
 
 
-  let notCurrentUsers = documents
-    .filter((doc) => {
-      return ( user &&
-        doc.id !== user.uid &&
-        !attachedUsers.some((member:any) => member.value.id === doc.id)
-      );
-    })
-    .map((user) => {
-      return {
-        label: user.nickname,
-        value: {
-          nickname: user.nickname,
-          id: user.id,
-          photoURL: user.photoURL,
-        },
-      };
-    });
+  // let notCurrentUsers = documents
+  //   .filter((doc) => {
+  //     return ( user &&
+  //       doc.id !== user.uid &&
+  //       !attachedUsers.some((member:any) => member.value.id === doc.id)
+  //     );
+  //   })
+  //   .map((user) => {
+  //     return {
+  //       label: user.nickname,
+  //       value: {
+  //         nickname: user.nickname,
+  //         id: user.id,
+  //         photoURL: user.photoURL,
+  //       },
+  //     };
+  //   });
 
 
   const finalizeAll = () => {
@@ -317,7 +309,7 @@ function CreateCompetition() {
           
                    <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Link  to the Voucher's Prize" type={"dark"}  />
 
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label='Money Prize' type={'transparent'} />
+                        <LabeledInput additionalClasses="max-w-xs w-full p-2 outline-none" label='Money Prize' type={'transparent'} />
           
           <div className="flex gap-1 flex-col col-span-full">
              <span className="text-lg text-white font-semibold">Other Prize's Description</span>
@@ -336,27 +328,27 @@ function CreateCompetition() {
           <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-52 max-w-2xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
                               </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
+                              </div>
+                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+                                  <p className='flex-1'>Additional Condition 1</p> 
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
                               </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
                               </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
                               </div>
                               <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
                                   <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2' type='transparent' />
+                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
                               </div>
 </div> 
 

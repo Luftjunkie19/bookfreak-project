@@ -77,12 +77,12 @@ model Book {
   isbn                Int?
   language            String?
   Shelf               Shelf[]
-  shelfId             String?
+  shelfId             String?          @unique
   userId              String
   author              author?          @relation(fields: [authorId], references: [id])
   bookAuthor          String?
-  authorId            String?
-  publishingHouseId   String?
+  authorId            String?          @unique
+  publishingHouseId   String?          @unique
   bookPublishingHouse String?
   publishingHouse     publishingHouse? @relation(fields: [publishingHouseId], references: [id])
 }
