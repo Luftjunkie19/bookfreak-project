@@ -7,6 +7,7 @@ import {
 } from 'react-redux';
 import uniqid from 'uniqid';
 
+import Select from 'react-tailwindcss-select';
 
 
 import alertMessages from '../../../assets/translations/AlertMessages.json';
@@ -15,7 +16,7 @@ import { snackbarActions } from '../../../context/SnackBarContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useRouter } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
-import { Avatar, Chip, DatePicker, Dropdown, DropdownItem, DropdownSection, DropdownTrigger, Select, SelectItem, Switch, Tooltip, useDisclosure } from '@nextui-org/react';
+import { Avatar, Chip, DatePicker, Dropdown, DropdownItem, DropdownSection, DropdownTrigger, Switch, Tooltip, useDisclosure } from '@nextui-org/react';
 import { FaInfo } from 'react-icons/fa6';
 import { InputSwitch } from 'primereact/inputswitch';
 import Image from 'next/image';
@@ -26,6 +27,8 @@ import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import ModalComponent from 'components/modal/ModalComponent';
 import { MdEditDocument } from 'react-icons/md';
 import { PiStackPlusFill } from 'react-icons/pi';
+import { useForm } from 'react-hook-form';
+import { SelectValue } from 'react-tailwindcss-select/dist/components/type';
 
 type Competition = {
  competitionTitle: string,
@@ -40,18 +43,18 @@ type Competition = {
         amount: number | null,
         currency: string | null,
       },
-      itemPrize?: { title: string | null, typeOfPrize: string | null },
+      itemPrize?: { title: string | null, typeOfPrize: SelectValue },
     },
 }
 
 function CreateCompetition() {
   const { user } = useAuthContext();
   const [attachedUsers, setAttachedUsers] = useState([]);
+  const { register, reset, setFocus,setValue, setError, clearErrors, getValues, getFieldState } = useForm<Competition>();
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
-  const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const dispatch=useDispatch();
   const [prize, setPrize] = useState(null);
@@ -65,20 +68,24 @@ function CreateCompetition() {
   ];
   
    const prizeTypes = [
-    { value: "item", label: translations.item[selectedLanguage] },
+    { value: "item", label: `${translations.item[selectedLanguage]} 📚` },
     {
       value: "Money",
-      label: translations.money[selectedLanguage],
+      label: `${translations.money[selectedLanguage]} 🤑`,
     },
   ];
   
-   const differentPrize = [
-    { value: "book", label:translations.book[selectedLanguage] },
+   const allPrizes = [
+    { value: "book", label: `${translations.book[selectedLanguage]} 📘` },
     {
-      value: "Voucher",
-      label: "Voucher",
+      value: "voucher",
+      label: "Voucher 🎟️",
     },
-    { value: "ticket", label: translations.ticket[selectedLanguage] },
+     { value: "ticket", label: `${translations.ticket[selectedLanguage]} 🎫` },
+     {
+      value: "money",
+      label: `${translations.money[selectedLanguage]} 🤑`,
+    },
   ];
 
   const navigate = useRouter();
@@ -252,6 +259,8 @@ function CreateCompetition() {
 
      const { isOpen, onOpen, onOpenChange} = useDisclosure();
 
+  const typeOfPrize = getValues('prize.itemPrize.typeOfPrize');
+  
   return (
      <div className={`w-full  sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto  overflow-x-hidden p-4`}>
       <div className="flex flex-col gap-1 max-w-2xl w-full">
@@ -274,11 +283,11 @@ function CreateCompetition() {
 <div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
             <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Competition Name" type={"dark"} />
           
-          <SingleDropDown label='Competition Rules' selectedArray={[]}>
+          {/* <SingleDropDown label='Competition Rules' selectedArray={[]}>
             <SelectItem key={'rule1'}>Rule 1</SelectItem>
              <SelectItem key={'rule2'}>Rule 2</SelectItem>
               <SelectItem key={'rule3'}>Rule 3</SelectItem>
-     </SingleDropDown>
+     </SingleDropDown> */}
 
         
           <DatePicker labelPlacement='outside'  label={<p className='text-white'>Expiration Date</p>} />
@@ -291,30 +300,53 @@ function CreateCompetition() {
 
       <div className="flex gap-2 flex-col pb-2">
         <p className='text-xl text-white font-semibold'>Detailed Prize</p>
-         <SingleDropDown label='Winner Prize' selectedArray={[]}>
-            <SelectItem key={'book'}>Book</SelectItem>
-             <SelectItem key={'ticket'}>Ticket</SelectItem>
-           <SelectItem key={'voucher'}>Voucher</SelectItem>
-          <SelectItem key={'money'}>Money</SelectItem>
-               <SelectItem key={'money'}>Others</SelectItem>
-     </SingleDropDown>
-
 
         <div className="grid xl:grid-cols-2 2xl:grid-cols-3 items-center gap-2 max-w-6xl">
+        <div className="flex flex-col gap-1">
+          <p className='text-white'>Winner Prize</p>
+          <Select {...register('prize.itemPrize.typeOfPrize', {
+          required:'Error !'
+        })} isMultiple={false} onChange={(values) => {
+            console.log(values);
+            setValue('prize.itemPrize.typeOfPrize', values);
+          }} classNames={{
+            menuButton: (value) => 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border text-white border-primary-color',
+           'tagItemText': '',
+                'tagItemIconContainer': '',
+                
+            }} value={typeOfPrize} options={allPrizes}  primaryColor='blue' />
+          </div>
+          {typeOfPrize && typeOfPrize.value === 'book' &&
+            <>
           <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Book Title" type={"dark"} />
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="BookFreak's DB Reference" type={"dark"} />
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Name" type={"dark"}  />
-            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Type" type={"dark"} />
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2" label="What is the Voucher for" type={"dark"} />
-          
-                   <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Link  to the Voucher's Prize" type={"dark"}  />
+          <LabeledInput additionalClasses="max-w-xs w-full p-2" label="BookFreak's DB Reference" type={"dark"} />
+            </>
+          }
 
-                        <LabeledInput additionalClasses="max-w-xs w-full p-2 outline-none" label='Money Prize' type={'transparent'} />
-          
+          {typeOfPrize && typeOfPrize.value === 'voucher' &&
+            <>
+          <LabeledInput additionalClasses="max-w-xs w-full p-2" label="What is the Voucher for" type={"dark"} />
+          <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Link to the Voucher's Prize" type={"dark"}  />
+            </>
+          }
+
+          {typeOfPrize && typeOfPrize.value === 'ticket' && <>
+            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Name" type={"dark"}  />
+            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Type" type={"dark"} />
+          </>}
+
+                        
+
+          {
+            typeOfPrize && typeOfPrize.value === 'money' &&  <LabeledInput additionalClasses="max-w-xs w-full p-2 outline-none" label='Money Prize' type={'dark'} />
+          }
+                       
+          {typeOfPrize && typeOfPrize.value !== 'money' &&
           <div className="flex gap-1 flex-col col-span-full">
              <span className="text-lg text-white font-semibold">Other Prize's Description</span>
       <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
           </div>
+       }   
 
         </div> 
       </div>
@@ -359,21 +391,21 @@ function CreateCompetition() {
       </Button>
  </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col gap-3'>
                                     
-          <SingleDropDown label='Type of Rule' selectedArray={[]}>
+          {/* <SingleDropDown label='Type of Rule' selectedArray={[]}>
      <SelectItem key={'rule1'}>Min. Read Pages of Genre</SelectItem>
          <SelectItem key={'rule1'}>Min. Read Books of Genre</SelectItem>
      <SelectItem key={'rule2'}>Min. Read Books Amount</SelectItem>
      <SelectItem key={'rule2'}>Min. Read Pages Amount</SelectItem>
           <SelectItem key={'rule2'}>Peculiar Question</SelectItem>
    </SingleDropDown>
-   
+    */}
   <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
 
 
-           <SingleDropDown label='Answer Accessment' selectedArray={[]}>
+           {/* <SingleDropDown label='Answer Accessment' selectedArray={[]}>
      <SelectItem key={'rule1'}>Manual</SelectItem>
          <SelectItem key={'rule1'}>Expected Answers</SelectItem>
-   </SingleDropDown>
+   </SingleDropDown> */}
    
      <textarea placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
 
