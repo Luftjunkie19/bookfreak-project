@@ -88,6 +88,9 @@ function CreateCompetition() {
     },
   ];
 
+  const [chosenPrize, setChosenPrize]=useState<SelectValue>();
+
+
   const navigate = useRouter();
   // const { documents }=useGetDocuments('users');
   // const {document}=useGetDocument("users", user ? user.uid : '');
@@ -164,13 +167,11 @@ function CreateCompetition() {
     // );
 
     setIsPending(false);
-    setError(null);
     navigate.push("/");
   };
 
   const submitForm = async (e) => {
     e.preventDefault();
-    setError(null);
     setIsPending(true);
     try {
       // if (!competition.expiresAt) {
@@ -308,29 +309,30 @@ function CreateCompetition() {
           required:'Error !'
         })} isMultiple={false} onChange={(values) => {
             console.log(values);
+            setChosenPrize(values);
             setValue('prize.itemPrize.typeOfPrize', values);
           }} classNames={{
             menuButton: (value) => 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border text-white border-primary-color',
            'tagItemText': '',
                 'tagItemIconContainer': '',
                 
-            }} value={typeOfPrize} options={allPrizes}  primaryColor='blue' />
+            }} value={chosenPrize} options={allPrizes}  primaryColor='blue' />
           </div>
-          {typeOfPrize && typeOfPrize.value === 'book' &&
+          {chosenPrize && (chosenPrize as any).value === 'book' &&
             <>
           <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Book Title" type={"dark"} />
           <LabeledInput additionalClasses="max-w-xs w-full p-2" label="BookFreak's DB Reference" type={"dark"} />
             </>
           }
 
-          {typeOfPrize && typeOfPrize.value === 'voucher' &&
+          {chosenPrize && (chosenPrize as any).value === 'voucher' &&
             <>
           <LabeledInput additionalClasses="max-w-xs w-full p-2" label="What is the Voucher for" type={"dark"} />
           <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Link to the Voucher's Prize" type={"dark"}  />
             </>
           }
 
-          {typeOfPrize && typeOfPrize.value === 'ticket' && <>
+          {chosenPrize && (chosenPrize as any).value === 'ticket' && <>
             <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Name" type={"dark"}  />
             <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Ticket's Event Type" type={"dark"} />
           </>}
@@ -338,12 +340,12 @@ function CreateCompetition() {
                         
 
           {
-            typeOfPrize && typeOfPrize.value === 'money' &&  <LabeledInput additionalClasses="max-w-xs w-full p-2 outline-none" label='Money Prize' type={'dark'} />
+            chosenPrize && (chosenPrize as any).value === 'money' &&  <LabeledInput additionalClasses="max-w-xs w-full p-2 outline-none" label='Money Prize' type={'dark'} />
           }
                        
-          {typeOfPrize && typeOfPrize.value !== 'money' &&
+          {chosenPrize && (chosenPrize as any).value !== 'money' &&
           <div className="flex gap-1 flex-col col-span-full">
-             <span className="text-lg text-white font-semibold">Other Prize's Description</span>
+             <span className="text-lg text-white font-semibold">Other Prize&#39;s Description</span>
       <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
           </div>
        }   
@@ -390,15 +392,19 @@ function CreateCompetition() {
         Append
       </Button>
  </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col gap-3'>
-                                    
-          {/* <SingleDropDown label='Type of Rule' selectedArray={[]}>
-     <SelectItem key={'rule1'}>Min. Read Pages of Genre</SelectItem>
-         <SelectItem key={'rule1'}>Min. Read Books of Genre</SelectItem>
-     <SelectItem key={'rule2'}>Min. Read Books Amount</SelectItem>
-     <SelectItem key={'rule2'}>Min. Read Pages Amount</SelectItem>
-          <SelectItem key={'rule2'}>Peculiar Question</SelectItem>
-   </SingleDropDown>
-    */}
+
+        <Select onChange={(value)=>{
+          console.log(value);
+        }} options={[
+          {value:'rule1', label:'Min. Read Pages of Genre'},
+          {value:'rule2', label:'Min. Read Books of Genre'},
+          {value:'rule3', label:'Min. Read Books Amount'},
+          {value:'rule4', label:'Min. Read Pages Amount'},
+          {value:'rule5', label:'Peculiar Question'}
+
+        ]} value={{value:'rule1', label:'Min. Read Pages of Genre' }}/>
+
+     
   <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
 
 
