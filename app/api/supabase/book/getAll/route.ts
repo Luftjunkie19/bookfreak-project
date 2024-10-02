@@ -4,21 +4,8 @@ import prisma from 'lib/prisma/prisma'
 
 export async function GET(request: NextRequest) {
     try {
-    const {
-            where,
-            select,
-            take,
-            skip,
-            orderBy
-        } = await request.json();
     
-      const createdItem =  await prisma.book.findMany({
-           where,
-            select,
-            take,
-            skip,
-            orderBy
-      });
+      const createdItem =  await prisma.book.findMany();
         
         return NextResponse.json(createdItem);
         

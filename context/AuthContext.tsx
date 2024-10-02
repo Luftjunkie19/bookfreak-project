@@ -60,7 +60,7 @@ export default function AuthContextProvider({ children }) {
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ id: session.user.id, nickname: session.user.identities!.length > 0 ?  session.user.identities[0].identity_data.name : 'Username', description: session.user.created_at, email: session.user.email, photoURL:  session.user.identities!.length > 0 ?  session.user.identities[0].identity_data.avatar_url : 'Username' }),
+              body: JSON.stringify({ id: session.user.id, nickname: session.user.identities!.length > 0 ?  (session.user.identities as any)[0].identity_data.name : 'Username', description: session.user.created_at, email: session.user.email, photoURL:  session.user.identities!.length > 0 ?  (session.user.identities as any)[0].identity_data.avatar_url : 'Username' }),
             });
             
 
