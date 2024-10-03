@@ -477,7 +477,7 @@ function CreateCompetition() {
             <Button type='blue' additionalClasses="w-fit  px-4 py-2">
         Append
       </Button>
- </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col min-h-80    gap-3'>
+ </div>} modalTitle='Additional Condition' modalBodyContent={<div className='flex flex-col min-h-80    gap-3'>
 
    <Select placeholder='Requirement Type' classNames={{
           menuButton:()=>'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color'
