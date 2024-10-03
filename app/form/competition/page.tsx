@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { Suspense, useRef, useState } from 'react';
 import React from 'react'
 
 import {
@@ -10,7 +10,7 @@ import uniqid from 'uniqid';
 
 import Select from 'react-tailwindcss-select';
 
-
+import { bookCategories } from 'assets/CreateVariables';
 import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/FormsTranslations.json';
 import { snackbarActions } from '../../../context/SnackBarContext';
@@ -29,23 +29,32 @@ import ModalComponent from 'components/modal/ModalComponent';
 import { MdEditDocument } from 'react-icons/md';
 import { PiStackPlusFill } from 'react-icons/pi';
 import { useForm } from 'react-hook-form';
-import { SelectValue } from 'react-tailwindcss-select/dist/components/type';
+import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
 import { useQuery } from '@tanstack/react-query';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
+import toast from 'react-hot-toast';
+
+interface Requirement{
+  requirementType: 'rule1' | 'rule2' | 'rule3' | 'rule4' | 'rule5',
+  requiredBookType?: string,
+  requiredBookRead?: number,
+  requiredPagesRead?: number,
+  requirementQuestion?: string,
+  requirementQuestionPossibleAnswers?: string[],
+}
 
 type Competition = {
  competitionTitle: string,
-    competitionsName: string,
+  competitionsName: string,
+    competitionLogo:File,
     expiresAt:  Date | null ,
     description: string,
-    prizeType: 'Money' | 'item' | null,
+    prizeType: 'money' | 'item' | null,
     chargeId: string | null ,
-  prizeHandedIn: false,
-
-    
+  prizeHandedIn: false,    
     prize: {
       moneyPrize?: {
         amount: number | null,
@@ -55,23 +64,32 @@ type Competition = {
         title: string | null,
         typeOfPrize: SelectValue,
         bookReferenceId?: SelectValue,
-
+        voucherFor?: string,
+        voucherEventLink?:string
       },
-    },
+  },
+    requirements?:Requirement[]
 }
+
+
+
 
 function CreateCompetition() {
   const { user } = useAuthContext();
-  const [attachedUsers, setAttachedUsers] = useState([]);
   const [expirationDate, setExpirationDate] = useState<Date>();
-  const { register, reset, setFocus,setValue, setError, clearErrors, getValues, getFieldState } = useForm<Competition>();
+  const competitionLogoFileInputRef = useRef<HTMLInputElement>(null);
+  const [requirementType, setRequirementType] = useState<SelectValue>(null);
+  const [bookReference, setBookReference] = useState<SelectValue>(null);
+  const [previewImage, setPreviewImage] = useState<string>();
+  const [competitionName, setCompetitionName] = useState<SelectValue>(null);
+  const { register, reset, setFocus, setValue, setError, clearErrors, getValues, getFieldState, handleSubmit } = useForm<Competition>();
+  const [bookGenreSelect, setBookGenreSelect] = useState<SelectValue>(null);
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const dispatch=useDispatch();
-  const [bookReference, setBookReference] = useState<SelectValue>(null);
-  const [competitionName, setCompetitionName] = useState<SelectValue>(null);
+
    const competitionTypes = [
     { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
     {
@@ -99,38 +117,29 @@ function CreateCompetition() {
 
   const navigate = useRouter();
 
-  const { data, } = useQuery({
+  const { data, error } = useQuery({
     queryKey: ["books"],
+    refetchOnWindowFocus: false,
     queryFn: async () => {
-      const response = await fetch("/api/supabase/book/getAll");
-      return response.json();
+      const response = await fetch("/api/supabase/book/getAll", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          take: 10,
+          where: undefined,
+          skip: undefined,
+          include: undefined,
+          select:undefined
+        })
+      });
+      const fetchedRes = await response.json();
+
+      return fetchedRes;
       },
   });
 
-  const transformedBookData= data && data.map((item)=>({value:item.id, label:item.title}))
-
-
-  // const { documents }=useGetDocuments('users');
-  // const {document}=useGetDocument("users", user ? user.uid : '');
-
-
-  // let notCurrentUsers = documents
-  //   .filter((doc) => {
-  //     return ( user &&
-  //       doc.id !== user.uid &&
-  //       !attachedUsers.some((member:any) => member.value.id === doc.id)
-  //     );
-  //   })
-  //   .map((user) => {
-  //     return {
-  //       label: user.nickname,
-  //       value: {
-  //         nickname: user.nickname,
-  //         id: user.id,
-  //         photoURL: user.photoURL,
-  //       },
-  //     };
-  //   });
 
 
   const finalizeAll = () => {
@@ -187,87 +196,71 @@ function CreateCompetition() {
     navigate.push("/");
   };
 
-  const submitForm = async (e) => {
-    e.preventDefault();
+
+    const handleSelect = (e) => {
+    clearErrors('competitionLogo');
+
+    let selected = e.target.files[0];
+
+    if (selected?.size > 200000) {
+      return;
+    }
+
+    if (!selected.type.includes("image")) {
+      //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]}`, alertType: "error" }));
+      return;
+    }
+
+    if (selected === null) {
+      //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.selectAnything[selectedLanguage]}`, alertType: "error" }));
+      return;
+    }
+
+        setValue('competitionLogo', selected);  
+      
+    if (selected.type.includes("image")) {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(selected);
+      fileReader.onload = () => {
+        setPreviewImage(fileReader.result as string);
+      };
+          clearErrors('competitionLogo');
+      return;
+    }
+  };
+
+
+  const submitForm = async (formData: Competition) => {
+       clearErrors();
+    const competitionId = uniqid();
+    const competitionChatId = uniqid();
+    console.log(formData)
     try {
-      // if (!competition.expiresAt) {
-      //   dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.earlyDate[selectedLanguage]}`,alertType:"error", }));
-      //   setIsPending(false);
-      //   return;
-      // }
+      const fetchCompetitionObject = await fetch('/api/supabase/competition/create', {
+        body: JSON.stringify({
+          competitionName: formData['competitionTitle'],
+          competitionType: formData['competitionsName'],
+          startDate: new Date(),
+          endDate: formData['expiresAt'],
+          id: competitionId,
+          chatId: competitionChatId
+        }),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
 
-      // if (
-      //   competition.prizeType === "Money" &&  competition.prize.moneyPrize &&
-      //   competition.prize.moneyPrize.amount === 0
-      // ) {
-      //   dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.zeroAmount[selectedLanguage]}`, alertType:"error"}));
-        
-        
-      //   setIsPending(false);
-      //   return;
-      // }
+      const fullResponse = await fetchCompetitionObject.json();
 
-      // if (competition.prize.moneyPrize && competition.prize.moneyPrize.amount && competition.prize.moneyPrize.amount > document.creditsAvailable) {
-      //   dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.wrong.notEnoughCredits[selectedLanguage]}`, alertType:"error"}));
-        
-     
-      //   setIsPending(false);
-      //   return;
-      // }
+      console.log(fullResponse);
 
-      // if (
-      //   competition.prize.itemPrize === undefined ||
-      //   competition.prize.itemPrize === null ||
-      //   competition.prize.moneyPrize === null ||
-      //   competition.prize.moneyPrize === undefined
-      // ) {
-        
-      //     //state.message = "Something went wrong.";
-       
-      //   setIsPending(false);
-      //   return;
-      // }
+      toast.success('Yeah, you did it !');
+      
+      clearErrors();
+      reset();
+      setPreviewImage(null);
 
-      // if (competition.prizeType === "Money" && competition.prize.moneyPrize) {
-      //   const payoutObject = await payCompetitionCharge({
-      //     organizatorObject: document,
-      //     payerId: document.stripeAccountData.id,
-      //     amount: competition.prize.moneyPrize.amount,
-      //     currency:
-      //       document.stripeAccountData.default_currency.toUpperCase(),
-      //   });
-        
-      //   const { error, chargeObject } = await payoutObject.data as any;
-
-      //   console.log(chargeObject);
-
-      //   if (error) {
-      //     setError(error);
-      //     setIsPending(false);
-      //     return;
-      //   }
-
-      //   if (chargeObject && user) {
-      //     setCompetition((comp) => {
-      //       comp.chargeId = chargeObject.id;
-      //       (comp.prize.moneyPrize as any).currency =
-      //         document.stripeAccountData.default_currency;
-      //       return comp;
-      //     });
-      //     updateDatabase(
-      //       {
-      //         valueInMoney:
-      //           document.creditsAvailable.valueInMoney -
-      //           (competition.prize.moneyPrize.amount as number),
-      //       },
-      //       "users",
-      //       `${user.uid}/creditsAvailable`
-      //     );
-      //   }
-      // }
-      // finalizeAll();
-      // dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.create[selectedLanguage]}`, alertType:"success"}));
-      // setIsPending(false);
     } catch (err) {
       console.log(err);
     }
@@ -277,7 +270,12 @@ function CreateCompetition() {
 
   
   return (
-    <div className={`w-full  sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden p-4`}>
+    <form onSubmit={handleSubmit(submitForm, (errors) => {
+      if (errors) {
+        toast.error('ERROR !')
+        console.log(errors)
+      }
+    })} className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden p-4`}>
 
 
       <div className="flex flex-col gap-1 max-w-2xl w-full">
@@ -287,12 +285,23 @@ function CreateCompetition() {
 
       <div className="flex py-4 gap-12">
 
-        <div className="w-56 cursor-pointer h-56 rounded-lg bg-white justify-center items-center flex">
-          <input  type="file" name="" className="hidden" id="" />
+        <div onClick={() => {
+          competitionLogoFileInputRef!.current!.click();
+        }} className="w-56 cursor-pointer h-56 rounded-lg bg-white justify-center items-center flex">
+          <input onChange={handleSelect} ref={competitionLogoFileInputRef} type="file" name="" className="hidden" id="" />
+          {previewImage ? <div className='relative group top-0 left-0 h-full w-full rounded-lg overflow-hidden'>
+            <div className="absolute z-10 top-full left-0 w-full h-full bg-dark-gray/50 group-hover:top-0 duration-400 transition-all  flex justify-center items-center flex-col gap-2">
+              <HiOutlineUpload className="text-5xl text-primary-color" />
+          <p className='text-xs text-center text-white'>Upload Different Logo</p>
+            </div>
+            <Image width={50} height={35} className='w-full h-full rounded-lg object-cover' src={previewImage} alt='' />
+          </div> : 
+          
           <div className="flex w-full flex-col items-center gap-2">
 <HiOutlineUpload className="text-5xl text-primary-color" />
-          <p className='text-xs text-dark-gray'>Upload Competition&apos;s Logo</p>
+          <p className='text-xs text-center text-dark-gray'>Upload Competition&apos;s Logo</p>
           </div>
+          }
         </div>
 
         
@@ -309,13 +318,6 @@ function CreateCompetition() {
 }} options={competitionTypes} />
           </div>
 
-          {/* <SingleDropDown label='Competition Rules' selectedArray={[]}>
-            <SelectItem key={'rule1'}>Rule 1</SelectItem>
-             <SelectItem key={'rule2'}>Rule 2</SelectItem>
-              <SelectItem key={'rule3'}>Rule 3</SelectItem>
-     </SingleDropDown> */}
-
-        
              <div className="flex flex-col gap-1">
               <p className="text-white text-base">Expiration Date</p>
             <Popover>
@@ -327,7 +329,10 @@ function CreateCompetition() {
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
+                <Calendar classNames={{
+                  'day_selected': 'bg-primary-color text-white',
+            
+                  }}
                      {...register('expiresAt', {
                        valueAsDate: true,
                        validate: {
@@ -337,15 +342,19 @@ function CreateCompetition() {
                            }
                          },
                          todaysDate: (value) => {
-                           if (value && value.getTime() > new Date().getTime()) { 
-                             return `You cannot select date greater than today's date.`
+                           if (value && value.getTime() < new Date().getTime()) { 
+                             return `You cannot select dates earlier than today's date.`
                            }
                          },
                        },
             })}
           mode="single"
           selected={expirationDate}
-                    onSelect={(day, selectedDate) => {
+                  onSelect={(day, selectedDate) => {
+                    if (selectedDate.getTime() < new Date().getTime()) {
+                      toast.error(`You cannot select dates earlier than today's date.`);
+                      return;
+                      }
                       setExpirationDate(selectedDate);
                       setValue('expiresAt', selectedDate);
           }}
@@ -368,7 +377,7 @@ function CreateCompetition() {
         <div className="grid xl:grid-cols-2 2xl:grid-cols-3 items-center gap-2 max-w-6xl">
         <div className="flex flex-col gap-1">
           <p className='text-white'>Winner Prize</p>
-          <Select {...register('prize.itemPrize.typeOfPrize', {
+          <Select  {...register('prize.itemPrize.typeOfPrize', {
           required:'Error !'
         })} isMultiple={false} onChange={(values) => {
             console.log(values);
@@ -384,16 +393,20 @@ function CreateCompetition() {
           {chosenPrize && (chosenPrize as any).value === 'book' &&
             <>
             <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Book Title" type={"dark"} />
+            {data && data.data && 
+              <Suspense fallback={<p>Loading.....</p>}>     
             <div className="flex flex-col gap-1">
               <p className='text-white'>BookFreak's DB Reference</p>
               <Select classNames={{
                 menuButton: () =>'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2  text-white border-primary-color'
-              }} {...register('prize.itemPrize.bookReferenceId')} options={transformedBookData} onChange={(values) => {
+              }} {...register('prize.itemPrize.bookReferenceId')} options={data.data.map((item) => ({ label: item.title, value: item.id}))} onChange={(values) => {
                 setBookReference(values);
                 setValue('prize.itemPrize.bookReferenceId', values);
               }} value={bookReference} primaryColor=''/>
 
             </div>
+              </Suspense>
+     }
       
             </>
           }
@@ -464,41 +477,62 @@ function CreateCompetition() {
             <Button type='blue' additionalClasses="w-fit  px-4 py-2">
         Append
       </Button>
- </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col gap-3'>
+ </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col min-h-80    gap-3'>
 
-   <Select classNames={{
+   <Select placeholder='Requirement Type' classNames={{
           menuButton:()=>'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color'
         }} onChange={(value) => {
-     console.log(value);
+     setRequirementType(value);
    } } options={[
      { value: 'rule1', label: 'Min. Read Pages of Genre' },
      { value: 'rule2', label: 'Min. Read Books of Genre' },
      { value: 'rule3', label: 'Min. Read Books Amount' },
      { value: 'rule4', label: 'Min. Read Pages Amount' },
      { value: 'rule5', label: 'Peculiar Question' }
-   ]} value={{ value: 'rule1', label: 'Min. Read Pages of Genre' }} primaryColor={''}/>
-
-     
-  <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
-
+     ]} value={requirementType} primaryColor={''} />
    
-     <textarea placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
+   {requirementType && ((requirementType as Option).value === 'rule1' || (requirementType as Option).value === 'rule4') &&
+   <>
+     <Select classNames={{
+       menuButton(value) {
+         return 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color'
+       },
+     }} value={bookGenreSelect} onChange={(values) => {
+       setBookGenreSelect((values as Option));
+   }} primaryColor='blue' options={bookCategories}/>
+   <LabeledInput  min={'0'}  inputType='number' additionalClasses="max-w-sm w-full p-2" label="Pages Number" type={"dark"} />
+   </>
+   }
 
-                        
+   {requirementType && ((requirementType as Option).value === 'rule2' || (requirementType as Option).value === 'rule3') &&
+     <LabeledInput min={'0'} inputType='number' additionalClasses="max-w-sm w-full p-2" label="Books Number" type={"dark"} />
+   }
+   
+   {requirementType && (requirementType as Option).value === 'rule5' && 
+     <>     
+     <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
+        <textarea placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
+     </>
+   }                 
                       </div>} isOpen={isOpen} onOpenChange={onOpenChange} />
 
       </div>
 
          <label className="flex flex-col gap-3">
           <span className="text-xl text-white font-semibold">Description</span>
-      <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
+        <textarea {...register('description', {
+         required:'Hello ?!',
+          onChange(event) {
+            setValue('description', event.target.value)
+          },
+      })} className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
       </label>
 
-      <Button type='blue' additionalClasses="w-fit px-8 py-2 text-lg my-4">
+      <Button isSubmit type='blue' additionalClasses="w-fit px-8 py-2 text-lg my-4">
         Insert
       </Button>
 
-    </div>
+    </form>
   );
 }
 

@@ -2,14 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from 'lib/prisma/prisma'
 
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
-    
-      const createdItem =  await prisma.book.findMany();
+
+        const { select, skip, take, where, include } = await request.json();
         
-        return NextResponse.json(createdItem);
+
+
+    
+        const foundItems = await prisma.book.findMany({
+            select,
+            skip,
+            take,
+            where,
+      });
+        
+        return NextResponse.json({data:foundItems, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({ data:null, error});
     }
 }

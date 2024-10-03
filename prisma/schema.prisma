@@ -141,21 +141,13 @@ model Message {
 }
 
 model Club {
-  id              String        @id @default(cuid())
+  id              String  @id @default(cuid())
   chatId          String?
-  chat            Chat?         @relation(fields: [chatId], references: [id])
-  users           User[]
+  chat            Chat?   @relation(fields: [chatId], references: [id])
+  members         Json[]
   hasRequirements Boolean
-  requirements    Requirement[]
-}
-
-model Requirement {
-  id             String  @id @default(cuid())
-  clubId         String
-  Club           Club?   @relation(fields: [clubId], references: [id])
-  name           String
-  requiredAmount Int?
-  description    String?
+  requirements    Json[]
+  users           User[]
 }
 
 model Competition {
@@ -167,18 +159,10 @@ model Competition {
   rules           Rule[]
   chatId          String
   chat            Chat            @relation(fields: [chatId], references: [id])
-  members         User[]
+  members         Json[]
   prizeId         String?
-  prize           Prize?
-}
-
-model Prize {
-  id               String       @id @default(cuid())
-  competitionId    String?      @unique
-  competition      Competition? @relation(fields: [competitionId], references: [id])
-  prizeType        PrizeType
-  amount           Float?
-  prizeDescription String?
+  prize           Json
+  users           User[]
 }
 
 model Rule {
