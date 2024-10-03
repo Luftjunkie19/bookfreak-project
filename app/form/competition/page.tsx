@@ -38,6 +38,7 @@ import { Calendar } from '@/components/ui/calendar';
 import toast from 'react-hot-toast';
 
 interface Requirement{
+  id:string,
   requirementType: 'rule1' | 'rule2' | 'rule3' | 'rule4' | 'rule5',
   requiredBookType?: string,
   requiredBookRead?: number,
@@ -83,7 +84,9 @@ function CreateCompetition() {
   const [previewImage, setPreviewImage] = useState<string>();
   const [competitionName, setCompetitionName] = useState<SelectValue>(null);
   const { register, reset, setFocus, setValue, setError, clearErrors, getValues, getFieldState, handleSubmit } = useForm<Competition>();
+    const { register:registerRequirement, reset:resetRequirement, setFocus:setRequirementFocus, setValue:setRequirementValue, setError:setRequirementError, clearErrors:clearRequirementErrors, getValues:getRequirementValues, getFieldState:getRequirementFieldState, handleSubmit:handleRequirementSubmit } = useForm<Requirement>();
   const [bookGenreSelect, setBookGenreSelect] = useState<SelectValue>(null);
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
@@ -196,8 +199,7 @@ function CreateCompetition() {
     navigate.push("/");
   };
 
-
-    const handleSelect = (e) => {
+const handleSelect = (e) => {
     clearErrors('competitionLogo');
 
     let selected = e.target.files[0];
@@ -445,44 +447,52 @@ function CreateCompetition() {
           <p className='text-xs text-gray-400'>You can add additional conditions users have to fullfill in order to join the competition.</p>
         </div>
 
-          <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-52 max-w-2xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p> 
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
-                              </div>
-                              <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-                                  <p className='flex-1'>Additional Condition 1</p>
-                                  <LabeledInput inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
-                              </div>
+        <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-52 max-w-2xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
+          {requirements.map((item)=>( <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+            <p className='flex-1'>{item.requirementType}</p>
+            {item.requiredPagesRead && 
+              <LabeledInput onChange={(e) => {
+              const foundRequirement = requirements.find((el) => el.id === item.id);
+
+              foundRequirement!.requiredPagesRead = +e.target.value;
+
+                                  }} inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
+            }
+                              </div>))}
+                             
+                             
 </div> 
 
         <Button onClick={onOpen} additionalClasses='w-fit px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill /></Button>
         <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
-            <Button type='blue' additionalClasses="w-fit  px-4 py-2">
+            <Button onClick={handleRequirementSubmit((formData: Requirement) => {
+          console.log(formData);
+
+          setRequirements([...requirements, {
+              id:uniqid('req'),
+              requirementType: (formData.requirementType as any).value,
+              requiredBookRead: formData.requiredBookRead,
+              requiredPagesRead: formData.requiredPagesRead,
+              requiredBookType: formData.requiredBookType,
+              requirementQuestionPossibleAnswers: formData.requirementQuestionPossibleAnswers,
+              requirementQuestion: formData.requirementQuestion
+            }])
+            
+            toast.success('Requirement Successfully inserted !');
+
+          
+         }, (err) => {
+          console.log(err);
+ })} type='blue' additionalClasses="w-fit  px-4 py-2">
         Append
       </Button>
- </div>} modalTitle='Additional Condition' modalBodyContent={<div className='flex flex-col min-h-80    gap-3'>
+        </div>} modalTitle='Additional Condition' modalBodyContent={<div  className='flex flex-col min-h-80 gap-3'>
 
-   <Select placeholder='Requirement Type' classNames={{
+   <Select {...registerRequirement('requirementType')}  placeholder='Requirement Type' classNames={{
           menuButton:()=>'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color'
         }} onChange={(value) => {
-     setRequirementType(value);
+          setRequirementType(value);
+          setRequirementValue('requirementType', (value as any).value);
    } } options={[
      { value: 'rule1', label: 'Min. Read Pages of Genre' },
      { value: 'rule2', label: 'Min. Read Books of Genre' },
@@ -493,25 +503,34 @@ function CreateCompetition() {
    
    {requirementType && ((requirementType as Option).value === 'rule1' || (requirementType as Option).value === 'rule4') &&
    <>
-     <Select classNames={{
+     <Select {...registerRequirement('requiredBookType')} classNames={{
        menuButton(value) {
          return 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color'
        },
      }} value={bookGenreSelect} onChange={(values) => {
        setBookGenreSelect((values as Option));
+       setRequirementValue('requiredBookType', (values as any).value);
    }} primaryColor='blue' options={bookCategories}/>
-   <LabeledInput  min={'0'}  inputType='number' additionalClasses="max-w-sm w-full p-2" label="Pages Number" type={"dark"} />
+   <LabeledInput {...registerRequirement('requiredPagesRead')}  min={'0'}  inputType='number' additionalClasses="max-w-sm w-full p-2" label="Pages Number" type={"dark"} />
    </>
    }
 
    {requirementType && ((requirementType as Option).value === 'rule2' || (requirementType as Option).value === 'rule3') &&
-     <LabeledInput min={'0'} inputType='number' additionalClasses="max-w-sm w-full p-2" label="Books Number" type={"dark"} />
+            <LabeledInput  {...registerRequirement('requiredBookRead', {
+              onChange: (e) => {
+                 setRequirementValue('requiredBookRead', +e.target.value);
+       }
+     })} min={'0'} inputType='number' additionalClasses="max-w-sm w-full p-2" label="Books Number" type={"dark"} />
    }
    
    {requirementType && (requirementType as Option).value === 'rule5' && 
      <>     
-     <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
-        <textarea placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
+     <LabeledInput  {...registerRequirement('requirementQuestion')} additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
+            <textarea {...registerRequirement('requirementQuestionPossibleAnswers', {
+              onBlur: (e) => {
+                setRequirementValue('requirementQuestionPossibleAnswers', e.target.value.split(', '))
+              }
+            })}  placeholder='Enter answers, separating the with commas (, )' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
      </>
    }                 
                       </div>} isOpen={isOpen} onOpenChange={onOpenChange} />
