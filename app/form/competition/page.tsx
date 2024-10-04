@@ -38,7 +38,7 @@ import { Calendar } from '@/components/ui/calendar';
 import toast from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
 
-export interface Requirement{
+interface Requirement{
   id:string,
   requirementType: 'rule1' | 'rule2' | 'rule3' | 'rule4' | 'rule5' | null,
   requiredBookType?: string,
@@ -93,9 +93,9 @@ function CreateCompetition() {
     (state:any) => state.languageSelection.selectedLangugage
   );
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
-  const dispatch = useDispatch();
-  
-  const { uploadImageUrl, uploadImage, getImageUrl } = useStorage();
+  const dispatch=useDispatch();
+
+  const {uploadImage, uploadImageUrl, getImageUrl}=useStorage();
 
    const competitionTypes = [
     { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
@@ -170,7 +170,54 @@ function CreateCompetition() {
 
   const finalizeAll = () => {
     const uniqueId = uniqid();
-  
+    // addToDataBase("competitions", uniqueId, {
+    //   competitionTitle: competition.competitionTitle,
+    //   competitionsName: competition.competitionsName,
+    //   expiresAt: new Date((competition.expiresAt as Date)).getTime(),
+    //   description: competition.description,
+    //   prizeHandedIn: false,
+    //   chargeId: competition.chargeId,
+    //   prize: competition.prize,
+    //   createdBy: {
+    //     displayName: (user as User).displayName,
+    //     email: (user as User).email,
+    //     photoURL: (user as User).photoURL,
+    //     createdAt: new Date().getTime(),
+    //     id: (user as User).uid,
+    //   },
+    //   id: uniqueId,
+    // });
+
+    // addToDataBase("communityChats", uniqueId, {
+    //   messages: {},
+    //   chatId: uniqueId,
+    // });
+
+    // addToDataBase("communityMembers", uniqueId, {
+    //   users: {
+    //     [(user as User).uid]: {
+    //       label: (user as User).displayName,
+    //       belongsTo: uniqueId,
+    //       value: {
+    //         nickname: (user as User).displayName,
+    //         id: (user as User).uid,
+    //         photoURL: (user as User).photoURL,
+    //       },
+    //     },
+    //   },
+    // });
+
+    // attachedUsers.map((member:any) =>
+    //   addToDataBase("notifications", `${uniqueId}-${new Date().getTime()}`, {
+    //     notificationContent: `You've been invited by ${(user as User).displayName} to join the ${competition.competitionsName} competition.`,
+    //     directedTo: member.value.id,
+    //     linkTo: `/competition/${uniqueId}`,
+    //     isRead: false,
+    //     notificationId: uniqueId,
+    //     notificationTime: new Date().getTime(),
+    //     addedTo: competition.competitionsName,
+    //   })
+    // );
 
     navigate.push("/");
   };
@@ -215,7 +262,13 @@ const handleSelect = (e) => {
     console.log(formData)
     try {
 
- const { data: imageData, error } = await uploadImage(formData.competitionLogo, 'bookCovers', `competitionLogo/${competitionId}/${uniqid('competitionLogo')}`);
+      if(!user){
+        toast.error('You are not allowed to add!')
+        return;
+      }
+
+
+      const { data: imageData, error } = await uploadImage(formData.competitionLogo, 'competitionLogo', `${competitionId}/${uniqid('competitionLogo')}`);
       console.log(imageData, error);
    
       if (!imageData) {
@@ -226,8 +279,9 @@ const handleSelect = (e) => {
              toast.error('Somethin went not correct.');
         return;
       }
+      const imageUrl = await uploadImageUrl('competitionLogo', imageData.fullPath);
 
-      const imageUrl = await uploadImageUrl('bookCovers', imageData.fullPath);
+
 
 
 
@@ -235,15 +289,15 @@ const handleSelect = (e) => {
         body: JSON.stringify({
           competitionName: formData['competitionTitle'],
           competitionType: formData['competitionsName'],
+          competitionLogo: imageUrl,
           startDate: new Date(),
           endDate: formData['expiresAt'],
           id: competitionId,
-          rules: requirements,
-          competitionLogo: imageUrl,
-          chargeId: formData['chargeId'],
-          prizeHandedIn: formData['prizeHandedIn'],
-          description: formData['description'],
+          chatId: competitionChatId,
           prize: formData['prize'],
+          description: formData['description'],
+          prizeHandedIn: false
+
         }),
         method: 'POST',
         headers: {
@@ -253,14 +307,44 @@ const handleSelect = (e) => {
 
       const fullResponse = await fetchCompetitionObject.json();
 
-      console.log(fullResponse);
+      const fetchRequirements= await fetch('/api/supabase/requirement/createMany', {
+        method:"POST",
+          body:JSON.stringify({data:requirements.map((item)=>({...item, competitionId}))}),
+          headers:{
+            'Content-Type':'application/json',
+          },
+      });
+
+      const fullRequirements= await fetchRequirements.json();
+
+
+      const fetchMember= await fetch('/api/supabase/member/create', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({data:{userId:user.id, competitionId:fullResponse.data.id}}),
+      });
+      
+      const fullMemberObj= await fetchMember.json();
+
+      console.log(fullMemberObj);
+
+
+      await fetch('/api/supabase/competition/update', {
+        method:"POST",
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({data:{...fullResponse.data, members:[fullMemberObj], rules:fullRequirements}, where:{id:fullResponse.data.id}})
+      });
+
+
 
       toast.success('Yeah, you did it !');
       
       clearErrors();
       reset();
-      resetRequirement();
-
       setPreviewImage(null);
 
     } catch (err) {
@@ -320,10 +404,10 @@ const handleSelect = (e) => {
 
         
 <div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
-          <LabeledInput {...register('competitionTitle', {
-            onChange(e){
-              setValue('competitionTitle', e.target.value);
-              }
+            <LabeledInput {...register('competitionTitle', {
+              onChange(event) {
+                setValue('competitionTitle', event.target.value);
+              },
             })} additionalClasses="max-w-xs w-full p-2" label="Competition Name" type={"dark"} />
           
           <div className="flex flex-col gap-1">
