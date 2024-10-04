@@ -36,8 +36,9 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import toast from 'react-hot-toast';
+import useStorage from 'hooks/storage/useStorage';
 
-interface Requirement{
+export interface Requirement{
   id:string,
   requirementType: 'rule1' | 'rule2' | 'rule3' | 'rule4' | 'rule5' | null,
   requiredBookType?: string,
@@ -92,7 +93,9 @@ function CreateCompetition() {
     (state:any) => state.languageSelection.selectedLangugage
   );
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
+  
+  const { uploadImageUrl, uploadImage, getImageUrl } = useStorage();
 
    const competitionTypes = [
     { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
@@ -167,54 +170,7 @@ function CreateCompetition() {
 
   const finalizeAll = () => {
     const uniqueId = uniqid();
-    // addToDataBase("competitions", uniqueId, {
-    //   competitionTitle: competition.competitionTitle,
-    //   competitionsName: competition.competitionsName,
-    //   expiresAt: new Date((competition.expiresAt as Date)).getTime(),
-    //   description: competition.description,
-    //   prizeHandedIn: false,
-    //   chargeId: competition.chargeId,
-    //   prize: competition.prize,
-    //   createdBy: {
-    //     displayName: (user as User).displayName,
-    //     email: (user as User).email,
-    //     photoURL: (user as User).photoURL,
-    //     createdAt: new Date().getTime(),
-    //     id: (user as User).uid,
-    //   },
-    //   id: uniqueId,
-    // });
-
-    // addToDataBase("communityChats", uniqueId, {
-    //   messages: {},
-    //   chatId: uniqueId,
-    // });
-
-    // addToDataBase("communityMembers", uniqueId, {
-    //   users: {
-    //     [(user as User).uid]: {
-    //       label: (user as User).displayName,
-    //       belongsTo: uniqueId,
-    //       value: {
-    //         nickname: (user as User).displayName,
-    //         id: (user as User).uid,
-    //         photoURL: (user as User).photoURL,
-    //       },
-    //     },
-    //   },
-    // });
-
-    // attachedUsers.map((member:any) =>
-    //   addToDataBase("notifications", `${uniqueId}-${new Date().getTime()}`, {
-    //     notificationContent: `You've been invited by ${(user as User).displayName} to join the ${competition.competitionsName} competition.`,
-    //     directedTo: member.value.id,
-    //     linkTo: `/competition/${uniqueId}`,
-    //     isRead: false,
-    //     notificationId: uniqueId,
-    //     notificationTime: new Date().getTime(),
-    //     addedTo: competition.competitionsName,
-    //   })
-    // );
+  
 
     navigate.push("/");
   };
@@ -258,6 +214,23 @@ const handleSelect = (e) => {
     const competitionChatId = uniqid();
     console.log(formData)
     try {
+
+ const { data: imageData, error } = await uploadImage(formData.competitionLogo, 'bookCovers', `competitionLogo/${competitionId}/${uniqid('competitionLogo')}`);
+      console.log(imageData, error);
+   
+      if (!imageData) {
+        setError('competitionLogo', {
+          'message': 'Failed to upload the image.',
+          'type': 'error',
+        });
+             toast.error('Somethin went not correct.');
+        return;
+      }
+
+      const imageUrl = await uploadImageUrl('bookCovers', imageData.fullPath);
+
+
+
       const fetchCompetitionObject = await fetch('/api/supabase/competition/create', {
         body: JSON.stringify({
           competitionName: formData['competitionTitle'],
@@ -265,9 +238,12 @@ const handleSelect = (e) => {
           startDate: new Date(),
           endDate: formData['expiresAt'],
           id: competitionId,
-          chatId: competitionChatId,
           rules: requirements,
-          competitionLogo: formData['competitionLogo']
+          competitionLogo: imageUrl,
+          chargeId: formData['chargeId'],
+          prizeHandedIn: formData['prizeHandedIn'],
+          description: formData['description'],
+          prize: formData['prize'],
         }),
         method: 'POST',
         headers: {
@@ -283,6 +259,8 @@ const handleSelect = (e) => {
       
       clearErrors();
       reset();
+      resetRequirement();
+
       setPreviewImage(null);
 
     } catch (err) {
@@ -342,7 +320,11 @@ const handleSelect = (e) => {
 
         
 <div className="grid max-w-2xl h-fit self-center w-full gap-4 grid-flow-dense xl:grid-cols-2">
-            <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Competition Name" type={"dark"} />
+          <LabeledInput {...register('competitionTitle', {
+            onChange(e){
+              setValue('competitionTitle', e.target.value);
+              }
+            })} additionalClasses="max-w-xs w-full p-2" label="Competition Name" type={"dark"} />
           
           <div className="flex flex-col gap-1">
             <p className='text-white'>Competition Type</p>

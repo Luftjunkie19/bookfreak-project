@@ -39,22 +39,23 @@ import SingleDropDown from 'components/drowdown/SingleDropDown';
 import MultipleDropDown from 'components/drowdown/MultipleDropDown';
 import ModalComponent from 'components/modal/ModalComponent';
 import { IoIosAddCircle } from 'react-icons/io';
+import { Requirement } from '../competition/page';
+
+interface Club{
+  members: {nickname:string, id:string, isAdmin:boolean, isOwner:boolean, joinedTime:Date, role:string}[],
+  hasRequirements: boolean,
+  competitionName: string,
+  description: string,
+  isFreeToJoin:boolean,
+  requirements:Requirement[]
+}
+
 
 function CreateClub() {
-  const [error, setError] = useState(null);
-  const [isPending, setIsPending] = useState(false);
   const dispatch = useDispatch();
-  const [attachedUsers, setAttachedUsers] = useState([]);
-  const [editCover, setEditCover] = useState<string | null>(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [radius, setRadius] = useState(0);
+ 
   const editorRef = useRef<AvatarEditor>(null);
-  const [readersClub, setReadersClub] = useState({
-    clubsName: "",
-    clubLogo: null,
-    description: "",
-    requiredPagesRead: 0,
-  });
+
   const navigate = useRouter();
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
@@ -87,109 +88,32 @@ function CreateClub() {
 
 
 
-  const submitForm = () => {
-    // e.preventDefault();
-    // setError(null);
-    // setIsPending(true);
-
-    // if (
-    //   allMembers.find(
-    //     (member:any) =>
-    //       member.value.id === (user as User).uid &&
-    //       member.belongsTo.includes("readersClub")
-    //   )
-    // ) {
-    //   dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.loyality[selectedLanguage]}` }));
-
-    //   return;
-    // }
-
-
-    // if (!readersClub.clubLogo || readersClub.description.trim().length === 0 || readersClub.clubsName.trim().length === 0 || readersClub.requiredPagesRead === 0) {
-    //   dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.someFieldsEmpty[selectedLanguage]}` }));
-
-    //   return;
-    // }
-
-    // const uniqueId = uniqid("readersClub");
-
-    // addToDataBase("readersClubs", uniqueId, {
-    //   clubsName: readersClub.clubsName,
-    //   clubLogo: readersClub.clubLogo,
-    //   description: readersClub.description,
-    //   requiredPagesRead: readersClub.requiredPagesRead,
-    //   createdBy: {
-    //     displayName: (user as User).displayName,
-    //     email: (user as User).email,
-    //     photoURL: (user as User).photoURL,
-    //     createdAt: new Date().getTime(),
-    //     id: (user as User).uid,
-    //   },
-    //   id: uniqueId,
-    // });
-
-    // addToDataBase("communityChats", uniqueId, {
-    //   messages: {},
-    //   chatId: uniqueId,
-    // });
-
-    // addToDataBase("communityMembers", uniqueId, {
-    //   users: {
-    //     [(user as User).uid]: {
-    //       label: (user as User).displayName,
-    //       belongsTo: uniqueId,
-    //       value: {
-    //         nickname: (user as User).displayName,
-    //         id: (user as User).uid,
-    //         photoURL: (user as User).photoURL,
-    //       },
-    //     },
-    //   },
-    // });
-
-    // attachedUsers.map((member:any) =>
-    //   addToDataBase("notifications", member.value.id, {
-    //     notificationContent: `You've been invited by ${(user as User).displayName} to ${readersClub.clubsName} club.`,
-    //     directedTo: member.value.id,
-    //     linkTo: `/readers-club/${uniqueId}`,
-    //     notificationId: uniqueId,
-    //     isRead: false,
-    //     notificationTime: new Date().getTime(),
-    //     addedTo: readersClub.clubsName,
-    //   })
-    // );
-    // setIsPending(false);
-    // dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.successfull.create[selectedLanguage]}` }));
-    // setError(null);
-    // navigate.push("/");
+  const submitForm = (formData:Club) => {
+   
   };
 
   const handleSelect = (e) => {
-    setError(null);
-    setEditCover(null);
-    setIsPending(false);
+ 
 
     let selected = e.target.files[0];
 
     if (selected?.size > 200000) {
-      setError(alertMessages.notifications.wrong.tooBigFile[selectedLanguage]);
-      setEditCover(null);
       return;
     }
 
     if (!selected?.type.includes("image")) {
-      setError(
-        alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]
-      );
-      setEditCover(null);
+      // setError(
+      //   alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]
+      // );
+     
       return;
     }
 
     if (selected === null) {
-      setError(
-        alertMessages.notifications.wrong.selectAnything[selectedLanguage]
-      );
-      setEditCover(null);
+      // setError(
+      //   alertMessages.notifications.wrong.selectAnything[selectedLanguage]
+      // );
+
       return;
     }
 
@@ -197,9 +121,8 @@ function CreateClub() {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(selected);
       fileReader.onload = () => {
-        setEditCover(fileReader.result as string);
+        // setEditCover(fileReader.result as string);
       };
-      setError(null);
       return;
     }
   };

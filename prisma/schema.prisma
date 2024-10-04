@@ -15,26 +15,27 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(cuid())
-  nickname    String
-  email       String        @unique
-  photoURL    String?
-  description String?
-  booksInRead BookInRead[]
-  bookShelfs  Shelf[]
-  dateOfJoin  DateTime
-  addedBooks  Book[]
-  recensions  Recension[]
-  chats       Chat[]
-  chatId      String?
-  BookLover   BookLover[]
-  Club        Club?         @relation(fields: [clubId], references: [id])
-  clubId      String?
-  Post        Post[]
-  Comment     Comment[]
-  Competition Competition[]
-  Test        Test[]
-  Result      Result[]
+  id            String         @id @default(cuid())
+  nickname      String
+  email         String         @unique
+  photoURL      String?
+  description   String?
+  booksInRead   BookInRead[]
+  bookShelfs    Shelf[]
+  dateOfJoin    DateTime
+  addedBooks    Book[]
+  recensions    Recension[]
+  chats         Chat[]
+  chatId        String?
+  BookLover     BookLover[]
+  Club          Club?          @relation(fields: [clubId], references: [id])
+  clubId        String?
+  Post          Post[]
+  Comment       Comment[]
+  Test          Test[]
+  Result        Result[]
+  Member        Member[]
+  notifications Notification[]
 }
 
 model Shelf {
@@ -133,37 +134,66 @@ model Chat {
 }
 
 model Message {
-  id       String  @id @default(cuid())
+  id       String    @id @default(cuid())
   content  String
   senderId String
-  Chat     Chat?   @relation(fields: [chatId], references: [id])
+  Chat     Chat?     @relation(fields: [chatId], references: [id])
   chatId   String?
+  sentAt   DateTime
+  isSeen   Boolean   @default(false)
+  seenAt   DateTime?
 }
 
 model Club {
-  id              String  @id @default(cuid())
-  chatId          String?
-  chat            Chat?   @relation(fields: [chatId], references: [id])
-  members         Json[]
+  id              String        @id @default(cuid())
+  chatId          String
+  chat            Chat          @relation(fields: [chatId], references: [id])
+  members         Member[]
   hasRequirements Boolean
-  requirements    Json[]
-  users           User[]
+  requirements    Requirement[]
+  User            User[]
+}
+
+model Requirement {
+  id                                 String       @id @default(cuid())
+  requirementType                    String
+  requiredBookType                   String?
+  requiredBookRead                   Int?
+  requiredPagesRead                  Int?
+  requirementQuestion                String?
+  requirementQuestionPossibleAnswers String[]
+  Club                               Club?        @relation(fields: [clubId], references: [id])
+  clubId                             String?
+  Competition                        Competition? @relation(fields: [competitionId], references: [id])
+  competitionId                      String?
 }
 
 model Competition {
-  id              String          @id @default(cuid())
+  id              String        @id @default(cuid())
   competitionName String
   competitionType String
   competitionLogo String
   startDate       DateTime
   endDate         DateTime
-  rules           Json[]
-  chatId          String @unique
-  chat            Chat            @relation(fields: [chatId], references: [id])
-  members         Json[]
+  rules           Requirement[]
+  chatId          String?       @unique
+  chat            Chat?         @relation(fields: [chatId], references: [id])
+  members         Member[]
   prizeId         String?
   prize           Json
-  users           User[]
+  description     String?
+  prizeHandedIn   Boolean       @default(false)
+  chargeId        String?
+}
+
+model Member {
+  id            String       @id @default(cuid())
+  userId        String       @unique
+  user          User         @relation(fields: [userId], references: [id])
+  Club          Club?        @relation(fields: [clubId], references: [id])
+  clubId        String?
+  Competition   Competition? @relation(fields: [competitionId], references: [id])
+  competitionId String?
 }
 
 model Test {
@@ -234,6 +264,20 @@ model Hashtag {
   hashtagName String
   posts       Post[]
   Comment     Comment[]
+}
+
+model Notification {
+  id                    String    @id @default(cuid())
+  type                  String
+  memberAchievement     Json?
+  clubInvitation        Json?
+  competitionInvitation Json?
+  newMessage            Json?
+  isRead                Boolean   @default(false)
+  receivedAt            DateTime
+  seenAt                DateTime?
+  directedTo            String
+  user                  User      @relation(fields: [directedTo], references: [id])
 }
 
 enum competitionType {
