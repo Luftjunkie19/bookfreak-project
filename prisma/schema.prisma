@@ -153,26 +153,17 @@ model Club {
 model Competition {
   id              String          @id @default(cuid())
   competitionName String
-  competitionType competitionType
+  competitionType String
+  competitionLogo String
   startDate       DateTime
   endDate         DateTime
-  rules           Rule[]
-  chatId          String
+  rules           Json[]
+  chatId          String @unique
   chat            Chat            @relation(fields: [chatId], references: [id])
   members         Json[]
   prizeId         String?
   prize           Json
   users           User[]
-}
-
-model Rule {
-  id               String       @id @default(cuid())
-  Competition      Competition? @relation(fields: [competitionId], references: [id])
-  competitionId    String?
-  name             String
-  description      String
-  requiredValue    Int?
-  requiredReadType String?
 }
 
 model Test {

@@ -1,5 +1,5 @@
 'use client';
-import { Suspense, useRef, useState } from 'react';
+import { Suspense, useCallback, useRef, useState } from 'react';
 import React from 'react'
 
 import {
@@ -39,7 +39,7 @@ import toast from 'react-hot-toast';
 
 interface Requirement{
   id:string,
-  requirementType: 'rule1' | 'rule2' | 'rule3' | 'rule4' | 'rule5',
+  requirementType: 'rule1' | 'rule2' | 'rule3' | 'rule4' | 'rule5' | null,
   requiredBookType?: string,
   requiredBookRead?: number,
   requiredPagesRead?: number,
@@ -83,6 +83,7 @@ function CreateCompetition() {
   const [bookReference, setBookReference] = useState<SelectValue>(null);
   const [previewImage, setPreviewImage] = useState<string>();
   const [competitionName, setCompetitionName] = useState<SelectValue>(null);
+  const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>(null);
   const { register, reset, setFocus, setValue, setError, clearErrors, getValues, getFieldState, handleSubmit } = useForm<Competition>();
     const { register:registerRequirement, reset:resetRequirement, setFocus:setRequirementFocus, setValue:setRequirementValue, setError:setRequirementError, clearErrors:clearRequirementErrors, getValues:getRequirementValues, getFieldState:getRequirementFieldState, handleSubmit:handleRequirementSubmit } = useForm<Requirement>();
   const [bookGenreSelect, setBookGenreSelect] = useState<SelectValue>(null);
@@ -116,6 +117,15 @@ function CreateCompetition() {
     },
   ];
 
+
+  const requirementOptions=[
+    { value: 'rule1', label: 'Min. Read Pages of Genre' },
+    { value: 'rule2', label: 'Min. Read Books of Genre' },
+    { value: 'rule3', label: 'Min. Read Books Amount' },
+    { value: 'rule4', label: 'Min. Read Pages Amount' },
+    { value: 'rule5', label: 'Peculiar Question' }
+    ]
+
   const [chosenPrize, setChosenPrize]=useState<SelectValue>(null);
 
   const navigate = useRouter();
@@ -130,7 +140,7 @@ function CreateCompetition() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          take: 10,
+          take: undefined,
           where: undefined,
           skip: undefined,
           include: undefined,
@@ -143,6 +153,16 @@ function CreateCompetition() {
       },
   });
 
+
+  const manageRequiredNumber = useCallback((e, item:Requirement, propertyName:string) => {
+    const foundRequirement = requirements.find((el) => el.id === item.id);
+    const foundRequirementIndex= requirements.findIndex((el) => el.id === item.id);
+    if(foundRequirementIndex === -1){
+      toast.error('Upsi !')
+      return;
+    }
+  requirements[foundRequirementIndex][propertyName]= +e.target.value;
+}, [requirements])
 
 
   const finalizeAll = () => {
@@ -245,7 +265,9 @@ const handleSelect = (e) => {
           startDate: new Date(),
           endDate: formData['expiresAt'],
           id: competitionId,
-          chatId: competitionChatId
+          chatId: competitionChatId,
+          rules: requirements,
+          competitionLogo: formData['competitionLogo']
         }),
         method: 'POST',
         headers: {
@@ -268,8 +290,20 @@ const handleSelect = (e) => {
     }
   };
 
-     const { isOpen, onOpen, onOpenChange} = useDisclosure();
+     const { isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+     const { isOpen:isAnswerModalOpen, onOpen:onAnswerModalOpen, onOpenChange:onAnswerModalOpenChange, onClose:onAnswerModalClose} = useDisclosure();
 
+     const answerModal=(item:Requirement)=>{
+      return(<ModalComponent modalSize='sm' isOpen={isAnswerModalOpen} modalTitle='Q&A' modalBodyContent={<div>
+        <p className="text-white">{item.requirementQuestion}</p>
+        <p className='text-base text-white'>{item.requirementQuestionPossibleAnswers.join(', ')}</p>
+      </div>} onClose={()=>{
+          setModalRequirementContent(null);
+          onAnswerModalClose();
+      }} onOpenChange={()=>{
+        onAnswerModalOpenChange();
+      }}/>)
+     }
   
   return (
     <form onSubmit={handleSubmit(submitForm, (errors) => {
@@ -396,9 +430,8 @@ const handleSelect = (e) => {
             <>
             <LabeledInput additionalClasses="max-w-xs w-full p-2" label="Book Title" type={"dark"} />
             {data && data.data && 
-              <Suspense fallback={<p>Loading.....</p>}>     
             <div className="flex flex-col gap-1">
-              <p className='text-white'>BookFreak's DB Reference</p>
+              <p className='text-white'>BookFreak&#39;s DB Reference</p>
               <Select classNames={{
                 menuButton: () =>'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2  text-white border-primary-color'
               }} {...register('prize.itemPrize.bookReferenceId')} options={data.data.map((item) => ({ label: item.title, value: item.id}))} onChange={(values) => {
@@ -407,7 +440,6 @@ const handleSelect = (e) => {
               }} value={bookReference} primaryColor=''/>
 
             </div>
-              </Suspense>
      }
       
             </>
@@ -428,7 +460,7 @@ const handleSelect = (e) => {
                         
 
           {
-            chosenPrize && (chosenPrize as any).value === 'money' &&  <LabeledInput additionalClasses="max-w-xs w-full p-2 outline-none" label='Money Prize' type={'dark'} />
+            chosenPrize && (chosenPrize as any).value === 'money' &&  <LabeledInput additionalClasses="max-w-xs w-full p-2 outline-none" label='Money Prize' type={'dark'} min={0.5} step={0.5} max={10} inputType='number' />
           }
                        
           {chosenPrize && (chosenPrize as any).value !== 'money' &&
@@ -447,16 +479,33 @@ const handleSelect = (e) => {
           <p className='text-xs text-gray-400'>You can add additional conditions users have to fullfill in order to join the competition.</p>
         </div>
 
-        <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-52 max-w-2xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
-          {requirements.map((item)=>( <div className="flex gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
-            <p className='flex-1'>{item.requirementType}</p>
+        <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-52 max-w-2xl min-h-48  bg-dark-gray py-4 px-2 rounded-lg  h-full">
+          {requirements.map((item)=>( <div onDoubleClick={()=>{
+            setRequirements(requirements.filter((element)=>element.id !== item.id));
+          }} key={item.id} className="flex cursor-pointer hover:bg-primary-color/40 transition-all duration-400 gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+            <div onClick={()=>{console.log(item)}} className='flex-1 flex flex-col gap-1 text-white'>
+              <p>{requirementOptions.find((el)=>el.value === item.requirementType) && requirementOptions.find((el)=>el.value === item.requirementType)!.label}</p>
+              <p className='text-xs'>{item.requiredBookType} {item.requirementQuestion}</p>
+            </div>
+
+{item.requirementQuestionPossibleAnswers && <>
+<Button onClick={()=>{
+  onAnswerModalOpen();
+  setModalRequirementContent(item);
+}} type='blue'>Answers</Button>
+</>
+}
+
+
+{item.requiredBookRead &&  
+<LabeledInput defaultValue={item.requiredBookRead} onChange={(e)=>{
+                manageRequiredNumber(e, item, 'requiredBookRead');
+              }} inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />}
+
             {item.requiredPagesRead && 
-              <LabeledInput onChange={(e) => {
-              const foundRequirement = requirements.find((el) => el.id === item.id);
-
-              foundRequirement!.requiredPagesRead = +e.target.value;
-
-                                  }} inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
+              <LabeledInput defaultValue={item.requiredPagesRead} onChange={(e)=>{
+                manageRequiredNumber(e, item, 'requiredPagesRead');
+              }} inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
             }
                               </div>))}
                              
@@ -470,7 +519,7 @@ const handleSelect = (e) => {
 
           setRequirements([...requirements, {
               id:uniqid('req'),
-              requirementType: (formData.requirementType as any).value,
+              requirementType: formData.requirementType,
               requiredBookRead: formData.requiredBookRead,
               requiredPagesRead: formData.requiredPagesRead,
               requiredBookType: formData.requiredBookType,
@@ -479,8 +528,12 @@ const handleSelect = (e) => {
             }])
             
             toast.success('Requirement Successfully inserted !');
+            resetRequirement();
+            setRequirementType(null);
+            setBookGenreSelect(null);
 
-          
+            onClose()
+
          }, (err) => {
           console.log(err);
  })} type='blue' additionalClasses="w-fit  px-4 py-2">
@@ -488,22 +541,18 @@ const handleSelect = (e) => {
       </Button>
         </div>} modalTitle='Additional Condition' modalBodyContent={<div  className='flex flex-col min-h-80 gap-3'>
 
+
    <Select {...registerRequirement('requirementType')}  placeholder='Requirement Type' classNames={{
           menuButton:()=>'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color'
         }} onChange={(value) => {
           setRequirementType(value);
           setRequirementValue('requirementType', (value as any).value);
-   } } options={[
-     { value: 'rule1', label: 'Min. Read Pages of Genre' },
-     { value: 'rule2', label: 'Min. Read Books of Genre' },
-     { value: 'rule3', label: 'Min. Read Books Amount' },
-     { value: 'rule4', label: 'Min. Read Pages Amount' },
-     { value: 'rule5', label: 'Peculiar Question' }
-     ]} value={requirementType} primaryColor={''} />
+   } } options={requirementOptions} value={requirementType} primaryColor={''} />
    
-   {requirementType && ((requirementType as Option).value === 'rule1' || (requirementType as Option).value === 'rule4') &&
-   <>
-     <Select {...registerRequirement('requiredBookType')} classNames={{
+
+{requirementType && ((requirementType as Option).value === 'rule1' || (requirementType as Option).value === 'rule2') &&  <div className='h-fit flex flex-col gap-1'>
+  <p className='text-white'>Book Genre</p>
+  <Select {...registerRequirement('requiredBookType')} classNames={{
        menuButton(value) {
          return 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color'
        },
@@ -511,7 +560,15 @@ const handleSelect = (e) => {
        setBookGenreSelect((values as Option));
        setRequirementValue('requiredBookType', (values as any).value);
    }} primaryColor='blue' options={bookCategories}/>
-   <LabeledInput {...registerRequirement('requiredPagesRead')}  min={'0'}  inputType='number' additionalClasses="max-w-sm w-full p-2" label="Pages Number" type={"dark"} />
+</div>}
+
+   {requirementType && ((requirementType as Option).value === 'rule1' || (requirementType as Option).value === 'rule4') &&
+   <>
+   <LabeledInput {...registerRequirement('requiredPagesRead', {
+    onChange:(event)=>{
+      setRequirementValue('requiredPagesRead', +event.target.value);
+    }
+   })}  min={'0'}  inputType='number' additionalClasses="max-w-sm w-full p-2" label="Pages Number" type={"dark"} />
    </>
    }
 
@@ -525,7 +582,11 @@ const handleSelect = (e) => {
    
    {requirementType && (requirementType as Option).value === 'rule5' && 
      <>     
-     <LabeledInput  {...registerRequirement('requirementQuestion')} additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
+     <LabeledInput  {...registerRequirement('requirementQuestion', {
+      onChange(event) {
+        setRequirementValue('requirementQuestion', event.target.value);
+      },
+     })} additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
             <textarea {...registerRequirement('requirementQuestionPossibleAnswers', {
               onBlur: (e) => {
                 setRequirementValue('requirementQuestionPossibleAnswers', e.target.value.split(', '))
@@ -537,6 +598,9 @@ const handleSelect = (e) => {
 
       </div>
 
+
+
+
          <label className="flex flex-col gap-3">
           <span className="text-xl text-white font-semibold">Description</span>
         <textarea {...register('description', {
@@ -546,6 +610,8 @@ const handleSelect = (e) => {
           },
       })} className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
       </label>
+
+      {modalRequirementContent && answerModal(modalRequirementContent)}
 
       <Button isSubmit type='blue' additionalClasses="w-fit px-8 py-2 text-lg my-4">
         Insert
