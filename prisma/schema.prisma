@@ -188,12 +188,17 @@ model Competition {
 
 model Member {
   id            String       @id @default(cuid())
-  userId        String       @unique
+  userId        String
   user          User         @relation(fields: [userId], references: [id])
   Club          Club?        @relation(fields: [clubId], references: [id])
   clubId        String?
   Competition   Competition? @relation(fields: [competitionId], references: [id])
   competitionId String?
+  joiningDate   DateTime     @default(now())
+  isCreator     Boolean      @default(false)
+  isAdmin       Boolean      @default(false)
+  isOwner       Boolean      @default(false)
+  rule          String?
 }
 
 model Test {

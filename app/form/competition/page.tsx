@@ -38,7 +38,7 @@ import { Calendar } from '@/components/ui/calendar';
 import toast from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
 
-interface Requirement{
+export interface Requirement{
   id:string,
   requirementType: 'rule1' | 'rule2' | 'rule3' | 'rule4' | 'rule5' | null,
   requiredBookType?: string,
@@ -315,32 +315,15 @@ const handleSelect = (e) => {
           },
       });
 
-      const fullRequirements= await fetchRequirements.json();
-
-
       const fetchMember= await fetch('/api/supabase/member/create', {
         method:'POST',
         headers:{
           'Content-Type':'application/json'
         },
-        body:JSON.stringify({data:{userId:user.id, competitionId:fullResponse.data.id}}),
+        body:JSON.stringify({data:{userId:user.id, competitionId:fullResponse.data.id, isAdmin:true, isCreator:true, isOwner:true}}),
       });
       
-      const fullMemberObj= await fetchMember.json();
-
-      console.log(fullMemberObj);
-
-
-      await fetch('/api/supabase/competition/update', {
-        method:"POST",
-        headers:{
-          'Content-Type':'application/json'
-        },
-        body:JSON.stringify({data:{...fullResponse.data, members:[fullMemberObj], rules:fullRequirements}, where:{id:fullResponse.data.id}})
-      });
-
-
-
+  
       toast.success('Yeah, you did it !');
       
       clearErrors();

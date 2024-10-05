@@ -1,11 +1,12 @@
 'use client';
 import React, {
+  useMemo,
   useRef,
   useState,
 } from 'react';
 
 import emptyImg from '../../../assets/emptyBox.png'
-
+import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll"
 import AvatarEditor from 'react-avatar-editor';
 import { BsStars } from 'react-icons/bs';
 import { CgDetailsMore } from 'react-icons/cg';
@@ -27,7 +28,7 @@ import reuseableTranslations
 import { snackbarActions } from '../../../context/SnackBarContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import LabeledInput from 'components/input/LabeledInput';
-import { Avatar, Checkbox, Chip, DatePicker, Select, SelectItem, Switch, tv, useCheckbox, useDisclosure } from '@nextui-org/react';
+import { Avatar, Checkbox, Chip, Select, SelectItem, SharedSelection, tv, useCheckbox, useDisclosure } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import ReactFlagsSelect from 'react-flags-select/build/components/ReactFlagsSelect';
 import { useRouter } from 'next/navigation';
@@ -40,11 +41,12 @@ import MultipleDropDown from 'components/drowdown/MultipleDropDown';
 import ModalComponent from 'components/modal/ModalComponent';
 import { IoIosAddCircle } from 'react-icons/io';
 import { Requirement } from '../competition/page';
+import { useFieldArray, useForm } from 'react-hook-form';
 
 interface Club{
-  members: {nickname:string, id:string, isAdmin:boolean, isOwner:boolean, joinedTime:Date, role:string}[],
   hasRequirements: boolean,
-  competitionName: string,
+  clubName: string,
+  clubLogo:string,
   description: string,
   isFreeToJoin:boolean,
   requirements:Requirement[]
@@ -53,15 +55,22 @@ interface Club{
 
 function CreateClub() {
   const dispatch = useDispatch();
- 
-  const editorRef = useRef<AvatarEditor>(null);
-
-  const navigate = useRouter();
-  const selectedLanguage = useSelector(
-    (state:any) => state.languageSelection.selectedLangugage
+  const { register, reset, getValues, setError, clearErrors, setValue, handleSubmit} = useForm<Club>();
+    const { register:registerRequirement, reset:resetRequirement, getValues:getRequirementValues, setError:setRequirementError, clearErrors:clearRequirementErrors, setValue:setRequirementValue, handleSubmit:handleRequirementSubmit} = useForm<Requirement>();
+    const editorRef = useRef<AvatarEditor>(null);
+    const [requirements, setRequirements] = useState<Requirement[]>([]);
+    const navigate = useRouter();
+    const selectedLanguage = useSelector(
+      (state:any) => state.languageSelection.selectedLangugage
+    );
+    const { user } = useAuthContext();
+    const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  
+    const selectedValue = useMemo(
+    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
+    [selectedKeys]
   );
-  const { user } = useAuthContext();
-  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   // const allMembers = members.map((club) => {
   //   return club.users;
   // }).map((object) => {
@@ -85,7 +94,6 @@ function CreateClub() {
 //         },
 //       };
 //     });
-
 
 
   const submitForm = (formData:Club) => {
@@ -154,7 +162,8 @@ function CreateClub() {
     const {
     children,
     isSelected,
-    isFocusVisible,
+      isFocusVisible,
+      isFocused,
     getBaseProps,
     getLabelProps,
     getInputProps,
@@ -162,6 +171,12 @@ function CreateClub() {
     defaultSelected: true,
   })
 
+    const [, scrollerRef] = useInfiniteScroll({
+    hasMore: true,
+    isEnabled: isFocusVisible,
+    shouldUseLoader: false, // We don't want to show the loader at the bottom of the list
+  
+  });
 
   return (
    <div className={`sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto w-full p-4`}>
@@ -181,12 +196,22 @@ function CreateClub() {
           </div>
         </div>
 
-            <LabeledInput containerStyle='max-w-xs w-full self-end' additionalClasses="max-w-xs w-full p-2" label="Club name" type={"dark"}  />
+        <LabeledInput {...register('clubName', {
+          required:'You have to put your club a name',
+              onChange(event) {
+            setValue('clubName', event.target.value);
+              },
+            })} containerStyle='max-w-xs w-full self-end' additionalClasses="max-w-xs w-full p-2" label="Club name" type={"dark"}  />
               
   
   </div>
       <Select
-        className='max-w-sm w-full'
+        value={selectedValue}
+        selectedKeys={selectedKeys}
+        onSelectionChange={(keys:SharedSelection) => {
+          setSelectedKeys(keys); 
+   }}
+        className='max-w-xs w-full'
       items={[
   {
     id: 1,
@@ -389,22 +414,28 @@ function CreateClub() {
     email: "mia.robinson@example.com",
   },
 ]}
-      label={<p className='text-white'>Invite Friends</p>}
+      label={<p className='text-white text-base'>Invite Friends</p>}
       selectionMode="multiple"
-      placeholder="Select a user"
-      labelPlacement='outside'
-            classNames={{
-              'innerWrapper': 'bg-dark-gray text-white focus:bg-dark-gray active:bg-dark-gray hover:bg-dark-gray',
-              'trigger':'bg-dark-gray text-white focus:bg-dark-gray active:bg-dark-gray hover:bg-dark-gray border-2 border-primary-color',
-              'popoverContent':'bg-dark-gray border-2 border-primary-color text-white'
+        placeholder="Select a user"
+        labelPlacement='outside'
+        scrollRef={scrollerRef}
+        data-hover={false}
+        aria-checked={'false'}
+        aria-hover={'false'}
+        classNames={{
+      
+              'innerWrapper': 'bg-dark-gray text-white py-2',
+              'trigger':'bg-dark-gray text-white border-2 border-primary-color py-2',
+          'popoverContent': 'bg-dark-gray border-2 border-primary-color text-white',
+              'value':'bg-dark-gray',
       }}
       renderValue={(items) => {
         return (
-          <div className="flex items-center overflow-auto w-fit gap-2">
+          <div className="flex items-center overflow-x-auto w-fit gap-2">
             {items.map((item) => (
-              <Chip key={item.key} classNames={{'content':'flex items-center gap-2'}}>
+              <Chip key={item.key} classNames={{'content':'flex items-center gap-2 w-fit','base':'bg-primary-color text-white w-fit'}}>
                 <Image src={item.data!.avatar} alt='' width={40} height={40} className='w-6 h-6 rounded-full' />
-                <p>{item.data!.name}</p>
+                <p className=' line-clamp-1 text-pretty'>{item.data!.name}</p>
               </Chip>
             ))}
           </div>
@@ -412,9 +443,14 @@ function CreateClub() {
       }}
     >
       {(user) => (
-        <SelectItem key={user.id} textValue={user.name}>
+          <SelectItem  aria-checked={'false'}
+        aria-hover={'false'} data-hover={false} data-focus={false} className='hover:bg-primary-color rounded-lg duration-400 transition-all' classNames={{
+            'wrapper': 'hover:bg-primary-color rounded-lg duration-400 transition-all',
+          'base': 'hover:bg-primary-color rounded-lg duration-400 transition-all',
+            
+        }} key={user.id} textValue={user.name}>
           <div className="flex gap-2 items-center">
-            <Avatar alt={user.name} className="flex-shrink-0" size="sm" src={user.avatar} />
+            <Avatar alt={user.name} className="px-1" size="sm" src={user.avatar} />
             <div className="flex flex-col">
               <span className="text-small">{user.name}</span>
               <span className="text-tiny text-default-400">{user.email}</span>
@@ -429,7 +465,11 @@ function CreateClub() {
         <div className="flex flex-col gap-2">
           <p className='text-white'>Do you want to have special requirements to join ?</p>
              <div className="flex gap-2 items-center">
-            <Checkbox color='default' />
+            <Checkbox {...register('hasRequirements', {
+              onChange(event) {
+                setValue('hasRequirements', event.target.value);
+              }
+            })} color='default' />
             <p className='text-white text-sm'>Yes, I want to have special requirements.</p>
         </div>
 </div>             
@@ -438,7 +478,11 @@ function CreateClub() {
         <div className="flex flex-col gap-2">
             <p className='text-white'>Is your club free to join?</p>
           <div className="flex gap-2 items-center">
-          <Checkbox color='default' />
+          <Checkbox data-checked={false} aria-checked={'false'} classNames={{'base':'checked:bg-primary-color checked:text-white'}} {...register('isFreeToJoin', {
+              onChange(event) {
+                setValue('isFreeToJoin', event.target.value);
+              }
+            })} color='primary' />
                <p className='text-white text-sm'>Yes, my club is free to join</p>
           </div>
         </div>
@@ -450,38 +494,80 @@ function CreateClub() {
       <div className="flex max-w-6xl w-full gap-2 flex-col pb-2">
         <p className='text-xl text-white font-semibold'>Club Requirements</p>
           <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
-            <Button type='blue' additionalClasses="w-fit  px-4 py-2">
+          <Button onClick={handleRequirementSubmit((data) => {
+            setRequirements([...requirements, { ...data, id: crypto.randomUUID() }]);
+            resetRequirement();
+            
+            },(err)=>{})} type='blue' additionalClasses="w-fit  px-4 py-2">
         Append
       </Button>
  </div>} modalTitle='Additional Conditions' modalBodyContent={    <div className='flex flex-col gap-3'>
                                     
-          <SingleDropDown label='Type of Rule' selectedArray={[]}>
+   <SingleDropDown selectedValue={selectedValue} selectedKeys={selectedKeys} onSelectionChange={(keys) => {
+     setSelectedKeys(keys); 
+
+   }} {...registerRequirement('requirementType', {
+     required: 'Choose the Type of Requirement !',
+     onChange(e){
+     setRequirementValue('requirementType', (e.target.value as any));
+   }
+          })}  data-hover={'false'} data-selected={'false'}  aria-checked={'false'}
+        aria-hover={'false'} label='Type of Rule'>
      <SelectItem key={'rule1'}>Min. Read Pages of Genre</SelectItem>
-         <SelectItem key={'rule1'}>Min. Read Books of Genre</SelectItem>
-     <SelectItem key={'rule2'}>Min. Read Books Amount</SelectItem>
-     <SelectItem key={'rule2'}>Min. Read Pages Amount</SelectItem>
-          <SelectItem key={'rule2'}>Peculiar Question</SelectItem>
+         <SelectItem key={'rule2'}>Min. Read Books of Genre</SelectItem>
+     <SelectItem key={'rule3'}>Min. Read Books Amount</SelectItem>
+     <SelectItem key={'rule4'}>Min. Read Pages Amount</SelectItem>
+          <SelectItem key={'rule5'}>Peculiar Question</SelectItem>
    </SingleDropDown>
-
-     <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Pages" type={"dark"} />
+   {getRequirementValues('requirementType') === 'rule1' || getRequirementValues('requirementType') === 'rule4' &&
+   <LabeledInput {...registerRequirement('requiredPagesRead', {
+     onChange(event) {
+       setRequirementValue('requiredPagesRead', +(event.target.value as string));
+     },
+     })} additionalClasses="max-w-sm w-full p-2" label="Pages Amount" type={"dark"} />
+   }
    
-  <LabeledInput additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
-
-
-           <SingleDropDown label='Answer Accessment' selectedArray={[]}>
-     <SelectItem key={'rule1'}>Manual</SelectItem>
-         <SelectItem key={'rule1'}>Expected Answers</SelectItem>
-   </SingleDropDown>
+   {getRequirementValues('requirementType') === 'rule2' || getRequirementValues('requirementType') === 'rule3' &&
+   <LabeledInput {...registerRequirement('requiredBookRead', {
+     onChange(event) {
+       setRequirementValue('requiredBookRead', +(event.target.value as string));
+     },
+     })} additionalClasses="max-w-sm w-full p-2" label="Books Amount" type={"dark"} />
+}
    
-     <textarea placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
 
-                        
-                      </div> } isOpen={isOpen} onOpenChange={onOpenChange} />
+
+   {getRequirementValues('requirementType') === 'rule5' && <>
+   
+    <LabeledInput {...registerRequirement('requirementQuestion', {
+       onChange(event) {
+         setRequirementValue('requirementQuestion', event.target.value);
+       },
+    })} additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
+     
+    <SingleDropDown selectedKeys={selectedKeys} selectedValue={selectedValue} label='Answer Accessment'>
+<SelectItem key={'rule1'}>Manual</SelectItem>
+  <SelectItem key={'rule2'}>Expected Answers</SelectItem>
+</SingleDropDown>
+
+<textarea onBlur={(e) => {
+setRequirementValue('requirementQuestionPossibleAnswers', e.target.value.split(', '));
+}} placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
+   </>
+  }
+  </div> } isOpen={isOpen} onOpenChange={onOpenChange} />
 
         <div className="max-w-2xl p-1 min-h-96 max-h-96 h-full w-full flex flex-col gap-6  items-center justify-center bg-dark-gray rounded-lg border-primary-color border-2">
-          <p className='text-3xl text-white font-semibold text-center opacity-75'>No Requirements yet !</p>
+          {requirements.length === 0 ? <>
+            <p className='text-3xl text-white font-semibold text-center opacity-75'>No Requirements yet !</p>
           <Image src={emptyImg} className='w-48 h-48' alt="" width={60} height={60} />
           <p className='text-center text-sm font-light opacity-40 text-white'>You haven&lsquo;t set any requirements yet. If you want to set requirements, click the dropdown above.</p>
+          </> : <>
+              {requirements.map((item) => (<div className='bg-primary-color text-white'>
+            <p className='text-lg font-bold'>{JSON.stringify(item)}</p>
+          </div>))}
+          </>}
+          
         </div>
         
         <Button additionalClasses='w-fit px-4 py-2 flex gap-2 items-center' onClick={onOpen} type='blue'>New Requirement <IoIosAddCircle /></Button>
