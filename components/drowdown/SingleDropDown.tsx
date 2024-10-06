@@ -1,4 +1,4 @@
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Select, SelectProps } from '@nextui-org/react';
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Select, SelectProps, SharedSelection } from '@nextui-org/react';
 import React, { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
@@ -7,7 +7,7 @@ type Props = {
     children: any,
     label?:string,
   name?: string,
-  selectedKeys: Set<string>,
+  selectedKeys?: string[],
     selectedValue?:string | number | readonly string[] 
 } & SelectProps
 
@@ -36,7 +36,8 @@ function SingleDropDown({ children, label,selectedKeys,selectedValue,  name, ...
         'listbox': 'outline-none',
         'popoverContent': 'bg-dark-gray text-white border-2 rounded-lg border-primary-color',
         'listboxWrapper': 'bg-dark-gray text-white',
-        
+        'mainWrapper':'text-white',
+        'innerWrapper':'text-white',
       }}
     >
    {children}

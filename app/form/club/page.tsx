@@ -42,6 +42,8 @@ import ModalComponent from 'components/modal/ModalComponent';
 import { IoIosAddCircle } from 'react-icons/io';
 import { Requirement } from '../competition/page';
 import { useFieldArray, useForm } from 'react-hook-form';
+import RequirementSelect from 'react-tailwindcss-select'
+import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
 
 interface Club{
   hasRequirements: boolean,
@@ -58,6 +60,7 @@ function CreateClub() {
   const { register, reset, getValues, setError, clearErrors, setValue, handleSubmit} = useForm<Club>();
     const { register:registerRequirement, reset:resetRequirement, getValues:getRequirementValues, setError:setRequirementError, clearErrors:clearRequirementErrors, setValue:setRequirementValue, handleSubmit:handleRequirementSubmit} = useForm<Requirement>();
     const editorRef = useRef<AvatarEditor>(null);
+
     const [requirements, setRequirements] = useState<Requirement[]>([]);
     const navigate = useRouter();
     const selectedLanguage = useSelector(
@@ -65,12 +68,12 @@ function CreateClub() {
     );
     const { user } = useAuthContext();
     const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+    const [selectedType, setSelectedType] = useState<SelectValue>(null);
+  const [selectedKeys, setSelectedKeys] = useState<SharedSelection>(new Set([]));
   
-    const selectedValue = useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys]
-  );
+    
+
+
   // const allMembers = members.map((club) => {
   //   return club.users;
   // }).map((object) => {
@@ -136,7 +139,7 @@ function CreateClub() {
   };
 
 
-  const { isOpen, onOpenChange, onOpen } = useDisclosure();
+  const { isOpen, onOpenChange, onOpen , onClose} = useDisclosure();
 
   
   const checkbox = tv({
@@ -206,11 +209,12 @@ function CreateClub() {
   
   </div>
       <Select
-        value={selectedValue}
         selectedKeys={selectedKeys}
-        onSelectionChange={(keys:SharedSelection) => {
-          setSelectedKeys(keys); 
-   }}
+        onChange={(e) => {
+          setSelectedKeys(new Set(e.target.value.split(",")));
+
+        }
+      }
         className='max-w-xs w-full'
       items={[
   {
@@ -421,7 +425,6 @@ function CreateClub() {
         scrollRef={scrollerRef}
         data-hover={false}
         aria-checked={'false'}
-        aria-hover={'false'}
         classNames={{
       
               'innerWrapper': 'bg-dark-gray text-white py-2',
@@ -444,7 +447,7 @@ function CreateClub() {
     >
       {(user) => (
           <SelectItem  aria-checked={'false'}
-        aria-hover={'false'} data-hover={false} data-focus={false} className='hover:bg-primary-color rounded-lg duration-400 transition-all' classNames={{
+       data-hover={false} data-focus={false} className='hover:bg-primary-color rounded-lg duration-400 transition-all' classNames={{
             'wrapper': 'hover:bg-primary-color rounded-lg duration-400 transition-all',
           'base': 'hover:bg-primary-color rounded-lg duration-400 transition-all',
             
@@ -497,38 +500,48 @@ function CreateClub() {
           <Button onClick={handleRequirementSubmit((data) => {
             setRequirements([...requirements, { ...data, id: crypto.randomUUID() }]);
             resetRequirement();
+            onClose();
             
             },(err)=>{})} type='blue' additionalClasses="w-fit  px-4 py-2">
         Append
       </Button>
  </div>} modalTitle='Additional Conditions' modalBodyContent={    <div className='flex flex-col gap-3'>
-                                    
-   <SingleDropDown selectedValue={selectedValue} selectedKeys={selectedKeys} onSelectionChange={(keys) => {
-     setSelectedKeys(keys); 
 
-   }} {...registerRequirement('requirementType', {
+    
+    <RequirementSelect
+     onChange={(values)=>{
+      console.log(values);
+      setSelectedType(values);
+     setRequirementValue('requirementType', (values as Option).value);
+   }} 
+   value={selectedType} primaryColor={''} options={[{ 'value': 'rule1', label: 'Min. Read Pages of Genre' }]}/>
+{/* 
+   <SingleDropDown selectedKeys={[selectedType]} {...registerRequirement('requirementType', {
      required: 'Choose the Type of Requirement !',
      onChange(e){
+      console.log(e.target.value);
+      setSelectedType(e.target.value);
      setRequirementValue('requirementType', (e.target.value as any));
    }
           })}  data-hover={'false'} data-selected={'false'}  aria-checked={'false'}
-        aria-hover={'false'} label='Type of Rule'>
-     <SelectItem key={'rule1'}>Min. Read Pages of Genre</SelectItem>
-         <SelectItem key={'rule2'}>Min. Read Books of Genre</SelectItem>
-     <SelectItem key={'rule3'}>Min. Read Books Amount</SelectItem>
-     <SelectItem key={'rule4'}>Min. Read Pages Amount</SelectItem>
-          <SelectItem key={'rule5'}>Peculiar Question</SelectItem>
-   </SingleDropDown>
-   {getRequirementValues('requirementType') === 'rule1' || getRequirementValues('requirementType') === 'rule4' &&
-   <LabeledInput {...registerRequirement('requiredPagesRead', {
+         label='Type of Rule'>
+     <SelectItem classNames={{'base':'text-white'}} value={'rule1'} key={'rule1'}>Min. Read Pages of Genre</SelectItem>
+         <SelectItem classNames={{'base':'text-white'}} value={'rule2'} key={'rule2'}>Min. Read Books of Genre</SelectItem>
+     <SelectItem classNames={{'base':'text-white'}} value={'rule3'} key={'rule3'}>Min. Read Books Amount</SelectItem>
+     <SelectItem classNames={{'base':'text-white'}} value={'rule4'} key={'rule4'}>Min. Read Pages Amount</SelectItem>
+          <SelectItem classNames={{'base':'text-white'}} value={'rule5'} key={'rule5'}>Peculiar Question</SelectItem>
+   </SingleDropDown> */}
+{/*    
+   {selectedType && (selectedType as Option).value && (selectedType as Option).value === "rule1" || (selectedType as Option).value === "rule4" &&
+   <LabeledInput {...registerRequirement("requiredPagesRead", {
      onChange(event) {
-       setRequirementValue('requiredPagesRead', +(event.target.value as string));
+       setRequirementValue("requiredPagesRead", +(event.target.value as string));
      },
      })} additionalClasses="max-w-sm w-full p-2" label="Pages Amount" type={"dark"} />
    }
    
-   {getRequirementValues('requirementType') === 'rule2' || getRequirementValues('requirementType') === 'rule3' &&
-   <LabeledInput {...registerRequirement('requiredBookRead', {
+   {selectedType && (selectedType as Option).value && (selectedType as Option).value === "rule2" || (selectedType as Option).value === "rule3" &&
+   <LabeledInput {...registerRequirement("requiredBookRead", {
      onChange(event) {
        setRequirementValue('requiredBookRead', +(event.target.value as string));
      },
@@ -537,7 +550,7 @@ function CreateClub() {
    
 
 
-   {getRequirementValues('requirementType') === 'rule5' && <>
+   {selectedType &&  (selectedType as Option).value && (selectedType as Option).value === 'rule1' && (selectedType as Option).value === 'rule4' && <>
    
     <LabeledInput {...registerRequirement('requirementQuestion', {
        onChange(event) {
@@ -545,16 +558,13 @@ function CreateClub() {
        },
     })} additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
      
-    <SingleDropDown selectedKeys={selectedKeys} selectedValue={selectedValue} label='Answer Accessment'>
-<SelectItem key={'rule1'}>Manual</SelectItem>
-  <SelectItem key={'rule2'}>Expected Answers</SelectItem>
-</SingleDropDown>
 
 <textarea onBlur={(e) => {
 setRequirementValue('requirementQuestionPossibleAnswers', e.target.value.split(', '));
 }} placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
    </>
   }
+   */}
   </div> } isOpen={isOpen} onOpenChange={onOpenChange} />
 
         <div className="max-w-2xl p-1 min-h-96 max-h-96 h-full w-full flex flex-col gap-6  items-center justify-center bg-dark-gray rounded-lg border-primary-color border-2">
@@ -563,7 +573,7 @@ setRequirementValue('requirementQuestionPossibleAnswers', e.target.value.split('
           <Image src={emptyImg} className='w-48 h-48' alt="" width={60} height={60} />
           <p className='text-center text-sm font-light opacity-40 text-white'>You haven&lsquo;t set any requirements yet. If you want to set requirements, click the dropdown above.</p>
           </> : <>
-              {requirements.map((item) => (<div className='bg-primary-color text-white'>
+              {requirements.map((item) => (<div key={item.id} className='bg-primary-color text-white'>
             <p className='text-lg font-bold'>{JSON.stringify(item)}</p>
           </div>))}
           </>}
