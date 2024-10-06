@@ -149,7 +149,11 @@ model Club {
   chatId          String
   chat            Chat          @relation(fields: [chatId], references: [id])
   members         Member[]
+  clubLogo        String
+  creationDate    DateTime      @default(now())
   hasRequirements Boolean
+  description     String
+  isFreeToJoin    Boolean
   requirements    Requirement[]
   User            User[]
 }
@@ -181,6 +185,7 @@ model Competition {
   members         Member[]
   prizeId         String?
   prize           Json
+  creationDate    DateTime      @default(now())
   description     String?
   prizeHandedIn   Boolean       @default(false)
   chargeId        String?

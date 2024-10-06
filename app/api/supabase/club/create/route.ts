@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from 'lib/prisma/prisma'
 
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
     const {
             data
@@ -12,9 +12,10 @@ export async function GET(request: NextRequest) {
            data
       });
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:createdTest, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        console.log(error);
+        return NextResponse.json({data:null, error});
     }
 }

@@ -10,9 +10,10 @@ export async function POST(request: NextRequest) {
             data,
       });
         
-        return NextResponse.json(createdChat);
+        return NextResponse.json({data:createdChat, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        console.log(error);
+        return NextResponse.json({data:null, error});
     }
 }

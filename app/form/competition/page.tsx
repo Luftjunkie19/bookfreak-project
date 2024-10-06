@@ -38,6 +38,15 @@ import { Calendar } from '@/components/ui/calendar';
 import toast from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
 
+export  const requirementOptions=[
+    { value: 'rule1', label: 'Min. Read Pages of Genre' },
+    { value: 'rule2', label: 'Min. Read Books of Genre' },
+    { value: 'rule3', label: 'Min. Read Books Amount' },
+    { value: 'rule4', label: 'Min. Read Pages Amount' },
+    { value: 'rule5', label: 'Peculiar Question' }
+    ]
+
+
 export interface Requirement{
   id:string,
   requirementType: 'rule1' | 'rule2' | 'rule3' | 'rule4' | 'rule5' | null,
@@ -121,14 +130,7 @@ function CreateCompetition() {
   ];
 
 
-  const requirementOptions=[
-    { value: 'rule1', label: 'Min. Read Pages of Genre' },
-    { value: 'rule2', label: 'Min. Read Books of Genre' },
-    { value: 'rule3', label: 'Min. Read Books Amount' },
-    { value: 'rule4', label: 'Min. Read Pages Amount' },
-    { value: 'rule5', label: 'Peculiar Question' }
-    ]
-
+ 
   const [chosenPrize, setChosenPrize]=useState<SelectValue>(null);
 
   const navigate = useRouter();

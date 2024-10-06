@@ -40,15 +40,17 @@ import SingleDropDown from 'components/drowdown/SingleDropDown';
 import MultipleDropDown from 'components/drowdown/MultipleDropDown';
 import ModalComponent from 'components/modal/ModalComponent';
 import { IoIosAddCircle } from 'react-icons/io';
-import { Requirement } from '../competition/page';
+import { Requirement, requirementOptions } from '../competition/page';
 import { useFieldArray, useForm } from 'react-hook-form';
 import RequirementSelect from 'react-tailwindcss-select'
 import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
+import toast from 'react-hot-toast';
+import useStorage from 'hooks/storage/useStorage';
 
 interface Club{
   hasRequirements: boolean,
   clubName: string,
-  clubLogo:string,
+  clubLogo:File,
   description: string,
   isFreeToJoin:boolean,
   requirements:Requirement[]
@@ -56,21 +58,34 @@ interface Club{
 
 
 function CreateClub() {
-  const dispatch = useDispatch();
   const { register, reset, getValues, setError, clearErrors, setValue, handleSubmit} = useForm<Club>();
     const { register:registerRequirement, reset:resetRequirement, getValues:getRequirementValues, setError:setRequirementError, clearErrors:clearRequirementErrors, setValue:setRequirementValue, handleSubmit:handleRequirementSubmit} = useForm<Requirement>();
-    const editorRef = useRef<AvatarEditor>(null);
-
-    const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const [selectedBookType, setselectedBookType] = useState<SelectValue>(null);
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
     const navigate = useRouter();
     const selectedLanguage = useSelector(
       (state:any) => state.languageSelection.selectedLangugage
     );
     const { user } = useAuthContext();
-    const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
+  const [previewImage, setPreviewImage] = useState<string>();
     const [selectedType, setSelectedType] = useState<SelectValue>(null);
   const [selectedKeys, setSelectedKeys] = useState<SharedSelection>(new Set([]));
-  
+    const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>(null);
+     const { isOpen:isAnswerModalOpen, onOpen:onAnswerModalOpen, onOpenChange:onAnswerModalOpenChange, onClose:onAnswerModalClose} = useDisclosure();
+  const {uploadImage, uploadImageUrl, getImageUrl}=useStorage();
+     const answerModal=(item:Requirement)=>{
+      return(<ModalComponent modalSize='sm' isOpen={isAnswerModalOpen} modalTitle='Q&A' modalBodyContent={<div>
+        <p className="text-white">{item.requirementQuestion}</p>
+        <p className='text-base text-white'>{item!.requirementQuestionPossibleAnswers.join(', ')}</p>
+      </div>} onClose={()=>{
+          setModalRequirementContent(null);
+          onAnswerModalClose();
+      }} onOpenChange={()=>{
+        onAnswerModalOpenChange();
+      }}/>)
+     }
     
 
 
@@ -99,14 +114,82 @@ function CreateClub() {
 //     });
 
 
-  const submitForm = (formData:Club) => {
-   
-  };
+  const submitForm = async (value:Club) => {
+      clearErrors();
+
+      const chatId=crypto.randomUUID();
+      const clubId = crypto.randomUUID();
+
+
+      const fetchChat = await fetch('/api/supabase/chat/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({data:{ id: chatId, dateOfCreation: new Date() }})
+      });
+
+            const { data: chat } = await fetchChat.json();
+
+      const { data: imageData, error: imageError } = await uploadImage(value.clubLogo, 'clubLogo', `${clubId}/${crypto.randomUUID()}`);
+
+      if (!imageData) {
+        return;
+}
+
+      const { image, error } = await getImageUrl('clubLogo', imageData.fullPath);
+
+      if(!image){
+        return;
+      }
+
+
+      
+      console.log(chat);
+
+     const fetchClub= await fetch('/api/supabase/club/create', {
+       method: 'POST',
+       headers:{
+        'Content-Type':'application/json',
+       },
+       body:JSON.stringify({data:{id:clubId, chatId:chat.id, creationDate:new Date(), hasRequirements:value.hasRequirements, description:value.description, isFreeToJoin:value.isFreeToJoin, clubLogo:image}})
+     });
+
+
+      const { data: club } = await fetchClub.json();
+
+
+      console.log(club);
+      
+      const fetchRequirements= await fetch('/api/supabase/requirement/createMany', {
+        method:"POST",
+          body:JSON.stringify({data:requirements.map((item)=>({...item, clubId}))}),
+          headers:{
+            'Content-Type':'application/json',
+          },
+      });
+
+
+
+      const fetchMember = await fetch('/api/supabase/member/create', {
+       method: 'POST',
+       headers:{
+        'Content-Type':'application/json',
+       },
+       body:JSON.stringify({data:{id:crypto.randomUUID(), userId:user!.id, clubId:club.id }})
+      });
+      
+      toast.success('Success !');
+      clearErrors();
+      reset();
+
+   }
 
   const handleSelect = (e) => {
- 
 
     let selected = e.target.files[0];
+
+    setValue('clubLogo', selected);  
 
     if (selected?.size > 200000) {
       return;
@@ -132,7 +215,7 @@ function CreateClub() {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(selected);
       fileReader.onload = () => {
-        // setEditCover(fileReader.result as string);
+        setPreviewImage(fileReader.result as string);
       };
       return;
     }
@@ -182,7 +265,7 @@ function CreateClub() {
   });
 
   return (
-   <div className={`sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto w-full p-4`}>
+    <form onSubmit={handleSubmit(submitForm, (error)=>{})} className={`sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto w-full p-4`}>
       <div className="flex flex-col gap-1 max-w-2xl w-full">
         <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
         <p className='text-white'>Are you an author, a book company or someone who wants to compete with other people ? Create the competition now and Read !</p>
@@ -191,12 +274,22 @@ function CreateClub() {
       
       <div className="flex py-4 gap-12">
 
-        <div className="w-56 cursor-pointer h-56 rounded-lg bg-white justify-center items-center flex">
-          <input  type="file" name="" className="hidden" id="" />
-          <div className="flex w-full flex-col items-center gap-2">
+        <div onClick={() => {
+          if(fileInputRef.current){
+            fileInputRef.current.click();
+          }
+        }} className="w-56 cursor-pointer group h-56 rounded-lg bg-white justify-center items-center flex">
+          <input ref={fileInputRef} onChange={handleSelect}  type="file" name="" className="hidden" id="" />
+          {previewImage ? <div className='w-full h-full rounded-lg relative top-0 left-0 overflow-hidden'>
+            <div className="absolute z-10  flex w-full h-full flex-col items-center justify-center gap-2 top-full left-0 bg-dark-gray/40 duration-400 transition-all group-hover:top-0">
+            <HiOutlineUpload className="text-5xl text-primary-color" />
+          <p className='text-xs text-white'>Upload Different One</p>
+            </div>
+            <Image src={previewImage} alt='' width={60} height={60} className='w-full h-full object-cover rounded-lg'/>
+        </div> :  <div className="flex w-full flex-col items-center gap-2">
 <HiOutlineUpload className="text-5xl text-primary-color" />
-          <p className='text-xs text-dark-gray'>Upload Competition&apos;s Logo</p>
-          </div>
+          <p className='text-xs text-dark-gray'>Upload Club&apos;s Logo</p>
+          </div>}
         </div>
 
         <LabeledInput {...register('clubName', {
@@ -505,42 +598,47 @@ function CreateClub() {
             },(err)=>{})} type='blue' additionalClasses="w-fit  px-4 py-2">
         Append
       </Button>
- </div>} modalTitle='Additional Conditions' modalBodyContent={    <div className='flex flex-col gap-3'>
+ </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex min-h-80 max-h-96 h-full flex-col gap-3'>
 
-    
-    <RequirementSelect
+   <div className="flex flex-col gap-1">
+     <p className='text-white'>Requirement Type</p>
+   <RequirementSelect isSearchable isClearable
+     classNames={{
+       menuButton: () => 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color line-clamp-1  ',
+       
+         list: "overflow-y-scroll",
+       
+     }}
      onChange={(values)=>{
-      console.log(values);
+      console.log((values as Option).value);
       setSelectedType(values);
-     setRequirementValue('requirementType', (values as Option).value);
+     setRequirementValue('requirementType', (values as any).value);
    }} 
-   value={selectedType} primaryColor={''} options={[{ 'value': 'rule1', label: 'Min. Read Pages of Genre' }]}/>
-{/* 
-   <SingleDropDown selectedKeys={[selectedType]} {...registerRequirement('requirementType', {
-     required: 'Choose the Type of Requirement !',
-     onChange(e){
-      console.log(e.target.value);
-      setSelectedType(e.target.value);
-     setRequirementValue('requirementType', (e.target.value as any));
-   }
-          })}  data-hover={'false'} data-selected={'false'}  aria-checked={'false'}
-         label='Type of Rule'>
-     <SelectItem classNames={{'base':'text-white'}} value={'rule1'} key={'rule1'}>Min. Read Pages of Genre</SelectItem>
-         <SelectItem classNames={{'base':'text-white'}} value={'rule2'} key={'rule2'}>Min. Read Books of Genre</SelectItem>
-     <SelectItem classNames={{'base':'text-white'}} value={'rule3'} key={'rule3'}>Min. Read Books Amount</SelectItem>
-     <SelectItem classNames={{'base':'text-white'}} value={'rule4'} key={'rule4'}>Min. Read Pages Amount</SelectItem>
-          <SelectItem classNames={{'base':'text-white'}} value={'rule5'} key={'rule5'}>Peculiar Question</SelectItem>
-   </SingleDropDown> */}
-{/*    
-   {selectedType && (selectedType as Option).value && (selectedType as Option).value === "rule1" || (selectedType as Option).value === "rule4" &&
+   value={selectedType} primaryColor={''} options={requirementOptions}/>
+    </div>
+   
+{getRequirementValues('requirementType') && (getRequirementValues('requirementType') === "rule1" || getRequirementValues('requirementType') === 'rule2') &&  <div className='h-fit flex flex-col gap-1'>
+  <p className='text-white'>Book Genre</p>
+  <RequirementSelect {...registerRequirement('requiredBookType')} classNames={{
+       menuButton: ()=> 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-wrap text-white line-clamp-1 border-primary-color',
+     }} value={selectedBookType} onChange={(values) => {
+       setselectedBookType(values);
+       setRequirementValue('requiredBookType', (values as any).value);
+   }} primaryColor='blue' options={bookCategories}/>
+</div>}
+
+
+   {getRequirementValues('requirementType') && (getRequirementValues('requirementType') === "rule1" || getRequirementValues('requirementType') === "rule4") &&
    <LabeledInput {...registerRequirement("requiredPagesRead", {
      onChange(event) {
        setRequirementValue("requiredPagesRead", +(event.target.value as string));
      },
      })} additionalClasses="max-w-sm w-full p-2" label="Pages Amount" type={"dark"} />
    }
+
+
    
-   {selectedType && (selectedType as Option).value && (selectedType as Option).value === "rule2" || (selectedType as Option).value === "rule3" &&
+   {getRequirementValues('requirementType') && (getRequirementValues('requirementType') === "rule2" || getRequirementValues('requirementType') === "rule3") &&
    <LabeledInput {...registerRequirement("requiredBookRead", {
      onChange(event) {
        setRequirementValue('requiredBookRead', +(event.target.value as string));
@@ -550,7 +648,7 @@ function CreateClub() {
    
 
 
-   {selectedType &&  (selectedType as Option).value && (selectedType as Option).value === 'rule1' && (selectedType as Option).value === 'rule4' && <>
+   {getRequirementValues('requirementType') && getRequirementValues('requirementType') === 'rule5' && <>
    
     <LabeledInput {...registerRequirement('requirementQuestion', {
        onChange(event) {
@@ -564,21 +662,33 @@ setRequirementValue('requirementQuestionPossibleAnswers', e.target.value.split('
 }} placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
    </>
   }
-   */}
+  
   </div> } isOpen={isOpen} onOpenChange={onOpenChange} />
 
-        <div className="max-w-2xl p-1 min-h-96 max-h-96 h-full w-full flex flex-col gap-6  items-center justify-center bg-dark-gray rounded-lg border-primary-color border-2">
+        <div className={`max-w-2xl p-2 min-h-96 max-h-96 h-full w-full flex flex-col  ${requirements.length > 0 ? 'gap-2' : 'items-center justify-center gap-6'} bg-dark-gray rounded-lg border-primary-color border-2`}>
           {requirements.length === 0 ? <>
             <p className='text-3xl text-white font-semibold text-center opacity-75'>No Requirements yet !</p>
           <Image src={emptyImg} className='w-48 h-48' alt="" width={60} height={60} />
           <p className='text-center text-sm font-light opacity-40 text-white'>You haven&lsquo;t set any requirements yet. If you want to set requirements, click the dropdown above.</p>
           </> : <>
-              {requirements.map((item) => (<div key={item.id} className='bg-primary-color text-white'>
-            <p className='text-lg font-bold'>{JSON.stringify(item)}</p>
+              {requirements.map((item) => (<div key={item.id} className='bg-secondary-color flex justify-between items-center p-2 rounded-lg cursor-pointer text-white text-pretty w-full'>
+             <div className="flex flex-col gap-1">
+                 <p className='text-base font-bold'>{requirementOptions.find((req)=>req.value===item.requirementType) && requirementOptions.find((req)=>req.value===item.requirementType)!.label}</p>
+                  <p className='text-sm  font-light'>{item.requiredBookType} {item.requirementQuestion}</p>
+                </div>
+                
+                {item.requiredPagesRead && <LabeledInput defaultValue={item.requiredPagesRead} inputType='number' min={1} additionalClasses="max-w-16 w-full p-2" type={'transparent'} />}
+                {item.requiredBookRead && <LabeledInput defaultValue={item.requiredBookRead} inputType='number' min={1} additionalClasses="max-w-16 w-full p-2" type={'transparent'} />}
+                {item.requirementQuestionPossibleAnswers && <Button onClick={() => {
+                  onAnswerModalOpen();
+  setModalRequirementContent(item);
+               }} type='blue'>Show Answer</Button>} 
           </div>))}
           </>}
           
         </div>
+
+            {modalRequirementContent && answerModal(modalRequirementContent)}
         
         <Button additionalClasses='w-fit px-4 py-2 flex gap-2 items-center' onClick={onOpen} type='blue'>New Requirement <IoIosAddCircle /></Button>
 
@@ -587,14 +697,18 @@ setRequirementValue('requirementQuestionPossibleAnswers', e.target.value.split('
 
          <label className="flex flex-col gap-3">
           <span className="text-xl text-white font-semibold">Description</span>
-      <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
+      <textarea {...register('description', {
+        onChange:(e)=>{
+          setValue('description', e.target.value);
+        }
+      })} className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
       </label>
 
-      <Button type='blue' additionalClasses="w-fit px-8 py-2 text-lg my-4">
+      <Button isSubmit type='blue' additionalClasses="w-fit px-8 py-2 text-lg my-4">
         Insert
       </Button>
 
-    </div>
+    </form>
   );
 }
 
