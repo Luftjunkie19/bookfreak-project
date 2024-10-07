@@ -10,9 +10,9 @@ export async function POST(request: NextRequest) {
             data,
       });
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:createdTest, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }

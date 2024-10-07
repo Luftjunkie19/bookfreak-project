@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     
 
     
-        const createdTest = await prisma.answer.create({
+        const createdAnswer = await prisma.answer.create({
             data: {
                 answerContent,
                 id,
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
             
       })
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({ data: createdAnswer, error:null});
         
     } catch (error) {
         return NextResponse.json(error);

@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         } = await request.json();
     
 
-        const createdTest = await prisma.answer.delete({
+        const removedTest = await prisma.answer.delete({
             where: {
                 id,
                 AND: {
@@ -19,9 +19,9 @@ export async function POST(request: NextRequest) {
             }
       })
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:removedTest, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }

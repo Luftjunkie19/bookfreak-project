@@ -9,13 +9,13 @@ export async function POST(request: NextRequest) {
         } = await request.json();
     
 
-        const createdTest = await prisma.answer.createMany({
+        const createdAnswers = await prisma.answer.createMany({
             data
       })
         
-        return NextResponse.json(createdTest);
+       return NextResponse.json({data:createdAnswers, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }
