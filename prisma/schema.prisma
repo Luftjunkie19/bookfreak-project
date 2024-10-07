@@ -86,6 +86,8 @@ model Book {
   publishingHouseId   String?          @unique
   bookPublishingHouse String?
   publishingHouse     publishingHouse? @relation(fields: [publishingHouseId], references: [id])
+
+  Test Test[]
 }
 
 model Recension {
@@ -211,7 +213,9 @@ model Test {
   name        String
   description String
   createdAt   DateTime
-  creatorId   String     @unique
+  bookReferenceId String?
+  Book Book? @relation(fields: [bookReferenceId], references: [id])
+  creatorId   String    
   creator     User?      @relation(fields: [creatorId], references: [id])
   questions   Question[]
   results     Result[]
@@ -220,7 +224,7 @@ model Test {
 model Question {
   id              String   @id @default(cuid())
   questionContent String
-  correctAnswer   answer
+  correctAnswer   String
   answers         Answer[]
   testId          String   @unique
   test            Test     @relation(fields: [testId], references: [id])
