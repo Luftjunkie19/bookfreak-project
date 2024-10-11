@@ -6,8 +6,8 @@ export async function POST(request: NextRequest) {
     try {
         const { data } = await request.json();
     
-      const createdTest =  await prisma.test.create({
-            data,
+        const createdTest = await prisma.test.create({
+            data
       });
         
         return NextResponse.json({data:createdTest, error:null});

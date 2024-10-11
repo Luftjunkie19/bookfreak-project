@@ -6,11 +6,11 @@ export async function POST(request: NextRequest) {
     try {
         const { testArray } = await request.json();
     
-      const createdTests =  await prisma.test.createMany({
+      const createdAnswers =  await prisma.test.createMany({
             data:testArray
       });
         
-        return NextResponse.json(createdTests);
+        return NextResponse.json({data:createdAnswers, error:null});
         
     } catch (error) {
         return NextResponse.json(error);

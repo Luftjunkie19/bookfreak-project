@@ -4,15 +4,16 @@ import prisma from 'lib/prisma/prisma'
 
 export async function POST(request: NextRequest) {
     try {
-        const { questionsArray } = await request.json();
+        const { data } = await request.json();
     
-      const createdTest =  await prisma.question.create({
-            data:questionsArray,
+      const createdQuestions =  await prisma.question.createMany({
+            data
       });
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:createdQuestions, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        console.log(error);
+        return NextResponse.json({data:null, error});
     }
 }

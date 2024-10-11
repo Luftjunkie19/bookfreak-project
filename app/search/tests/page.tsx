@@ -22,13 +22,12 @@ import formTranslations from '../../../assets/translations/FormsTranslations.jso
 import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
-import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import FilterBar from 'components/Sidebars/right/FilterBar';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import Test from 'components/elements/Test';
-import useGetDocuments from 'hooks/useGetDocuments';
+
 
 function Tests() {
   const selectedLanguage = useSelector((state:any) => state.languageSelection.selectedLangugage);
@@ -46,12 +45,6 @@ function Tests() {
   ];
 
 
-  const { documents } = useGetDocuments('tests');
-
-
-  const objectsOnPage = () => {
-    return document.body.clientWidth > 0 && document.body.clientWidth < 1024 ? 10 : 45;
-  };
 
 
   const [selectedFilters, setSelectedFilters] = useState([]);
@@ -65,32 +58,6 @@ function Tests() {
     setSelectedSort(sort);
   };
 
-  const filteredItems = useMemo(() => {
-    if (selectedFilters.length > 0) {
-      return selectedFilters.reduce((result, selectedFilter) => {
-        const filterOption = filterOptions.find(option => option.label === selectedFilter);
-
-        if (filterOption) {
-          return filterOption.filter(result);
-        }
-
-        return result;
-      }, documents);
-    } else {
-      return documents;
-    }
-  }, [documents, filterOptions, selectedFilters]);
-
-  const sortedTests = useMemo(() => {
-    if (selectedSort.trim() !== "") {
-      return (sortOptions.find((option:any) => option.label === (selectedSort as string)) as {
-    label: string;
-    sort: (tests: any) => any;
-}).sort(filteredItems);
-    } else {
-      return filteredItems;
-    }
-  },[filteredItems, selectedSort, sortOptions]);
 
   return (
     <div className={`w-full flex`}>
@@ -98,8 +65,8 @@ function Tests() {
       
 
       <div className="w-full h-full flex flex-col gap-6">
-        {sortedTests && sortedTests.length > 0 &&     
-    <Autocomplete
+       
+    {/* <Autocomplete
           defaultItems={sortedTests}
           onValueChange={(value)=>setSearchInputValue(value)}
           label={<p className='text-white'>Test's Name</p>}
@@ -109,11 +76,11 @@ function Tests() {
     >
       {(book:any) => <AutocompleteItem key={book.testName}>{book.testName}</AutocompleteItem>}
         </Autocomplete>
-        }
+         */}
         <div className="flex flex-col gap-2">
           <p className='mx-4 text-white text-2xl'>Results for {searchInputValue}</p>
         <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4 mx-4 my-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6">
-            {sortedTests && sortedTests.length > 0 && sortedTests.map((test: any) => (<Test key={test.testName} testData={test} type={'white'} />))}
+            {/* {sortedTests && sortedTests.length > 0 && sortedTests.map((test: any) => (<Test key={test.testName} testData={test} type={'white'} />))} */}
         </div>
         </div>
         <Pagination classNames={{

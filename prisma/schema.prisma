@@ -152,6 +152,7 @@ model Club {
   chat            Chat          @relation(fields: [chatId], references: [id])
   members         Member[]
   clubLogo        String
+  clubName        String
   creationDate    DateTime      @default(now())
   hasRequirements Boolean
   description     String
@@ -209,24 +210,24 @@ model Member {
 }
 
 model Test {
-  id          String     @id @default(cuid())
-  name        String
-  description String
-  createdAt   DateTime
+  id              String     @id @default(cuid())
+  name            String
+  description     String
+  createdAt       DateTime
   bookReferenceId String?
-  Book Book? @relation(fields: [bookReferenceId], references: [id])
-  creatorId   String    
-  creator     User?      @relation(fields: [creatorId], references: [id])
-  questions   Question[]
-  results     Result[]
+  Book            Book?      @relation(fields: [bookReferenceId], references: [id])
+  creatorId       String
+  creator         User?      @relation(fields: [creatorId], references: [id])
+  questions       Question[]
+  results         Result[]
 }
 
 model Question {
   id              String   @id @default(cuid())
   questionContent String
-  correctAnswer   String
+  correctAnswer   String[]
   answers         Answer[]
-  testId          String   @unique
+  testId          String
   test            Test     @relation(fields: [testId], references: [id])
 }
 
@@ -244,11 +245,11 @@ model Result {
 }
 
 model Answer {
-  id            String    @id @default(cuid())
+  id            String   @id @default(cuid())
   answerContent String
   isCorrect     Boolean
-  Question      Question? @relation(fields: [questionId], references: [id])
-  questionId    String?
+  Question      Question @relation(fields: [questionId], references: [id])
+  questionId    String
 }
 
 model Post {

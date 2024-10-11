@@ -5,7 +5,7 @@ type Props = {}
 
 function Page({}: Props) {
   return (
-    <div>
+    <div className='w-full h-full flex flex-col gap-6'>
 
 
 <Pagination classNames={{

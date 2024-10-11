@@ -4,19 +4,22 @@ import prisma from 'lib/prisma/prisma'
 
 export async function POST(request: NextRequest) {
     try {
-        const { where, select, take, skip, orderBy   } = await request.json();
+        const { where, take, skip, orderBy, include   } = await request.json();
     
-        const createdTest = await prisma.competition.findMany({
+        const receivedCompetitions = await prisma.competition.findMany({
             where,
-            select,
+            include: {
+                members: true,
+                rules:true,
+            },
             take,
             skip,
             orderBy
       });
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:receivedCompetitions, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }

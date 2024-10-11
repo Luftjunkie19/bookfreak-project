@@ -5,13 +5,13 @@ import prisma from 'lib/prisma/prisma'
 export async function POST(request: NextRequest) {
     try {
 
-        const { select, skip, take, where, } = await request.json();
+        const { select, skip, take, where,include } = await request.json();
         
 
 
     
         const foundItems = await prisma.book.findMany({
-            select,
+            include,
             skip,
             take,
             where,

@@ -22,15 +22,14 @@ import formTranslations from '../../../assets/translations/FormsTranslations.jso
 import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
-import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useSearchParams } from 'next/navigation';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import FilterBar from '../../../components/Sidebars/right/FilterBar';
 import Club from 'components/elements/Club';
 
 function Clubs() {
-  const {documents:clubs}=useGetDocuments('readersClubs');
-  const [documents, setElements] = useState<any[]>([]);
+
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInputValue, setSearchInputValue] = useState('');
   
@@ -83,42 +82,10 @@ function Clubs() {
       return 45;
     }
   };
-  const fetchObjects = useCallback(
-    (page: number) => {
-      const start = (page - 1) * objectsOnPage();
-      const end = start + objectsOnPage();
-      const pageObjects = clubs.slice(start, end);
-      return pageObjects;
-    },
-    [clubs]
-  );
-
-  const handlePagesChange = (e: any, value: React.SetStateAction<number>) => {
-    if (currentPage < pagesAmount) {
-      setCurrentPage(currentPage + 1);
-      const pageObjects = fetchObjects(currentPage + 1);
-      setElements(pageObjects as any[]);
-      return;
-    }
-
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      const pageObjects = fetchObjects(currentPage - 1);
-      setElements(pageObjects as any[]);
-      return;
-    }
-    setCurrentPage(value);
-  };
 
   
 
 
-  useEffect(() => {
-    if (documents.length > 0) {
-      const fetchedObjects = fetchObjects(currentPage);
-      setElements(fetchedObjects as any[]);
-    }
-  }, [currentPage, documents, fetchObjects]);
 
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
@@ -126,56 +93,17 @@ function Clubs() {
 
 
   
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [selectedSort, setSelectedSort] = useState("");
-
-  const applyFilters = (filters: string[]) => {
-    setSelectedFilters(filters);
-    console.log(filters);
-  };
-
-  const applySort = (sort: string) => {
-    setSelectedSort(sort);
-  };
-
-  const filteredItems = useMemo(() => {
-    if (selectedFilters.length > 0) {
-      const filteredDocuments = selectedFilters.reduce((result, selectedFilter) => {
-        const filterOption = filterOptions.find(option => option.label === selectedFilter);
   
-        if (filterOption) {
-          const temp = filterOption.filter(result);
-          return temp;
-        }
-  
-        return result;
-      }, documents);
-  
-      return filteredDocuments.filter((item)=> item.clubsName.toLowerCase().includes(searchInputValue.toLowerCase()));
-    } else {
-      // If no filters selected, return all documents
-      return clubs.filter((item)=> item.clubsName.toLowerCase().includes(searchInputValue.toLowerCase()));;
-    }
-  },[clubs, documents, filterOptions, searchInputValue, selectedFilters]);
 
-  const sortedClubs = useMemo(() => {
-    if (selectedSort.trim() !== "") {
-      return (sortOptions
-        .find((option) => option.label === selectedSort) as { label: string; sort: (array: any) => any })
-        .sort(filteredItems).filter((item)=> item.clubsName.toLowerCase().includes(searchInputValue.toLowerCase()));
-    } else {
-      return filteredItems.filter((item)=> item.clubsName.toLowerCase().includes(searchInputValue.toLowerCase()));;
-    }
-  },[filteredItems, searchInputValue, selectedSort, sortOptions]);
 
-  const pagesAmount = Math.ceil(sortedClubs.length / objectsOnPage());
+  // const pagesAmount = Math.ceil(sortedClubs.length / objectsOnPage());
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   
   return (
     <div className={`w-full flex`}>
    
       <div className="w-full h-full flex flex-col gap-6">
-            <Autocomplete
+            {/* <Autocomplete
           defaultItems={sortedClubs}
           onValueChange={(value)=>setSearchInputValue(value)}
   label={<p className='text-white'>Club Name</p>}
@@ -184,9 +112,9 @@ function Clubs() {
       className="max-w-sm w-full self-center p-2"
     >
       {(book:any) => <AutocompleteItem key={book.id}>{book.clubsName}</AutocompleteItem>}
-        </Autocomplete>
+        </Autocomplete> */}
         <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-        {sortedClubs.map((club, i)=>(<Club key={club.id} clubLogo={club.clubLogo} clubName={club.clubsName} membersAmount={0} clubData={club} hasRequirements={false} type={'dark'}  />))}
+        {/* {sortedClubs.map((club, i)=>(<Club key={club.id} clubLogo={club.clubLogo} clubName={club.clubsName} membersAmount={0} clubData={club} hasRequirements={false} type={'dark'}  />))} */}
         </div>
         <Pagination classNames={{
   'wrapper':' self-center mx-auto w-full p-2',
@@ -194,7 +122,7 @@ function Clubs() {
 }} total={10} showControls loop color='primary' initialPage={1}  />
       </div>
          <FilterBar sortingBarContent={   <div className="flex flex-col gap-2">
-            <RadioGroup
+            {/* <RadioGroup
               onValueChange={(value)=>applySort(value)}
       label="Sorting"
               orientation="horizontal"
@@ -203,10 +131,10 @@ function Clubs() {
               {sortOptions.map((sort) => (
                 <Radio key={sort.label} value={sort.label} classNames={{label:'text-xs text-white'}}>{sort.label}</Radio>
               ))}
-    </RadioGroup>
+    </RadioGroup> */}
         </div>} filterBarContent={
           <div className="flex flex-col gap-2">
-             <CheckboxGroup
+             {/* <CheckboxGroup
               onValueChange={(value:string[]) => {
                 applyFilters(value);
               }}
@@ -216,7 +144,7 @@ function Clubs() {
               {filterOptions.map((filter) => (
                 <Checkbox key={filter.label} value={filter.label} classNames={{label:'text-xs text-white'}}>{filter.label}</Checkbox>
               ))}
-    </CheckboxGroup>
+    </CheckboxGroup> */}
           </div>
           
    } />

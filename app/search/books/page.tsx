@@ -23,26 +23,39 @@ import translations from '../../../assets/translations/SearchTranslations.json';
 import typesTranslation from '../../../assets/translations/TypesTranslations.json';
 import Book from '../../../components/elements/Book';
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
-import useGetDocuments from '../../../hooks/useGetDocuments';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, PaginationItemType, Radio, RadioGroup } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
 import { DataView } from 'primereact/dataview';
 import LabeledInput from 'components/input/LabeledInput';
 import FilterBar from 'components/Sidebars/right/FilterBar';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
 
 function Books() {
-  const { documents: orderedDocuments } = useGetDocuments('books');
-  // const [filterQuery, setFilterQuery] = useSearchParams({ filters: "" });
-
-  const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
+   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
 
   const selectedLanguage = useSelector(
     (state: any) => state.languageSelection.selectedLangugage
   );
-  const setBooks = useCallback((pagesObjects: any) => {
-    return pagesObjects;
-  }, []);
+  
+   const { data:orderedDocuments, error, isFetching, isLoading } = useQuery({
+      queryKey: ['books'],
+      'queryFn': async () => {
+         const fetchBooks = await fetch('/api/supabase/book/getAll', {
+            method: 'POST',
+            headers: {
+            },
+            body: JSON.stringify({ skip: 0, take: 6, where: undefined, include: undefined })
+         });
+
+         const fetchedBooks = await fetchBooks.json();
+
+         return fetchedBooks;
+      }
+})
+  // const [filterQuery, setFilterQuery] = useSearchParams({ filters: "" });
+
+ 
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const categoryTypes = [
@@ -159,42 +172,10 @@ function Books() {
     }
   };
 
-  const pagesAmount = Math.ceil(orderedDocuments.length / objectsOnPage());
 
-  const fetchObjects = useCallback(
-    (page: number) => {
-      const start = (page - 1) * objectsOnPage();
-      const end = start + objectsOnPage();
-      const pageObjects = orderedDocuments.slice(start, end);
-      return pageObjects;
-    },
-    [orderedDocuments]
-  );
 
-  const handlePagesChange = (e: any, value: React.SetStateAction<number>) => {
-    if (currentPage < pagesAmount) {
-      setCurrentPage(currentPage + 1);
-      const pageObjects = fetchObjects(currentPage + 1);
-      setBooks(pageObjects);
-      return;
-    }
+  
 
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      const pageObjects = fetchObjects(currentPage - 1);
-      setBooks(pageObjects);
-      return;
-    }
-
-    setCurrentPage(value);
-  };
-
-  useEffect(() => {
-    const pageObjects = fetchObjects(currentPage);
-    setBooks(pageObjects);
-  }, [currentPage, fetchObjects, setBooks]);
-
-  let books = setBooks(fetchObjects(currentPage));
 
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [selectedSort, setSelectedSort] = useState("");
@@ -209,50 +190,50 @@ function Books() {
     setSelectedSort(sort);
   };
 
-  const filteredArray =  useMemo(() => {
-    if (selectedFilters.length > 0) {
-      const filteredDocuments = selectedFilters.reduce((result, selectedFilter) => {
-        const filterOption = categoryTypes.find(option => option.label === selectedFilter);
+  // const filteredArray =  useMemo(() => {
+  //   if (selectedFilters.length > 0) {
+  //     const filteredDocuments = selectedFilters.reduce((result, selectedFilter) => {
+  //       const filterOption = categoryTypes.find(option => option.label === selectedFilter);
 
-        if (filterOption) {
-          const temp = filterOption.filter(result);
-          return temp;
-        }
+  //       if (filterOption) {
+  //         const temp = filterOption.filter(result);
+  //         return temp;
+  //       }
 
-        return result;
-      }, books);
+  //       return result;
+  //     }, books);
 
-      return filteredDocuments.filter((item)=> item.title.includes(searchInputValue) || item.author.includes(searchInputValue));
-    } else {
-      return books.filter((item)=> item.title.toLowerCase().includes(searchInputValue.toLowerCase()) || item.author.toLowerCase().includes(searchInputValue.toLowerCase()));
-    }
-  },[books, categoryTypes, searchInputValue, selectedFilters]);
+  //     return filteredDocuments.filter((item)=> item.title.includes(searchInputValue) || item.author.includes(searchInputValue));
+  //   } else {
+  //     return books.filter((item)=> item.title.toLowerCase().includes(searchInputValue.toLowerCase()) || item.author.toLowerCase().includes(searchInputValue.toLowerCase()));
+  //   }
+  // },[books, categoryTypes, searchInputValue, selectedFilters]);
 
-  const sortedArray = useMemo(() => {
-    if (selectedSort.trim() !== "" && sortTypes
-        .find((option) => option.label === selectedSort)) {
-      return (sortTypes
-        .find((option) => option.label === selectedSort) as {
-        label: string,
-        sort: (array: Array<any>) => any[];
-        })
-        .sort(filteredArray).filter((item)=> item.title.toLowerCase().includes(searchInputValue.toLowerCase()) || item.author.toLowerCase().includes(searchInputValue.toLowerCase()));
-    } else {
-      return filteredArray.filter((item)=> item.title.toLowerCase().includes(searchInputValue.toLowerCase()) || item.author.toLowerCase().includes(searchInputValue.toLowerCase()));;
-    }
-  }, [filteredArray, searchInputValue, selectedSort, sortTypes]);
+  // const sortedArray = useMemo(() => {
+  //   if (selectedSort.trim() !== "" && sortTypes
+  //       .find((option) => option.label === selectedSort)) {
+  //     return (sortTypes
+  //       .find((option) => option.label === selectedSort) as {
+  //       label: string,
+  //       sort: (array: Array<any>) => any[];
+  //       })
+  //       .sort(filteredArray).filter((item)=> item.title.toLowerCase().includes(searchInputValue.toLowerCase()) || item.author.toLowerCase().includes(searchInputValue.toLowerCase()));
+  //   } else {
+  //     return filteredArray.filter((item)=> item.title.toLowerCase().includes(searchInputValue.toLowerCase()) || item.author.toLowerCase().includes(searchInputValue.toLowerCase()));;
+  //   }
+  // }, [filteredArray, searchInputValue, selectedSort, sortTypes]);
   
  
 
 
   return (
     <div className='w-full flex'>
-    <div className={`flex flex-col gap-6 p-2`}>
-      <LabeledInput type={'dark'} additionalClasses='max-w-sm mx-auto w-full p-2' setValue={(value: string)=> {
-        console.log(value);
+    <div className={`flex w-full flex-col gap-6 p-2`}>
+      <LabeledInput placeholder='' type={'dark'} additionalClasses='max-w-sm mx-auto w-full p-2' onChange={(e)=> {
+        console.log(e.target.value);
       } } />
-      <div className="grid mx-auto  p-2 gap-4 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-        {sortedArray && sortedArray.map((item)=>(<Book key={item.id} bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} type={'transparent'}/>))}
+      <div className="grid mx-auto p-2 gap-4 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
+        {/* {sortedArray && sortedArray.map((item)=>(<Book key={item.id} bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} type={'transparent'}/>))} */}
       </div>
 
 <Pagination classNames={{

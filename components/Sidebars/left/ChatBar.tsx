@@ -18,7 +18,7 @@ function ChatBar({ }: Props) {
   const { chatId } = useParams();
     const yourChats = useMemo(() => {
         if (chats && user) {
-            return chats.filter(chat => chat.chatUsers.find((item)=> item.id === user.uid));
+            return chats.filter(chat => chat.chatUsers.find((item)=> item.id === user.id));
         }
     },[chats, user])
 

@@ -26,14 +26,11 @@ import formTranslations from '../../../assets/translations/FormsTranslations.jso
 import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
-import useGetDocuments from '../../../hooks/useGetDocuments';
 import FilterBar from '../../../components/Sidebars/right/FilterBar';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import Competition from 'components/elements/Competition';
 
 function Competitions() {
-  const { documents } = useGetDocuments("competitions");
-  const [elements, setElements] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchInputValue, setSearchInputValue] = useState('');
 
@@ -89,49 +86,6 @@ function Competitions() {
 
 
 
-  const objectsOnPage = () => {
-    if (document.body.clientWidth > 0 && document.body.clientWidth < 1024) {
-      return 15;
-    } else {
-      return 45;
-    }
-  };
-  const fetchObjects = useCallback(
-    (page) => {
-      const start = (page - 1) * objectsOnPage();
-      const end = start + objectsOnPage();
-      const pageObjects = documents.slice(start, end);
-      return pageObjects;
-    },
-    [documents]
-  );
-
-  const handlePagesChange = (e, value) => {
-    if (currentPage < pagesAmount) {
-      setCurrentPage(currentPage + 1);
-      const pageObjects = fetchObjects(currentPage + 1);
-      setElements(pageObjects as any[]);
-      return;
-    }
-
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      const pageObjects = fetchObjects(currentPage - 1);
-      setElements(pageObjects as any[]);
-      return;
-    }
-    setCurrentPage(value);
-  };
-
- 
-
-  useEffect(() => {
-    if (documents.length > 0) {
-      const fetchedObjects = fetchObjects(currentPage);
-      setElements(fetchedObjects as any[]);
-    }
-  }, [currentPage, documents, fetchObjects]);
-
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [selectedSort, setSelectedSort] = useState("");
 
@@ -144,43 +98,43 @@ function Competitions() {
     setSelectedSort(sort);
   };
 
-  const filteredItems = useMemo(() => {
-    if (selectedFilters.length > 0) {
-      const filteredDocuments = selectedFilters.reduce((result, selectedFilter) => {
-        const filterOption = filterOptions.find(option => option.label === selectedFilter);
+//   const filteredItems = useMemo(() => {
+//     if (selectedFilters.length > 0) {
+//       const filteredDocuments = selectedFilters.reduce((result, selectedFilter) => {
+//         const filterOption = filterOptions.find(option => option.label === selectedFilter);
   
-        if (filterOption) {
-          const temp = filterOption.filter(result);
-          return temp;
-        }
+//         if (filterOption) {
+//           const temp = filterOption.filter(result);
+//           return temp;
+//         }
   
-        return result;
-      }, documents);
+//         return result;
+//       }, documents);
   
-      return filteredDocuments;
-    } else {
-      // If no filters selected, return all documents
-      return elements;
-    }
-  },[documents, elements, filterOptions, selectedFilters]);
+//       return filteredDocuments;
+//     } else {
+//       // If no filters selected, return all documents
+//       return elements;
+//     }
+//   },[documents, elements, filterOptions, selectedFilters]);
 
-  const sortedClubs = useMemo(() => {
-    if (selectedSort.trim() !== "" && sortOptions.find((option) => option.label === selectedSort)) {
-      return (sortOptions
-        .find((option) => option.label === selectedSort) as {
-    label: string;
-    sort: (array: any) => any;
-} )
-        .sort(filteredItems)
-    } else {
-      return filteredItems;
-    }
-  },[filteredItems, selectedSort, sortOptions]);
+//   const sortedClubs = useMemo(() => {
+//     if (selectedSort.trim() !== "" && sortOptions.find((option) => option.label === selectedSort)) {
+//       return (sortOptions
+//         .find((option) => option.label === selectedSort) as {
+//     label: string;
+//     sort: (array: any) => any;
+// } )
+//         .sort(filteredItems)
+//     } else {
+//       return filteredItems;
+//     }
+//   },[filteredItems, selectedSort, sortOptions]);
 
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
-  const pagesAmount = Math.ceil(sortedClubs.length / objectsOnPage());
+  // const pagesAmount = Math.ceil(sortedClubs.length / objectsOnPage());
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   return (
     <div className={`w-full flex`}>
@@ -188,7 +142,7 @@ function Competitions() {
 
       
       <div className="w-full flex flex-col gap-6">
-             <Autocomplete
+             {/* <Autocomplete
           defaultItems={sortedClubs}
           onValueChange={(value)=>setSearchInputValue(value)}
            label={<p className='text-white'>Competition's Name</p>}
@@ -197,10 +151,10 @@ function Competitions() {
       className="max-w-sm w-full self-center p-2"
     >
       {(book:any) => (<AutocompleteItem key={book.id}>{book.competitionTitle}</AutocompleteItem>)}
-        </Autocomplete>
+        </Autocomplete> */}
 
         <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">  
-        {sortedClubs.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={''} competitionName={item.competitionTitle} membersAmount={0} comeptitionRemainingTime={item.expiresAt} type={'dark'}/>))}
+        {/* {sortedClubs.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={''} competitionName={item.competitionTitle} membersAmount={0} comeptitionRemainingTime={item.expiresAt} type={'dark'}/>))} */}
          </div>
          <Pagination classNames={{
   'wrapper':' self-center mx-auto w-full p-2',
