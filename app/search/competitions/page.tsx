@@ -29,6 +29,7 @@ import ManagementBar from '../../../components/managment-bar/ManagementBar';
 import FilterBar from '../../../components/Sidebars/right/FilterBar';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import Competition from 'components/elements/Competition';
+import { useQuery } from '@tanstack/react-query';
 
 function Competitions() {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -84,8 +85,6 @@ function Competitions() {
     }
   ];
 
-
-
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [selectedSort, setSelectedSort] = useState("");
 
@@ -98,44 +97,32 @@ function Competitions() {
     setSelectedSort(sort);
   };
 
-//   const filteredItems = useMemo(() => {
-//     if (selectedFilters.length > 0) {
-//       const filteredDocuments = selectedFilters.reduce((result, selectedFilter) => {
-//         const filterOption = filterOptions.find(option => option.label === selectedFilter);
-  
-//         if (filterOption) {
-//           const temp = filterOption.filter(result);
-//           return temp;
-//         }
-  
-//         return result;
-//       }, documents);
-  
-//       return filteredDocuments;
-//     } else {
-//       // If no filters selected, return all documents
-//       return elements;
-//     }
-//   },[documents, elements, filterOptions, selectedFilters]);
 
-//   const sortedClubs = useMemo(() => {
-//     if (selectedSort.trim() !== "" && sortOptions.find((option) => option.label === selectedSort)) {
-//       return (sortOptions
-//         .find((option) => option.label === selectedSort) as {
-//     label: string;
-//     sort: (array: any) => any;
-// } )
-//         .sort(filteredItems)
-//     } else {
-//       return filteredItems;
-//     }
-//   },[filteredItems, selectedSort, sortOptions]);
 
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
-  // const pagesAmount = Math.ceil(sortedClubs.length / objectsOnPage());
-  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
+
+  const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
+  
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["competitions"],
+       'queryFn': () => fetch('/api/supabase/competition/getAll', {
+            method: 'POST',
+            headers: {
+            },
+           body: JSON.stringify({
+             where: undefined,
+             take: undefined,
+             skip: undefined,
+             orderBy: undefined,
+             include: {members:true, rules:true},
+           })
+         }).then((item)=>item.json())
+  })
+
+
+
   return (
     <div className={`w-full flex`}>
 
@@ -154,7 +141,7 @@ function Competitions() {
         </Autocomplete> */}
 
         <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">  
-        {/* {sortedClubs.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={''} competitionName={item.competitionTitle} membersAmount={0} comeptitionRemainingTime={item.expiresAt} type={'dark'}/>))} */}
+        {data && data.data && data.data.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={item.competitionLogo} competitionName={item.competitionName} membersAmount={item.members.length} comeptitionRemainingTime={new Date(item.endDate)} type={'dark'}/>))}
          </div>
          <Pagination classNames={{
   'wrapper':' self-center mx-auto w-full p-2',

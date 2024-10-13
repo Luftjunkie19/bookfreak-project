@@ -27,6 +27,7 @@ import { useSearchParams } from 'next/navigation';
 import FilterBar from 'components/Sidebars/right/FilterBar';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import Test from 'components/elements/Test';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 
 function Tests() {
@@ -58,6 +59,38 @@ function Tests() {
     setSelectedSort(sort);
   };
 
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["tests", {questions:1}],
+    'queryFn': ({queryKey}) => fetch('/api/supabase/test/getAll', {
+      method: 'POST',
+      headers: {
+      },
+      body: JSON.stringify({
+        where: undefined,
+        take: undefined,
+        skip: undefined,
+        orderBy: undefined,
+        include: { questions: true, results: true },
+      })
+    }).then((item) => item.json()),
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    retry:0,
+  });
+
+  const { mutate, isError, isPending } = useMutation({
+    mutationFn: async () => { },
+    onMutate:(variables)=>{},
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: ["tests"],
+      })
+    },
+  });
+
+
 
   return (
     <div className={`w-full flex`}>
@@ -78,9 +111,10 @@ function Tests() {
         </Autocomplete>
          */}
         <div className="flex flex-col gap-2">
-          <p className='mx-4 text-white text-2xl'>Results for {searchInputValue}</p>
+
         <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4 mx-4 my-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6">
-            {/* {sortedTests && sortedTests.length > 0 && sortedTests.map((test: any) => (<Test key={test.testName} testData={test} type={'white'} />))} */}
+      
+            {data && data.data && data.data.map((test: any) => (<Test key={test.name} testData={test} type={'white'} />))}
         </div>
         </div>
         <Pagination classNames={{
@@ -89,11 +123,22 @@ function Tests() {
 }} total={10} showControls loop color='primary' initialPage={1}  />
       </div>
 
-         <FilterBar filterBarContent={
+         <FilterBar sortingBarContent={         
+      <div className="flex flex-col gap-2">
+            <RadioGroup
+              onValueChange={(value)=>applySort(value)}
+              orientation="horizontal"
+              classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
+            >
+              {sortOptions.map((sort) => (
+                <Radio key={sort.label} value={sort.label} classNames={{label:'text-xs text-white'}}>{sort.label}</Radio>
+              ))}
+    </RadioGroup>
+        </div>} filterBarContent={
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
              <CheckboxGroup
-              label="Filters"
+            
               onValueChange={(value:string[]) => {
                 applyFilters(value);
               }}
@@ -105,19 +150,6 @@ function Tests() {
               ))}
     </CheckboxGroup>
           </div>
-          
-      <div className="flex flex-col gap-2">
-            <RadioGroup
-              onValueChange={(value)=>applySort(value)}
-      label="Sorting"
-              orientation="horizontal"
-              classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
-            >
-              {sortOptions.map((sort) => (
-                <Radio key={sort.label} value={sort.label} classNames={{label:'text-xs text-white'}}>{sort.label}</Radio>
-              ))}
-    </RadioGroup>
-        </div>
           
 </div>} />
     </div>

@@ -26,9 +26,25 @@ import { useSearchParams } from 'next/navigation';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import FilterBar from '../../../components/Sidebars/right/FilterBar';
 import Club from 'components/elements/Club';
+import { useQuery } from '@tanstack/react-query';
 
 function Clubs() {
 
+    const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["clubs"],
+       'queryFn': () => fetch('/api/supabase/club/getAll', {
+            method: 'POST',
+            headers: {
+            },
+           body: JSON.stringify({
+             where: undefined,
+             take: undefined,
+             skip: undefined,
+             orderBy: undefined,
+             include: {members:true, requirements:true},
+           })
+         }).then((item)=>item.json())
+  })
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInputValue, setSearchInputValue] = useState('');
@@ -73,16 +89,6 @@ function Clubs() {
     }
   ];
 
-
-
-  const objectsOnPage = () => {
-    if (document.body.clientWidth > 0 && document.body.clientWidth < 1024) {
-      return 10;
-    } else {
-      return 45;
-    }
-  };
-
   
 
 
@@ -93,9 +99,6 @@ function Clubs() {
 
 
   
-  
-
-
   // const pagesAmount = Math.ceil(sortedClubs.length / objectsOnPage());
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   
@@ -114,7 +117,7 @@ function Clubs() {
       {(book:any) => <AutocompleteItem key={book.id}>{book.clubsName}</AutocompleteItem>}
         </Autocomplete> */}
         <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-        {/* {sortedClubs.map((club, i)=>(<Club key={club.id} clubLogo={club.clubLogo} clubName={club.clubsName} membersAmount={0} clubData={club} hasRequirements={false} type={'dark'}  />))} */}
+        {data && data.data && data.data.map((club, i)=>(<Club key={club.id} clubLogo={club.clubLogo} clubName={club.clubsName} membersAmount={club.members.length} clubData={club} hasRequirements={club.hasRequirements} type={'dark'}  />))}
         </div>
         <Pagination classNames={{
   'wrapper':' self-center mx-auto w-full p-2',

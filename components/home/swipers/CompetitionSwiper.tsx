@@ -25,9 +25,7 @@ function CompetitionSwiper({ }: Props) {
          }).then((item)=>item.json())
     })
   
-      const expiresIn = (expirationTime:Date) => {
-        return Math.floor((new Date(expirationTime).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 0 ? <span className='text-red-400 font-semibold'><span className='text-white font-normal'>Expired</span> {Math.abs(Math.floor((new Date(expirationTime).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days ago</span> : <span className='text-red-400 font-semibold'> <span className='text-white font-normal'>Expires in</span> {Math.floor((new Date(expirationTime).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days</span>; 
-    };
+     
 
 
     return (
@@ -36,7 +34,7 @@ function CompetitionSwiper({ }: Props) {
     <BaseSwiper  additionalClasses='w-full' slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5}>
     {data && data.data && data.data.map((item, i )=>(
         <SwiperSlide key={i}>
-        <Competition competitionId={item.id} competitionLogo={item.competitionLogo} competitionName={item.competitionName} membersAmount={item.members.length} comeptitionRemainingTime={expiresIn(item.endDate)} type={'dark'}  />
+        <Competition competitionId={item.id} competitionLogo={item.competitionLogo} competitionName={item.competitionName} membersAmount={item.members.length} comeptitionRemainingTime={new Date(item.endDate)} type={'dark'}  />
     </SwiperSlide>     
        ))}
   

@@ -16,7 +16,7 @@ function Club({clubData, clubLogo, clubName, hasRequirements, membersAmount, typ
 
         <p className=' font-bold text-xl'>{clubName}</p>
         <p>{membersAmount} Members</p>
-        <div className="flex gap-2 items-center"><IoAlertCircle className=' text-yellow-700 text-lg'/> <p className=' text-sm font-light'>{hasRequirements ? '146 Requirements' : 'Free to Join'}</p></div>
+        <div className="flex gap-2 items-center"><IoAlertCircle className=' text-yellow-700 text-lg'/> <p className=' text-sm font-light'>{hasRequirements ? `${clubData.requirements.length} Requirements` : 'Free to Join'}</p></div>
         </div>
 
         <Button type={`${type === 'transparent' ? 'blue' : type === 'blue' ? 'dark-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'blue' : 'blue'}`}>{hasRequirements ? 'Request' : 'Join'}</Button>

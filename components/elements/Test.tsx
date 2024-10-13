@@ -17,9 +17,9 @@ function Test({testData, type}: Props) {
       <div className="w-full max-h-52 h-full relative top-0 left-0">
         <Image src={image} alt='' className='w-full max-h-52 h-full object-cover rounded-t-lg' />
         <div className="absolute bottom-0 left-0 p-1 w-full text-xs flex justify-between items-center">
-          <p className={`p-2 rounded-lg ${type === 'transparent' ? 'bg-primary-color text-white' : type === 'blue' ? 'bg-dark-gray text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-primary-color text-white' : 'bg-white text-dark-gray'} `}>2 Questions</p>
+          <p className={`p-2 rounded-lg ${type === 'transparent' ? 'bg-primary-color text-white' : type === 'blue' ? 'bg-dark-gray text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-primary-color text-white' : 'bg-white text-dark-gray'} `}>{testData.questions.length} Questions</p>
 
-          <p className={`p-2 rounded-lg ${type === 'transparent' ? 'bg-primary-color text-white' : type === 'blue' ? 'bg-dark-gray text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-primary-color text-white' : 'bg-white text-dark-gray'}`}>120k Plays</p>
+          <p className={`p-2 rounded-lg ${type === 'transparent' ? 'bg-primary-color text-white' : type === 'blue' ? 'bg-dark-gray text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-primary-color text-white' : 'bg-white text-dark-gray'}`}>{testData.results.length} Plays</p>
         </div>
       </div>
 

@@ -16,14 +16,14 @@ function SubscriptionRow({}: Props) {
 
         <BaseSwiper slidesOnSmallScreen={1} slidesOnLargeScreen2={'auto'} slidesOnLargeScreen={'auto'} slidesOnXlScreen={2} slidesOn2XlScreen={3} additionalClasses='w-full max-w-6xl'>
           <SwiperSlide className='sm:mx-auto sm:flex xl:block justify-center items-center xl:mx-0'>
-              <SubscriptionPlan subscriptionPeriod='week' bgType='blue' isMonth={false} price={5.99} offerName={'WeekyFreaky Plan'} />
+              <SubscriptionPlan subscriptionPeriod='week' bgType='blue' isMonth={false} price={9.99} offerName={'WeekyFreaky Plan'} />
           </SwiperSlide>
           
           <SwiperSlide className='sm:mx-auto sm:flex xl:block justify-center items-center xl:mx-0'>
-              <SubscriptionPlan subscriptionPeriod='month' bgType='dark' isMonth={false} price={9.99} offerName={'FOTM Plan'} />
+              <SubscriptionPlan subscriptionPeriod='month' bgType='dark' isMonth={false} price={19.99} offerName={'FOTM Plan'} />
           </SwiperSlide>
           <SwiperSlide className='sm:mx-auto sm:flex xl:block justify-center items-center xl:mx-0'>
-                        <SubscriptionPlan subscriptionPeriod='year' bgType='white' isMonth={false} price={99.99} offerName={'FOTY Plan'}/>
+                        <SubscriptionPlan subscriptionPeriod='year' bgType='white' isMonth={false} price={199.99} offerName={'FOTY Plan'}/>
               </SwiperSlide>
           
         </BaseSwiper>
