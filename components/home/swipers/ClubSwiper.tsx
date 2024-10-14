@@ -24,17 +24,17 @@ function BookSwiper({ }: Props) {
    
 
   return (<>
+    <Suspense fallback={<p>Loading...</p>}>         
      <p className='text-white text-2xl px-2 py-1'>Clubs, that are waiting for you</p>
     <BaseSwiper additionalClasses='w-full' slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5}>
         {data && data.data && data.data.map((item, i) => (
            <SwiperSlide key={i}>
-              <Suspense fallback={<p>Loading...</p>}>         
         <Club  clubLogo={item.clubLogo} clubName={'CLUBNAME !'} membersAmount={item.members.length} clubData={item} hasRequirements={item.requirements.length > 0} type={'white'}  />
-              </Suspense>
     </SwiperSlide>     
        ))}
   
     </BaseSwiper>
+       </Suspense>
     </>
  )
 }

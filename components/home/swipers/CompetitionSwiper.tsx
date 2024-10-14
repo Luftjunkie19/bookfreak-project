@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useMemo } from 'react'
+import React, { Suspense, useCallback, useMemo } from 'react'
 import BaseSwiper from './base-swiper/BaseSwiper';
 import { SwiperSlide } from 'swiper/react';
 import Competition from 'components/elements/Competition';
@@ -29,7 +29,8 @@ function CompetitionSwiper({ }: Props) {
 
 
     return (
-    <>
+      <>
+        <Suspense fallback={<p>Loading...</p>}>
         <p className='text-white text-2xl px-2 py-1'>Competitions, join, win and enjoy !</p>
     <BaseSwiper  additionalClasses='w-full' slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5}>
     {data && data.data && data.data.map((item, i )=>(
@@ -39,6 +40,7 @@ function CompetitionSwiper({ }: Props) {
        ))}
   
     </BaseSwiper>
+        </Suspense>
     </>
     )
 }

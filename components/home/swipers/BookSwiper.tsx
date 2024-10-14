@@ -21,9 +21,9 @@ function BookSwiper({}: Props) {
 })
    
    return (<>
+    <Suspense fallback={<p className='text-red-500'>Loading....</p>}>          
       <p className='text-white text-2xl px-2 py-1'>Books, that might interest you</p>
     
-    <Suspense fallback={<p className='text-red-500'>Loading....</p>}>          
     <BaseSwiper slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5} additionalClasses='w-full'>
          {data && data.data && data.data.map((item, i) => (
         <SwiperSlide key={i}>
