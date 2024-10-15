@@ -4,7 +4,7 @@ import React from 'react'
 import { BsThreeDots } from 'react-icons/bs'
 import image from '../../../assets/Logo.png'
 import { FaComment, FaHeart } from 'react-icons/fa6'
-type Props = { type: 'dark-blue' | 'dark-white' | 'white-dark' | 'white' | 'white-blue',addClasses?:string, userImg: string, username:string, isOwner:boolean, timePassed:string | number, content:string, images:string[], postData:any}
+type Props = { type: 'dark-blue' | 'dark-white' | 'white-dark' | 'white' | 'white-blue',addClasses?:string, userImg: string, username:string, isOwner:boolean, timePassed:string | number, content:string, images?:any[], postData:any}
 
 function Post({type, userImg, username, isOwner, content, timePassed, images, postData, addClasses}: Props) {
     return (
@@ -23,7 +23,9 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
 
           <div className="flex flex-col gap-2 px-2 ">
                 <p className='line-clamp-6 text-sm'>{content}</p>
-                {images.length > 0 && <div className='grid grid-cols-3 gap-2 w-fit'></div>}
+                {images && images.length > 0 && <div className='grid grid-cols-3 gap-2 w-fit'>
+                {images.map((item, index)=>(<Image width={60} height={60} alt='' className='w-32 h-32 rounded-lg' src={item.url} key={index}/>))}
+                </div>}
           </div>
 
           <div className={`flex justify-between shadow-large px-2 py-1 rounded-b-lg items-center w-full ${type === 'dark-blue' ? 'bg-primary-color text-white' : type === 'dark-white' ? 'bg-white text-primary-color' : type === 'white-dark' ? 'bg-dark-gray text-white' : type === 'white-blue' ? 'bg-primary-color text-white': 'bg-white text-dark-gray'}`}>
@@ -31,12 +33,12 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
                   
                   <Button type='transparent' additionalClasses="flex gap-2 text-2xl items-center">
                       <FaHeart className={`${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue'  ? ' text-white' : ' text-dark-gray'}`} />
-                      <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue' ? ' text-white' : ' text-dark-gray'}`}> 12</p>
+                      <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue' ? ' text-white' : ' text-dark-gray'}`}> 0</p>
                   </Button>
 
                   <Button type='transparent' additionalClasses="flex gap-2 text-2xl items-center">
                       <FaComment className={`text-2xl ${type === 'dark-blue' ? 'text-dark-gray' :  type === 'white' || type === 'dark-white' || type === 'white-dark' ? 'text-primary-color' : 'text-dark-gray'}`} />
-                                <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue'  ? ' text-white' : ' text-dark-gray'}`}> 12</p>
+                                <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue'  ? ' text-white' : ' text-dark-gray'}`}> 0</p>
                   </Button>
                   
             </div>

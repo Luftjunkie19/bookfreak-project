@@ -1,10 +1,10 @@
-'use client';
-import { useRealDocument } from 'hooks/firestore/useGetRealDocument';
+"use client";
+import { useQuery } from '@tanstack/react-query';
 import { useAuthContext } from 'hooks/useAuthContext';
 import { useCheckPathname } from 'hooks/useCheckPathname';
 import Image from 'next/image';
 import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import React, { useMemo } from 'react'
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { FaGear, FaVideo } from 'react-icons/fa6'
@@ -18,10 +18,32 @@ import { TbListDetails } from 'react-icons/tb'
 function CompetitionLeftBar() {
   const { competitionId } = useParams();
   const { user } = useAuthContext();
-  const { document } = useRealDocument('competitions', competitionId as string);
   const { includesElements } = useCheckPathname();
+  
+  const { data: document } = useQuery({
+    queryKey: ['competition'],
+    queryFn: () => fetch('/api/supabase/competition/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: competitionId, include: { members: true, rules: true } })
+    }).then((res) => res.json())
+  });
+
+  const {data:userObject}=useQuery({
+    queryKey: ['userData'],
+    queryFn: () => fetch('/api/supabase/user/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: user!.id })
+    }).then((res) => res.json())
+  })
+
   const isMemberCheck = useMemo(() => {
-    return user && document && document.members.find((item) => item.id === user.uid)
+    return user && document && document.data && document.data.members.find((item) => item.id === user.id)
   }, [user, document]);
  
   return (
@@ -39,11 +61,11 @@ function CompetitionLeftBar() {
               <FaGear size={24} /> Settings 
           </Link>
         </div>
-        {isMemberCheck && user &&
+        {isMemberCheck && userObject && userObject.data &&
           <div className='flex justify-between items-center gap-2'>
           <div className=" flex gap-2 items-center">
-          <Image src={user.photoURL} alt='' width={60} height={60} className='w-8 h-8 rounded-full' />
-          <p className='sm:hidden 2xl:block'>{user?.displayName}</p>
+          <Image src={userObject.data.photoURL} alt='' width={60} height={60} className='w-8 h-8 rounded-full' />
+          <p className='sm:hidden 2xl:block'>{userObject.data.nickname}</p>
         </div>
            <button className='text-white text-xl'><BsThreeDotsVertical/></button>
           </div>

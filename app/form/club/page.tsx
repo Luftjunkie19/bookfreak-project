@@ -152,7 +152,7 @@ function CreateClub() {
        headers:{
         'Content-Type':'application/json',
        },
-       body:JSON.stringify({data:{id:clubId, chatId:chat.id, creationDate:new Date(), hasRequirements:value.hasRequirements, description:value.description, isFreeToJoin:value.isFreeToJoin, clubLogo:image}})
+       body:JSON.stringify({data:{id:clubId, chatId:chat.id, clubName:value.clubName, creationDate:new Date(), hasRequirements:value.hasRequirements, description:value.description, isFreeToJoin:value.isFreeToJoin, clubLogo:image}})
      });
 
 

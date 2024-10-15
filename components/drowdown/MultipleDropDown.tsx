@@ -1,16 +1,15 @@
-import React from 'react'
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Select, SelectProps} from "@nextui-org/react";
+import React, { useState } from 'react'
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Select, SelectProps, Selection} from "@nextui-org/react";
 import { IoIosArrowDown } from 'react-icons/io';
 
 type Props = {
     children: any,
-    selectedArray: string[],
     label?:string,
     name?:string,
 } 
 
-function MultipleDropDown({children, selectedArray, label, name, ...props}: Props) {
-     const [selectedKeys, setSelectedKeys] = React.useState(new Set(["text"]));
+function MultipleDropDown({children, label, name, ...props}: Props) {
+     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
   const selectedValue = React.useMemo(
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
@@ -26,6 +25,10 @@ function MultipleDropDown({children, selectedArray, label, name, ...props}: Prop
       label={<p className='text-white'>{label}</p>}
       placeholder={`Select ${label}`}
       selectionMode="multiple"
+      selectedKeys={selectedKeys}
+      onChange={(e) => {
+   new Set(e.target.value.split(","))
+      }}
       className="max-w-xs w-full"
       name={name}
       labelPlacement='outside'
@@ -40,6 +43,7 @@ function MultipleDropDown({children, selectedArray, label, name, ...props}: Prop
         'popoverContent': 'bg-dark-gray text-white border-2 rounded-lg border-primary-color',
       }}
     >
+      
    {children}
     </Select>
   )

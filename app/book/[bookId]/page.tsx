@@ -18,11 +18,6 @@ import {
   useDispatch,
   useSelector,
 } from 'react-redux';
-import {
-  useNavigate,
-  useParams,
-} from 'react-router';
-import { Link } from 'react-router-dom';
 import uniqid from 'uniqid';
 import { useClipboard } from 'use-clipboard-copy';
 
@@ -45,14 +40,14 @@ import toast from 'react-hot-toast';
 import { Chip, DropdownItem, Modal, ModalBody, ModalContent, ModalHeader, SelectItem, Tab, Tabs } from '@nextui-org/react';
 import { IoMdBookmarks } from 'react-icons/io';
 import { IoBook, IoChatbubbleSharp } from 'react-icons/io5';
-import { FaBookBookmark, FaStar, FaStarOfLife } from 'react-icons/fa6';
+import { FaBookBookmark, FaBookOpen, FaStar, FaStarOfLife } from 'react-icons/fa6';
 import { Separator } from '@/components/ui/separator';
 import { GrUpdate } from 'react-icons/gr';
 import RemoveBtn from 'components/buttons/RemoveBtn';
 import { Rating } from 'primereact/rating';
 import { GoStar, GoStarFill } from 'react-icons/go';
 import { GiWhiteBook } from 'react-icons/gi';
-import { BsBookmarkHeartFill } from 'react-icons/bs';
+import { BsBookmarkHeartFill, BsBookmarkPlusFill, BsBookmarkStarFill } from 'react-icons/bs';
 import Button from 'components/buttons/Button';
 import MultipleDropDown from 'components/drowdown/MultipleDropDown';
 import BookAd from 'components/advertisements/BookAd';
@@ -61,6 +56,7 @@ import Recension from 'components/elements/recension/Recension';
 import SingleDropDown from 'components/drowdown/SingleDropDown';
 import { useQuery } from '@tanstack/react-query';
 import { format, formatDistanceToNow } from 'date-fns';
+import { HiBookmark } from 'react-icons/hi';
 
 function Book({ params }: { params: { bookId: string } }) {
   const { bookId: id } = params;
@@ -412,28 +408,31 @@ function Book({ params }: { params: { bookId: string } }) {
             </div>
             <div className="flex gap-1 ">
               <div className="flex gap-1 items-center">
-              <FaStar className='text-4xl text-primary-color'/>
-              <p className='text-primary-color font-semibold text-4xl'>9.5</p>
+              <FaStar className='text-4xl text-yellow-600'/>
+              <p className=' text-yellow-600 font-semibold text-4xl'>9.5</p>
               </div>
               <p className='text-gray-400 font-light self-end text-sm'>out of 50 reviews</p>
             </div>
             <div className='flex gap-4'>
               <Button type='blue' additionalClasses='flex gap-4 self-end items-center px-12 h-fit py-2 '>
-                  Read it 
+                  Read it <FaBookOpen />
               </Button>
-              <MultipleDropDown label='Insert to shelf' selectedArray={[]}>
-                <DropdownItem>
-                  Loved
-                </DropdownItem>
-                  <DropdownItem>
-                  Loved
-                </DropdownItem>
-                  <DropdownItem>
-                  Loved
-                </DropdownItem>
-                  <DropdownItem>
-                  Loved
-                </DropdownItem>
+              <MultipleDropDown label='Insert to shelf'>
+                  <SelectItem key={'favourite'}>
+                    <div className='flex text-base w-full gap-2 items-center'>
+                  Favourite <BsBookmarkStarFill className='text-yellow-700 text-xl'  />
+                    </div>
+                </SelectItem>
+                  <SelectItem key={'wishlist'} className='flex w-full gap-2 items-center' >
+                    <div className='flex text-base w-full gap-2 items-center'>    
+                  Wishlist <BsBookmarkPlusFill className='text-primary-color text-xl' />
+                     </div>
+                </SelectItem>
+                  <SelectItem key={'wantread'} className='flex w-full gap-2 items-center'>
+                     <div className='flex w-full text-base gap-2 items-center'>
+                 Want to read <HiBookmark className='text-primary-color text-xl' />
+                     </div>
+                </SelectItem>
               </MultipleDropDown>
             </div>
           </div>
@@ -451,10 +450,11 @@ function Book({ params }: { params: { bookId: string } }) {
           <div className="max-w-sm w-full"> 
             
 <p className='text-white text-lg font-semibold'>Book Details</p>
-            <div className="overflow-y-auto text-white min-h-56 max-h-56 h-full bg-dark-gray rounded-lg p-2 max-w-sm w-full">
+            <div className="overflow-y-auto text-white min-h-56 max-h-56 h-full bg-dark-gray flex flex-col gap-1 rounded-lg p-2 max-w-sm w-full">
+              <p>Full title: {document.data.fullTitle}</p>
               <p>Genre: {document.data.genre}</p>
               <p>Pages: {document.data.pages}</p>
-             
+              <p>Released: {formatDistanceToNow(new Date(document.data.releaseDate))}</p>
             </div>
     </div>
   
@@ -488,9 +488,13 @@ function Book({ params }: { params: { bookId: string } }) {
           </div>
         </div>
 
-          <div className=" flex flex-col gap-3 max-h-[60rem] overflow-y-auto">
+          <div className=" flex flex-col gap-3 max-h-[36rem] overflow-y-auto h-full">
             <Recension userImg={''} username={'Username'} rate={6} isOwner={false} content={'lorem ipsum durum lalalalalllla'} type={'white'} />
             <Recension userImg={''} username={'Username'} rate={6} isOwner={false} content={'lorem ipsum durum lalalalalllla'} type={'white'} />
+              <Recension userImg={''} username={'Username'} rate={6} isOwner={false} content={'lorem ipsum durum lalalalalllla'} type={'white'} />
+                <Recension userImg={''} username={'Username'} rate={6} isOwner={false} content={'lorem ipsum durum lalalalalllla'} type={'white'} />
+            <Recension userImg={''} username={'Username'} rate={6} isOwner={false} content={'lorem ipsum durum lalalalalllla'} type={'white'} />
+              <Recension userImg={''} username={'Username'} rate={6} isOwner={false} content={'lorem ipsum durum lalalalalllla'} type={'white'} />
           </div>
         </div>
 

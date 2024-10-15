@@ -1,14 +1,28 @@
+'use client';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@nextui-org/react";
+import { useQuery } from "@tanstack/react-query";
 import { useLogout } from "hooks/useLogout";
 import Link from "next/link";
 import { PiSignOutBold } from "react-icons/pi";
 
 type Props = {
-  userObject: any,
-  userId:string
+  userId?:string
 }
 
-const UserDropDown = ({userObject, userId}:Props) => {
+const UserDropDown = ({ userId }: Props) => {
+  
+    const { data:document } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => fetch('/api/supabase/user/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id:userId, include:undefined}),
+    }).then((res)=>res.json())
+  })
+
+
  const { logout } = useLogout();
 
   const signout = async () => {
@@ -16,16 +30,18 @@ const UserDropDown = ({userObject, userId}:Props) => {
   }
 
     return (
-         <Dropdown className="sm:hidden lg:block" placement="bottom-start">
+      <>
+        {userId && document && document.data &&
+       <Dropdown className="sm:hidden lg:block" placement="bottom-start">
         <DropdownTrigger className="sm:hidden lg:flex">
                 <User
                     as='button'
             avatarProps={{
-              src: userObject.photoURL,
+              src: document.data.photoURL,
             }}
             className="transition-transform"
-                    description={<p className=" uppercase text-green-300">{userObject.creditsAvailable && userObject.creditsAvailable.valueInMoney} {userObject.creditsAvailable && userObject.creditsAvailable.currency}</p>}
-                    name={<p className=" text-white line-clamp-1">{userObject.nickname}</p>}
+                    description={<p className=" uppercase text-green-300">{document.data.creditsAvailable && document.data.creditsAvailable.valueInMoney} {document.data.creditsAvailable && document.data.creditsAvailable.currency}</p>}
+                    name={<p className=" text-white line-clamp-1">{document.data.nickname}</p>}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">
@@ -47,6 +63,8 @@ const UserDropDown = ({userObject, userId}:Props) => {
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
+        }
+      </>
     );
 }
 

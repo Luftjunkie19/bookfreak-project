@@ -25,6 +25,7 @@ import { FaHome, FaSearch } from 'react-icons/fa';
 import MobileDrawer from './Drawer/Drawer';
 import CreateBtn from 'components/buttons/CreateBtn';
 import { PiChatsCircleFill } from 'react-icons/pi';
+import { useQuery } from '@tanstack/react-query';
 
 function Navbar() {
   const translations = navBarTranslation;
@@ -45,6 +46,7 @@ function Navbar() {
   };
 
 
+
   const dispatch = useDispatch();
 
   return (
@@ -55,13 +57,14 @@ function Navbar() {
       </div>
       {user ?
         <div className="flex items-center gap-6">
+          { user && <UserDropDown userId={user.id}/>}
           <Link className='sm:hidden lg:block' href={'/'}><FaHome className='text-2xl' /></Link>
           <CreateBtn/>
           <NotificationViewer />
                     <Link href={'/chat'} className='sm:hidden lg:block'><PiChatsCircleFill  className='text-2xl text-white' /></Link>
-          {1 + 1 ===3 && 
-          <UserDropDown userId={user.id} userObject={{}}/>
-          }
+       
+          
+          
           <LanguageSelect  />
           <MobileDrawer/>
   

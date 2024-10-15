@@ -4,8 +4,6 @@ import { useState } from 'react';
 import image from '../../../assets/Logo.png'
 import classes from '../../../stylings/gradient.module.css' 
 import CompetitionBar from 'components/Sidebars/left/CompetitionLeftBar';
-import { increment } from 'firebase/database';
-import { httpsCallable } from 'firebase/functions';
 import { BsFillDoorOpenFill, BsListTask } from 'react-icons/bs';
 import {
   FaBook,
@@ -34,7 +32,6 @@ import Link from 'next/link';
 
 
 
-import { functions } from '../../firebase';
 import alertTranslations from '../../../assets/translations/AlertMessages.json';
 import competitionTranslations
   from '../../../assets/translations/CompetitionsTranslations.json';
@@ -48,13 +45,7 @@ import Loader from '../../../components/Loader';
 import { snackbarActions } from '../../../context/SnackBarContext';
 import { warningActions } from '../../../context/WarningContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import useGetDocument from '../../../hooks/useGetDocument';
-import useGetDocuments from '../../../hooks/useGetDocuments';
-import { useRealDatabase } from '../../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../../hooks/useRealtimeDocument';
-import { User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { useRealDocument } from 'hooks/firestore/useGetRealDocument';
 import Image from 'next/image';
 import Button from 'components/buttons/Button';
 import { IoChatbubbles } from 'react-icons/io5';
@@ -65,12 +56,13 @@ import Slide from 'components/home/swipers/base-swiper/Slide';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { PagesPerDayChart } from 'components/charts/competition/CompetitionCharts';
+import { useQuery } from '@tanstack/react-query';
 
 function Competition({params}:{params:{competitionId:string}}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
   const [isPending, setIsPending] = useState(false);
-  const sendRefund=httpsCallable(functions, 'sendRefund');
+  // const sendRefund=httpsCallable(functions, 'sendRefund');
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
   };
@@ -95,139 +87,157 @@ function Competition({params}:{params:{competitionId:string}}) {
   const { user } = useAuthContext();
 
 
-  const { getDocument } = useRealtimeDocument();
+  const { data: document } = useQuery({
+    queryKey:['competition'],
+    queryFn: () => fetch('/api/supabase/competition/get', {
+      method: 'POST',
+      headers:{
+        'Content-Type':'application/json',
+      }, 
+      body:JSON.stringify({id, include:{
+                members: {
+                    include: {
+                      user:true,
+                  },
+        },
+        rules:true,
+          }})
+    }).then((res)=>res.json())
+  })
+
+  // const { getDocument } = useRealtimeDocument();
   const navigate = useRouter();
-  const { removeFromDataBase, updateDatabase, addToDataBase } =
-    useRealDatabase();
+  // const { removeFromDataBase, updateDatabase, addToDataBase } =
+  //   useRealDatabase();
 
   const isWarningVisible = useSelector((state:any) => state.isWarningVisible);
 
-const {document}=useRealDocument("competitions", id);
-const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
+// const {document}=useRealDocument("competitions", id);
+// const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
 
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
  
 
-  const competitionExpirationDate =
-    document && (document.expiresAt - new Date().getTime()) / 86400000;
+  // const competitionExpirationDate =
+  //   document && (document.expiresAt - new Date().getTime()) / 86400000;
 
-  const deleteCompetition = async (id) => {
-    setIsPending(true);
-    if (
-      !document.prizeHandedIn &&
-      document.prize.moneyPrize &&
-      !document.prize.itemPrize &&
-      competitionExpirationDate > 0
-    ) {
-      const userDoc = await getDocument("users", document.createdBy.id);
+  // const deleteCompetition = async (id) => {
+  //   setIsPending(true);
+  //   if (
+  //     !document.prizeHandedIn &&
+  //     document.prize.moneyPrize &&
+  //     !document.prize.itemPrize &&
+  //     competitionExpirationDate > 0
+  //   ) {
+  //     const userDoc = await getDocument("users", document.createdBy.id);
 
-      const response=  await sendRefund({
-        chargeId: document.chargeId,
-      });
+  //     const response=  await sendRefund({
+  //       chargeId: document.chargeId,
+  //     });
 
       
-      const { error } = (response.data as any);
+  //     const { error } = (response.data as any);
 
-      if (error) {
-        setIsPending(false);
-        dispatch(snackbarActions.showMessage({message:error, alertType:"error"}));
-        return;
-      }
+  //     if (error) {
+  //       setIsPending(false);
+  //       dispatch(snackbarActions.showMessage({message:error, alertType:"error"}));
+  //       return;
+  //     }
 
-      updateDatabase(
-        {
-          ...userDoc,
-          creditsAvailable: {
-            ...userDoc.creditsAvailable,
-            valueInMoney: increment(document.prize.moneyPrize.amount),
-            balance: {
-              ...userDoc.creditsAvailable.balance,
-              0: {
-                ...userDoc.creditsAvailable.balance["0"],
-                amount: increment(document.prize.moneyPrize.amount),
-              },
-            },
-          },
-        },
-        "users",
-        userDoc.id
-      );
-      removeFromDataBase("competitions", id);
-      removeFromDataBase("communityChats", id);
-      removeFromDataBase("communityMembers", id);
-      setIsPending(false);
-      navigate.push("/");
-    }
+  //     updateDatabase(
+  //       {
+  //         ...userDoc,
+  //         creditsAvailable: {
+  //           ...userDoc.creditsAvailable,
+  //           valueInMoney: increment(document.prize.moneyPrize.amount),
+  //           balance: {
+  //             ...userDoc.creditsAvailable.balance,
+  //             0: {
+  //               ...userDoc.creditsAvailable.balance["0"],
+  //               amount: increment(document.prize.moneyPrize.amount),
+  //             },
+  //           },
+  //         },
+  //       },
+  //       "users",
+  //       userDoc.id
+  //     );
+  //     removeFromDataBase("competitions", id);
+  //     removeFromDataBase("communityChats", id);
+  //     removeFromDataBase("communityMembers", id);
+  //     setIsPending(false);
+  //     navigate.push("/");
+  //   }
 
-    if (
-      competitionExpirationDate <= 0 &&
-      !document.prizeHandedIn &&
-      document.prize.moneyPrize &&
-      !document.prize.itemPrize
-    ) {
-      setIsPending(false);
-      dispatch(snackbarActions.showMessage({message:alertTranslations.notifications.wrong.winnerClaimError, alertType:"error"}));
-      return;
-    } else {
-      removeFromDataBase("competitions", id);
-      removeFromDataBase("communityChats", id);
-      removeFromDataBase("communityMembers", id);
-      setIsPending(false);
-      navigate.push("/");
-    }
+  //   if (
+  //     competitionExpirationDate <= 0 &&
+  //     !document.prizeHandedIn &&
+  //     document.prize.moneyPrize &&
+  //     !document.prize.itemPrize
+  //   ) {
+  //     setIsPending(false);
+  //     dispatch(snackbarActions.showMessage({message:alertTranslations.notifications.wrong.winnerClaimError, alertType:"error"}));
+  //     return;
+  //   } else {
+  //     removeFromDataBase("competitions", id);
+  //     removeFromDataBase("communityChats", id);
+  //     removeFromDataBase("communityMembers", id);
+  //     setIsPending(false);
+  //     navigate.push("/");
+  //   }
 
-    dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
+  //   dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
 
    
-  };
+  // };
 
   const dispatch = useDispatch();
 
-  const leaveCompetition = async () => {
-    const arrayWithoutYou = members.filter((doc) => doc.value.id !== (user as User).uid);
+  // const leaveCompetition = async () => {
+  //   const arrayWithoutYou = members.filter((doc) => doc.value.id !== (user as User).uid);
 
-    if (arrayWithoutYou && document.createdBy.id === (user as User).uid) {
-      dispatch(
-        warningActions.openWarning({
-          referedTo: document.id,
-          typeOf: document.competitionTitle,
-          collection: "competitions",
-        })
-      );
-    } else {
-      removeFromDataBase("communityMembers", `${id}/users/${(user as User).uid}`);
-      navigate.push("/");
-      dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.leave[selectedLanguage]}`, alertType:"success"}));
-    }
-  };
+  //   if (arrayWithoutYou && document.createdBy.id === (user as User).uid) {
+  //     dispatch(
+  //       warningActions.openWarning({
+  //         referedTo: document.id,
+  //         typeOf: document.competitionTitle,
+  //         collection: "competitions",
+  //       })
+  //     );
+  //   } else {
+  //     removeFromDataBase("communityMembers", `${id}/users/${(user as User).uid}`);
+  //     navigate.push("/");
+  //     dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.leave[selectedLanguage]}`, alertType:"success"}));
+  //   }
+  // };
 
-  const sendJoiningRequest = async () => {
-    try {
-      addToDataBase("notifications", `${document.id}-${new Date().getTime()}`, {
-        requestContent: `${(user as User).displayName} sent a request to join ${document.competitionTitle}`,
-        directedTo: `${document.createdBy.id}`,
-        clubToJoin: `${document.id}`,
-        isRead: false,
-        requestTo: "competitions",
-        notificationTime: new Date().getTime(),
-        joinerData: {
-          label: (user as User).displayName,
-          belongsTo: document.id,
-          value: {
-            nickname: (user as User).displayName,
-            id: (user as User).uid,
-            photoURL: (user as User).photoURL,
-          },
-        },
-      });
+  // const sendJoiningRequest = async () => {
+  //   try {
+  //     addToDataBase("notifications", `${document.id}-${new Date().getTime()}`, {
+  //       requestContent: `${(user as User).displayName} sent a request to join ${document.competitionTitle}`,
+  //       directedTo: `${document.createdBy.id}`,
+  //       clubToJoin: `${document.id}`,
+  //       isRead: false,
+  //       requestTo: "competitions",
+  //       notificationTime: new Date().getTime(),
+  //       joinerData: {
+  //         label: (user as User).displayName,
+  //         belongsTo: document.id,
+  //         value: {
+  //           nickname: (user as User).displayName,
+  //           id: (user as User).uid,
+  //           photoURL: (user as User).photoURL,
+  //         },
+  //       },
+  //     });
 
-      console.log(members);
-      dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.send[selectedLanguage]}`, alertType:"success"}));
+  //     console.log(members);
+  //     dispatch(snackbarActions.showMessage({message:`${alertTranslations.notifications.successfull.send[selectedLanguage]}`, alertType:"success"}));
    
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   return (
     <div
@@ -235,16 +245,15 @@ const {documents:members}=useGetDocuments(`communityMembers/${id}/users`);
      >
       <div className="flex flex-col sm:gap-14 xl:gap-0">
       <div className={`relative w-full ${classes['light-blue-gradient']} top-0 left-0 h-64 `}>
-          {document && 
+          {document && document.data && 
         <div className="absolute z-10 -bottom-16 flex gap-6 items-center  left-0 m-3">
             <Image src={image} alt='' width={60} height={60} className='sm:w-24 sm:h-24 xl:w-44 z-10 xl:h-44 object-cover rounded-lg' />
             <div className="flex flex-col gap-1">
-              <p className="text-2xl font-bold text-white">{document.competitionName}</p>
-              <p>{document.members.length} Members</p>
+              <p className="text-2xl font-bold text-white">{document.data.competitionName}</p>
+              <p>{document.data.members &&document.data.members.length} Members</p>
               <div className="flex">
-                <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
-                <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
-                <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
+                  {document.data.members && document.data.members.map((item) => (<Image src={item.user.photoURL} alt="" width={60} height={60} className='w-8 h-8 rounded-full object-cover' />))}
+                  
               </div>
             </div>
           

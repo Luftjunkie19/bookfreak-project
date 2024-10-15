@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuthContext } from 'hooks/useAuthContext';
-import useRealtimeDocument from 'hooks/useRealtimeDocument';
 import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import classes from '../../../stylings/gradient.module.css'
 import { FaBook } from 'react-icons/fa6';
@@ -15,43 +14,38 @@ import { AreaChart } from 'lucide-react';
 import { PagesPerDayChart } from 'components/charts/competition/CompetitionCharts';
 import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
 import { SwiperSlide } from 'swiper/react';
+import { useQuery } from '@tanstack/react-query';
 
 type Props = {}
 
 function Page({ }: Props) {
-    const [userObj, setUserObj] = useState<null | any>(null);
   const { user } = useAuthContext();
 
-  const { getDocument } = useRealtimeDocument();
+  const { data: document } = useQuery({
+    queryKey: ['profile'],
+    queryFn: () => fetch('/api/supabase/user/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id:user!.id  }),
+    }).then((res) => res.json())
+  });
 
     const [value, setValue] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setValue((v) => (v >= 80 ? 80 : v + 10));
-    }, 150);
+      setValue((v) => (v >= 80 ? 80 : v + 5));
+    }, 200);
 
     return () => clearInterval(interval);
   }, []);
 
 
-
-  const currentUserObject = useCallback(async () => {
-    if (!user) return null;
-    const userRef = await getDocument('users', user.uid);
-    setUserObj(userRef);
-    console.log('hello');
-  }, [user]);
-
-  useEffect(() => {
-    currentUserObject();
-  },[currentUserObject])
-
-
-
   return (
-    <div className='flex sm:h-[calc(100vh-3rem)] overflow-y-auto lg:h-[calc(100vh-3.5rem)] flex-col gap-3'>{userObj && <>
-      <p className='text-white text-3xl'>Welcome, <span className={`${classes['header-gradient']} ${classes['button-blue-dark-gradient']} font-bold`}>{userObj.nickname}</span></p>
+    <div className='flex sm:h-[calc(100vh-3rem)] overflow-y-auto lg:h-[calc(100vh-3.5rem)] flex-col gap-3'>{document && document.data && <>
+      <p className='text-white text-3xl'>Welcome, <span className={`${classes['header-gradient']} ${classes['button-blue-dark-gradient']} font-bold`}>{document.data.nickname}</span></p>
       
       <div className="flex flex-col gap-2">
         <p className='text-4xl font-semibold text-white'>Overview</p>

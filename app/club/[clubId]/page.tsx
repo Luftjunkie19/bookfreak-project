@@ -47,20 +47,15 @@ import { snackbarActions } from '../../../context/SnackBarContext';
 import { warningActions } from '../../../context/WarningContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 
-import { useRealDatabase } from '../../../hooks/useRealDatabase';
-import useRealtimeDocuments from '../../../hooks/useRealtimeDocuments';
-import { User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 
 import Image from 'next/image';
-import useGetDocument from 'hooks/firestore/useGetDocument';
-import { useRealDocument } from 'hooks/firestore/useGetRealDocument';
-import useGetCollection from 'hooks/firestore/useGetCollection';
 import Button from 'components/buttons/Button';
 import CompetitionAd from 'components/advertisements/CompetitionAd';
 import { IoChatbubbles } from 'react-icons/io5';
 import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
 import { SwiperSlide } from 'swiper/react';
+import { useQuery } from '@tanstack/react-query';
 
 function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
@@ -69,141 +64,125 @@ function Club({params}:{params:{clubId:string}}) {
   const { clubId:id } = params;
   const dispatch = useDispatch();
   const { user } = useAuthContext();
-  const navigate = useRouter();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [managmentEl, setManagmentEl] = useState(null);
-  const { getDocuments } = useRealtimeDocuments();
-  const { removeFromDataBase, addToDataBase } = useRealDatabase();
+  const navigate = useRouter();;
   const [message, setMessage] = useState<{open:boolean, message:string | null}>({ open: false, message: null });
-  const {document}=useRealDocument("clubs", id);
- const {documents }=useGetCollection(`users`);
-
-
-
-  const handleClick = (e) => {
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleOpenManagement = (e) => {
-    setManagmentEl(e.currentTarget);
-  };
-
-  const handleCloseManagent = () => {
-    setManagmentEl(null);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const {data:document}=useQuery({
+    queryKey:['club'],
+    queryFn: () => fetch('/api/supabase/club/get', {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, include:undefined })
+    }).then((res) => res.json())
+  })
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
-  const open = Boolean(anchorEl);
-  const openMangement = Boolean(managmentEl);
 
 
-  const deleteClub = async (id) => {
-    removeFromDataBase("readersClubs", id);
-    removeFromDataBase("communityChats", id);
-    removeFromDataBase("communityMembers", id);
+  // const deleteClub = async (id) => {
+  //   removeFromDataBase("readersClubs", id);
+  //   removeFromDataBase("communityChats", id);
+  //   removeFromDataBase("communityMembers", id);
 
-    navigate.push("/");
-    dispatch(snackbarActions.showMessage({message:`${ alertTranslations.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
+  //   navigate.push("/");
+  //   dispatch(snackbarActions.showMessage({message:`${ alertTranslations.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
 
-  };
+  // };
 
-  const leaveClub = async () => {
-    const arrayWithoutYou = members.filter((doc) => doc.value.id !== (user as User).uid);
+  // const leaveClub = async () => {
+  //   const arrayWithoutYou = members.filter((doc) => doc.value.id !== (user as User).uid);
 
-    if (arrayWithoutYou && document.createdBy.id === (user as User).uid) {
-      dispatch(
-        warningActions.openWarning({
-          referedTo: document.id,
-          typeOf: document.clubsName,
-          collection: "readersClubs",
-        })
-      );
-      return;
-    } else {
-      removeFromDataBase(`communityMembers/${id}/users`, (user as User).uid);
-    }
+  //   if (arrayWithoutYou && document.createdBy.id === (user as User).uid) {
+  //     dispatch(
+  //       warningActions.openWarning({
+  //         referedTo: document.id,
+  //         typeOf: document.clubsName,
+  //         collection: "readersClubs",
+  //       })
+  //     );
+  //     return;
+  //   } else {
+  //     removeFromDataBase(`communityMembers/${id}/users`, (user as User).uid);
+  //   }
 
-    navigate.push("/");
-    setMessage({
-      open: true,
-      message:
-        alertTranslations.notifications.successfull.leave[selectedLanguage],
-    });
-  };
+  //   navigate.push("/");
+  //   setMessage({
+  //     open: true,
+  //     message:
+  //       alertTranslations.notifications.successfull.leave[selectedLanguage],
+  //   });
+  // };
 
-  const sendJoiningRequest = async () => {
-    try {
-      const ClubswithMembers = await getDocuments("communityMembers");
+  // const sendJoiningRequest = async () => {
+  //   try {
+  //     const ClubswithMembers = await getDocuments("communityMembers");
 
-      const membersOfClubsEls = (ClubswithMembers as any[]).map((club) => {
-        return club.users;
-      });
+  //     const membersOfClubsEls = (ClubswithMembers as any[]).map((club) => {
+  //       return club.users;
+  //     });
 
-      const allMembersEls = membersOfClubsEls.map((object) => {
-        return Object.values(object);
-      });
+  //     const allMembersEls = membersOfClubsEls.map((object) => {
+  //       return Object.values(object);
+  //     });
 
-      const finalConversion = allMembersEls.flat();
+  //     const finalConversion = allMembersEls.flat();
 
-      if (
-        finalConversion.find(
-          (member:any) =>
-            member.value.id === (user as User).uid &&
-            member.belongsTo.includes("readersClub")
-        )
-      ) {
-        setMessage({
-          open: true,
-          message:
-            alertTranslations.notifications.wrong.loyality[selectedLanguage],
-        });
+  //     if (
+  //       finalConversion.find(
+  //         (member:any) =>
+  //           member.value.id === (user as User).uid &&
+  //           member.belongsTo.includes("readersClub")
+  //       )
+  //     ) {
+  //       setMessage({
+  //         open: true,
+  //         message:
+  //           alertTranslations.notifications.wrong.loyality[selectedLanguage],
+  //       });
 
-        return;
-      }
+  //       return;
+  //     }
 
-      addToDataBase("notifications", `${document.id}-${new Date().getTime()}`, {
-        requestContent: `${(user as User).displayName} sent a request to join ${document.clubsName}`,
-        directedTo: `${document.createdBy.id}`,
-        clubToJoin: `${document.id}`,
-        isRead: false,
-        requestTo: "readersClubs",
-        notificationTime: new Date().getTime(),
-        joinerData: {
-          label: (user as User).displayName,
-          belongsTo: document.id,
-          value: {
-            nickname: (user as User).displayName,
-            id: (user as User).uid,
-            photoURL: (user as User).photoURL,
-          },
-        },
-      });
+  //     addToDataBase("notifications", `${document.id}-${new Date().getTime()}`, {
+  //       requestContent: `${(user as User).displayName} sent a request to join ${document.clubsName}`,
+  //       directedTo: `${document.createdBy.id}`,
+  //       clubToJoin: `${document.id}`,
+  //       isRead: false,
+  //       requestTo: "readersClubs",
+  //       notificationTime: new Date().getTime(),
+  //       joinerData: {
+  //         label: (user as User).displayName,
+  //         belongsTo: document.id,
+  //         value: {
+  //           nickname: (user as User).displayName,
+  //           id: (user as User).uid,
+  //           photoURL: (user as User).photoURL,
+  //         },
+  //       },
+  //     });
 
 
-      setMessage({
-        open: true,
-        message:
-          alertTranslations.notifications.successfull.send[selectedLanguage],
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //     setMessage({
+  //       open: true,
+  //       message:
+  //         alertTranslations.notifications.successfull.send[selectedLanguage],
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   return (
     <div
       className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto`}
     >
       <div className="relative top-0 left-0 bg-red-200 max-h-60 h-full">
-        {document && 
+        {document && document.data &&
         <div className="absolute z-10 -bottom-16 flex gap-6 items-center  left-0 m-3">
-            <Image src={document.clubLogo} alt='' width={60} height={60} className='w-44 z-10 h-44 object-cover rounded-lg' />
+            <Image src={document.data.clubLogo} alt='' width={60} height={60} className='w-44 z-10 h-44 object-cover rounded-lg' />
             <div className="flex flex-col gap-1">
-              <p className="text-2xl font-bold text-white">{document.clubName}</p>
-              <p>{document.members && document.members.length} Members</p>
+              <p className="text-2xl font-bold text-white">{document.data.clubName}</p>
+              <p>{document.data.members && document.data.members.length} Members</p>
               <div className="flex">
                 <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
                 <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />

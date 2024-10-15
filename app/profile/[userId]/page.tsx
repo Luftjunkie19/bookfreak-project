@@ -1,7 +1,5 @@
 'use client';
 
-import { deleteUser, User } from 'firebase/auth';
-import { httpsCallable } from 'firebase/functions';
 import {
   BiSolidBook,
   BiSolidBookHeart,
@@ -33,14 +31,10 @@ import { useSelector } from 'react-redux';
 
 import Link from 'next/link';
 
-import { functions } from '../../firebase';
+
 import translations from '../../../assets/translations/ProfileTranslations.json';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import useGetDocument from '../../../hooks/useGetDocument';
-import useGetDocuments from '../../../hooks/useGetDocuments';
 import { useLogout } from '../../../hooks/useLogout';
-import { useRealDatabase } from '../../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../../hooks/useRealtimeDocument';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { BsFillPersonPlusFill } from 'react-icons/bs';
@@ -51,95 +45,101 @@ import Slide from 'components/home/swipers/base-swiper/Slide';
 import Book from 'components/elements/Book';
 import { SwiperSlide } from 'swiper/react';
 import Button from 'components/buttons/Button';
-import { TbMessageCircle2Filled } from 'react-icons/tb';
 import { ButtonGroup } from '@nextui-org/react';
 import Post from 'components/elements/activity/Post';
+import { useQuery } from '@tanstack/react-query';
+import { LucideMessageCircle } from 'lucide-react';
+import { useState } from 'react';
 
 function Profile({params}:{params:{userId:string}}) {
-  const { userId:id } = params;
+  const { userId } = params;
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
-  const removeAccount=httpsCallable(functions, 'removeAccount');
-  const { logout } = useLogout();
-  const { getDocument } = useRealtimeDocument();
-  const { removeFromDataBase } = useRealDatabase();
-  const {document}=useGetDocument('users', id);
 
-
-const {documents:books}=useGetDocuments('books');
-  const {documents: links}= useGetDocuments("links");
-  const { documents: favBooks } = useGetDocuments("lovedBooks");
-const {documents: readers}=useGetDocuments("bookReaders");
-
-const readerObjects=readers.map((bookReader) => {
-  return bookReader.readers;
-}).map((obj) => {
-  const nestedObject = Object.values(obj);
-  return nestedObject;
-}).flat();
-
-  const navigate = useRouter();
-
+    const navigate = useRouter();
+  const [activeBtn, setActiveBtn] = useState<string>();
   const { user } = useAuthContext();
 
-  const booksFilter = books.map((book) => {
-    return { bookId: book.id, pagesNumber: book.pagesNumber };
-  });
+  const { data:document } = useQuery({
+    queryKey: ['profile'],
+    queryFn: () => fetch('/api/supabase/user/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({id:userId, include:{
+                recensions: true,
+                notifications: true,
+                'BookLover': true,
+                'Comment': true,
+                'Result': true,
+                'addedBooks': true,
+                'bookShelfs': true,
+                'booksInRead': true,
+                'Club': true,
+                'Post': true,
+            },}),
+    }).then((res)=>res.json())
+  })
+  // const removeAccount=httpsCallable(functions, 'removeAccount');
+  const { logout } = useLogout();
+  // const { getDocument } = useRealtimeDocument();
+  // const { removeFromDataBase } = useRealDatabase();
+  // const {document}=useGetDocument('users', id);
 
 
-  
-  const readersFiltered = readerObjects.filter((reader:any) => reader.id === id);
-
-  const lovedBooks=books.map((book,i)=>{
-    return books.filter((bookItem)=>bookItem.id === favBooks.filter((fav)=>fav.lovedBy===(user as User).uid)[i]?.lovedBookId);
-  }).flat();
-
-  const yourFinishedBooks=readersFiltered.map((reader:any)=>{
-    return books.filter((bookItem:any)=>bookItem.id === reader?.bookReadingId && reader.pagesRead === bookItem?.pagesNumber);
-}).flat();
-
-  const redirectToExistedChat = async (providedId) => {
-const providedIdPartOne=providedId.split("-")[0];
-const providedIdPartTwo=providedId.split("-")[1];
-
-    const optionOne = await getDocument("usersChats",providedId);
-    const secondOption= await getDocument("usersChats", `${providedIdPartTwo}-${providedIdPartOne}`);
-
-    if(optionOne){
-      navigate.push(`/message-to/${providedId}`);
-    }
-    if(secondOption){
-      navigate.push(`/message-to/${providedIdPartTwo}-${providedIdPartOne}`);
-    }else{
-      navigate.push(`/message-to/${providedId}`);
-    }
+// const {documents:books}=useGetDocuments('books');
+//   const {documents: links}= useGetDocuments("links");
+//   const { documents: favBooks } = useGetDocuments("lovedBooks");
+// const {documents: readers}=useGetDocuments("bookReaders");
 
 
-  };
 
-  const removeFiancialAccount = async () => {
-    await removeAccount( { accountId: document.stripeAccountData.id });
-    removeFromDataBase("users", (user as User).uid);
-    await logout();
-    await deleteUser(user as User);
-  };
+
+
+
+//   const redirectToExistedChat = async (providedId) => {
+// const providedIdPartOne=providedId.split("-")[0];
+// const providedIdPartTwo=providedId.split("-")[1];
+
+//     // const optionOne = await getDocument("usersChats",providedId);
+//     // const secondOption= await getDocument("usersChats", `${providedIdPartTwo}-${providedIdPartOne}`);
+
+//     if(optionOne){
+//       navigate.push(`/message-to/${providedId}`);
+//     }
+//     if(secondOption){
+//       navigate.push(`/message-to/${providedIdPartTwo}-${providedIdPartOne}`);
+//     }else{
+//       navigate.push(`/message-to/${providedId}`);
+//     }
+
+
+//   };
+
+  // const removeFiancialAccount = async () => {
+  //   await removeAccount( { accountId: document.stripeAccountData.id });
+  //   removeFromDataBase("users", (user as User).uid);
+  //   await logout();
+  //   await deleteUser(user as User);
+  // };
 
 
 
   return (
     <div className={`min-h-screen w-full h-full`}>
-   {document && 
+   {document && document.data && 
         <>
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col w-full sm:gap-14 lg:gap-0">
           <div className='bg-dark-gray min-h-52 relative top-0 left-0'>
           <div className="flex gap-8 items-center absolute -bottom-12 left-4 m-2">
-            <Image src={document.photoURL} alt='' width={60} height={60} className='w-48 h-48 rounded-full' />
+            <Image src={document.data.photoURL} alt='' width={60} height={60} className='w-48 h-48 rounded-full' />
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2 items-center">
-                  <p className='text-white text-3xl font-semibold'>{document.nickname}</p>
+                  <p className='text-white text-3xl font-semibold'>{document.data.nickname}</p>
                   <p className='text-gray-400  text-sm self-end'>Joined in February 2024</p>
                 </div>
               <p className='flex gap-2 items-center'>
@@ -155,7 +155,7 @@ const providedIdPartTwo=providedId.split("-")[1];
                 Invite Friend <MdPersonAdd />
               </Button>
               <Button type={'white-blue'} additionalClasses='flex gap-2 items-center'>
-                Message <TbMessageCircle2Filled />
+                Message <LucideMessageCircle />
               </Button>
             </div>
             
@@ -217,20 +217,35 @@ const providedIdPartTwo=providedId.split("-")[1];
             
             
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 w-full max-w-5xl">
                   <div className='flex gap-4 items-center'>
-      <Button type={'blue'}>Posts</Button>
-      <Button type={'black'}>Bookshelfs</Button>
-      <Button type={'black'}>Competitions</Button>
-      <Button type={'black'}>Club</Button>
-      <Button type={'black'}>Books</Button>
-      <Button type={'black'}>Reviews</Button>    
+                <Button onClick={() => {
+                  setActiveBtn('posts')
+      }} type={activeBtn === 'posts' ? 'blue' : 'black'}>Posts</Button>
+      <Button onClick={() => {
+                  setActiveBtn('bookshelfs')
+      }} type={activeBtn === 'bookshelfs' ? 'blue' : 'black'}>Bookshelfs</Button>
+      <Button onClick={() => {
+                  setActiveBtn('competitions')
+      }} type={activeBtn === 'competitions' ? 'blue' : 'black'}>Competitions</Button>
+      <Button onClick={() => {
+                  setActiveBtn('clubs')
+      }} type={activeBtn === 'clubs' ? 'blue' : 'black'}>Club</Button>
+      <Button onClick={() => {
+                  setActiveBtn('books')
+      }} type={activeBtn === 'books' ? 'blue' : 'black'}>Books</Button>
+      <Button onClick={() => {
+                  setActiveBtn('reviews')
+      }} type={activeBtn === 'reviews' ? 'blue' : 'black'}>Reviews</Button>    
     </div>
-               <div className=" flex  flex-col gap-4 w-full max-h-[36rem] overflow-y-auto items-center ">
-                <Post type={'white'} userImg={document.photoURL} username={document.nickname} isOwner={false} timePassed={''} content={'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repudiandae pariatur aspernatur quisquam mollitia sed quia voluptatem fugiat, soluta voluptatum cum quasi doloremque saepe incidunt laborum. Inventore laborum eveniet maxime aut? Debitis nemo, soluta velit temporibus commodi illo incidunt nobis quos minima consectetur voluptatibus cum. Numquam quam, repellat voluptatem doloremque optio facere ut est reiciendis ex dolore. Sunt illo beatae, optio porro maxime consequuntur quo numquam a voluptatem, fuga neque nobis?'} images={[]} postData={{}} />
-                              <Post  type={'white'} userImg={document.photoURL} username={document.nickname} isOwner={false} timePassed={''} content={'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repudiandae pariatur aspernatur quisquam mollitia sed quia voluptatem fugiat, soluta voluptatum cum quasi doloremque saepe incidunt laborum. Inventore laborum eveniet maxime aut? Debitis nemo, soluta velit temporibus commodi illo incidunt nobis quos minima consectetur voluptatibus cum. Numquam quam, repellat voluptatem doloremque optio facere ut est reiciendis ex dolore. Sunt illo beatae, optio porro maxime consequuntur quo numquam a voluptatem, fuga neque nobis?'} images={[]} postData={{}}/>
-                                            <Post  type={'white'} userImg={document.photoURL} username={document.nickname} isOwner={false} timePassed={''} content={'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repudiandae pariatur aspernatur quisquam mollitia sed quia voluptatem fugiat, soluta voluptatum cum quasi doloremque saepe incidunt laborum. Inventore laborum eveniet maxime aut? Debitis nemo, soluta velit temporibus commodi illo incidunt nobis quos minima consectetur voluptatibus cum. Numquam quam, repellat voluptatem doloremque optio facere ut est reiciendis ex dolore. Sunt illo beatae, optio porro maxime consequuntur quo numquam a voluptatem, fuga neque nobis?'} images={[]} postData={{}}/>
-                <Post type={'white'} userImg={document.photoURL} username={document.nickname} isOwner={false} timePassed={''} content={'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repudiandae pariatur aspernatur quisquam mollitia sed quia voluptatem fugiat, soluta voluptatum cum quasi doloremque saepe incidunt laborum. Inventore laborum eveniet maxime aut? Debitis nemo, soluta velit temporibus commodi illo incidunt nobis quos minima consectetur voluptatibus cum. Numquam quam, repellat voluptatem doloremque optio facere ut est reiciendis ex dolore. Sunt illo beatae, optio porro maxime consequuntur quo numquam a voluptatem, fuga neque nobis?'} images={[]} postData={{}} />
+              <div className=" flex flex-col gap-4 w-full max-h-[36rem] overflow-y-auto ">
+                {activeBtn && activeBtn === 'posts' && document.data.Post.length > 0  ? <>
+                  {document.data.Post.map((item)=>(<Post key={item.id} type={'white'} userImg={document.data.photoURL} username={document.data.nickname} isOwner={item.ownerId === user?.id} timePassed={''} content={item.body} images={item.images} postData={item} />))}
+                           
+                
+                </> : <>
+               {activeBtn && <p className='text-center text-white'>No Posts Have been inserted yet !</p>}
+                </>}
                 
 
 

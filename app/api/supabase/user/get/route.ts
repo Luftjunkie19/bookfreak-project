@@ -3,20 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        const {  id  } = await req.json();
+        const {  id, include  } = await req.json();
 
         const fetchedItem = await prisma.user.findUnique({
             'where': {
-               id
-           }
+                id
+            },
+            include: include || undefined,
         })
 
-        return NextResponse.json(fetchedItem);
+        return NextResponse.json({ data: fetchedItem, error:null});
 
   }
     
-    catch (err) {
-         return NextResponse.json({...err, error:'Error occured'});
+    catch (error) {
+         return NextResponse.json({data:null, error});
 }
 
 

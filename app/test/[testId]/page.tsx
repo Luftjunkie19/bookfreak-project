@@ -29,9 +29,6 @@ import uniqid from 'uniqid';
 import translations from '../../../assets/translations/BookPageTranslations.json';
 import formTranslations from '../../../assets/translations/FormsTranslations.json';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { useRealDatabase } from '../../../hooks/useRealDatabase';
-import useRealtimeDocument from '../../../hooks/useRealtimeDocument';
-import useGetDocument from 'hooks/useGetDocument';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import RemoveBtn from 'components/buttons/RemoveBtn';
@@ -41,10 +38,8 @@ import Button from 'components/buttons/Button';
 function TestMainPage({ params }:{params:{testId:string}}) {
   const { user } = useAuthContext();
   const { testId } = params;
-  const { document } = useGetDocument('tests', testId);
 
   const [showOnlyYours, setShowOnlyYours] = useState(false);
-  const { removeFromDataBase } = useRealDatabase();
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
