@@ -19,6 +19,7 @@ import SingleDropDown from 'components/drowdown/SingleDropDown';
 import { PiStackPlusFill } from 'react-icons/pi';
 import { GiTargetPrize } from 'react-icons/gi';
 import ConditionItem from 'components/condition/ConditionItem';
+import { Requirement, requirementOptions } from '../../../competition/page';
 
 
 export default function Page() {
@@ -53,11 +54,23 @@ export default function Page() {
         </div>
 
           <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-64 max-w-3xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
-                            <ConditionItem conditionName={'Favourite Book Title'} conditionValue={'Ich bin am leiden...'} inputType={'text'} />
+    {/* {[].map((item)=>(<div key={item.id} className='bg-secondary-color flex justify-between items-center p-2 rounded-lg cursor-pointer text-white text-pretty w-full'>
+             <div className="flex flex-col gap-1">
+                 <p className='text-base font-bold'>{requirementOptions.find((req)=>req.value===item.requirementType) && requirementOptions.find((req)=>req.value===item.requirementType)!.label}</p>
+                  <p className='text-sm  font-light'>{item.requiredBookType} {item.requirementQuestion}</p>
+                </div>
+                
+                {item.requiredPagesRead && <LabeledInput defaultValue={item.requiredPagesRead} inputType='number' min={1} additionalClasses="max-w-16 w-full p-2" type={'transparent'} />}
+                {item.requiredBookRead && <LabeledInput defaultValue={item.requiredBookRead} inputType='number' min={1} additionalClasses="max-w-16 w-full p-2" type={'transparent'} />}
+                {item.requirementQuestionPossibleAnswers && <Button onClick={() => {
+                  onAnswerModalOpen();
+  setModalRequirementContent(item);
+               }} type='blue'>Show Answer</Button>} 
+          </div>))} */}
 </div> 
 
         <Button onClick={onOpen} additionalClasses='w-fit px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill/></Button>
-        <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
+        {/* <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
             <Button type='blue' additionalClasses="w-fit  px-4 py-2">
         Append
       </Button>
@@ -84,7 +97,7 @@ export default function Page() {
      <textarea placeholder='Enter answers...' className="w-full text-white bg-secondary-color p-2 h-52 overflow-y-auto  resize-none outline-none rounded-md border-2 border-primary-color"  />
 
                         
-                      </div>} isOpen={isOpen} onOpenChange={onOpenChange} />
+                      </div>} isOpen={isOpen} onOpenChange={onOpenChange} /> */}
 
       </div>
                   
