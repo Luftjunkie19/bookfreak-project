@@ -19,7 +19,9 @@ function CompetitionBar() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: competitionId, include: { members: true, rules: true } })
+      body: JSON.stringify({ id: competitionId, include: { members: {include:{
+        user:true,
+      }}, rules: true } })
     }).then((res) => res.json())
   });
 
@@ -27,14 +29,15 @@ function CompetitionBar() {
   return (
       <Suspense fallback={<p>Loading...</p>}>   
       <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] bg-dark-gray ${!includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} border-l-2 border-primary-color flex-col sm:max-w-40 w-full 2xl:max-w-xs p-2 2xl:w-full`}>
-        <p className='text-white'>{JSON.stringify({document})}</p>
-        
-        {/* {document && usersList.map((userObj) => (<Suspense fallback={<p>Loading....</p>}>
+       
+       {document && document.data && document.data.members.map((item)=>(<Suspense key={item.id} fallback={<p>Loading....</p>}>
               <div className='text-white flex items-center gap-3'>
-              <Image src={userObj.photoURL} alt="" width={60} height={60} className="w-12 h-12 rounded-full" />
-<p>{userObj.nickname}</p>
+              <Image src={item.user.photoURL} alt="" width={60} height={60} className="2xl:w-12 2xl:h-12 lg:w-8 lg:h-8 rounded-full" />
+<p>{item.user.nickname}</p>
           </div>
-          </Suspense>))} */}
+          </Suspense>))}
+        
+     
 
             </div>
       </Suspense>

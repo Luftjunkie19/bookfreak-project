@@ -250,9 +250,9 @@ function Competition({params}:{params:{competitionId:string}}) {
             <Image src={image} alt='' width={60} height={60} className='sm:w-24 sm:h-24 xl:w-44 z-10 xl:h-44 object-cover rounded-lg' />
             <div className="flex flex-col gap-1">
               <p className="text-2xl font-bold text-white">{document.data.competitionName}</p>
-              <p>{document.data.members &&document.data.members.length} Members</p>
+              <p className='text-white'>{document.data.members && document.data.members.length} Members</p>
               <div className="flex">
-                  {document.data.members && document.data.members.map((item) => (<Image src={item.user.photoURL} alt="" width={60} height={60} className='w-8 h-8 rounded-full object-cover' />))}
+                  {document.data.members && document.data.members.map((item) => (<Image key={item.id} src={item.user.photoURL} alt="" width={60} height={60} className='w-8 h-8 rounded-full object-cover' />))}
                   
               </div>
             </div>
@@ -265,9 +265,12 @@ function Competition({params}:{params:{competitionId:string}}) {
         <Button additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
 Share
         </Button>
+
+        {document && document.data && document.data.members && user && !document.data.members.find((item)=>item.user.id === user.id) &&   
            <Button additionalClasses='px-6 py-[0.375rem] text-nowrap' type={'white-blue'} >
 Request To Join
         </Button>
+        }
 </div>
 
       </div>

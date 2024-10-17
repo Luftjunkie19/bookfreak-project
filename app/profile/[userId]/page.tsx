@@ -21,6 +21,7 @@ import {
   FaGear,
   FaGears,
   FaHeart,
+  FaPencil,
   FaUserGear,
 } from 'react-icons/fa6';
 import {
@@ -83,11 +84,8 @@ function Profile({params}:{params:{userId:string}}) {
             },}),
     }).then((res)=>res.json())
   })
-  // const removeAccount=httpsCallable(functions, 'removeAccount');
   const { logout } = useLogout();
-  // const { getDocument } = useRealtimeDocument();
-  // const { removeFromDataBase } = useRealDatabase();
-  // const {document}=useGetDocument('users', id);
+
 
 
 // const {documents:books}=useGetDocuments('books');
@@ -150,13 +148,22 @@ function Profile({params}:{params:{userId:string}}) {
             </div>
             
       </div>  
-            <div className="flex items-center gap-4 p-2 self-end">
+            <div className="flex items-center gap-4 p-2 self-end">{document && user &&
+              document.data.id !== user.id && 
+              <>
               <Button type={'blue'} additionalClasses='flex gap-2 items-center'>
                 Invite Friend <MdPersonAdd />
               </Button>
               <Button type={'white-blue'} additionalClasses='flex gap-2 items-center'>
                 Message <LucideMessageCircle />
               </Button>
+              </>
+              }
+
+              {document && user &&
+              document.data.id === user.id && <Button onClick={()=>navigate.push('/profile/dashboard')} type={'blue'} additionalClasses='flex gap-2 px-2 items-center'>Change <FaPencil/></Button> }
+
+
             </div>
             
        </div>

@@ -28,9 +28,15 @@ function Page({ }: Props) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id:user!.id  }),
+      body: JSON.stringify({ id:user!.id, include:{
+        'recensions':{'include':{'book':true}},
+        'booksInRead':{orderBy:{'readingDate':'desc'}}, 
+        'notifications':true,
+       }}),
     }).then((res) => res.json())
   });
+
+
 
     const [value, setValue] = useState(0);
 
@@ -55,8 +61,8 @@ function Page({ }: Props) {
             <FaBook className='text-3xl text-white'/>
           </div>
            <div className="flex flex-col gap-1 text-white">
-            <p>Your books read this year</p>
-            <p className='text-2xl font-bold'>12</p>
+            <p>Your books read this month</p>
+            <p className='text-2xl font-bold'>{document.data.booksInRead.length}</p>
           </div>
           </div>
 
@@ -66,7 +72,7 @@ function Page({ }: Props) {
           </div>
            <div className="flex flex-col gap-1 text-white">
             <p>Reviews, you have shared</p>
-            <p className='text-2xl font-bold'>42</p>
+            <p className='text-2xl font-bold'>{document.data.recensions.length}</p>
           </div>
           </div>
 
@@ -76,7 +82,7 @@ function Page({ }: Props) {
           </div>
            <div className="flex flex-col gap-1 text-white">
             <p>Your books read this year</p>
-            <p className='text-2xl text-yellow-600 font-bold'>12</p>
+            <p className='text-2xl text-yellow-600 font-bold'>{document.data.booksInRead.length}</p>
           </div>
           </div>
 

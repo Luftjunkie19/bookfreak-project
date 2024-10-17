@@ -1,5 +1,4 @@
 import Button from 'components/buttons/Button'
-import { DocumentData } from 'firebase/firestore'
 import React from 'react'
 import { FaImage, FaMicrophone, FaPaperPlane } from 'react-icons/fa6'
 
@@ -10,7 +9,7 @@ function ChatBottomBar({ isAllowedToType }: Props) {
  
 
   return (
-    <div className="w-full p-2 flex justify-between text-white items-center bg-primary-color ">
+    <div className="w-full px-2 py-3 flex justify-between text-white items-center bg-primary-color ">
     <div className="flex gap-1 items-center text-xl">
       <Button disableState={Boolean(isAllowedToType) || typeof isAllowedToType !== 'undefined' ? true : false} type='transparent'><FaImage /></Button>
       <Button disableState={Boolean(isAllowedToType) ? true : false} type='transparent'><FaMicrophone /></Button>

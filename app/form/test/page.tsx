@@ -200,7 +200,7 @@ const answerModal=(item:Question)=>{
           <p className='text-lg text-white'>Possible Answers</p>
           <div className={`flex flex-col overflow-y-auto gap-2 ${questionGetValues('answers') && questionGetValues('answers').length > 0 && 'h-52'}`}>
             {fields.length > 0 && fields.map((field, index) => (
-              <div className='flex gap-4 w-full items-center'>
+              <div key={field.id} className='flex gap-4 w-full items-center'>
                 <LabeledInput key={field.id}  {...register(`answers.${index}.answerContent`, {
                 onChange(event) {
                     setQuestionValue(`answers.${index}.answerContent`, event.target.value);
@@ -277,7 +277,7 @@ const answerModal=(item:Question)=>{
           <p className='text-white'>No questions yet</p>
           </>}
 
-          {getValues('questions') && getValues('questions').length > 0 && getValues('questions').map((item, index) => (<TestQuestion onClick={() => {
+          {getValues('questions') && getValues('questions').length > 0 && getValues('questions').map((item, index) => (<TestQuestion key={item.id} onClick={() => {
             setModalQuestion(item);
             onAnswerModalOpen();
         }} answers={item.answers} questionContent={item.questionContent} index={index} />))}

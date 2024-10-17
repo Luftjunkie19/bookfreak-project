@@ -27,7 +27,9 @@ function CompetitionLeftBar() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: competitionId, include: { members: true, rules: true } })
+      body: JSON.stringify({ id: competitionId, include: { members: {
+        include: { user: true }
+      }, rules: true } })
     }).then((res) => res.json())
   });
 
@@ -43,7 +45,7 @@ function CompetitionLeftBar() {
   })
 
   const isMemberCheck = useMemo(() => {
-    return user && document && document.data && document.data.members.find((item) => item.id === user.id)
+    return user && document && document.data && document.data.members.find((item) => item.user.id === user.id)
   }, [user, document]);
  
   return (

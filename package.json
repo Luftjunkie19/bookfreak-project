@@ -183,7 +183,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "*",
-    "@prisma/client": "^5.20.0",
+    "@prisma/client": "^5.21.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-avatar-editor": "^13.0.2",
@@ -194,7 +194,7 @@
     "eslint-config-next": "14.2.4",
     "eslint-plugin-react-hooks": "^4.6.0",
     "postcss": "^8.4.25",
-    "prisma": "^5.20.0",
+    "prisma": "^5.21.0",
     "tailwindcss": "^3.3.2",
     "typescript": "^5"
   },

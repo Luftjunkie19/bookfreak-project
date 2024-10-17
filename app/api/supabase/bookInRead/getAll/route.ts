@@ -2,27 +2,27 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from 'lib/prisma/prisma'
 
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
     const {
             where,
-            select,
+            include,
             take,
             skip,
             orderBy
         } = await request.json();
     
-      const createdTest =  await prisma.bookInRead.findMany({
-           where,
-            select,
-            take,
-            skip,
-            orderBy
+      const bookProgress =  await prisma.bookInRead.findMany({
+           where:where || undefined,
+           include: include || undefined,
+            take: take || undefined,
+            skip: skip || undefined,
+            orderBy: orderBy || undefined,
       });
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:bookProgress, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }

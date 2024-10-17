@@ -73,7 +73,7 @@ function Club({params}:{params:{clubId:string}}) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id, include:undefined })
+      body: JSON.stringify({ id, include:{members:{include:{user:true}}} })
     }).then((res) => res.json())
   })
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
@@ -174,7 +174,7 @@ function Club({params}:{params:{clubId:string}}) {
 
   return (
     <div
-      className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto`}
+      className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden`}
     >
       <div className="relative top-0 left-0 bg-red-200 max-h-60 h-full">
         {document && document.data &&
@@ -184,9 +184,7 @@ function Club({params}:{params:{clubId:string}}) {
               <p className="text-2xl font-bold text-white">{document.data.clubName}</p>
               <p>{document.data.members && document.data.members.length} Members</p>
               <div className="flex">
-                <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
-                <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
-                <Image src={image} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />
+                {document.data.members && document.data.members.map((item)=>( <Image key={item.id} src={item.user.photoURL} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />))}
               </div>
             </div>
           
@@ -197,9 +195,12 @@ function Club({params}:{params:{clubId:string}}) {
         <Button additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
 Share
         </Button>
+
+        {document && user && document.data && !document.data.members.find((member)=>member.user.id === user.id) &&
            <Button additionalClasses='px-6 py-[0.375rem]' type={'white-blue'} >
 Join Club
         </Button>
+        }
       </div>
       
         <div className="flex sm:flex-col 2xl:flex-row 2xl:items-center gap-6 w-full">

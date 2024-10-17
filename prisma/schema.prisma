@@ -36,6 +36,34 @@ model User {
   Result        Result[]
   Member        Member[]
   notifications Notification[]
+  friendsStarted Friend[] @relation(name: "invitorRelation")
+  friends Friend[] @relation(name: "inviteeRelation")
+  blockedUsers blockedUser[] @relation(name: "blockedUser")
+  blockerUser blockedUser[] @relation(name: "blockerUser")
+}
+
+
+model blockedUser{
+  id        String   @id @default(cuid())
+  blockedBy String
+  blockedId String
+  dateOfBlock DateTime @default(now())
+  isTemporarilyBlocked Boolean
+  endOfBlock DateTime?
+  wantSeeContent Boolean
+  blockMessaging Boolean
+  blockedUser User @relation(name: "blockedUser", fields: [blockedId], references: [id])
+  blockerUser User @relation(name: "blockerUser", fields: [blockedBy], references: [id])
+}
+
+model Friend {
+  id String @id @default(cuid())
+  inviterUserId String 
+  inviteeId String
+  Invitor User @relation(name: "invitorRelation", fields: [inviterUserId], references: [id])
+  invitee User @relation(name: "inviteeRelation", fields: [inviteeId], references: [id])
+  dateOfFriendship DateTime @default(now())
+  
 }
 
 model Shelf {
@@ -51,6 +79,7 @@ model BookInRead {
   userId       String    @unique
   user         User      @relation(fields: [userId], references: [id])
   bookId       String
+  book         Book      @relation(fields: [bookId], references: [id])
   readingDate  DateTime
   startedTime  DateTime
   finishedTime DateTime?
@@ -88,6 +117,8 @@ model Book {
   publishingHouse     publishingHouse? @relation(fields: [publishingHouseId], references: [id])
 
   Test Test[]
+
+  BookInRead BookInRead[]
 }
 
 model Recension {
