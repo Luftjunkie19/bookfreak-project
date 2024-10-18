@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from 'lib/prisma/prisma'
 
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
     const {
             where,
@@ -20,9 +20,9 @@ export async function GET(request: NextRequest) {
             orderBy
       });
         
-        return NextResponse.json(items);
+        return NextResponse.json({data:items, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }

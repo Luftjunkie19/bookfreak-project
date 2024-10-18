@@ -64,8 +64,9 @@ type Competition = {
     expiresAt:  Date | null ,
     description: string,
     prizeType: 'money' | 'item' | null,
-    chargeId: string | null ,
-  prizeHandedIn: false,    
+    chargeId?: string  ,
+  prizeHandedIn: false,   
+  prizeDescription?:string,
     prize: {
       moneyPrize?: {
         amount: number | null,
@@ -93,7 +94,7 @@ function CreateCompetition() {
   const [bookReference, setBookReference] = useState<SelectValue>(null);
   const [previewImage, setPreviewImage] = useState<string>();
   const [competitionName, setCompetitionName] = useState<SelectValue>(null);
-  const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>(null);
+  const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>();
   const { register, reset, setFocus, setValue, setError, clearErrors, getValues, getFieldState, handleSubmit } = useForm<Competition>();
     const { register:registerRequirement, reset:resetRequirement, setFocus:setRequirementFocus, setValue:setRequirementValue, setError:setRequirementError, clearErrors:clearRequirementErrors, getValues:getRequirementValues, getFieldState:getRequirementFieldState, handleSubmit:handleRequirementSubmit } = useForm<Requirement>();
   const [bookGenreSelect, setBookGenreSelect] = useState<SelectValue>(null);
@@ -261,7 +262,7 @@ const handleSelect = (e) => {
        clearErrors();
     const competitionId = uniqid();
     const competitionChatId = uniqid();
-    console.log(formData)
+    const prizeId = uniqid();
     try {
 
       if(!user){
@@ -283,6 +284,31 @@ const handleSelect = (e) => {
       }
       const imageUrl = await uploadImageUrl('competitionLogo', imageData.fullPath);
 
+     
+      const fetchPrize = await fetch('/api/supabase/prize/create', {
+        body: JSON.stringify({data:{
+          id: prizeId,
+          prizeName: formData['prize'].itemPrize && formData['prize'].itemPrize.title,
+          isPrizeItem: formData['prize'].itemPrize && formData['prize'].itemPrize.title ? true : false,
+          itemType: formData.prize.itemPrize && formData.prize.itemPrize.typeOfPrize &&  (formData.prize.itemPrize.typeOfPrize as Option)['value'],
+          voucherFor:  formData['prize'].itemPrize && formData['prize'].itemPrize.voucherFor ? formData['prize'].itemPrize.voucherFor : undefined,
+          voucherLinkTo: formData['prize'].itemPrize && formData['prize'].itemPrize.voucherEventLink ? formData['prize'].itemPrize.voucherEventLink : undefined,
+          chargeId: formData.chargeId,
+          prizeDescription: formData.prizeDescription || undefined,
+          bookReferenceId: formData.prize.itemPrize && formData.prize.itemPrize.bookReferenceId ? (formData.prize.itemPrize.bookReferenceId as Option).value : undefined,
+          isCryptoPrize: false,
+          prizeImage: undefined,
+          prizeMoneyAmount: formData['prize'].moneyPrize ? formData['prize'].moneyPrize.amount : undefined,
+          prizeMoneyCurrency: formData['prize'].moneyPrize ?  formData['prize'].moneyPrize.currency : undefined,
+        }}),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const fullPrize = await fetchPrize.json();
+
 
 
 
@@ -296,10 +322,10 @@ const handleSelect = (e) => {
           endDate: formData['expiresAt'],
           id: competitionId,
           chatId: competitionChatId,
-          prize: formData['prize'],
+          prizeId: prizeId,
           description: formData['description'],
-          prizeHandedIn: false
-
+          prizeHandedIn: false,
+          chargeId: formData['chargeId'] || undefined,
         }),
         method: 'POST',
         headers: {
@@ -330,7 +356,7 @@ const handleSelect = (e) => {
       
       clearErrors();
       reset();
-      setPreviewImage(null);
+      setPreviewImage(undefined);
 
     } catch (err) {
       console.log(err);
@@ -343,9 +369,9 @@ const handleSelect = (e) => {
      const answerModal=(item:Requirement)=>{
       return(<ModalComponent modalSize='sm' isOpen={isAnswerModalOpen} modalTitle='Q&A' modalBodyContent={<div>
         <p className="text-white">{item.requirementQuestion}</p>
-        <p className='text-base text-white'>{item.requirementQuestionPossibleAnswers.join(', ')}</p>
+        <p className='text-base text-white'>{item && item.requirementQuestionPossibleAnswers && item.requirementQuestionPossibleAnswers.join(', ')}</p>
       </div>} onClose={()=>{
-          setModalRequirementContent(null);
+          setModalRequirementContent(undefined);
           onAnswerModalClose();
       }} onOpenChange={()=>{
         onAnswerModalOpenChange();
@@ -517,7 +543,11 @@ const handleSelect = (e) => {
           {chosenPrize && (chosenPrize as any).value !== 'money' &&
           <div className="flex gap-1 flex-col col-span-full">
              <span className="text-lg text-white font-semibold">Other Prize&#39;s Description</span>
-      <textarea className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
+              <textarea {...register('prizeDescription', {
+                onChange: (e) => {
+                  setValue('prizeDescription', e.target.value);
+        }
+      })} className=" font-light p-2 max-w-3xl w-full h-80 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
           </div>
        }   
 

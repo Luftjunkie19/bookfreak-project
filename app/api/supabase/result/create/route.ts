@@ -9,12 +9,13 @@ export async function POST(req: NextRequest) {
            data
         })
 
-        return NextResponse.json(fetchedItem);
+        return NextResponse.json({data:fetchedItem, error:null});
 
   }
     
-    catch (err) {
-         return NextResponse.json({...err, error:'Error occured'});
+    catch (error) {
+      console.log(error);
+      return NextResponse.json({ data:null, error});
 }
 
 

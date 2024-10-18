@@ -15,55 +15,53 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  nickname      String
-  email         String         @unique
-  photoURL      String?
-  description   String?
-  booksInRead   BookInRead[]
-  bookShelfs    Shelf[]
-  dateOfJoin    DateTime
-  addedBooks    Book[]
-  recensions    Recension[]
-  chats         Chat[]
-  chatId        String?
-  BookLover     BookLover[]
-  Club          Club?          @relation(fields: [clubId], references: [id])
-  clubId        String?
-  Post          Post[]
-  Comment       Comment[]
-  Test          Test[]
-  Result        Result[]
-  Member        Member[]
-  notifications Notification[]
-  friendsStarted Friend[] @relation(name: "invitorRelation")
-  friends Friend[] @relation(name: "inviteeRelation")
-  blockedUsers blockedUser[] @relation(name: "blockedUser")
-  blockerUser blockedUser[] @relation(name: "blockerUser")
+  id             String         @id @default(cuid())
+  nickname       String
+  email          String         @unique
+  photoURL       String?
+  description    String?
+  booksInRead    BookInRead[]
+  bookShelfs     Shelf[]
+  dateOfJoin     DateTime
+  addedBooks     Book[]
+  recensions     Recension[]
+  chats          Chat[]
+  chatId         String?
+  BookLover      BookLover[]
+  Club           Club?          @relation(fields: [clubId], references: [id])
+  clubId         String?
+  Post           Post[]
+  Comment        Comment[]
+  Test           Test[]
+  Result         Result[]
+  Member         Member[]
+  notifications  Notification[]
+  friendsStarted Friend[]       @relation(name: "invitorRelation")
+  friends        Friend[]       @relation(name: "inviteeRelation")
+  blockedUsers   blockedUser[]  @relation(name: "blockedUser")
+  blockerUser    blockedUser[]  @relation(name: "blockerUser")
 }
 
-
-model blockedUser{
-  id        String   @id @default(cuid())
-  blockedBy String
-  blockedId String
-  dateOfBlock DateTime @default(now())
+model blockedUser {
+  id                   String    @id @default(cuid())
+  blockedBy            String
+  blockedId            String
+  dateOfBlock          DateTime  @default(now())
   isTemporarilyBlocked Boolean
-  endOfBlock DateTime?
-  wantSeeContent Boolean
-  blockMessaging Boolean
-  blockedUser User @relation(name: "blockedUser", fields: [blockedId], references: [id])
-  blockerUser User @relation(name: "blockerUser", fields: [blockedBy], references: [id])
+  endOfBlock           DateTime?
+  wantSeeContent       Boolean
+  blockMessaging       Boolean
+  blockedUser          User      @relation(name: "blockedUser", fields: [blockedId], references: [id])
+  blockerUser          User      @relation(name: "blockerUser", fields: [blockedBy], references: [id])
 }
 
 model Friend {
-  id String @id @default(cuid())
-  inviterUserId String 
-  inviteeId String
-  Invitor User @relation(name: "invitorRelation", fields: [inviterUserId], references: [id])
-  invitee User @relation(name: "inviteeRelation", fields: [inviteeId], references: [id])
+  id               String   @id @default(cuid())
+  inviterUserId    String
+  inviteeId        String
+  Invitor          User     @relation(name: "invitorRelation", fields: [inviterUserId], references: [id])
+  invitee          User     @relation(name: "inviteeRelation", fields: [inviteeId], references: [id])
   dateOfFriendship DateTime @default(now())
-  
 }
 
 model Shelf {
@@ -115,10 +113,9 @@ model Book {
   publishingHouseId   String?          @unique
   bookPublishingHouse String?
   publishingHouse     publishingHouse? @relation(fields: [publishingHouseId], references: [id])
-
-  Test Test[]
-
-  BookInRead BookInRead[]
+  Prize               Prize[]
+  Test                Test[]
+  BookInRead          BookInRead[]
 }
 
 model Recension {
@@ -206,6 +203,23 @@ model Requirement {
   competitionId                      String?
 }
 
+model Prize {
+  id                 String       @id @default(cuid())
+  prizeName          String?
+  isPrizeItem        Boolean
+  itemType           String
+  prizeDescription   String?
+  prizeImage         String?
+  voucherFor         String?
+  prizeMoneyAmount   Int?
+  prizeMoneyCurrency String?
+  chargeId           String?
+  isCryptoPrize      Boolean
+  bookReferenceId    String?
+  book               Book?        @relation(fields: [bookReferenceId], references: [id])
+  competition        Competition?
+}
+
 model Competition {
   id              String        @id @default(cuid())
   competitionName String
@@ -214,11 +228,11 @@ model Competition {
   startDate       DateTime
   endDate         DateTime
   rules           Requirement[]
-  chatId          String?       @unique
-  chat            Chat?         @relation(fields: [chatId], references: [id])
+  chatId          String        @unique
+  chat            Chat          @relation(fields: [chatId], references: [id])
   members         Member[]
-  prizeId         String?
-  prize           Json
+  prizeId         String        @unique
+  prize           Prize         @relation(fields: [prizeId], references: [id])
   creationDate    DateTime      @default(now())
   description     String?
   prizeHandedIn   Boolean       @default(false)
@@ -264,13 +278,13 @@ model Question {
 
 model Result {
   id               String   @id @default(cuid())
-  testId           String   @unique
+  testId           String
   test             Test     @relation(fields: [testId], references: [id])
-  userId           String   @unique
-  user             User?    @relation(fields: [userId], references: [id])
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
   score            Int
   percentageResult Int
-  timeDevoted      DateTime
+  timeDevoted      Int
   timeStarted      DateTime
   timeFinished     DateTime
 }

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
-        const { competitionName, competitionType, endDate, startDate,rules, id,competitionLogo,prizeHandedIn,description, prize,chatId,
+        const { competitionName, competitionType,chargeId, endDate, startDate,rules, prizeId, id,competitionLogo,prizeHandedIn,description, prize,chatId,
              } = await request.json();
         
         const createdChat = await prisma.chat.create({
@@ -28,8 +28,10 @@ export async function POST(request: NextRequest) {
                 chatId: createdChat.id,
                 competitionLogo,
                 prize,
+                prizeId,
                 description,
-                prizeHandedIn
+                prizeHandedIn,
+                chargeId,
                 
             },
         }); 

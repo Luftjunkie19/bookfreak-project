@@ -3,18 +3,19 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        const {  where  } = await req.json();
+        const {  where, include } = await req.json();
 
         const fetchedItem = await prisma.prize.findUnique({
-           where
+          where,
+          include
         })
 
-        return NextResponse.json(fetchedItem);
+        return NextResponse.json({data:fetchedItem, error:null});
 
   }
     
     catch (err) {
-         return NextResponse.json({...err, error:'Error occured'});
+         return NextResponse.json({data:null, error:err});
 }
 
 

@@ -16,6 +16,8 @@ import {
 } from 'react-icons/fa';
 import {
   FaClockRotateLeft,
+  FaLock,
+  FaLockOpen,
   FaUsers,
   FaX,
 } from 'react-icons/fa6';
@@ -56,6 +58,9 @@ import { IoChatbubbles } from 'react-icons/io5';
 import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
 import { SwiperSlide } from 'swiper/react';
 import { useQuery } from '@tanstack/react-query';
+import { formatDistanceToNow } from 'date-fns';
+import { TbListDetails } from 'react-icons/tb';
+import { BiShieldQuarter } from 'react-icons/bi';
 
 function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
@@ -203,80 +208,97 @@ Join Club
         }
       </div>
       
-        <div className="flex sm:flex-col 2xl:flex-row 2xl:items-center gap-6 w-full">
-        
-        <div className="flex sm:flex-col xl:flex-row 2xl:flex-col my-4 mx-2 gap-3 sm:max-w-sm xl:max-w-full w-full">
+        {document && document.data &&   
+        <div className="flex sm:flex-col 2xl:flex-row 2xl:items-center gap-6 px-1 w-full">
+        <div className="flex sm:flex-col xl:flex-row 2xl:flex-col my-4 mx-2 gap-3 sm:max-w-sm w-full">
           <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
               <div className="flex flex-col gap-1 text-white">
-                <p>10 New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+                <p>{document.data.chat.messages.length} New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month {document.data.chat.messages.length} Messages</p>
               </div>
             </div>
              <div className="flex items-center gap-6">
               <FaUserFriends className="text-white text-2xl" />
               <div className="flex flex-col gap-1 text-white">
-                <p>19 Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+                <p>{document.data.members.length} Members Together</p>
+                <p className='text-sm font-extralight'>Yesterday {document.data.members.length} new members</p>
               </div>
             </div>
              <div className="flex items-center gap-6">
               <GiCrane  className="text-primary-color text-2xl" />
               <div className="flex flex-col gap-1 text-white">
-                <p>Estimated 3 years ago</p>
-                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+                <p>Estimated {formatDistanceToNow(new Date(document.data.creationDate))}</p>
+                <p className='text-xs font-extralight'>Est. {new Date(document.data.creationDate).toDateString()}</p>
               </div>
             </div>
           </div>
               <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft/> Activity</p>
-            <div className="flex items-center gap-6">
-              <IoChatbubbles className="text-white text-2xl" />
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><TbListDetails /> Details</p>
+            <div className="flex items-center gap-4">
+              {document.data.members.find((item)=>item.isCreator) && <Image alt='' width={60} height={60} className='w-10 h-10 rounded-full' src={document.data.members.find((item)=>item.isCreator).user.photoURL}/>}
               <div className="flex flex-col gap-1 text-white">
-                <p>10 New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+                <p>Estimated By</p>
+                <p className='text-sm font-extralight'>{document.data.members.find((item)=>item.isCreator).user.nickname}</p>
               </div>
             </div>
-             <div className="flex items-center gap-6">
-              <FaUserFriends className="text-white text-2xl" />
+              <div className="flex items-center gap-4">
+                {document.data.isFreeToJoin ? <FaLockOpen className="text-primary-color text-2xl" /> :        <FaLock className="text-primary-color text-2xl" />}
               <div className="flex flex-col gap-1 text-white">
-                <p>19 Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+                <p>{document.data.isFreeToJoin ? `Open Club` : `Closed Club`}</p>
+                <p className='text-sm font-extralight'>{document.data.isFreeToJoin ? `Click the button and enjoy !` : `Request to join the club`}</p>
               </div>
             </div>
-             <div className="flex items-center gap-6">
-              <GiCrane  className="text-primary-color text-2xl" />
+             <div className="flex items-center gap-3">
+              <BiShieldQuarter className="text-primary-color text-2xl" />
               <div className="flex flex-col gap-1 text-white">
-                <p>Estimated 3 years ago</p>
-                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+                <p>Administration</p>
+                <div className="flex">
+                  {document.data.members.filter((item)=>item.isAdmin).map((memberItem)=>(<Image alt='' width={60} height={60} className='w-8 h-8 rounded-full' src={memberItem.user.photoURL}/>))}
+          </div>
               </div>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-3 max-w-4xl w-full">
-          <div className="w-full bg-dark-gray p-2 rounded-lg">
+          <div className="w-full h-72 bg-dark-gray p-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaTasks className='text-2xl' /> Competition Rules</p>
-            <ul>
-              <li>Competition </li>
-                <li>Competition </li>
-                  <li>Competition </li>
+            <ul className='py-2'>
+              {document.data.requirements.map((item, index) => (<li key={index} className='text-white flex gap-1 items-center'>
+              
+            -  
+                {item.requirementQuestion && item.requirementQuestionPossibleAnswers.length > 0 && 
+                <p>{item.requirementQuestion}: {item.requirementQuestionPossibleAnswers.join(', ')}</p>
+                }
+
+                {item.requiredBookType && item.requiredPagesRead && 
+                <p>{item.requiredBookType}: {item.requiredPagesRead} Pages</p>
+                }
+
+                {item.requiredBookType && item.requiredBookRead && <p>{item.requiredBookType}: {item.requiredBookRead} Books</p>}
+                
+             
+              
+              </li>))}
             </ul>
             <p className='flex gap-4 items-center text-lg font-bold text-white'><BsListTask className='text-2xl' /> Description</p>
-            <div className="max-h-44 overflow-y-auto h-full">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa, placeat sint deleniti, est nesciunt eius non dolore nemo voluptatibus odio qui magnam iusto voluptatum illum suscipit repellat eligendi modi sapiente quae consectetur. Nobis quos sit delectus animi autem magni quibusdam consequatur maiores necessitatibus dolorem voluptatem tenetur laboriosam unde placeat earum enim modi, quo consequuntur doloribus laborum vero! Similique laudantium ullam quidem itaque amet dolorum voluptate culpa fuga suscipit fugiat, sit, doloribus sunt, dicta laboriosam sapiente quasi aperiam iusto. Quod, voluptatibus.</div>
+            <div className="max-h-44 overflow-y-auto h-full text-white">{document.data.description}</div>
           </div>
 
        <CompetitionAd />
 
         </div>
 </div>
+        }
 
-      <div className="flex flex-col gap-1 p-1">
+      {document && document.data && 
+      <div className="flex flex-col gap-1 py-1 px-4">
         <p className='text-xl flex gap-2 items-center  font-semibold text-white'><FaBookOpen className='text-white'/> Reading Activity of the users</p>
         <div className="max-w-5xl w-full">
-          <BaseSwiper slidesOnXlScreen={2} additionalClasses='w-full'>
+          <BaseSwiper slidesOnXlScreen={2} additionalClasses='w-full gap-2'>
             <SwiperSlide className='w-full max-w-xs'>
           <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
@@ -362,6 +384,8 @@ Join Club
       </div>
       </div>   
    
+      }
+      
 
     </div>
   );
