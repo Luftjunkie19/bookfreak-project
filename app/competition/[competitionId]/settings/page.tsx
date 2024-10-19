@@ -1,5 +1,5 @@
 'use client';
-import React from 'react'
+import React, { useState } from 'react'
 import Link from "next/link";
 import { FaInfo, FaUpload, FaUserGear } from "react-icons/fa6";
 import { IoGitPullRequestSharp } from 'react-icons/io5';
@@ -19,11 +19,53 @@ import SingleDropDown from 'components/drowdown/SingleDropDown';
 import { PiStackPlusFill } from 'react-icons/pi';
 import { GiTargetPrize } from 'react-icons/gi';
 import ConditionItem from 'components/condition/ConditionItem';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
+import { Requirement, requirementOptions } from 'app/form/competition/page';
 
 type Props = {}
 
 function Page({ }: Props) {
-    const { isOpen, onOpen, onOpenChange} = useDisclosure();
+    const { competitionId} = useParams();
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>();
+     const { isOpen:isAnswerModalOpen, onOpen:onAnswerModalOpen, onOpenChange:onAnswerModalOpenChange, onClose:onAnswerModalClose} = useDisclosure();
+     const answerModal=(item:Requirement)=>{
+      return(<ModalComponent modalSize='sm' isOpen={isAnswerModalOpen} modalTitle='Q&A' modalBodyContent={<div>
+        <p className="text-white">{item.requirementQuestion}</p>
+        <p className='text-base text-white'>{item && item.requirementQuestionPossibleAnswers && item.requirementQuestionPossibleAnswers.join(', ')}</p>
+      </div>} onClose={()=>{
+          setModalRequirementContent(undefined);
+          onAnswerModalClose();
+      }} onOpenChange={()=>{
+        onAnswerModalOpenChange();
+      }}/>)
+     }
+    
+    
+ const { data: document } = useQuery({
+    queryKey:['competition'],
+    queryFn: () => fetch('/api/supabase/competition/get', {
+      method: 'POST',
+      headers:{
+        'Content-Type':'application/json',
+      }, 
+      body: JSON.stringify({
+        id:competitionId, include: {
+        prize:true,
+                members: {
+                    include: {
+                      user:true,
+          },
+        },
+        chat: {
+            include:{messages:true},
+          },
+        rules:true,
+          }})
+    }).then((res)=>res.json())
+  })
+
   return (
       <div className='w-full flex'>
           <DashboardBar/>
@@ -41,9 +83,7 @@ function Page({ }: Props) {
                       <Button type='blue' additionalClasses='items-center gap-2 flex w-fit'>Upload <FaUpload/></Button>
                           </div>
               </div>
-                                  <LabeledInput  additionalClasses='p-2 min-w-80 max-w-xs w-full' label='Competition Name' type='dark' setValue={(value) => {
-                      console.log(value);
-                  }}/>
+                                  <LabeledInput  additionalClasses='p-2 min-w-80 max-w-xs w-full' label='Competition Name' type='dark'/>
             
 
               </div>        
@@ -64,9 +104,9 @@ function Page({ }: Props) {
    errorMessage: "",
                           
                   }} labelPlacement='outside'  label={<p className='text-white'>Expiration Date</p>} />
+
                    
-                   
-                               <SingleDropDown label='Competition Rules' selectedArray={[]}>
+                               <SingleDropDown label='Competition Rules' >
             <SelectItem key={'rule1'}>Rule 1</SelectItem>
              <SelectItem key={'rule2'}>Rule 2</SelectItem>
               <SelectItem key={'rule3'}>Rule 3</SelectItem>
@@ -81,18 +121,49 @@ function Page({ }: Props) {
           <p className='text-xs text-gray-400'>You can add additional conditions users have to fullfill in order to join the competition.</p>
         </div>
 
-          <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-64 max-w-3xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
-                             <ConditionItem conditionName={'Condition 2'} conditionValue={3} inputType={'number'} />
+                      <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-64 max-w-3xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">{
+                      document && document.data.rules.map((item)=>(<div onDoubleClick={()=>{
+
+          }} key={item.id} className="flex cursor-pointer hover:bg-primary-color/40 transition-all duration-400 gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
+            <div onClick={()=>{console.log(item)}} className='flex-1 flex flex-col gap-1 text-white'>
+              <p>{requirementOptions.find((el)=>el.value === item.requirementType) && requirementOptions.find((el)=>el.value === item.requirementType)!.label}</p>
+              <p className='text-xs'>{item.requiredBookType} {item.requirementQuestion}</p>
+            </div>
+
+{item.requirementQuestionPossibleAnswers && <>
+<Button onClick={()=>{
+  onAnswerModalOpen();
+  setModalRequirementContent(item);
+}} type='blue'>Answers</Button>
+</>
+}
+
+
+{item.requiredBookRead &&  
+<LabeledInput defaultValue={item.requiredBookRead} onChange={(e)=>{
+    
+              }} inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />}
+
+            {item.requiredPagesRead && 
+              <LabeledInput defaultValue={item.requiredPagesRead} onChange={(e)=>{
+      
+              }} inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
+            }
+                              </div>))}
+                             
                 </div> 
 
         <Button onClick={onOpen} additionalClasses='w-fit px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill/></Button>
-        <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
+   
+                      {modalRequirementContent && answerModal(modalRequirementContent)}
+   
+                      <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
             <Button type='blue' additionalClasses="w-fit  px-4 py-2">
         Append
       </Button>
  </div>} modalTitle='Additional Conditions' modalBodyContent={<div className='flex flex-col gap-3'>
                                     
-          <SingleDropDown label='Type of Rule' selectedArray={[]}>
+          <SingleDropDown label='Type of Rule' >
      <SelectItem key={'rule1'}>Min. Read Pages of Genre</SelectItem>
          <SelectItem key={'rule1'}>Min. Read Books of Genre</SelectItem>
      <SelectItem key={'rule2'}>Min. Read Books Amount</SelectItem>
@@ -100,12 +171,10 @@ function Page({ }: Props) {
           <SelectItem key={'rule2'}>Peculiar Question</SelectItem>
    </SingleDropDown>
    
-  <LabeledInput  additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} setValue={(value) => {
-              console.log(value);
-            }} />
+  <LabeledInput  additionalClasses="max-w-sm w-full p-2" label="Question" type={"dark"} />
 
 
-           <SingleDropDown label='Answer Accessment' selectedArray={[]}>
+           <SingleDropDown label='Answer Accessment'>
      <SelectItem key={'rule1'}>Manual</SelectItem>
          <SelectItem key={'rule1'}>Expected Answers</SelectItem>
    </SingleDropDown>

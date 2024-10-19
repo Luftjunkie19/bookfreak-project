@@ -167,57 +167,65 @@ Request To Join
         <div className="w-full sm:block xl:hidden">
           <BaseSwiper  slidesOnSmallScreen={2} slidesOnLargeScreen={2} slidesOnLargeScreen2={2} slidesOnXlScreen={2} slidesOn2XlScreen={2} additionalClasses='w-full'>
             <SwiperSlide className='max-w-sm w-full'>
-                   <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><TbListDetails /> Details</p>
-            <div className="flex items-center gap-4">
-              {document && document.data.members.find((item)=>item.isCreator) && <Image alt='' width={60} height={60} className='w-10 h-10 rounded-full' src={document.data.members.find((item)=>item.isCreator)?.user?.photoURL}/>}
-              <div className="flex flex-col gap-1 text-white">
-                <p>Estimated By</p>
-                <p className='text-sm font-extralight'>{document.data.members.find((item)=>item.isCreator) && document.data.members.find((item)=>item.isCreator)?.user?.nickname}</p>
+                 <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+                <p className='flex gap-4 items-center text-lg font-bold text-white'><TbListDetails /> Details</p>
+                <div className="flex items-center gap-4">
+                  {document.data.members.find((item) => item.isCreator) && <Image alt='' width={60} height={60} className='w-10 h-10 rounded-full' src={document.data.members.find((item) => item.isCreator).user.photoURL} />}
+                  <div className="flex flex-col gap-1 text-white">
+                    <p>Estimated By</p>
+                    <p className='text-sm font-extralight'>{document.data.members.find((item) => item.isCreator).user.nickname}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  {document.data.isFreeToJoin ? <FaLockOpen className="text-primary-color text-2xl" /> : <FaLock className="text-primary-color text-2xl" />}
+                  <div className="flex flex-col gap-1 text-white">
+                    <p>{document.data.isFreeToJoin ? `Open Club` : `Closed Club`}</p>
+                    <p className='text-sm font-extralight'>{document.data.isFreeToJoin ? `Click the button and enjoy !` : `Request to join the club`}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <BiShieldQuarter className="text-primary-color text-2xl" />
+                  <div className="flex flex-col gap-1 text-white">
+                    <p>Administration</p>
+                    <div className="flex">
+                      {document.data.members.filter((item) => item.isAdmin).map((memberItem) => (<Image alt='' width={60} height={60} className='w-8 h-8 rounded-full' src={memberItem.user.photoURL} />))}
+                    </div>
+                  </div>
+                </div>
+               
               </div>
-            </div>
-              <div className="flex items-center gap-4">
-                {document.data.isFreeToJoin ? <FaLockOpen className="text-primary-color text-2xl" /> :        <FaLock className="text-primary-color text-2xl" />}
-              <div className="flex flex-col gap-1 text-white">
-                <p>{document.data.isFreeToJoin ? `Open Club` : `Closed Club`}</p>
-                <p className='text-sm font-extralight'>{document.data.isFreeToJoin ? `Click the button and enjoy !` : `Request to join the club`}</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-3">
-              <BiShieldQuarter className="text-primary-color text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>Administration</p>
-                <div className="flex">
-                  {document.data.members.filter((item)=>item.isAdmin).map((memberItem)=>(<Image alt='' width={60} height={60} className='w-8 h-8 rounded-full' src={memberItem.user.photoURL}/>))}
-          </div>
-              </div>
-            </div>
-          </div>
             </SwiperSlide>
               <SwiperSlide className='max-w-sm w-full'>
-                 <div className="w-full h-72 max-w-sm bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+                 <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
               <div className="flex flex-col gap-1 text-white">
-                <p>10 New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
+                <p>{document && document.data && document.data.chat.messages.length} New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month {document && document.data && document.data.chat.messages.length} Messages</p>
               </div>
             </div>
              <div className="flex items-center gap-6">
               <FaUserFriends className="text-white text-2xl" />
               <div className="flex flex-col gap-1 text-white">
-                <p>19 Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
+                <p>{document.data.members.length} Members Together</p>
+                <p className='text-sm font-extralight'>Yesterday {document.data.members.length} new members</p>
               </div>
             </div>
              <div className="flex items-center gap-6">
               <GiCrane  className="text-primary-color text-2xl" />
               <div className="flex flex-col gap-1 text-white">
-                <p>Estimated 3 years ago</p>
-                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
+                <p>Estimated {formatDistanceToNow(new Date(document.data.creationDate))}</p>
+                <p className='text-xs font-extralight'>Est. {new Date(document.data.creationDate).toDateString()}</p>
               </div>
-            </div>
+                </div>
+                 <div className="flex items-center gap-4">
+                  <TbClockExclamation className='text-red-500 text-2xl' />
+                  <div className="flex flex-col gap-1 text-white">
+                    <p>Expires in</p>
+                    <p className='text-sm font-extralight'> <span className='text-red-500 font-bold'>{Math.floor((new Date(document.data.endDate).getTime() - new Date().getTime()) / 86400000)}</span> days until expiration </p>
+                  </div>
+                </div>
           </div>
           </SwiperSlide>
           </BaseSwiper>
@@ -282,34 +290,58 @@ Request To Join
                     <p className='text-sm font-extralight'> <span className='text-red-500 font-bold'>{Math.floor((new Date(document.data.endDate).getTime() - new Date().getTime()) / 86400000)}</span> days until expiration </p>
                   </div>
                 </div>
-          </div>
-            
-            
-            
+          </div>                
         </div>
 
             <div className="flex flex-col gap-3 p-1 overflow-y-auto h-auto overflow-x-hidden max-w-4xl w-full">
           <div className="flex flex-col gap-1">
-            <p className='text-white text-xl'>The Prize</p>
-          <div className="flex flex-wrap gap-3 p-1 w-full lg:items-center">
+           <div className="flex flex-wrap gap-3 p-1 w-full lg:items-center">
                 <div className="w-full max-w-xs h-72 bg-dark-gray items-center p-2 flex flex-col justify-around border-green-400 border shadow-green-400 shadow gap-2 rounded-lg">
-                  <p>{JSON.stringify(document.data.prize)}</p>
-              <p className=' text-5xl font-bold text-green-400'>100.00$</p>
+                  {document.data.prize.isPrizeItem && 
+                    <>
+                  {document.data.prize.book && <Link href={`/book/${document.data.prize.book.id}`} className='flex flex-col gap-1 items-center justify-center'>
+                    <Image width={60} height={60} className='w-16 h-24 rounded-lg' src={document.data.prize.book} alt='' />
+                      <p className='text-white'>{document.data.prize.book.title}</p>
+                    </Link>}
+
+
+                     {document.data.prize.voucherFor && <div className='flex flex-col gap-1 items-center justify-center'>
+                    <Image width={60} height={60} className='w-16 h-24 rounded-lg' src={document.data.prize.book} alt='' />
+                      <p className='text-white'>{document.data.prize.prizeName}</p>
+   <p className='text-white'>{document.data.prize.book.itemType}</p>
+                    </div>}
+                   
+                    </>
+                  }
+
+                  {!document.data.prize.isPrizeItem && 
+                    <>
+                    <p className=' text-5xl font-bold text-green-400'>{document.data.prize.prizeMoneyAmount} {document.data.prize.prizeMoneyCurrency}</p>
+                  </>
+                  }
               <div className="flex flex-col gap-1 items-center">
               <p className='text-white text-lg self-center'>Prize only for the ranking-leader</p> 
 <p className='text-yellow-700 text-3xl self-center font-bold'>#1</p>               
-              </div>
+              </div>  
+                  
+
+      
+   
           </div>
 
                <div className="w-full max-w-xs h-72 bg-dark-gray justify-around items-center  p-2 flex flex-col gap-4 rounded-lg">
-              <div className="flex flex-col justify-around items-center">
+              <div className="flex flex-col gap-1 justify-around items-center">
                 <Image src={image} width={60} height={60} className='w-12 h-12 rounded-full' alt=''/>
               <p className='text-white self-center'>Winner</p>
               <p className='text-white'>1. Username - 100 points</p>
-              </div>
+                  </div>
+
               <div className="flex flex-col gap-2 items-center">
-              <p className='text-green-400 text-3xl font-bold'>15.00$</p>
+                    {new Date(document.data.endDate).getTime() === new Date().getTime() ? <>      
               <Button type={'black'} additionalClasses='bg-green-400'>Claim Reward</Button>
+                    </> : <>
+                        <p className='text-white text-center'>The winner will be announced on <span className='text-red-500'>{new Date(document.data.endDate).toLocaleDateString()}</span></p>
+                    </>}
               </div>
           </div>
            </div>

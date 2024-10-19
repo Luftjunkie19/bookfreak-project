@@ -176,7 +176,7 @@ function CreateClub() {
        headers:{
         'Content-Type':'application/json',
        },
-       body:JSON.stringify({data:{id:crypto.randomUUID(), userId:user!.id, clubId }})
+       body:JSON.stringify({data:{id:crypto.randomUUID(), userId:user!.id, clubId, isCreator:true, isAdmin:true, isOwner:true }})
       });
       
       toast.success('Success !');

@@ -267,7 +267,7 @@ Join Club
           <div className="w-full h-72 bg-dark-gray p-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaTasks className='text-2xl' /> Competition Rules</p>
             <ul className='py-2'>
-              {document.data.requirements.map((item, index) => (<li key={index} className='text-white flex gap-1 items-center'>
+              {document.data.requirements.length > 0 ? document.data.requirements.map((item, index) => (<li key={index} className='text-white flex gap-1 items-center'>
               
             -  
                 {item.requirementQuestion && item.requirementQuestionPossibleAnswers.length > 0 && 
@@ -282,7 +282,9 @@ Join Club
                 
              
               
-              </li>))}
+              </li>)) : <>
+                <p>No requirements have been estabilished.</p>
+                </>}
             </ul>
             <p className='flex gap-4 items-center text-lg font-bold text-white'><BsListTask className='text-2xl' /> Description</p>
             <div className="max-h-44 overflow-y-auto h-full text-white">{document.data.description}</div>
