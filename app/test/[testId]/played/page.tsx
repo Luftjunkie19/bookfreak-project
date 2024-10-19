@@ -51,7 +51,7 @@ function TestStartedPage() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ data: {id: crypto.randomUUID(), score: accquiredPoints, testId, userId: user!.id, id: attemptId, percentageResult: Math.floor((accquiredPoints / document.questions.length) * 100), timeStarted: new Date(time), timeFinished: new Date(), timeDevoted: new Date().getTime() - new Date(time).getTime() } })
+      body: JSON.stringify({ data: {score: accquiredPoints, testId, userId: user!.id, id: attemptId, percentageResult: Math.floor((accquiredPoints / document.questions.length) * 100), timeStarted: new Date(time), timeFinished: new Date(), timeDevoted: new Date().getTime() - new Date(time).getTime() } })
     });
 
     const insertedObjFetched = await insertedObj.json();

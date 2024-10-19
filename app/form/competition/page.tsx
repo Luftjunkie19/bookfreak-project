@@ -282,14 +282,14 @@ const handleSelect = (e) => {
              toast.error('Somethin went not correct.');
         return;
       }
-      const imageUrl = await uploadImageUrl('competitionLogo', imageData.fullPath);
+      const imageUrl = await getImageUrl('competitionLogo', imageData.fullPath);
 
      
       const fetchPrize = await fetch('/api/supabase/prize/create', {
         body: JSON.stringify({data:{
           id: prizeId,
-          prizeName: formData['prize'].itemPrize && formData['prize'].itemPrize.title,
-          isPrizeItem: formData['prize'].itemPrize && formData['prize'].itemPrize.title ? true : false,
+          prizeName: formData['prize'].itemPrize!.title || undefined,
+          isPrizeItem: formData['prize'].itemPrize && formData['prize'].itemPrize.typeOfPrize ? true : false,
           itemType: formData.prize.itemPrize && formData.prize.itemPrize.typeOfPrize &&  (formData.prize.itemPrize.typeOfPrize as Option)['value'],
           voucherFor:  formData['prize'].itemPrize && formData['prize'].itemPrize.voucherFor ? formData['prize'].itemPrize.voucherFor : undefined,
           voucherLinkTo: formData['prize'].itemPrize && formData['prize'].itemPrize.voucherEventLink ? formData['prize'].itemPrize.voucherEventLink : undefined,
@@ -317,7 +317,7 @@ const handleSelect = (e) => {
         body: JSON.stringify({
           competitionName: formData['competitionTitle'],
           competitionType: formData['competitionsName'],
-          competitionLogo: imageUrl,
+          competitionLogo: imageUrl.image,
           startDate: new Date(),
           endDate: formData['expiresAt'],
           id: competitionId,
