@@ -1,17 +1,12 @@
 
+'use client';
 import React from 'react';
+import Link from 'next/link';
+import { FaDiscord, FaTiktok, FaFacebook, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
 
-import {
-  FaInstagram,
-  FaMailBulk,
-} from 'react-icons/fa';
-import {
-  FaDiscord,
-  FaPhone,
-  FaXTwitter,
-} from 'react-icons/fa6';
+
+
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { useClipboard } from 'use-clipboard-copy';
 
 import aboutUsTranslations
@@ -25,39 +20,66 @@ function ContactPage() {
   const clipboard= useClipboard();
 
   return (
-    <div className={`w-full min-h-screen h-full ${!isDarkModed && 'pattern-bg'}`}>
-      <p className={`sm:text-2xl lg:text-5xl font-bold ${isDarkModed ? 'text-white' : "text-black"} flex gap-3 m-2`}>
-        <FaPhone className="text-green-400" /> {aboutUsTranslations.contactPage.contact[selectedLanguage]}
+    <div className="flex flex-col items-center justify-center min-h-screen p-6">
+    <div className="max-w-3xl w-full text-center">
+      <h1 className="text-4xl font-bold text-gray-800 mb-4">Contact Us</h1>
+      <p className="text-lg text-gray-600 mb-6">
+        We would love to hear from you! Whether you have a question about our services, pricing, or anything else,
+        our team is ready to answer all your questions. Feel free to reach out to us through our social media channels
+        or send us a message directly. Stay connected with us for the latest updates and exclusive content.
       </p>
-      <p className={`sm:text-lg lg:text-3xl ${isDarkModed ? 'text-white' : "text-black"} font-medium p-2`}>
-      {aboutUsTranslations.contactPage.description[selectedLanguage]}
-      </p>
-      <div className="flex flex-wrap sm:justify-center sm:items-center md:justify-start md:items-start w-full gap-3 p-3">
-        <Link
-          to="https://discord.gg/CtPSTnRwv9"
-          className=" bg-discord text-white p-8 rounded-lg cursor-pointer group"
-        >
-          <FaDiscord className="w-16 h-16 group-hover:rotate-180 group-hover:scale-95 transition-all duration-500" />
+      
+      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Connect with us on Social Media</h2>
+      <div className="flex justify-center space-x-6 mb-8">
+        <Link  target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-600 hover:text-blue-500 transition-colors" href="https://discord.com" passHref>
+        
+            <FaDiscord size={30} />
+       
         </Link>
-        <div className="bg-blue-400 p-8 rounded-lg cursor-pointer group" onClick={()=>{
-          clipboard.copy(process.env.REACT_APP_GMAIL);
-        }}>
-          <FaMailBulk className="w-16 h-16 group-hover:rotate-180 group-hover:scale-95 transition-all duration-500 text-white" />
-        </div>
-        <Link
-          className={`bg-white ${!isDarkModed && 'border-2 border-black'} p-8 rounded-lg cursor-pointer group`}
-          to="https://www.instagram.com/bookfreak_officiall"
-        >
-          <FaInstagram className="w-16 h-16 group-hover:rotate-180 group-hover:scale-95 transition-all duration-500 text-purple-400" />
+        <Link target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-600 hover:text-pink-500 transition-colors" href="https://www.tiktok.com" passHref>
+        
+            <FaTiktok size={30} />
+          
         </Link>
-        <Link
-          className="bg-black text-white p-8 rounded-lg cursor-pointer group"
-          to="https://twitter.com/BookFreak_ofc"
-        >
-          <FaXTwitter className="w-16 h-16 group-hover:rotate-180 group-hover:scale-95 transition-all duration-500" />
+        <Link target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-600 hover:text-blue-700 transition-colors" href="https://www.facebook.com" passHref>
+         
+            <FaFacebook size={30} />
+          
+        </Link>
+        <Link target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-600 hover:text-blue-400 transition-colors" href="https://twitter.com" passHref>
+       
+            <FaTwitter size={30} />
+          
+        </Link>
+        <Link  target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-600 hover:text-pink-400 transition-colors" href="https://www.instagram.com" passHref>
+       
+            <FaInstagram size={30} />
+          
+        </Link>
+        <Link  target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-600 hover:text-red-600 transition-colors" href="https://www.youtube.com" passHref>
+         
+            <FaYoutube size={30} />
+          
         </Link>
       </div>
+
+      <p className="text-sm text-gray-500">
+        © 2024 Your Company. All rights reserved.
+      </p>
     </div>
+  </div>
   );
 }
 

@@ -1,189 +1,104 @@
+// pages/about.tsx
 'use client';
 
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-
 import React from 'react';
-
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper-bundle.css';
 import { motion } from 'framer-motion';
-import Lottie from 'lottie-react';
-import CountUp from 'react-countup';
-import {
-  FaArrowLeft,
-  FaArrowRight,
-} from 'react-icons/fa';
-import { GiBull } from 'react-icons/gi';
-import { ImBooks } from 'react-icons/im';
-import { SiFuturelearn } from 'react-icons/si';
-import {
-  TbCircleNumber1,
-  TbCircleNumber2,
-  TbCircleNumber3,
-} from 'react-icons/tb';
-import { useSelector } from 'react-redux';
-import { Typewriter } from 'react-simple-typewriter';
-import {
-  Steps,
-  useSteps,
-} from 'react-step-builder';
-
-import myImage from '../../assets/about-image.jpg';
-import logoImage from '../../assets/Logo.png';
-import lottieAnimation
-  from '../../assets/lottieAnimations/Astronaut-Reading.json';
-import breakImg2 from '../../assets/ProjectHistory/August.png';
-import breakImg1 from '../../assets/ProjectHistory/September2.png';
-import difficultiesImage1
-  from '../../assets/ProjectHistory/March.png';
-import aboutUsTranslations
-  from '../../assets/translations/aboutUsTranslations.json';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'; // Assuming Shadcn provides an Accordion component
 import Image from 'next/image';
 
-
-function AboutUs() {
-  
-  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
-  const mainHolderVariant = {
-    offscreen: { y: 100, opacity: 0 },
-    onscreen: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        type: "spring",
-        bounce: 0.4,
-      },
-    },
-  };
-  const selectedLanguage = useSelector(
-    (state:any) => state.languageSelection.selectedLangugage
-  );
-  const iconVariant = {
-    onscreen: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        delay: 0.2,
-        duration: 0.5,
-        type: "spring",
-        bounce: 0.5,
-      },
-    },
-    offscreen: {
-      opacity: 0,
-      scale: 0.1,
-    },
-  };
-
-  const typingTextVariant = {
-    onscreen: { x: 0, opacity: 1 },
-    offscreen: { x: 100, opacity: 0 },
-  };
-
-  const headingTextVariant = {
-    onscreen: { transition: { delay: 0.5 }, opacity: 1 },
-    offscreen: { opacity: 0 },
-  };
-
-  const descriptionVariant = {
-    onscreen: { x: 0, opacity: 1, transition: { delay: 0.75 } },
-    offscreen: {
-      x: -100,
-      opacity: 0,
-    },
-  };
-
-  const firstImageVariant = {
-    onscreen: { y: 0, opacity: 1, transition: { delay: 0.75 } },
-    offscreen: { y: 100, opacity: 0 },
-  };
-
-  const invoices = [
+// Dummy data for the project history
+const historyData = [
   {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
+    title: 'Project Start',
+    description: 'Our project began with a simple idea of bringing people together.',
+    imageUrl: '/images/history1.jpg',
   },
   {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
+    title: 'First Milestone',
+    description: 'We reached our first milestone within six months, expanding our community significantly.',
+    imageUrl: '/images/history2.jpg',
   },
   {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
+    title: 'Current Status',
+    description: 'Today, we are proud to have thousands of users and a vibrant community.',
+    imageUrl: '/images/history3.jpg',
   },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-]
+];
 
-;
+const AboutUs: React.FC = () => {
   return (
-    <div className={`min-h-screen flex flex-col gap-6 h-full w-full p-6 ${isDarkModed ? "text-white" : "text-black"}`}>
-     <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {invoices.map((invoice) => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-          </TableRow>
+    <div className="py-10">
+      <motion.h1
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-4xl font-bold text-center mb-6"
+      >
+        About Us
+      </motion.h1>
+
+      <motion.p
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="text-lg text-center text-gray-700 mb-8"
+      >
+        We are dedicated to building a platform that fosters community and collaboration. Our journey has been
+        incredible, and we are excited to share our story with you.
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="mb-12"
+      >
+        {/* <Swiper spaceBetween={30} pagination={true} className="mySwiper">
+          {historyData.map((item, index) => (
+            <SwiperSlide key={index}>
+              <Card isHoverable>
+                <Card>
+                  <Image src={item.imageUrl} alt={item.title} width={400} height={300} layout="responsive" />
+                  <Text h4 className="mt-4">
+                    {item.title}
+                  </Text>
+                  <Text>{item.description}</Text>
+                </Card>
+              </Card>
+            </SwiperSlide>
+          ))}
+        </Swiper> */}
+      </motion.div>
+
+      <motion.h2
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+        className="text-3xl font-semibold text-center mb-4"
+      >
+        Our History
+      </motion.h2>
+
+
+      <Accordion type="single" collapsible>
+      {historyData.map((item, index) => (
+
+<AccordionItem key={index} title={item.title} value={''}>
+<AccordionTrigger>{item.title}</AccordionTrigger>
+<AccordionContent>
+<Image src={item.imageUrl} alt={item.title} width={400} height={300} className="mt-2" />
+{item.description}
+</AccordionContent>
+</AccordionItem>
+         
         ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter>
-    </Table>
- 
+
+</Accordion>
+   
     </div>
   );
-}
+};
 
 export default AboutUs;

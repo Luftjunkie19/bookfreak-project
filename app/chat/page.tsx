@@ -25,7 +25,6 @@ function YourChats() {
     <p className='text-white text-2xl'>Start A Conversation Now!</p>
     <p className='text-sm text-white'>Type with someone and explore new possibilities to grow !</p>
 
-
   </div>
 </div>
       

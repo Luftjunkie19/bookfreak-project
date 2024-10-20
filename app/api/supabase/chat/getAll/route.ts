@@ -6,15 +6,15 @@ export async function GET(request: NextRequest) {
     try {
     const {
             where,
-            select,
+include,
             take,
             skip,
             orderBy
         } = await request.json();
     
       const createdTest =  await prisma.chat.findMany({
-           where,
-            select,
+           where:{'users':{'some':{id:where.id}}},
+           include:{'users':true, 'messages':true},
             take,
             skip,
             orderBy
