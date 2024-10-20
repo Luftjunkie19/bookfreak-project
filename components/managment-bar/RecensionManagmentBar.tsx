@@ -20,7 +20,7 @@ type Props = {
 function RecensionManagmentBar({ applyFilters, applySort, filters, sortings, filtersSelected, sortSelected }:Props) {
 
   return (
-    <div className='flex gap-4 items-center overflow-x-auto'>
+    <div className='flex gap-2 items-center overflow-x-auto'>
       <Select
         label="Filters"
         selectionMode="multiple"

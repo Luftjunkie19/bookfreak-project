@@ -16,7 +16,7 @@ function BookSwiper({}: Props) {
             method: 'POST',
             headers: {
             },
-            body: JSON.stringify({ skip: undefined, take: undefined, where: undefined, include: undefined })
+            body: JSON.stringify({ skip: undefined, take: undefined, where: undefined, include:{recensions:true} })
       }).then((item) => item.json())
 })
    
@@ -27,7 +27,7 @@ function BookSwiper({}: Props) {
     <BaseSwiper slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5} additionalClasses='w-full'>
          {data && data.data && data.data.map((item, i) => (
         <SwiperSlide key={i}>
-        <Book bookId={item.id} bookCover={item.bookCover} pages={item.pages} author={item.bookAuthor} title={item.title} bookCategory={item.genre} type={'transparent'} />
+        <Book recensions={item.recensions.length} bookId={item.id} bookCover={item.bookCover} pages={item.pages} author={item.bookAuthor} title={item.title} bookCategory={item.genre} type={'transparent'} />
     </SwiperSlide>     
        ))}
   

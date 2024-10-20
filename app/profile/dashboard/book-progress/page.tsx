@@ -22,7 +22,7 @@ function Page({}: Props) {
         <div className="flex sm:flex-col xl:flex-row xl:items-center gap-6">
         <div className="flex sm:flex-col lg:flex-row items-center max-w-3xl w-full gap-12">
 
-          <Book additionalClasses='max-w-52 w-full' bookCover={''} pages={45} author={'Book Author'} bookId={'BookID'} title={'Book Title'} bookCategory={'Book Category'} type={'white'} />
+          <Book recensions={0} additionalClasses='max-w-52 w-full' bookCover={''} pages={45} author={'Book Author'} bookId={'BookID'} title={'Book Title'} bookCategory={'Book Category'} type={'white'} />
       
           <div className="flex max-w-xl w-full flex-col gap-2">
             <p className='text-2xl font-semibold text-white'>Book Title</p>

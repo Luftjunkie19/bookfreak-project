@@ -114,11 +114,11 @@ function Page() {
       <div className="flex sm:flex-col lg:flex-wrap 2xl:flex-row gap-2 items-center max-w-3xl w-full justify-between">
             <div className=" max-w-56 w-full p-2">    
         <Card 
-        focused='name'
-        number={4901490149014901}
-        expiry={1218}
-        cvc={412}
-                name={'John Smith'}
+        
+        number={''}
+        expiry={''}
+        cvc={''}
+                name={''}
                 preview={true}
       />
           </div>

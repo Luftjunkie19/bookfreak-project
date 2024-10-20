@@ -4,6 +4,9 @@
 
 
 const nextConfig = {
+  'swcMinify': true,
+  productionBrowserSourceMaps: false, // Disable source maps in development
+    optimizeFonts: false, // Disable font optimization
   experimental:{
     esmExternal:'loose'
   },

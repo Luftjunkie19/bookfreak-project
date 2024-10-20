@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
           where,
           include: {
             'lovedBy': true,
-            'recensions': true,
+            'recensions': {include:{'user':true},},
             'publishingHouse': true,
             'addedBy':true,
           }

@@ -1,6 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { AiOutlineReload } from "react-icons/ai";
+'use client';
 
+import 'node_modules/font-awesome/css/font-awesome.min.css'; 
+
+import { AiOutlineReload } from "react-icons/ai";
+import ReactStars from "react-rating-stars-component";
 import {
   useEffect,
   useMemo,
@@ -10,20 +13,22 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import Lottie from 'lottie-react';
 import { useSelector } from 'react-redux';
+import { TiStarFullOutline, TiStarHalfOutline, TiStarOutline } from 'react-icons/ti';
 
 
 import guyAnimation
   from '../../assets/lottieAnimations/NoRecensions.json';
 import translations from '../../assets/translations/BookPageTranslations.json';
-import useRealtimeDocuments from '../../hooks/useRealtimeDocuments';
 import RecensionManagmentBar from '../managment-bar/RecensionManagmentBar';
 import Recension from 'components/elements/recension/Recension';
 import { DataView } from 'primereact/dataview';
+import { useAuthContext } from "hooks/useAuthContext";
+import { Rating } from "primereact/rating";
+import { FaRegStar, FaStar } from "react-icons/fa6";
+import { FaStarHalfAlt } from "react-icons/fa";
+import Button from "components/buttons/Button";
 
 type Props = {
-   bookPages:number,
-  readPages:number,
-  title:string,
   hasReadBook: boolean,
   hasRecension:boolean,
   recensions:any[],
@@ -31,45 +36,29 @@ type Props = {
 }
 
 function RecensionsForBook({
-  bookPages,
-  readPages,
-  title,
   hasReadBook,
   hasRecension,
   recensions,
   publishRecension,
 }: Props) {
-  const [bookRate, setBookRate] = useState(0);
-  const [resension, setRecension] = useState("");
-  const [users, setUsers] = useState<any[]>([]);
-  const { getDocuments, loadingDocs } = useRealtimeDocuments();
-  const [showMore, setShowMore] = useState<string | null>(null);
+  const { user } = useAuthContext();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [recensionsNumber, setRecensionsNumber] = useState(10);
-  const handlePublish = (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    publishRecension(resension, bookRate);
+  const handlePublish = () => {
+    // e.preventDefault();
+    // publishRecension(resension, bookRate);
   };
   const selectedLanguage = useSelector(
     (state: any) => state.languageSelection.selectedLangugage
   );
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadUsers = async () => {
-    const documents = await getDocuments("users");
 
-    if (Array.isArray(documents)) {
-      setUsers(documents);
-    }
-  };
 
-  useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
 
-  const toggleContent = (id: string) => {
-    setShowMore(id);
-  };
+  // const toggleContent = (id: string) => {
+  //   setShowMore(id);
+  // };
 
   const [selectedFilters, setFilters] = useState<any[]>([]);
   const [selectedSorting, setSorting] = useState <any | null>(null);
@@ -233,46 +222,43 @@ function RecensionsForBook({
 
 
   return (
-    <div className="p-2 flex flex-col gap-6">
-      {readPages === bookPages && hasReadBook && !hasRecension && (
-        <div></div>
-        // <form
-        //   className="sm:w-full lg:w-1/2 py-2 sm:px-4 lg:px-0 lg:ml-5"
-        //   onSubmit={handlePublish}
-        // >
-        //   <label className="flex flex-col">
-        //     <span className="font-bold text-lg">{translations.buttonsTexts.rateBook[selectedLanguage]}:</span>
-        //     <Rating
-        //       name="customized-10"
-        //       className="sm:text-2xl md:text-[2.5rem] xl:text-5xl"
-        //       value={bookRate}
-        //       onChange={(event, newValue) => {
-        //         setBookRate(newValue);
-        //       }}
-        //       defaultValue={0.5}
-        //       precision={1}
-        //       max={10}
-        //     />
-        //   </label>
+    <div className="flex flex-col gap-3">
+        <form
+          className="max-w-xl flex flex-col gap-2 w-full p-1"
+          onSubmit={handlePublish}
+        >
+          <label className="flex flex-col">
+            <span className="font-bold text-xl text-white">{translations.buttonsTexts.rateBook[selectedLanguage]}:</span>
+          <ReactStars 
+            classNames='h-fit p-0 m-0'
+    count={10}
+            onChange={(rating) => {
+      console.log(rating)
+    }}
+    size={36}
+    isHalf={true}
+emptyIcon={<i className="far fa-star"></i>}
+    halfIcon={<i className="fa fa-star-half-alt"></i>}
+    fullIcon={<i className="fa fa-star"></i>}
+    activeColor="#4777ff"
+  />,
+          </label>
 
-        //   <label className="flex flex-col gap-2">
-        //     <span className={`font-bold text-lg ${isDarkModed ? "text-white" :"text-black"}`}>{translations.recensionLabel[selectedLanguage]}:</span>
-        //     <textarea
-        //       type="text"
-        //       className="textarea text-lg textarea-bordered border-accColor resize-none w-full textarea-lg"
-        //       onChange={(e) => setRecension(e.target.value)}
-        //       placeholder={`${translations.recensionPlaceholder[selectedLanguage]}`}
-        //     ></textarea>
-        //   </label>
+          <label className="flex flex-col gap-1 w-full">
+            <span className={`font-bold text-lg text-white`}>{translations.recensionLabel[selectedLanguage]}:</span>
+            <textarea
+              className="textarea text-white max-w-xl w-full max-h-36 min-h-28 h-full text-lg outline-none border-2 rounded-lg bg-dark-gray border-primary-color resize-none"
+              placeholder={`${translations.recensionPlaceholder[selectedLanguage]}`}
+            ></textarea>
+          </label>
 
-        //   <button className="btn bg-accColor hover:bg-blue-400 my-4 border-none text-white">
-        //     {translations.buttonsTexts.publishBtn[selectedLanguage]}
-        //   </button>
-        // </form>
-      )}
-
-      <p>{JSON.stringify(selectedFilters)} {JSON.stringify(selectedSorting)}</p>
-  
+        <Button type="blue" additionalClasses="w-fit px-2">
+            {translations.buttonsTexts.publishBtn[selectedLanguage]}
+        </Button>
+        
+         
+        </form>
+      
         <RecensionManagmentBar
           applySort={selectSorting}
           applyFilters={addToFilters}
@@ -280,8 +266,17 @@ function RecensionsForBook({
           filters={filterOptions}
           filtersSelected={selectedFilters}
           sortSelected={selectedSorting}
-      />
+          />
       
+
+        <div className="flex flex-col">
+          <p className='text-white text-2xl font-semibold'>Recensions</p>
+          <p className='text-white'>For now this book has been reviewed by {recensions.length} readers.</p>
+          </div>
+      
+      <div className=" flex flex-col gap-3 max-h-[36rem] overflow-y-auto h-full">
+        {recensions.map((item)=>( <Recension userImg={item.user.photoURL} username={item.user.nickname} rate={item.rating} isOwner={item.user.id === user?.id} content={item.comment} type={'white'} />))}
+          </div>
 
 
 
