@@ -15,7 +15,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-function CreateBtn() {
+function CreateBtn({buttonColour}:{buttonColour:string}) {
   const router = useRouter();
   const navigateToForm = (path: string) => {
     router.push(path);
@@ -26,7 +26,7 @@ function CreateBtn() {
     <Dropdown className='sm:hidden lg:block'>
       <DropdownTrigger>
         <button className="outline-none border-none bg-none sm:hidden lg:block">
-          <FaPlusCircle size={24} className="text-white " />
+          <FaPlusCircle size={24} className={`${buttonColour}`} />
         </button>
       </DropdownTrigger>
       <DropdownMenu variant="faded" aria-label="Dropdown menu with description">

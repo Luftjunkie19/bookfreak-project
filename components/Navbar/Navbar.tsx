@@ -26,12 +26,14 @@ import MobileDrawer from './Drawer/Drawer';
 import CreateBtn from 'components/buttons/CreateBtn';
 import { PiChatsCircleFill } from 'react-icons/pi';
 import { useQuery } from '@tanstack/react-query';
+import { useCheckPathname } from 'hooks/useCheckPathname';
 
 function Navbar() {
   const translations = navBarTranslation;
   const languageChosen = useSelector(
     (state: any) => state.languageSelection.selectedLangugage
   );
+  const {includesElements, isPathnameEqual}=useCheckPathname();
 
   const { user } = useAuthContext();
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
@@ -39,11 +41,6 @@ function Navbar() {
   const location = usePathname();
   const isOpened = useSelector((state: any) => state.notificationViewer.isOpened);
 
-  const checkLocation = (linkLocation: string) => {
-    if (location === linkLocation) {
-      return true;
-    }
-  };
 
 
 
@@ -58,10 +55,10 @@ function Navbar() {
       {user ?
         <div className="flex items-center gap-6">
           { user && <UserDropDown userId={user.id}/>}
-          <Link className='sm:hidden lg:block' href={'/'}><FaHome className='text-2xl' /></Link>
-          <CreateBtn/>
+          <Link className={`sm:hidden lg:block ${isPathnameEqual('/') ? 'text-dark-gray' : 'text-white'}`} href={'/'}><FaHome className='text-2xl' /></Link>
+          <CreateBtn buttonColour={`${includesElements('/form/') ? 'text-dark-gray' : 'text-white'}`}/>
           <NotificationViewer />
-                    <Link href={'/chat'} className='sm:hidden lg:block'><PiChatsCircleFill  className='text-2xl text-white' /></Link>
+                    <Link href={'/chat'} className='sm:hidden lg:block'><PiChatsCircleFill  className={`text-2xl ${isPathnameEqual('/chat') ? 'text-dark-gray' : 'text-white'}`} /></Link>
        
           
           

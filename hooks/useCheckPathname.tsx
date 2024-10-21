@@ -11,8 +11,12 @@ export function useCheckPathname() {
         return  pathname.includes(includingElements)
     }
 
+    const isPathnameEqual=(includingElements:string) => {
+        return  pathname === includingElements
+    }
+
     return {
-        includesElements
+        includesElements,isPathnameEqual
     }
 }
 
