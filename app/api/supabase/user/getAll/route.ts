@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from 'lib/prisma/prisma'
 
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
     const {
             where,
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
         } = await request.json();
     
 
-      const createdTest =  await prisma.user.findMany({
+      const foundData =  await prisma.user.findMany({
            where,
             select,
             take,
@@ -21,9 +21,9 @@ export async function GET(request: NextRequest) {
             orderBy
       });
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:foundData, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }

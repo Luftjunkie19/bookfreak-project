@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import React, {
@@ -11,9 +10,8 @@ import { formatDistanceToNow } from 'date-fns';
 import Lottie from 'lottie-react';
 import { useSelector } from 'react-redux';
 import {
-  Link,
   useSearchParams,
-} from 'react-router-dom';
+} from 'next/navigation';
 
 
 import itemReward from '../../assets/ItemReward.webp';
@@ -29,73 +27,64 @@ import ManagementBar from '../../../components/managment-bar/ManagementBar';
 import FilterBar from '../../../components/Sidebars/right/FilterBar';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import Competition from 'components/elements/Competition';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import LabeledInput from 'components/input/LabeledInput';
+import { FaSearch } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 function Competitions() {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [searchInputValue, setSearchInputValue] = useState('');
-
+  const [userSearchParams, setUserSearchParams] = useState<{ skip: number, take: number, where?: any, include?: any, orderBy?: any }>({ skip: 0, take: 25, where: undefined, include: { rules:true, members:true }, orderBy: undefined });
+  const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set(name, value)
+ 
+      return params.toString()
+    },
+    [searchParams]
+  );
   const filterOptions = [{
-    label:"prize (Money)", filter:(array)=>{
-        return array.filter((doc)=>doc.prize.moneyPrize.amount > 0);
+    label:"prize (Money)", filter:{chargeId:true}
+}, 
+{
+    label:"prize (Item)", filter:{
+chargeId:null
     }
 }, 
 {
-    label:"prize (Item)", filter:(array)=>{
-        return array.filter((doc)=>doc.prize.moneyPrize.amount === 0);
-    }
+    label:"Type (Teach to fish)", filter:{competitionsType:'Teach to Fish'}
 }, 
 {
-    label:"Type (Teach to fish)", filter:(array)=>{
-        return array.filter((doc)=>doc.competitionsName === "Teach to fish");
-    }
-}, 
-{
-    label:"Type (Lift others, rise)", filter:(array)=>{
-        return array.filter((doc)=>doc.competitionsName ==="Lift others, rise");
-    }
+    label:"Type (Lift others, rise)", filter:{competitionsType:'Lift others, rise'}
 }, 
 {
     label:"Type (First Come, First Booked)",
-    filter: (array) =>{
-        return array.filter((doc)=>doc.competitionsName ==="First read, first served");
-    },
+    filter: {competitionType:'First Come, First Booked'}
 },
-{label:"Expired",filter:(array)=>{
-  return array.filter((doc)=>doc.expiresAt < new Date().getTime());
-}},{
-  label:"Not Expired",filter:(array)=>{
-    return array.filter((doc)=> doc.expiresAt >= new Date().getTime())
+{label:"Expired",filter:{expiresAt:{
+  lt: new Date()
+}}
+},{
+  label:"Not Expired",filter:{
+  expiresAt:{
+    gt: new Date(),
+  }
   }
 }
   ];
-
   const sortOptions = [
     {
         label:"Time (Ascending)", 
-        sort:(array)=>{
-            return array.sort((a,b)=>b.createdBy.createdAt - a.createdBy.createdAt);
-        }
+        sort:{creationDate:'asc'}
     },
     {
         label:"Time (Descending)", 
-        sort:(array)=>{
-            return array.sort((a,b)=>a.createdBy.createdAt - b.createdBy.createdAt);
-        }
+        sort:{creationDate:'desc'}
     }
   ];
-
-  const [selectedFilters, setSelectedFilters] = useState([]);
-  const [selectedSort, setSelectedSort] = useState("");
-
-  const applyFilters = (filters) => {
-    setSelectedFilters(filters);
-    console.log(filters);
-  };
-
-  const applySort = (sort) => {
-    setSelectedSort(sort);
-  };
 
 
 
@@ -111,13 +100,7 @@ function Competitions() {
             method: 'POST',
             headers: {
             },
-           body: JSON.stringify({
-             where: undefined,
-             take: undefined,
-             skip: undefined,
-             orderBy: undefined,
-             include: {members:true, rules:true},
-           })
+           body: JSON.stringify(userSearchParams)
          }).then((item)=>item.json())
   })
 
@@ -129,33 +112,88 @@ function Competitions() {
 
       
       <div className="w-full flex flex-col gap-6">
-             {/* <Autocomplete
-          defaultItems={sortedClubs}
-          onValueChange={(value)=>setSearchInputValue(value)}
-           label={<p className='text-white'>Competition's Name</p>}
-          labelPlacement='outside'
-      placeholder="Search a Club"
-      className="max-w-sm w-full self-center p-2"
-    >
-      {(book:any) => (<AutocompleteItem key={book.id}>{book.competitionTitle}</AutocompleteItem>)}
-        </Autocomplete> */}
 
         <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">  
         {data && data.data && data.data.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={item.competitionLogo} competitionName={item.competitionName} membersAmount={item.members.length} comeptitionRemainingTime={new Date(item.endDate)} type={'dark'}/>))}
          </div>
-         <Pagination classNames={{
+         <Pagination  onChange={async (page) => {
+              setUserSearchParams({ ...userSearchParams, skip:page, });
+          console.log(page);
+          await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['clubs'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['clubs'], type: 'active' })
+      
+        }}  classNames={{
   'wrapper':' self-center mx-auto w-full p-2',
   'cursor':"bg-primary-color",
 }} total={10} showControls loop color='primary' initialPage={1}  />
       </div>
-         <FilterBar filterBarContent={
+         <FilterBar searchBarContent={<div className="flex justify-between items-center gap-2">
+        <LabeledInput onChange={async (e) => {
+          if (e.target.value.trim() === '') {
+            searchParams.delete();
+            setUserSearchParams({ ...userSearchParams, where: { competitionName: undefined } });
+            return;
+          }
+
+          setUserSearchParams({ ...userSearchParams, where: { competitionName: e.target.value } });
+// Cancel all queries
+await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['competitions'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['competitions'], type: 'active' })
+
+          router.replace(`/search/competitions?${createQueryString('clubName', e.target.value)}`);
+      }} additionalClasses='text-base' placeholder='Search....' type='transparent' />
+        <FaSearch  className='text-white cursor-pointer hover:text-primary-color hover:rotate-[360deg] transition-all text-xl'/>
+      </div>} filterBarContent={
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
              <CheckboxGroup
               label="Filters"
-              onValueChange={(value:string[]) => {
-                applyFilters(value);
-              }}
+              onValueChange={async (value:string[]) => {
+                let arrayOfFilters: any[] = [];
+  
+              if (value.length === 0) {
+                  setUserSearchParams({ ...userSearchParams, where: {...userSearchParams.where, 'OR':undefined}  });
+              }
+  
+              console.log(value);
+              value.map((item) => {
+                const foundItem = filterOptions.find((catObj) => catObj.label === item);
+                console.log(foundItem);
+                if (foundItem) {
+                  arrayOfFilters.push(foundItem.filter);
+                }
+              })
+  
+              setUserSearchParams({ ...userSearchParams, where: { OR: arrayOfFilters } });
+  
+              // Cancel all queries
+  await queryClient.cancelQueries()
+  
+  // Remove all inactive queries that begin with `posts` in the key
+  queryClient.removeQueries({ queryKey: ['competitions'], type: 'inactive' })
+  
+  // Refetch all active queries
+  await queryClient.refetchQueries({ type: 'active' })
+  
+  // Refetch all active queries that begin with `posts` in the key
+  await queryClient.refetchQueries({ queryKey: ['competitions'], type: 'active' })
+                }}
               orientation="horizontal"
               classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
             >
@@ -167,7 +205,22 @@ function Competitions() {
           
       <div className="flex flex-col gap-2">
             <RadioGroup
-              onValueChange={(value)=>applySort(value)}
+             onValueChange={async (value) => {
+              
+              setUserSearchParams({ ...userSearchParams, orderBy: sortOptions.find((item) => item.label === value)!.sort || undefined })
+            // Cancel all queries
+await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['competitions'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['competitions'], type: 'active' })
+            }
+           }
       label="Sorting"
               orientation="horizontal"
               classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}

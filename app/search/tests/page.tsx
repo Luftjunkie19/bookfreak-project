@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 'use client';
 
 import React, {
@@ -23,18 +21,33 @@ import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
 import ManagementBar from '../../../components/managment-bar/ManagementBar';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import FilterBar from 'components/Sidebars/right/FilterBar';
 import { Autocomplete, AutocompleteItem, Checkbox, CheckboxGroup, Pagination, Radio, RadioGroup } from '@nextui-org/react';
 import Test from 'components/elements/Test';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { FaSearch } from 'react-icons/fa';
+import LabeledInput from 'components/input/LabeledInput';
 
 
 function Tests() {
+  const [userSearchParams, setUserSearchParams] = useState<{ skip: number, take: number, where?: any, include?: any, orderBy?: any }>({ skip: 0, take: 25, where: undefined, include: { rules:true, members:true }, orderBy: undefined });
+  const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set(name, value)
+ 
+      return params.toString()
+    },
+    [searchParams]
+  );
+
   const selectedLanguage = useSelector((state:any) => state.languageSelection.selectedLangugage);
-  const [currentPage, setCurrentPage] = useState(1);
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
-    const [searchInputValue, setSearchInputValue] = useState('');
+
   const sortOptions = [
     { label: "Test's name (Z-A)", sort: (tests) => tests.sort((a, b) => b.testName.localeCompare(a.testName)) },
     { label: "Test's name (A-Z)", sort: (tests) => tests.sort((a, b) => a.testName.localeCompare(b.testName)) },
@@ -46,34 +59,13 @@ function Tests() {
   ];
 
 
-
-
-  const [selectedFilters, setSelectedFilters] = useState([]);
-  const [selectedSort, setSelectedSort] = useState("");
-
-  const applyFilters = (filters) => {
-    setSelectedFilters(filters);
-  };
-
-  const applySort = (sort) => {
-    setSelectedSort(sort);
-  };
-
-  const queryClient = useQueryClient();
-
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["tests", {questions:1}],
     'queryFn': ({queryKey}) => fetch('/api/supabase/test/getAll', {
       method: 'POST',
       headers: {
       },
-      body: JSON.stringify({
-        where: undefined,
-        take: undefined,
-        skip: undefined,
-        orderBy: undefined,
-        include: { questions: true, results: true },
-      })
+      body: JSON.stringify(userSearchParams)
     }).then((item) => item.json()),
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
@@ -83,8 +75,8 @@ function Tests() {
   const { mutate, isError, isPending } = useMutation({
     mutationFn: async () => { },
     onMutate:(variables)=>{},
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (data, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: ["tests"],
       })
     },
@@ -123,10 +115,49 @@ function Tests() {
 }} total={10} showControls loop color='primary' initialPage={1}  />
       </div>
 
-         <FilterBar sortingBarContent={         
+         <FilterBar searchBarContent={<div className="flex justify-between items-center gap-2">
+        <LabeledInput onChange={async (e) => {
+          if (e.target.value.trim() === '') {
+            searchParams.delete();
+            setUserSearchParams({ ...userSearchParams, where: { name: undefined } });
+            return;
+          }
+
+          setUserSearchParams({ ...userSearchParams, where: { name: e.target.value } });
+// Cancel all queries
+await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['tests'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['tests'], type: 'active' })
+
+          router.replace(`/search/tests?${createQueryString('clubName', e.target.value)}`);
+      }} additionalClasses='text-base' placeholder='Search....' type='transparent' />
+        <FaSearch  className='text-white cursor-pointer hover:text-primary-color hover:rotate-[360deg] transition-all text-xl'/>
+      </div>} sortingBarContent={         
       <div className="flex flex-col gap-2">
             <RadioGroup
-              onValueChange={(value)=>applySort(value)}
+            onValueChange={async (value) => {
+              
+              setUserSearchParams({ ...userSearchParams, orderBy: sortOptions.find((item) => item.label === value)!.sort || undefined })
+            // Cancel all queries
+await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['tests'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['tests'], type: 'active' })
+            }
+           }
               orientation="horizontal"
               classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
             >
@@ -138,9 +169,35 @@ function Tests() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
              <CheckboxGroup
-            
-              onValueChange={(value:string[]) => {
-                applyFilters(value);
+            onValueChange={async (value:string[]) => {
+              let arrayOfFilters: any[] = [];
+
+            if (value.length === 0) {
+                setUserSearchParams({ ...userSearchParams, where: {...userSearchParams.where, 'OR':undefined}  });
+            }
+
+            console.log(value);
+            value.map((item) => {
+              const foundItem = filterOptions.find((catObj) => catObj.label === item);
+              console.log(foundItem);
+              if (foundItem) {
+                arrayOfFilters.push(foundItem.filter);
+              }
+            })
+
+            setUserSearchParams({ ...userSearchParams, where: { OR: arrayOfFilters } });
+
+            // Cancel all queries
+await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['tests'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['tests'], type: 'active' })
               }}
               orientation="horizontal"
               classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 
@@ -33,7 +32,7 @@ import { FaSearch } from 'react-icons/fa';
 function Clubs() {
   
   const searchParams = useSearchParams();
-  const [userSearchParams, setUserSearchParams] = useState<{ skip: number, take: number, where?: any, include?: any, orderBy?: any }>({ skip: 0, take: 25, where: undefined, include: { recensions: true }, orderBy: undefined });
+  const [userSearchParams, setUserSearchParams] = useState<{ skip: number, take: number, where?: any, include?: any, orderBy?: any }>({ skip: 0, take: 25, where: undefined, include: { members:true, requirements:true }, orderBy: undefined });
   const router = useRouter();
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["clubs"],
@@ -41,13 +40,7 @@ function Clubs() {
       method: 'POST',
       headers: {
       },
-      body: JSON.stringify({
-        where: undefined,
-        take: undefined,
-        skip: undefined,
-        orderBy: undefined,
-        include: { members: true, requirements: true },
-      })
+      body: JSON.stringify(userSearchParams)
     }).then((item) => item.json())
   });
 
@@ -62,7 +55,7 @@ function Clubs() {
           requiredPagesRead: {
             lte: 100
           },
-                },
+          },
       },
     }
 }, 
@@ -80,7 +73,6 @@ function Clubs() {
 
     
   ];
-
 
   const sortOptions = [
     {
@@ -128,18 +120,19 @@ function Clubs() {
         {data && data.data && data.data.map((club, i)=>(<Club key={club.id} clubLogo={club.clubLogo} clubName={club.clubsName} membersAmount={club.members.length} clubData={club} hasRequirements={club.hasRequirements} type={'dark'}  />))}
         </div>
         <Pagination onChange={async (page) => {
+              setUserSearchParams({ ...userSearchParams, skip:page, });
           console.log(page);
           await queryClient.cancelQueries()
 
 // Remove all inactive queries that begin with `posts` in the key
-queryClient.removeQueries({ queryKey: ['books'], type: 'inactive' })
+queryClient.removeQueries({ queryKey: ['clubs'], type: 'inactive' })
 
 // Refetch all active queries
 await queryClient.refetchQueries({ type: 'active' })
 
 // Refetch all active queries that begin with `posts` in the key
-await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
-          setUserSearchParams({ ...userSearchParams, skip:page, });
+await queryClient.refetchQueries({ queryKey: ['clubs'], type: 'active' })
+      
         }} onRateChange={(e) => {
           console.log(e)
 }} classNames={{
@@ -180,13 +173,13 @@ await queryClient.refetchQueries({ queryKey: ['clubs'], type: 'active' })
 await queryClient.cancelQueries()
 
 // Remove all inactive queries that begin with `posts` in the key
-queryClient.removeQueries({ queryKey: ['books'], type: 'inactive' })
+queryClient.removeQueries({ queryKey: ['clubs'], type: 'inactive' })
 
 // Refetch all active queries
 await queryClient.refetchQueries({ type: 'active' })
 
 // Refetch all active queries that begin with `posts` in the key
-await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
+await queryClient.refetchQueries({ queryKey: ['clubs'], type: 'active' })
             }
            }
               orientation="horizontal"
@@ -221,13 +214,13 @@ await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
 await queryClient.cancelQueries()
 
 // Remove all inactive queries that begin with `posts` in the key
-queryClient.removeQueries({ queryKey: ['books'], type: 'inactive' })
+queryClient.removeQueries({ queryKey: ['clubs'], type: 'inactive' })
 
 // Refetch all active queries
 await queryClient.refetchQueries({ type: 'active' })
 
 // Refetch all active queries that begin with `posts` in the key
-await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
+await queryClient.refetchQueries({ queryKey: ['clubs'], type: 'active' })
               }}
               orientation="horizontal"
               classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
