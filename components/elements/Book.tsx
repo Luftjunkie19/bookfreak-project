@@ -13,8 +13,8 @@ function Book({ bookCover, additionalClasses, recensions, pages, author, title, 
       <Image width={60} height={60} src={bookCover} alt='' className='w-full h-44  rounded-t-lg object-cover' />
 
         <div className="flex flex-col gap-1 p-1">
-          <p className='text-xl line-clamp-1 font-bold'>{title}</p>
-          <p className='line-clamp-1'>{author}</p>
+          <p className='text-xl line-clamp-1 text-wrap font-bold'>{title}</p>
+          <p className='line-clamp-1 text-wrap'>{author}</p>
         <p className='line-clamp-1 text-sm font-light'>{bookCategory}</p>
         <div className="flex text-lg gap-2 items-center">
           <FaStar className={`${type === 'blue' ? ' text-orange-200' : 'text-primary-color'} text-2xl`}/>

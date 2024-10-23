@@ -19,6 +19,7 @@ import AdBanner from 'components/advertisements/AdBanner';
 import SubscriptionPlan from 'components/elements/subscription/SubscriptionPlan';
 import SubscriptionRow from 'components/elements/subscription/SubscriptionRow';
 import LeftSidebar from 'components/Sidebars/left/LeftSidebar';
+import PostsSwiper from 'components/home/swipers/PostsSwiper';
 
 
 //error.tsx - Handles all errors from try catch
@@ -39,6 +40,7 @@ export default function Home() {
      data-ad-format="auto"
      data-full-width-responsive="true"/>
       
+      <PostsSwiper/>
       <BookSwiper />
       <CompetitionSwiper />
       <ClubSwiper/>

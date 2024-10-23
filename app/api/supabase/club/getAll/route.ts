@@ -13,8 +13,8 @@ export async function POST(request: NextRequest) {
             include
         } = await request.json();
     
-      const clubsArray =  await prisma.club.findMany({
-           where,
+        const clubsArray = await prisma.club.findMany({
+            where,
           include,
             take,
             skip,

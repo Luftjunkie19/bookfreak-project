@@ -14,7 +14,7 @@ function Club({clubData, clubLogo, clubName, hasRequirements, membersAmount, typ
       <div className="p-2 flex flex-col justify-between h-full gap-2">
         <div className="flex gap-2 flex-col   ">
 
-        <p className=' font-bold text-xl'>{clubName}</p>
+          <p className=' font-bold text-lg line-clamp-1'>{clubData.clubName}</p>
         <p>{membersAmount} Members</p>
         <div className="flex gap-2 items-center"><IoAlertCircle className=' text-yellow-700 text-lg'/> <p className=' text-sm font-light'>{hasRequirements ? `${clubData.requirements.length} Requirements` : 'Free to Join'}</p></div>
         </div>

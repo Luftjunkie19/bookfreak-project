@@ -8,9 +8,9 @@ type Props = {
 
 function BarFriendOverview({username, image}: Props) {
   return (
-    <div className="flex gap-3 cursor-pointer w-full">
+    <div className="flex group gap-3 items-center hover:bg-white/80 transition-all duration-500  cursor-pointer px-2 py-1 rounded-lg w-full">
                   <Image className=' w-8 h-8 rounded-full' src={image} alt='' width={40} height={40} />
-                  <p className='text-white line-clamp-1 text-sm  '>{username} </p>
+                  <p className='text-white transition-all group-hover:text-dark-gray line-clamp-1 text-sm  '>{username} </p>
               </div>
   )
 }

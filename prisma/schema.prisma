@@ -40,6 +40,7 @@ model User {
   friends        Friend[]       @relation(name: "inviteeRelation")
   blockedUsers   blockedUser[]  @relation(name: "blockedUser")
   blockerUser    blockedUser[]  @relation(name: "blockerUser")
+  Lover          Lover[]
 }
 
 model blockedUser {
@@ -298,25 +299,41 @@ model Answer {
 }
 
 model Post {
-  id       String    @id @default(cuid())
-  header   String
-  body     String
-  ownerId  String
-  owner    User?     @relation(fields: [ownerId], references: [id])
-  images   Json[]
-  comments Comment[]
-  hashtags Hashtag[]
+  id           String    @id @default(cuid())
+  header       String
+  body         String
+  ownerId      String
+  creationTime DateTime  @default(now())
+  owner        User      @relation(fields: [ownerId], references: [id])
+  images       Json[]
+  comments     Comment[]
+  hashtags     Hashtag[]
+  lovers       Lover[]
+}
+
+model Lover {
+  id             String   @id @default(cuid())
+  postLovedId    String?
+  Post           Post?    @relation(fields: [postId], references: [id])
+  commentLovedId String?
+  comment        Comment? @relation(fields: [commentLovedId], references: [id])
+  postId         String
+  loverId        String
+  user           User     @relation(fields: [loverId], references: [id])
+  timeAdded      DateTime @default(now())
 }
 
 model Comment {
   id       String    @id @default(cuid())
   postId   String
-  Post     Post?     @relation(fields: [postId], references: [id])
+  Post     Post      @relation(fields: [postId], references: [id])
   ownerId  String
-  owner    User?     @relation(fields: [ownerId], references: [id])
+  owner    User      @relation(fields: [ownerId], references: [id])
   body     String
   images   String[]
+  time     DateTime  @default(now())
   hashtags Hashtag[]
+  Lover    Lover[]
 }
 
 model Hashtag {

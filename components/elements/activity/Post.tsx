@@ -18,13 +18,15 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
                   </div>
               </div>
 
+                {isOwner &&  
               <Button type='transparent' additionalClasses='text-2xl'><BsThreeDots/></Button>
+                }
           </div>
 
-          <div className="flex flex-col gap-2 px-2 ">
-                <p className='line-clamp-6 text-sm'>{content}</p>
-                {images && images.length > 0 && <div className='grid grid-cols-3 gap-2 w-fit'>
-                {images.map((item, index)=>(<Image width={60} height={60} alt='' className='w-32 h-32 rounded-lg' src={item.url} key={index}/>))}
+          <div className="flex flex-col gap-2 px-2 min-h-44 max-h-64">
+                <p className='line-clamp-6'>{content}</p>
+                {postData.images && postData.images.length > 0 && <div className='grid grid-cols-3 gap-2 w-fit'>
+                {postData.images.map((item, index)=>(<Image width={60} height={60} alt='' className='w-32 h-32 rounded-lg object-cover' src={item.url} key={index}/>))}
                 </div>}
           </div>
 
@@ -33,12 +35,12 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
                   
                   <Button type='transparent' additionalClasses="flex gap-2 text-2xl items-center">
                       <FaHeart className={`${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue'  ? ' text-white' : ' text-dark-gray'}`} />
-                      <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue' ? ' text-white' : ' text-dark-gray'}`}> 0</p>
+                        <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue' ? ' text-white' : ' text-dark-gray'}`}>{postData.lovers.length}</p>
                   </Button>
 
                   <Button type='transparent' additionalClasses="flex gap-2 text-2xl items-center">
                       <FaComment className={`text-2xl ${type === 'dark-blue' ? 'text-dark-gray' :  type === 'white' || type === 'dark-white' || type === 'white-dark' ? 'text-primary-color' : 'text-dark-gray'}`} />
-                                <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue'  ? ' text-white' : ' text-dark-gray'}`}> 0</p>
+                        <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue' ? ' text-white' : ' text-dark-gray'}`}>{postData.comments.length}</p>
                   </Button>
                   
             </div>

@@ -2,27 +2,34 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from 'lib/prisma/prisma'
 
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
     const {
             where,
-            select,
+            include,
             take,
             skip,
             orderBy
         } = await request.json();
     
-      const createdTest =  await prisma.post.findMany({
+      const posts =  await prisma.post.findMany({
            where,
-            select,
+          include: {
+              'comments': true,
+              'owner':true,
+              'hashtags': true,
+              lovers: true,
+              
+            },
             take,
             skip,
             orderBy
       });
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:posts, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        console.log(error);
+        return NextResponse.json({ data: null, error });
     }
 }

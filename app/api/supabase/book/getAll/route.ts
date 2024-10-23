@@ -5,7 +5,7 @@ import prisma from 'lib/prisma/prisma'
 export async function POST(request: NextRequest) {
     try {
 
-        const { select, skip, take, where,include } = await request.json();
+        const { select, orderBy, skip, take, where,include } = await request.json();
         
 
 
@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
             skip,
             take,
             where,
+            orderBy,
       });
         
         return NextResponse.json({data:foundItems, error:null});

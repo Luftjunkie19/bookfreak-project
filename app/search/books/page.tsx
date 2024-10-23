@@ -11,7 +11,7 @@ import React, {
 
 import Lottie from 'lottie-react';
 import { useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 
 import lottieAnimation
@@ -29,219 +29,244 @@ import { DataView } from 'primereact/dataview';
 import LabeledInput from 'components/input/LabeledInput';
 import FilterBar from 'components/Sidebars/right/FilterBar';
 import { cn } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
+import { FaSearch } from 'react-icons/fa';
 
 function Books() {
-   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
+  const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
+  const searchParams = useSearchParams();
+  const [userSearchParams, setUserSearchParams] = useState<{ skip: number, take: number, where?: any, include?: any, orderBy?: any }>({ skip: 0, take: 25, where: undefined, include: { recensions: true }, orderBy: undefined });
+  const router = useRouter();
 
   const selectedLanguage = useSelector(
     (state: any) => state.languageSelection.selectedLangugage
   );
   
-   const { data:orderedDocuments, error, isFetching, isLoading } = useQuery({
-      queryKey: ['books'],
-      'queryFn': async () => {
-         const fetchBooks = await fetch('/api/supabase/book/getAll', {
-            method: 'POST',
-            headers: {
-            },
-            body: JSON.stringify({ skip: 0, take: 6, where: undefined, include: undefined })
-         });
+  const { data: orderedDocuments, error, isFetching, isLoading } = useQuery({
+    queryKey: ['books'],
+    'queryFn': async () => {
+      const fetchBooks = await fetch('/api/supabase/book/getAll', {
+        method: 'POST',
+        headers: {
+        },
+        body: JSON.stringify(userSearchParams)
+      });
 
-         const fetchedBooks = await fetchBooks.json();
+      const fetchedBooks = await fetchBooks.json();
 
-         return fetchedBooks;
-      }
-})
-  // const [filterQuery, setFilterQuery] = useSearchParams({ filters: "" });
-
+      return fetchedBooks;
+    }
+  })
  
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const categoryTypes = [
     {
-      filter: (array:any[]) => {
-        return array.filter((book) => book.category === "Fiction");
-      },
+      filter: { genre: 'fiction' },
       label: typesTranslation.bookFilter.fiction[selectedLanguage],
     },
     {
-      filter: (array:any[]) => {
-        return array.filter((book) => book.category === "Non-fiction");
-      },
+      filter: { genre: 'non-fiction' },
       label: typesTranslation.bookFilter["non-fiction"][selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Crime");
-      },
+      filter: { genre: 'crime' },
       label: typesTranslation.bookFilter.crime[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Science fiction and fantasy");
-      },
+      filter: { genre: 'Science fiction and fantasy' },
       label: typesTranslation.bookFilter.scienceFF[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Children's and young adult literature");
-      },
+      filter: {genre: `Children's and young adult literature`},
       label: typesTranslation.bookFilter.cayal[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Travel and adventure literature");
-      },
+      filter: {genre:'Travel and adventure literature'},
       label: typesTranslation.bookFilter.travelaal[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Popular science and popular history");
-      },
+      filter: {genre:'Popular science and popular history'},
       label: typesTranslation.bookFilter.popularScience[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Self-help and personal development");
-      },
+      filter:{genre:'Self-help and personal development'},
       label: typesTranslation.bookFilter.selfHelp[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "History and culture");
-      },
+      filter: {genre:'History and culture'},
       label: typesTranslation.bookFilter.history[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Art and design");
-      },
+      filter: {genre:'Art and design'},
       label: typesTranslation.bookFilter.artDesign[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Business and economics");
-      },
+      filter: {genre:'Business and economics'},
       label: typesTranslation.bookFilter.Business[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Psychology and philosophy");
-      },
+      filter: { genre:'Psychology and philosophy'},
       label: typesTranslation.bookFilter.Psychology[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Health and medicine");
-      },
+      filter: {genre:"Health and medicine"},
       label: typesTranslation.bookFilter.Health[selectedLanguage],
     },
     {
-      filter: (array: any[]) => {
-        return array.filter((book: { category: string; }) => book.category === "Erotic literature");
-      },
+      filter: {genre:'Erotic literature'},
       label: typesTranslation.bookFilter.Erotic[selectedLanguage],
     },
   ];
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const sortTypes = [
     {
       label: typesTranslation.bookSort.Default[selectedLanguage],
-      sort: (array: Array<any>) => array.slice().sort((a, b) => a.title - b.title),
+      sort:{title:'desc'},
     },
     {
       label: typesTranslation.bookSort.pagesDescending[selectedLanguage],
-      sort: (array: Array<any>) => array.slice().sort((a, b) => b.pagesNumber - a.pagesNumber),
+      sort:{pages:'asc'},
     },
     {
       label: typesTranslation.bookSort.pagesAscending[selectedLanguage],
-      sort: (array: Array<any>) => array.slice().sort((a, b) => a.pagesNumber - b.pagesNumber),
+      sort: {pages:'desc'},
     },
 
   ];
 
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const objectsOnPage = () => {
-    if (document.body.clientWidth > 0 && document.body.clientWidth < 1024) {
-      return 10;
-    } else {
-      return 45;
-    }
-  };
+  const queryClient = useQueryClient();
 
 
-
-  
-
-
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [selectedSort, setSelectedSort] = useState("");
-  const [searchInputValue, setSearchInputValue] = useState('');
-
-  const applyFilters = (filters: string[]) => {
-    setSelectedFilters(filters);
-    console.log(filters);
-  };
-
-  const applySort = (sort: string) => {
-    setSelectedSort(sort);
-  };
-
-  // const filteredArray =  useMemo(() => {
-  //   if (selectedFilters.length > 0) {
-  //     const filteredDocuments = selectedFilters.reduce((result, selectedFilter) => {
-  //       const filterOption = categoryTypes.find(option => option.label === selectedFilter);
-
-  //       if (filterOption) {
-  //         const temp = filterOption.filter(result);
-  //         return temp;
-  //       }
-
-  //       return result;
-  //     }, books);
-
-  //     return filteredDocuments.filter((item)=> item.title.includes(searchInputValue) || item.author.includes(searchInputValue));
-  //   } else {
-  //     return books.filter((item)=> item.title.toLowerCase().includes(searchInputValue.toLowerCase()) || item.author.toLowerCase().includes(searchInputValue.toLowerCase()));
-  //   }
-  // },[books, categoryTypes, searchInputValue, selectedFilters]);
-
-  // const sortedArray = useMemo(() => {
-  //   if (selectedSort.trim() !== "" && sortTypes
-  //       .find((option) => option.label === selectedSort)) {
-  //     return (sortTypes
-  //       .find((option) => option.label === selectedSort) as {
-  //       label: string,
-  //       sort: (array: Array<any>) => any[];
-  //       })
-  //       .sort(filteredArray).filter((item)=> item.title.toLowerCase().includes(searchInputValue.toLowerCase()) || item.author.toLowerCase().includes(searchInputValue.toLowerCase()));
-  //   } else {
-  //     return filteredArray.filter((item)=> item.title.toLowerCase().includes(searchInputValue.toLowerCase()) || item.author.toLowerCase().includes(searchInputValue.toLowerCase()));;
-  //   }
-  // }, [filteredArray, searchInputValue, selectedSort, sortTypes]);
-  
+    const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set(name, value)
  
+      return params.toString()
+    },
+    [searchParams]
+  )
 
 
   return (
     <div className='w-full flex'>
     <div className={`flex w-full flex-col gap-6 p-2`}>
-      <LabeledInput placeholder='' type={'dark'} additionalClasses='max-w-sm mx-auto w-full p-2' onChange={(e)=> {
-        console.log(e.target.value);
-      } } />
       <div className="grid mx-auto p-2 gap-4 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-        {/* {sortedArray && sortedArray.map((item)=>(<Book key={item.id} bookCover={item.photoURL} pages={item.pagesNumber} author={item.author} bookId={item.id} title={item.title} bookCategory={item.category} type={'transparent'}/>))} */}
+        {orderedDocuments && orderedDocuments.data && orderedDocuments.data.map((item)=>( <Book recensions={item.recensions.length} bookId={item.id} bookCover={item.bookCover} pages={item.pages} author={item.bookAuthor} title={item.title} bookCategory={item.genre} key={item.id} type={'transparent'} />))}
       </div>
 
-<Pagination classNames={{
+        <Pagination onChange={async (page) => {
+          console.log(page);
+          await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['books'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
+          setUserSearchParams({ ...userSearchParams, skip:page, });
+        }} onRateChange={(e) => {
+          console.log(e)
+}} classNames={{
   'wrapper':' self-center mx-auto w-full p-2',
   'cursor':"bg-primary-color",
 }} total={10} showControls loop color='primary' initialPage={1}  />
     </div>
-        <FilterBar/>
+      <FilterBar searchBarContent={<div className="flex justify-between items-center gap-2">
+        <LabeledInput onChange={async (e) => {
+          if (e.target.value.trim() === '') {
+            searchParams.delete();
+            setUserSearchParams({ ...userSearchParams, where: { title: undefined } });
+            return;
+          }
+
+          setUserSearchParams({ ...userSearchParams, where: { title: e.target.value } });
+// Cancel all queries
+await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['books'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
+
+          router.replace(`/search/books?${createQueryString('title', e.target.value)}`);
+      }} additionalClasses='text-base' placeholder='Search....' type='transparent' />
+        <FaSearch  className='text-white cursor-pointer hover:text-primary-color hover:rotate-[360deg] transition-all text-xl'/>
+      </div>} filterBarContent={<div>
+         <CheckboxGroup
+          onValueChange={async (value: string[]) => {
+            let arrayOfFilters: { genre: string }[] = [];
+
+            if (value.length === 0) {
+                setUserSearchParams({ ...userSearchParams, where: {...userSearchParams.where, 'OR':undefined}  });
+            }
+
+            console.log(value);
+            value.map((item) => {
+              const foundItem = categoryTypes.find((catObj) => catObj.label === item);
+              console.log(foundItem);
+              if (foundItem) {
+                arrayOfFilters.push(foundItem.filter);
+              }
+            })
+
+            setUserSearchParams({ ...userSearchParams, where: { OR: arrayOfFilters } });
+
+            // Cancel all queries
+await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['books'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
+
+              }}
+              orientation="horizontal"
+              classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
+            >
+              {categoryTypes.map((filter) => (
+                <Checkbox key={filter.label} value={filter.label} classNames={{label:'text-xs text-white'}}>{filter.label}</Checkbox>
+              ))}
+    </CheckboxGroup>
+
+        </div>} sortingBarContent={<div>
+            <RadioGroup
+            onValueChange={async (value) => {
+              
+              setUserSearchParams({ ...userSearchParams, orderBy: sortTypes.find((item) => item.label === value)!.sort || undefined })
+            // Cancel all queries
+await queryClient.cancelQueries()
+
+// Remove all inactive queries that begin with `posts` in the key
+queryClient.removeQueries({ queryKey: ['books'], type: 'inactive' })
+
+// Refetch all active queries
+await queryClient.refetchQueries({ type: 'active' })
+
+// Refetch all active queries that begin with `posts` in the key
+await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
+            }
+           
+            }
+              orientation="horizontal"
+              classNames={{wrapper:'max-h-96 overflow-y-auto h-full flex gap-2 flex-wrap', label:"text-white text-2xl"}}
+            >
+              {sortTypes.map((sort) => (
+                <Radio key={sort.label} value={sort.label} classNames={{label:'text-xs text-white'}}>{sort.label}</Radio>
+              ))}
+    </RadioGroup>
+      </div  >} />
     </div>
   );
 }

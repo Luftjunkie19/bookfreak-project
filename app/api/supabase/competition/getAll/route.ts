@@ -8,10 +8,7 @@ export async function POST(request: NextRequest) {
     
         const receivedCompetitions = await prisma.competition.findMany({
             where,
-            include: {
-                members: true,
-                rules:true,
-            },
+            include,
             take,
             skip,
             orderBy
