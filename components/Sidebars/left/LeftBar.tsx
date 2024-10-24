@@ -21,7 +21,7 @@ function DefaultLeftBar({ }: Props) {
   const {user } = useAuthContext();
   const location = usePathname();
   return (
-    <div className={`overflow-y-auto sm:justify-center xl:justify-normal ${location.includes('/book/') || location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2 sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] lg:max-w-fit xl:max-w-36 2xl:max-w-64 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
+    <div className={`overflow-y-auto sm:justify-center xl:justify-normal ${location.includes('/book/') || location.includes('/post/') || location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2 sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] lg:max-w-fit xl:max-w-36 2xl:max-w-64 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
       <div className="flex flex-col flex-grow">
         
       <SearchBtn />

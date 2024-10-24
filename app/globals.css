@@ -83,6 +83,7 @@ body {
 
 
 
-  div::-webkit-scrollbar, form::-webkit-scrollbar{
+  div::-webkit-scrollbar, form::-webkit-scrollbar, p::-webkit-scrollbar{
     display: none;
   }
+
